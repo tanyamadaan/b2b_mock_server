@@ -27,45 +27,45 @@ import { onStatusController } from "./onStatus";
 import { onUpdateController } from "./onUpdate";
 import { updateController } from "./update";
 
-export const b2bBppRouter = Router();
+export const bppRouter = Router();
 
-b2bBppRouter.post("/search", jsonSchemaValidator(searchSchema), searchController);
-b2bBppRouter.post(
+bppRouter.post("/search", jsonSchemaValidator(searchSchema), searchController);
+bppRouter.post(
   "/onSearch",
   jsonSchemaValidator(onSearchSchema),
   onSearchController
 );
 
-b2bBppRouter.post("/init", jsonSchemaValidator(initSchema), initController);
-b2bBppRouter.post("/onInit", jsonSchemaValidator(onInitSchema), onInitController);
+bppRouter.post("/init", jsonSchemaValidator(initSchema), initController);
+bppRouter.post("/onInit", jsonSchemaValidator(onInitSchema), onInitController);
 
-b2bBppRouter.post("/select", jsonSchemaValidator(selectSchema), selectController);
-b2bBppRouter.post(
+bppRouter.post("/select", jsonSchemaValidator(selectSchema), selectController);
+bppRouter.post(
   "/onSelect",
   jsonSchemaValidator(onSelectSchema),
   onSelectController
 );
 
-b2bBppRouter.post(
+bppRouter.post(
   "/confirm",
   jsonSchemaValidator(confirmSchema),
   confirmController
 );
-b2bBppRouter.post(
+bppRouter.post(
   "/onConfirm",
   jsonSchemaValidator(onConfirmSchema),
   onConfirmController
 );
 
-b2bBppRouter.post("/status", jsonSchemaValidator(statusSchema), statusController);
-b2bBppRouter.post(
+bppRouter.post("/status", jsonSchemaValidator(statusSchema), statusController);
+bppRouter.post(
   "/onStatus",
   jsonSchemaValidator(onStatusSchema),
   onStatusController
 );
 
-b2bBppRouter.post("/update", jsonSchemaValidator(updateSchema), updateController);
-b2bBppRouter.post(
+bppRouter.post("/update", jsonSchemaValidator(updateSchema), updateController);
+bppRouter.post(
   "/onUpdate",
   jsonSchemaValidator(onUpdateSchema),
   onUpdateController
