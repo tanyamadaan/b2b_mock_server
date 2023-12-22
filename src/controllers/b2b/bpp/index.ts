@@ -4,12 +4,6 @@ import { jsonSchemaValidator } from "../../../middlewares/jsonSchemaValidator";
 import {
   confirmSchema,
   initSchema,
-  onConfirmSchema,
-  onInitSchema,
-  onSearchSchema,
-  onSelectSchema,
-  onStatusSchema,
-  onUpdateSchema,
   searchSchema,
   selectSchema,
   statusSchema,

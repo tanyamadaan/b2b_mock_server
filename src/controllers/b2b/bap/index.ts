@@ -1,18 +1,12 @@
 import { Router } from "express";
 import { jsonSchemaValidator } from "../../../middlewares/jsonSchemaValidator";
 import {
-  confirmSchema,
-  initSchema,
   onConfirmSchema,
   onInitSchema,
   onSearchSchema,
   onSelectSchema,
   onStatusSchema,
   onUpdateSchema,
-  searchSchema,
-  selectSchema,
-  statusSchema,
-  updateSchema,
 } from "../../../schema/b2b";
 import { onSearchController } from "./onSearch";
 import { onInitController } from "./onInit";

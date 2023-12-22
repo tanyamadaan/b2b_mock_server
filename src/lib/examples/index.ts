@@ -1,11 +1,12 @@
 export * from "./search"
 export * from "./on_search"
 
+export * from "./select"
+export * from "./on_select"
+
 export * from "./init"
 export * from "./on_init"
 
-export * from "./select"
-export * from "./on_select"
 
 export * from "./confirm"
 export * from "./on_confirm"
