@@ -1,3 +1,5 @@
+import { domain, version } from "./constants";
+
 export const onUpdateSchema = {
   $id: "onUpdateSchema",
   type: "object",
@@ -7,7 +9,7 @@ export const onUpdateSchema = {
       properties: {
         domain: {
           type: "string",
-          const: "ONDC:RET10",
+          enum: [domain.grocery]
         },
         location: {
           type: "object",
@@ -41,7 +43,7 @@ export const onUpdateSchema = {
         },
         version: {
           type: "string",
-          const: "2.0.1",
+          const: version,
         },
         bap_id: {
           type: "string",

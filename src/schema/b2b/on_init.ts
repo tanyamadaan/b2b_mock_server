@@ -1,3 +1,5 @@
+import { domain, version } from "./constants";
+
 export const onInitSchema = {
   $id: "onInitSchema",
   type: "object",
@@ -7,6 +9,7 @@ export const onInitSchema = {
       properties: {
         domain: {
           type: "string",
+          enum: [domain.grocery]
         },
         location: {
           type: "object",
@@ -40,7 +43,7 @@ export const onInitSchema = {
         },
         version: {
           type: "string",
-          const: "2.0.1",
+          const: version,
         },
         bap_id: {
           type: "string",
