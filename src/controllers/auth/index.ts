@@ -3,7 +3,7 @@ import { signup } from "./signup";
 import { generateApiToken } from "./generateApiToken";
 import { getApiTokens } from "./getApiTokens";
 import { getUserProfile } from "./getUserProfile";
-import { jsonSchemaValidator } from "../../middlewares/jsonSchemaValidator";
+import { jsonSchemaValidator } from "../../middlewares";
 import { userSigninSchema, userSignupSchema } from "../../schema/auth";
 import passport from "passport";
 import { jwtStrategy, localStrategy } from "../../strategies";

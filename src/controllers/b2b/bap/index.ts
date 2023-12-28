@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { jsonSchemaValidator } from "../../../middlewares/jsonSchemaValidator";
+import { jsonSchemaValidator } from "../../../middlewares";
 import {
   onConfirmSchema,
   onInitSchema,

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { searchController } from "./search";
-import { jsonSchemaValidator } from "../../../middlewares/jsonSchemaValidator";
+import { jsonSchemaValidator } from "../../../middlewares";
 import {
   confirmSchema,
   initSchema,

@@ -19,7 +19,8 @@ export const jsonSchemaValidator =
 		const isValid = validate(req.body);
 
 		if (!isValid) {
-			if (req.baseUrl === "/api/b2b") {
+      const regex = /^\/api\/b2b(?:\/.*)?$/;
+			if (regex.test(req.baseUrl)) {
 				return res.status(400).json({
 					message: {
 						ack: {
