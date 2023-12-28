@@ -17,7 +17,7 @@ model User {
   email     String   @unique
   password  String
   org       String
-  ApiKey    ApiKey[]
+  apiKeys    ApiKey[]
 }
 
 model ApiKey {

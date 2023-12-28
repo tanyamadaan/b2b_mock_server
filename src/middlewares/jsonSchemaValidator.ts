@@ -18,16 +18,23 @@ export const jsonSchemaValidator =
 		const validate = ajv.compile(JSONSchema);
 		const isValid = validate(req.body);
 
-		if (!isValid)
-			return res.status(400).json({
-				message: {
-					ack: {
-						status: "ACK",
+		if (!isValid) {
+			if (req.baseUrl === "/api/b2b") {
+				return res.status(400).json({
+					message: {
+						ack: {
+							status: "NACK",
+						},
+						body: {
+							log_report: validate.errors,
+						},
 					},
-					body: {
-						log_report: validate.errors,
-					},
-				},
-			});
+				});
+			} else {
+				return res
+					.status(400)
+					.json({ errors: validate.errors?.map(({ message }) => ({message})) });
+			}
+		}
 		next();
 	};
