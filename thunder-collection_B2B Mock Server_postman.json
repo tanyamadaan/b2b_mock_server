@@ -1,0 +1,233 @@
+{
+    "info": {
+        "_postman_id": "858b73f0-ff97-4cc4-8504-88b69f33d4c2",
+        "name": "B2B Mock Server",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "description": ""
+    },
+    "item": [
+        {
+            "name": "Auth",
+            "item": [
+                {
+                    "name": "http://localhost:3000/api/auth/signup",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "http://localhost:3000/api/auth/signup",
+                            "path": [
+                                "api",
+                                "auth",
+                                "signup"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"email\": \"abhik@abhik.com\",\n  \"password\": \"123\",\n  \"org\": \"wits\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "http://localhost:3000/api/auth/signin",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "http://localhost:3000/api/auth/signin",
+                            "path": [
+                                "api",
+                                "auth",
+                                "signin"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"email\": \"abhik@abhik.com\",\n  \"password\": \"123\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "http://localhost:3000/api/auth/profile",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "http://localhost:3000/api/auth/profile",
+                            "path": [
+                                "api",
+                                "auth",
+                                "profile"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000"
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU1YzhiNDlmLThlMGMtNGRjOC05M2Y4LTY4YTE4MjYzMzM0OSIsImlhdCI6MTcwMzc2ODM1N30.5Eomx1LzPd123x_5q08oecXblRguTqGMnNsZw_8m8TI",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "http://localhost:3000/api/auth/api-token",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "http://localhost:3000/api/auth/api-token",
+                            "path": [
+                                "api",
+                                "auth",
+                                "api-token"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000"
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU1YzhiNDlmLThlMGMtNGRjOC05M2Y4LTY4YTE4MjYzMzM0OSIsImlhdCI6MTcwMzc2OTU1Mn0.C5G9DEqdq65mXxKpkWm8k3fWN1mMoo4YB1XWgc5st1o",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "http://localhost:3000/api/auth/api-token Copy",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "http://localhost:3000/api/auth/api-token",
+                            "path": [
+                                "api",
+                                "auth",
+                                "api-token"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000"
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU1YzhiNDlmLThlMGMtNGRjOC05M2Y4LTY4YTE4MjYzMzM0OSIsImlhdCI6MTcwMzc2OTU1Mn0.C5G9DEqdq65mXxKpkWm8k3fWN1mMoo4YB1XWgc5st1o",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "B2B",
+            "item": [
+                {
+                    "name": "BPP",
+                    "item": [
+                        {
+                            "name": "http://localhost:3000/api/b2b/bpp/search",
+                            "request": {
+                                "method": "POST",
+                                "url": {
+                                    "raw": "http://localhost:3000/api/b2b/bpp/search?apiKey=957e4f7c-3069-45d9-af72-2c60b264fa13",
+                                    "query": [
+                                        {
+                                            "key": "apiKey",
+                                            "value": "957e4f7c-3069-45d9-af72-2c60b264fa13"
+                                        }
+                                    ],
+                                    "variable": [],
+                                    "path": [
+                                        "api",
+                                        "b2b",
+                                        "bpp",
+                                        "search"
+                                    ],
+                                    "protocol": "http",
+                                    "host": [
+                                        "localhost"
+                                    ],
+                                    "port": "3000"
+                                },
+                                "body": {
+                                    "mode": "raw",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    },
+                                    "raw": "{\n    \"context\": {\n      \"domain\": \"ONDC:RET10\",\n      \"action\": \"search\",\n      \"bap_id\": \"mystore5.storehippo.manu:3000\",\n      \"bap_uri\": \"http://mystore5.storehippo.manu:3000/ondc/1.0/\",\n      \"transaction_id\": \"31d9b9cc-0344-4263-a171-b17f59044d8b\",\n      \"message_id\": \"5c545e87-d7f3-4a86-a9ea-174181e5442d\",\n      \"timestamp\": \"2023-08-27T16:53:14.875Z\",\n      \"ttl\": \"PT30S\",\n      \"location\": {\n        \"city\": {\n          \"code\": \"std:080\"\n        },\n        \"country\": {\n          \"code\": \"IND\"\n        }\n      },\n      \"version\": \"2.0.2\"\n    },\n    \"message\": {\n      \"intent\": {\n        \"item\": {\n          \"descriptor\": {\n            \"name\": \"testtt\"\n          }\n        },\n        \"fulfillment\": {\n          \"type\": \"Delivery\",\n          \"stops\": [\n            {\n              \"type\": \"end\",\n              \"location\": {\n                \"gps\": \"28.356316,76.931176\",\n                \"area_code\": \"122050\"\n              }\n            }\n          ]\n        },\n        \"tags\": [\n          {\n            \"descriptor\": {\n              \"code\": \"bap_terms\"\n            },\n            \"list\": [\n              {\n                \"descriptor\": {\n                  \"code\": \"finder_fee_type\"\n                },\n                \"value\": \"percent\"\n              },\n              {\n                \"descriptor\": {\n                  \"code\": \"finder_fee_amount\"\n                },\n                \"value\": \"3\"\n              }\n            ]\n          },\n          {\n            \"descriptor\": {\n              \"code\": \"buyer_id\"\n            },\n            \"list\": [\n              {\n                \"descriptor\": {\n                  \"code\": \"buyer_id_code\"\n                },\n                \"value\": \"gst\"\n              },\n              {\n                \"descriptor\": {\n                  \"code\": \"buyer_id_no\"\n                },\n                \"value\": \"07AAGFF2194N1Z1\"\n              }\n            ]\n          }\n        ],\n        \"payment\": {\n          \"type\": \"ON-FULFILLMENT\"\n        }\n      }\n    }\n  \n}"
+                                }
+                            }
+                        },
+                        {
+                            "name": "http://localhost:3000/api/b2b/bpp/select",
+                            "request": {
+                                "method": "POST",
+                                "url": {
+                                    "raw": "http://localhost:3000/api/b2b/bpp/select",
+                                    "path": [
+                                        "api",
+                                        "b2b",
+                                        "bpp",
+                                        "select"
+                                    ],
+                                    "protocol": "http",
+                                    "host": [
+                                        "localhost"
+                                    ],
+                                    "port": "3000"
+                                },
+                                "body": {
+                                    "mode": "raw",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    },
+                                    "raw": "{\n    \"context\": {\n      \"domain\": \"ONDC:RET10\",\n      \"action\": \"select\",\n      \"bap_id\": \"mystore5.storehippo.manu:3000\",\n      \"bap_uri\": \"http://mystore5.storehippo.manu:3000/ondc/1.0/\",\n      \"transaction_id\": \"31d9b9cc-0344-4263-a171-b17f59044d8b\",\n      \"message_id\": \"5c545e87-d7f3-4a86-a9ea-174181e5442d\",\n      \"timestamp\": \"2023-08-27T16:53:14.875Z\",\n      \"ttl\": \"PT30S\",\n      \"location\": {\n        \"city\": {\n          \"code\": \"std:080\"\n        },\n        \"country\": {\n          \"code\": \"IND\"\n        }\n      },\n      \"version\": \"2.0.1\"\n    },\n    \"message\": {\n      \"intent\": {\n        \"item\": {\n          \"descriptor\": {\n            \"name\": \"testtt\"\n          }\n        },\n        \"fulfillment\": {\n          \"type\": \"Delivery\",\n          \"stops\": [\n            {\n              \"type\": \"end\",\n              \"location\": {\n                \"gps\": \"28.356316,76.931176\",\n                \"area_code\": \"122050\"\n              }\n            }\n          ]\n        },\n        \"tags\": [\n          {\n            \"descriptor\": {\n              \"code\": \"bap_terms\"\n            },\n            \"list\": [\n              {\n                \"descriptor\": {\n                  \"code\": \"finder_fee_type\"\n                },\n                \"value\": \"percent\"\n              },\n              {\n                \"descriptor\": {\n                  \"code\": \"finder_fee_amount\"\n                },\n                \"value\": \"3\"\n              }\n            ]\n          },\n          {\n            \"descriptor\": {\n              \"code\": \"buyer_id\"\n            },\n            \"list\": [\n              {\n                \"descriptor\": {\n                  \"code\": \"buyer_id_code\"\n                },\n                \"value\": \"gst\"\n              },\n              {\n                \"descriptor\": {\n                  \"code\": \"buyer_id_no\"\n                },\n                \"value\": \"07AAGFF2194N1Z1\"\n              }\n            ]\n          }\n        ],\n        \"payment\": {\n          \"type\": \"ON-FULFILLMENT\"\n        }\n      }\n    }\n  \n}"
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
