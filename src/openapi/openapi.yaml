@@ -1,0 +1,688 @@
+openapi: 3.0.3
+info:
+  title: ONDC Mock Server - OpenAPI 3.0
+  description: >-
+    This is a Mock Server for integrating with ONDC. Currently, it supports B2B.
+    An easy way to get started would be to ask yourself the two question -
+    _"which network participant am I going to send to?"_ and _"what would be the
+    action/on_action I am going to send?"_. With these you can easily construct
+    the URL you need to mock and then find that among this list. <br />
+  contact:
+    email: team@ondc.org
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+externalDocs:
+  description: Find out more about ONDC
+  url: https://ondc.org
+tags:
+  - name: B2B
+    description: Everything for B2B domain
+    externalDocs:
+      description: Find out more
+      url: >-
+        https://github.com/ONDC-Official/ONDC-RET-Specifications/tree/release-2.0.2
+  - name: Auth
+    description: Endpoints for AuthN and AuthZ
+paths:
+  /api/b2b/bpp/search:
+    post:
+      tags:
+        - B2B
+      summary: Mock search request to BPP
+      parameters:
+        - in: query
+          name: apiKey
+          schema:
+            type: string
+          required: true
+          description: API Key Generated from /api/auth/api-token
+      requestBody:
+        description: Search Request Log
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/search'
+      responses:
+        '200':
+          description: Successfull response from BPP
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/on_search_ack'
+components:
+  schemas:
+    on_search_ack:
+      type: object
+      properties:
+        sync:
+          $ref: '#/components/schemas/ack'
+        async:
+          $ref: '#/components/schemas/on_search'
+    ack:
+      type: object
+      properties:
+        message:
+          type: object
+          properties:
+            ack:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: ACK
+    search:
+      type: object
+      properties:
+        context:
+          type: object
+          properties:
+            domain:
+              type: string
+            location:
+              type: object
+              properties:
+                city:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                country:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+            action:
+              type: string
+            version:
+              type: string
+            bap_id:
+              type: string
+            bap_uri:
+              type: string
+            transaction_id:
+              type: string
+            message_id:
+              type: string
+            timestamp:
+              type: string
+              format: date-time
+            ttl:
+              type: string
+        message:
+          type: object
+          properties:
+            intent:
+              type: object
+              properties:
+                item:
+                  type: object
+                  properties:
+                    category:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                fulfillment:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                    stops:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                          location:
+                            type: object
+                            properties:
+                              gps:
+                                type: string
+                              area_code:
+                                type: string
+                payment:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                tags:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      descriptor:
+                        type: object
+                        properties:
+                          code:
+                            type: string
+                      list:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            descriptor:
+                              type: object
+                              properties:
+                                code:
+                                  type: string
+                            value:
+                              type: string
+    on_search:
+      type: object
+      properties:
+        context:
+          type: object
+          properties:
+            domain:
+              type: string
+            location:
+              type: object
+              properties:
+                city:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                country:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+            action:
+              type: string
+            version:
+              type: string
+            bap_id:
+              type: string
+            bap_uri:
+              type: string
+            bpp_id:
+              type: string
+            bpp_uri:
+              type: string
+            transaction_id:
+              type: string
+            message_id:
+              type: string
+            timestamp:
+              type: string
+              format: date-time
+            ttl:
+              type: string
+        message:
+          type: object
+          properties:
+            catalog:
+              type: object
+              properties:
+                fulfillments:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      type:
+                        type: string
+                payments:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      type:
+                        type: string
+                descriptor:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    short_desc:
+                      type: string
+                    long_desc:
+                      type: string
+                    images:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          url:
+                            type: string
+                providers:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      descriptor:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          code:
+                            type: string
+                          short_desc:
+                            type: string
+                          long_desc:
+                            type: string
+                          additional_desc:
+                            type: object
+                            properties:
+                              url:
+                                type: string
+                              content_type:
+                                type: string
+                          images:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                url:
+                                  type: string
+                      rating:
+                        type: string
+                      ttl:
+                        type: string
+                      locations:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            gps:
+                              type: string
+                            address:
+                              type: string
+                            city:
+                              type: object
+                              properties:
+                                code:
+                                  type: string
+                                name:
+                                  type: string
+                            state:
+                              type: object
+                              properties:
+                                code:
+                                  type: string
+                            country:
+                              type: object
+                              properties:
+                                code:
+                                  type: string
+                            area_code:
+                              type: string
+                      creds:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            type:
+                              type: string
+                            desc:
+                              type: string
+                            url:
+                              type: string
+                      tags:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            descriptor:
+                              type: object
+                              properties:
+                                code:
+                                  type: string
+                            list:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  descriptor:
+                                    type: object
+                                    properties:
+                                      code:
+                                        type: string
+                                  value:
+                                    type: string
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            parent_item_id:
+                              type: string
+                            descriptor:
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                code:
+                                  type: string
+                                short_desc:
+                                  type: string
+                                long_desc:
+                                  type: string
+                                images:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      url:
+                                        type: string
+                                media:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      mimetype:
+                                        type: string
+                                      url:
+                                        type: string
+                            creator:
+                              type: object
+                              properties:
+                                descriptor:
+                                  type: object
+                                  properties:
+                                    name:
+                                      type: string
+                                    contact:
+                                      type: object
+                                      properties:
+                                        name:
+                                          type: string
+                                        address:
+                                          type: object
+                                          properties:
+                                            full:
+                                              type: string
+                                        phone:
+                                          type: string
+                                        email:
+                                          type: string
+                            price:
+                              type: object
+                              properties:
+                                currency:
+                                  type: string
+                                value:
+                                  type: string
+                                offered_value:
+                                  type: string
+                                maximum_value:
+                                  type: string
+                            quantity:
+                              type: object
+                              properties:
+                                unitized:
+                                  type: object
+                                  properties:
+                                    measure:
+                                      type: object
+                                      properties:
+                                        unit:
+                                          type: string
+                                        value:
+                                          type: string
+                                available:
+                                  type: object
+                                  properties:
+                                    measure:
+                                      type: object
+                                      properties:
+                                        unit:
+                                          type: string
+                                        value:
+                                          type: string
+                                    count:
+                                      type: string
+                                maximum:
+                                  type: object
+                                  properties:
+                                    measure:
+                                      type: object
+                                      properties:
+                                        unit:
+                                          type: string
+                                        value:
+                                          type: string
+                                    count:
+                                      type: string
+                            category_ids:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  '0':
+                                    type: string
+                                  '1':
+                                    type: string
+                                  '2':
+                                    type: string
+                                  '3':
+                                    type: string
+                                  '4':
+                                    type: string
+                                  '5':
+                                    type: string
+                                  '6':
+                                    type: string
+                                  '7':
+                                    type: string
+                                  '8':
+                                    type: string
+                                  '9':
+                                    type: string
+                            fulfillment_ids:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  '0':
+                                    type: string
+                            location_ids:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  '0':
+                                    type: string
+                                  '1':
+                                    type: string
+                            payment_ids:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  '0':
+                                    type: string
+                            add-ons:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  id:
+                                    type: string
+                                  descriptor:
+                                    type: object
+                                    properties:
+                                      name:
+                                        type: string
+                                      short_desc:
+                                        type: string
+                                      long_desc:
+                                        type: string
+                                      images:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            url:
+                                              type: string
+                                  price:
+                                    type: object
+                                    properties:
+                                      currency:
+                                        type: string
+                                      value:
+                                        type: string
+                                      offered_value:
+                                        type: string
+                                      maximum_value:
+                                        type: string
+                            cancellation_terms:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  fulfillment_state:
+                                    type: object
+                                    properties:
+                                      descriptor:
+                                        type: object
+                                        properties:
+                                          code:
+                                            type: string
+                                  refund_eligible:
+                                    type: string
+                                  return_policy:
+                                    type: object
+                                    properties:
+                                      return_eligible:
+                                        type: string
+                                      return_within:
+                                        type: string
+                                      fulfillment_managed_by:
+                                        type: string
+                                      return_location:
+                                        type: object
+                                        properties:
+                                          address:
+                                            type: string
+                                          gps:
+                                            type: string
+                            replacement_terms:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  replace_within:
+                                    type: string
+                            time:
+                              type: object
+                              properties:
+                                label:
+                                  type: string
+                                range:
+                                  type: object
+                                  properties:
+                                    start:
+                                      type: string
+                                      format: date-time
+                                    end:
+                                      type: string
+                                      format: date-time
+                            matched:
+                              type: string
+                            recommended:
+                              type: string
+                            tags:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  descriptor:
+                                    type: object
+                                    properties:
+                                      code:
+                                        type: string
+                                  list:
+                                    type: array
+                                    items:
+                                      type: object
+                                      properties:
+                                        descriptor:
+                                          type: object
+                                          properties:
+                                            code:
+                                              type: string
+                                        value:
+                                          type: string
+                      offers:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            descriptor:
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                code:
+                                  type: string
+                                short_desc:
+                                  type: string
+                                long_desc:
+                                  type: string
+                                images:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      url:
+                                        type: string
+                            location_ids:
+                              type: array
+                              items:
+                                type: object
+                                properties: {}
+                            category_ids:
+                              type: array
+                              items:
+                                type: object
+                                properties: {}
+                            item_ids:
+                              type: array
+                              items:
+                                type: object
+                                properties: {}
+                            time:
+                              type: object
+                              properties:
+                                label:
+                                  type: string
+                                range:
+                                  type: object
+                                  properties:
+                                    start:
+                                      type: string
+                                      format: date-time
+                                    end:
+                                      type: string
+                                      format: date-time
+                      fulfillments:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            contact:
+                              type: object
+                              properties:
+                                phone:
+                                  type: string
+                                email:
+                                  type: string
+      
