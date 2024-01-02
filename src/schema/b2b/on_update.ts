@@ -19,7 +19,6 @@ export const onUpdateSchema = {
               properties: {
                 code: {
                   type: "string",
-                  const: { $data: "/search/0/context/location/city/code" },
                 },
               },
               required: ["code"],
@@ -29,7 +28,6 @@ export const onUpdateSchema = {
               properties: {
                 code: {
                   type: "string",
-                  const: { $data: "/search/0/context/location/country/code" },
                 },
               },
               required: ["code"],
@@ -59,11 +57,9 @@ export const onUpdateSchema = {
         },
         transaction_id: {
           type: "string",
-           const: { $data: "/select/0/context/transaction_id" },
         },
         message_id: {
           type: "string",
-             const: { $data: "/update/0/context/message_id" },
         },
         timestamp: {
           type: "string",
@@ -96,7 +92,6 @@ export const onUpdateSchema = {
           properties: {
             id: {
               type: "string",
-               const: { $data: "/confirm/0/message/order/id" },
             },
             state: {
               type: "string",
@@ -111,7 +106,6 @@ export const onUpdateSchema = {
               properties: {
                 id: {
                   type: "string",
-                   const: { $data: "/select/0/message/order/provider/id" },
                 },
               },
               required: ["id"],
@@ -481,48 +475,6 @@ export const onUpdateSchema = {
         },
       },
       required: ["order"],
-    },
-    search: {
-      type: "array",
-      items: {
-        $ref: "searchSchema#",
-      },
-    },
-    on_search: {
-      type: "array",
-      items: {
-        $ref: "onSearchSchema#",
-      },
-    },
-    init: {
-      type: "array",
-      items: {
-        $ref: "initSchema#",
-      },
-    },
-    on_init: {
-      type: "array",
-      items: {
-        $ref: "onInitSchema#",
-      },
-    },
-    confirm: {
-      type: "array",
-      items: {
-        $ref: "confirmSchema#",
-      },
-    },
-    on_confirm: {
-      type: "array",
-      items: {
-        $ref: "onConfirmSchema#",
-      },
-    },
-    update: {
-      type: "array",
-      items: {
-        $ref: "updateSchema#",
-      },
     },
   },
   required: ["context", "message"],

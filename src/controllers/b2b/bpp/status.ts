@@ -9,7 +9,7 @@ export const statusDeliveredController = (req: Request, res: Response) => {
 	ts.setSeconds(ts.getSeconds() + 1);
   const context = {
 		...req.body.context,
-		action: "on_status",
+		action: "on_status_",
 		timeStamp: ts.toISOString(),
 	};
   return res.json({

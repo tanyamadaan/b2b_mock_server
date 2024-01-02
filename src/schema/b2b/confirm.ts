@@ -457,7 +457,11 @@ export const confirmSchema = {
                       },
                       "@ondc/org/title_type": {
                         type: "string",
-                        enum: ["item", "Discount", "Packing charges", "delivery ", "tax", "misc"]
+                        enum: ["item", "delivery",
+                        "packing",
+                        "tax",
+                        "discount",
+                        "misc",]
                       },
                       price: {
                         type: "object",

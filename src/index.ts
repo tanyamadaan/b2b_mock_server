@@ -12,7 +12,7 @@ const swaggerDocument = YAML.parse(file)
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-app.use(express.json());
+app.use(express.json({limit: '50mb'}));
 app.get("/", (req: Request, res: Response) => {
 	res.send("Mock Server for NP");
 });
@@ -21,5 +21,5 @@ app.use("/api/b2b", b2bRouter);
 app.use("/api/auth", authRouter);
 
 app.listen(port, () => {
-	console.log(`[server]: Server is running at http://localhost:3000`);
+	console.log(`[server]: Server is running at http://localhost:3001`);
 });
