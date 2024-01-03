@@ -1,3 +1,5 @@
+import { domain, version } from "./constants";
+
 export const initSchema = {
   $id: "initSchema",
   type: "object",
@@ -7,6 +9,7 @@ export const initSchema = {
       properties: {
         domain: {
           type: "string",
+          enum: [domain.grocery]
         },
         location: {
           type: "object",
@@ -16,7 +19,6 @@ export const initSchema = {
               properties: {
                 code: {
                   type: "string",
-                  const: { $data: "/search/0/context/location/city/code" },
                 },
               },
               required: ["code"],
@@ -26,7 +28,6 @@ export const initSchema = {
               properties: {
                 code: {
                   type: "string",
-                  const: { $data: "/search/0/context/location/country/code" },
                 },
               },
               required: ["code"],
@@ -40,7 +41,7 @@ export const initSchema = {
         },
         version: {
           type: "string",
-          const: "2.0.1",
+          const: version,
         },
         bap_id: {
           type: "string",
@@ -56,22 +57,12 @@ export const initSchema = {
         },
         transaction_id: {
           type: "string",
-          const: { $data: "/select/0/context/transaction_id" },
           errorMessage:
                 "Transaction ID should be same across the transaction: ${/search/0/context/transaction_id}",
 
         },
         message_id: {
           type: "string",
-          allOf: [
-            {
-              not: {
-                const: { $data: "1/transaction_id" },
-              },
-              errorMessage:
-                "Message ID should not be equal to transaction_id: ${1/transaction_id}",
-            },
-          ]
         },
         timestamp: {
           type: "string",
@@ -79,7 +70,6 @@ export const initSchema = {
         },
         ttl: {
           type: "string",
-          const: { $data: "2/message/order/provider/ttl" },
           errorMessage:"should match provider ttl - ${2/message/order/provider/ttl}"
         },
       },
@@ -109,7 +99,6 @@ export const initSchema = {
               properties: {
                 id: {
                   type: "string",
-                  const: { $data: "/select/0/message/order/provider/id" },
                 },
                 locations: {
                   type: "array",
@@ -118,8 +107,7 @@ export const initSchema = {
                     properties: {
                       id: {
                         type: "string",
-                        const: { $data: "/select/0/message/order/provider/locations/0/id"}
-                      },
+                         },
                     },
                     required: ["id"],
                   },

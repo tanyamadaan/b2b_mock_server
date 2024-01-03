@@ -1,3 +1,5 @@
+import { domain, version } from "./constants";
+
 export const statusSchema = {
   $id: "statusSchema",
   type: "object",
@@ -7,7 +9,7 @@ export const statusSchema = {
       properties: {
         domain: {
           type: "string",
-          const: "ONDC:RET10",
+          enum: [domain.grocery]
         },
         location: {
           type: "object",
@@ -17,7 +19,6 @@ export const statusSchema = {
               properties: {
                 code: {
                   type: "string",
-                  const: { $data: "/on_confirm/0/context/location/city/code" },
                 },
               },
               required: ["code"],
@@ -27,7 +28,6 @@ export const statusSchema = {
               properties: {
                 code: {
                   type: "string",
-                  const: { $data: "/on_confirm/0/context/location/country/code" },
                 },
               },
               required: ["code"],
@@ -41,7 +41,7 @@ export const statusSchema = {
         },
         version: {
           type: "string",
-          const: "2.0.1",
+          const: version,
         },
         bap_id: {
           type: "string",
@@ -57,7 +57,6 @@ export const statusSchema = {
         },
         transaction_id: {
           type: "string",
-          const: { $data: "/on_confirm/0/context/transaction_id" },
         },
         message_id: {
           type: "string",
@@ -91,17 +90,10 @@ export const statusSchema = {
       properties: {
         order_id: {
           type: "string",
-          const: { $data: "/on_confirm/0/message/order/id" },
         },
       },
       additionalProperties:false,
       required: ["order_id"],
-    },
-    on_confirm: {
-      type: "array",
-      items: {
-        $ref: "onConfirmSchema#",
-      },
     },
   },
   required: ["context", "message"],

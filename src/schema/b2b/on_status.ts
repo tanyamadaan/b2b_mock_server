@@ -1,3 +1,5 @@
+import { domain, version } from "./constants";
+
 export const onStatusSchema = {
   $id: "onStatusSchema",
   type: "object",
@@ -7,6 +9,7 @@ export const onStatusSchema = {
       properties: {
         domain: {
           type: "string",
+          enum: [domain.grocery]
         },
         location: {
           type: "object",
@@ -16,7 +19,6 @@ export const onStatusSchema = {
               properties: {
                 code: {
                   type: "string",
-                  const: { $data: "/search/0/context/location/city/code" },
                 },
               },
               required: ["code"],
@@ -26,7 +28,6 @@ export const onStatusSchema = {
               properties: {
                 code: {
                   type: "string",
-                  const: { $data: "/search/0/context/location/country/code" },
                 },
               },
               required: ["code"],
@@ -40,7 +41,7 @@ export const onStatusSchema = {
         },
         version: {
           type: "string",
-          const: "2.0.1",
+          const: version,
         },
         bap_id: {
           type: "string",
@@ -56,7 +57,6 @@ export const onStatusSchema = {
         },
         transaction_id: {
           type: "string",
-          const: { $data: "/select/0/context/transaction_id" },
           errorMessage:
                 "Transaction ID should be same across the transaction: ${/select/0/context/transaction_id}",
         },
@@ -94,7 +94,6 @@ export const onStatusSchema = {
           properties: {
             id: {
               type: "string",
-              const: { $data: "/confirm/0/message/order/id" },
             },
             state: {
               type: "string",
@@ -111,7 +110,6 @@ export const onStatusSchema = {
               properties: {
                 id: {
                   type: "string",
-                  const: { $data: "/select/0/message/order/provider/id" },
                 },
                 locations: {
                   type: "array",
@@ -166,20 +164,15 @@ export const onStatusSchema = {
               properties: {
                 name: {
                   type: "string",
-                  const: { $data: "/init/0/message/order/billing/name" },
                 },
                 address: {
                   type: "string",
-                  const: { $data: "/init/0/message/order/billing/address" },
                 },
                 state: {
                   type: "object",
                   properties: {
                     name: {
                       type: "string",
-                      const: {
-                        $data: "/init/0/message/order/billing/state/name",
-                      },
                     },
                   },
                   required: ["name"],
@@ -190,19 +183,14 @@ export const onStatusSchema = {
                     name: {
                       type: "string",
                     },
-                    const: {
-                      $data: "/init/0/message/order/billing/city/name",
-                    },
                   },
                   required: ["name"],
                 },
                 email: {
                   type: "string",
-                  const: { $data: "/init/0/message/order/billing/email" },
                 },
                 phone: {
                   type: "string",
-                  const: { $data: "/init/0/message/order/billing/phone" },
                 },
               },
               required: ["name", "address", "state", "city", "phone"],
@@ -710,7 +698,6 @@ export const onStatusSchema = {
             created_at: {
               type: "string",
               format: "date-time",
-              const: { $data: "/confirm/0/message/order/created_at" },
               errorMessage:
                 "order/created_at should remain same as in /confirm - ${/confirm/0/message/order/created_at}",
             },
@@ -736,72 +723,6 @@ export const onStatusSchema = {
         },
       },
       required: ["order"],
-    },
-    search: {
-      type: "array",
-      items: {
-        $ref: "searchSchema#",
-      },
-    },
-    on_search: {
-      type: "array",
-      items: {
-        $ref: "onSearchSchema#",
-      },
-    },
-    select: {
-      type: "array",
-      items: {
-        $ref: "selectSchema#",
-      },
-    },
-    on_select: {
-      type: "array",
-      items: {
-        $ref: "onSelectSchema#",
-      },
-    },
-    init: {
-      type: "array",
-      items: {
-        $ref: "initSchema#",
-      },
-    },
-    on_init: {
-      type: "array",
-      items: {
-        $ref: "onInitSchema#",
-      },
-    },
-    confirm: {
-      type: "array",
-      items: {
-        $ref: "confirmSchema#",
-      },
-    },
-    on_confirm: {
-      type: "array",
-      items: {
-        $ref: "onConfirmSchema#",
-      },
-    },
-    update: {
-      type: "array",
-      items: {
-        $ref: "updateSchema#",
-      },
-    },
-    on_update: {
-      type: "array",
-      items: {
-        $ref: "onUpdateSchema#",
-      },
-    },
-    status: {
-      type: "array",
-      items: {
-        $ref: "statusSchema#",
-      },
     },
   },
   required: ["context", "message"],

@@ -1,3 +1,5 @@
+import { domain, version } from "./constants";
+
 export const onInitSchema = {
   $id: "onInitSchema",
   type: "object",
@@ -7,6 +9,7 @@ export const onInitSchema = {
       properties: {
         domain: {
           type: "string",
+          enum: [domain.grocery]
         },
         location: {
           type: "object",
@@ -16,7 +19,6 @@ export const onInitSchema = {
               properties: {
                 code: {
                   type: "string",
-                  const: { $data: "/search/0/context/location/city/code" },
                 },
               },
               required: ["code"],
@@ -26,7 +28,6 @@ export const onInitSchema = {
               properties: {
                 code: {
                   type: "string",
-                  const: { $data: "/search/0/context/location/country/code" },
                 },
               },
               required: ["code"],
@@ -40,7 +41,7 @@ export const onInitSchema = {
         },
         version: {
           type: "string",
-          const: "2.0.1",
+          const: version,
         },
         bap_id: {
           type: "string",
@@ -56,26 +57,11 @@ export const onInitSchema = {
         },
         transaction_id: {
           type: "string",
-          const: { $data: "/select/0/context/transaction_id" },
           errorMessage:
                 "Transaction ID should be same across the transaction: ${/select/0/context/transaction_id}",
         },
         message_id: {
           type: "string",
-          allOf: [
-            {
-              const: { $data: "/init/0/context/message_id" },
-              errorMessage:
-                "Message ID for on_action API should be same as action API: ${/init/0/context/message_id}",
-            },
-            {
-              not: {
-                const: { $data: "1/transaction_id" },
-              },
-              errorMessage:
-                "Message ID should not be equal to transaction_id: ${1/transaction_id}",
-            },
-          ]
         },
         timestamp: {
           type: "string",
@@ -112,7 +98,6 @@ export const onInitSchema = {
               properties: {
                 id: {
                   type: "string",
-                  const: { $data: "/init/0/message/order/provider/id" },
                 },
               },
               required: ["id"],
@@ -122,7 +107,6 @@ export const onInitSchema = {
               properties: {
                 id: {
                   type: "string",
-                  const: { $data: "/init/0/message/order/provider/locations/0/id"}
                 },
               },
               required: ["id"],
@@ -200,14 +184,6 @@ export const onInitSchema = {
                               },
                               value: {
                                 type: "string",
-                                anyOf: [
-                                  {
-                                    const: { $data: "/init/0/message/order/items/0/tags/0/list/0/value" },
-                                  },
-                                  {
-                                    const: { $data: "/init/0/message/order/items/0/tags/0/list/1/value" },
-                                  }
-                                ]
                               },
                             },
                             required: ["descriptor", "value"],
@@ -226,20 +202,15 @@ export const onInitSchema = {
               properties: {
                 name: {
                   type: "string",
-                  const: { $data: "/init/0/message/order/billing/name" },
                 },
                 address: {
                   type: "string",
-                  const: { $data: "/init/0/message/order/billing/address" },
                 },
                 state: {
                   type: "object",
                   properties: {
                     name: {
                       type: "string",
-                      const: {
-                        $data: "/init/0/message/order/billing/state/name",
-                      },
                     },
                   },
                   required: ["name"],
@@ -249,24 +220,18 @@ export const onInitSchema = {
                   properties: {
                     name: {
                       type: "string",
-                      const: {
-                        $data: "/init/0/message/order/billing/city/name",
-                      },
                     },
                   },
                   required: ["name"],
                 },
                 tax_id: {
                   type: "string",
-                  const: { $data: "/init/0/message/order/billing/tax_id" },
                 },
                 email: {
                   type: "string",
-                  const: { $data: "/init/0/message/order/billing/email" },
                 },
                 phone: {
                   type: "string",
-                  const: { $data: "/init/0/message/order/billing/phone" },
                 },
               },
               additionalProperties: false,
@@ -394,14 +359,6 @@ export const onInitSchema = {
                               },
                               value: {
                                 type: "string",
-                                anyOf: [
-                                  {
-                                    const: { $data: "/init/0/message/order/fulfillments/0/tags/0/list/0/value" },
-                                  },
-                                  {
-                                    const: { $data: "/init/0/message/order/fulfillments/0/tags/0/list/1/value" },
-                                  }
-                                ]
                               },
                             },
                             if: {
@@ -473,7 +430,11 @@ export const onInitSchema = {
                       },
                       "@ondc/org/title_type": {
                         type: "string",
-                        enum: ["item", "Discount", "Packing charges", "delivery ", "tax", "misc"]
+                        enum: ["item", "delivery",
+                        "packing",
+                        "tax",
+                        "discount",
+                        "misc",]
                       },
                       price: {
                         type: "object",
