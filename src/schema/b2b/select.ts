@@ -19,7 +19,6 @@ export const selectSchema = {
               properties: {
                 code: {
                   type: "string",
-                  const: { $data: "/search/0/context/location/city/code" },
                 },
               },
               required: ["code"],
@@ -29,7 +28,6 @@ export const selectSchema = {
               properties: {
                 code: {
                   type: "string",
-                  const: { $data: "/search/0/context/location/country/code" },
                 },
               },
               required: ["code"],
@@ -59,21 +57,11 @@ export const selectSchema = {
         },
         transaction_id: {
           type: "string",
-          const: { $data: "/search/0/context/transaction_id" },
           errorMessage:
                 "Transaction ID should be same across the transaction: ${/search/0/context/transaction_id}",
         },
         message_id: {
           type: "string",
-          allOf: [
-            {
-              not: {
-                const: { $data: "1/transaction_id" },
-              },
-              errorMessage:
-                "Message ID should not be equal to transaction_id: ${1/transaction_id}",
-            },
-          ]
         },
         timestamp: {
           type: "string",

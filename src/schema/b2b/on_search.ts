@@ -19,7 +19,6 @@ export const onSearchSchema = {
               properties: {
                 code: {
                   type: "string",
-                  const: { $data: "/search/0/context/location/city/code" },
                 },
               },
               required: ["code"],
@@ -29,7 +28,6 @@ export const onSearchSchema = {
               properties: {
                 code: {
                   type: "string",
-                  const: { $data: "/search/0/context/location/country/code" },
                 },
               },
               required: ["code"],
@@ -59,26 +57,11 @@ export const onSearchSchema = {
         },
         transaction_id: {
           type: "string",
-          const: { $data: "/search/0/context/transaction_id" },
           errorMessage:
                 "Transaction ID should be same across the transaction: ${/search/0/context/transaction_id}",
         },
         message_id: {
           type: "string",
-          allOf: [
-            {
-              const: { $data: "/search/0/context/message_id" },
-              errorMessage:
-                "Message ID for on_action API should be same as action API: ${/search/0/context/message_id}",
-            },
-            {
-              not: {
-                const: { $data: "1/transaction_id" },
-              },
-              errorMessage:
-                "Message ID should not be equal to transaction_id: ${1/transaction_id}",
-            },
-          ]
         },
         timestamp: {
           type: "string",
@@ -251,7 +234,7 @@ export const onSearchSchema = {
                           properties: {
                             code: {
                               type: "string",
-                              pattern: "^(std:?[0-9]{2,3})$"
+                              pattern: "^(std:?[0-9]{2,4})$"      
                             },
                             name: {
                               type: "string",
@@ -263,8 +246,7 @@ export const onSearchSchema = {
                           type: "object",
                           properties: {
                             code: {
-                              type: "string",
-                              pattern: "^(std:?[0-9]{2,3})$"
+                              type: "string"
                             },
                           },
                           required: ["code"],
@@ -959,12 +941,6 @@ export const onSearchSchema = {
         },
       },
       required: ["catalog"],
-    },
-    search: {
-      type: "array",
-      items: {
-        $ref: "searchSchema#",
-      },
     },
   },
   required: ["context", "message"],
