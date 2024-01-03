@@ -21,5 +21,5 @@ app.use("/api/b2b", b2bRouter);
 app.use("/api/auth", authRouter);
 
 app.listen(port, () => {
-	console.log(`[server]: Server is running at http://localhost:3001`);
+	console.log(`[server]: Server is running at http://localhost:3000`);
 });
