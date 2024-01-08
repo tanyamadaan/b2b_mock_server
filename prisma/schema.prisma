@@ -25,4 +25,7 @@ model ApiKey {
   createdBy User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   userId    String
+
+  lastQuery DateTime?
+  queryFreq Int?
 }
