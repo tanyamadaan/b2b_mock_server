@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "ApiKey" ADD COLUMN "lastQuery" DATETIME;
-ALTER TABLE "ApiKey" ADD COLUMN "queryFreq" INTEGER;

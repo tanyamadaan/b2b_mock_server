@@ -3,7 +3,7 @@ import YAML from 'yaml'
 import fs from "fs"
 import swaggerUi from "swagger-ui-express"
 
-import { authRouter, b2bRouter } from "./controllers";
+import { b2bRouter } from "./controllers";
 const app: Express = express();
 const port = 3000;
 
@@ -18,7 +18,6 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api/b2b", b2bRouter);
-app.use("/api/auth", authRouter);
 
 app.listen(port, () => {
 	console.log(`[server]: Server is running at http://localhost:3000`);
