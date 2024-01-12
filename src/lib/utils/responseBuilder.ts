@@ -9,14 +9,14 @@ export const responseBuilder = async (
 	reqContext: object,
 	message: object,
 	uri: string,
-	action: boolean = true
+	action: string
 ) => {
 	var ts = new Date((reqContext as any).timestamp);
 	ts.setSeconds(ts.getSeconds() + 1);
 	const sandboxMode = process.env.SANDBOX_MODE;
 	var async: { message: object; context?: object } = { message };
 
-	if (action) {
+	if (!action.startsWith("on_")) {
 		const { bap_uri, bap_id, ...context } = reqContext as any;
 		async = {
 			...async,
@@ -25,6 +25,7 @@ export const responseBuilder = async (
 				bpp_id: MOCKSERVER_ID,
 				bpp_uri: MOCKSERVER_URL,
 				timeStamp: ts.toISOString(),
+				action,
 			},
 		};
 	} else {
