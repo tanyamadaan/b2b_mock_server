@@ -1,6 +1,12 @@
 version: '3.8'
 services:
-  dev-db:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+  db:
     image: postgres:13
     ports:
       - 5434:5432
