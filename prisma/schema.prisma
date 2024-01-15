@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -11,18 +12,18 @@ datasource db {
 }
 
 model User {
-  subscriber_id        String   @id
-  
+  subscriber_id String @id
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  unique_key_id String
+  unique_key_id      String
   signing_public_key String
-  valid_until String
-  type NetworkPaticipantType
+  valid_until        String
+  type               NetworkPaticipantType
 
   lastAccessed DateTime?
-  accessCount Int @default(1)
+  accessCount  Int       @default(1)
 }
 
 enum NetworkPaticipantType {

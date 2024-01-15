@@ -13,15 +13,19 @@ RUN npm ci
 # Copy the application code to the container
 COPY . .
 
+# Generate the Prisma Client
+RUN npx prisma generate
+
 # Builds the Express Project
 RUN npm run build
 
-FROM node:20-alpine
+FROM node:20-alpine AS ondc-mock-server
 
 WORKDIR /app
 
 # Copy only the necessary files from the build environment
 COPY --from=build /app/dist /app
+COPY --from=build /app/src/openapi /app/openapi
 COPY --from=build /app/node_modules /app/node_modules
 
 # Expose the port your app will run on
