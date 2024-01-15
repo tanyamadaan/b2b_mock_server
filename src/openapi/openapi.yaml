@@ -24,13 +24,19 @@ tags:
       url: >-
         https://github.com/ONDC-Official/ONDC-RET-Specifications/tree/release-2.0.2
   - name: Auth
-    description: Endpoints for AuthN and AuthZ
+    description: Endpoints for Authentication
 paths:
-  /api/auth/signup:
+  /api/auth/signCheck:
     post:
       tags:
         - Auth
-      summary: Mock signup request to server 
+      summary: Check the validity of a authorization token
+      parameters:
+        - name: authorization
+          in: header
+          description: Signed Authorization Header
+          required: true
+          type: string
       requestBody:
         description: Email, Password and Organization Name 
         content:
@@ -40,72 +46,12 @@ paths:
 
       responses:
         '200':
-          description: New User Created Successfully
+          description: Response Signature is valid
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/signup_response'
-  /api/auth/signin:
-    post:
-      tags:
-        - Auth
-      summary: Mock signin request to server 
-      requestBody:
-        description: Email and Password
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/signin'
-      responses:
-        '200':
-          description: auth token
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/signin_response' 
-  /api/auth/profile:
-    get:
-      tags:
-        - Auth
-      summary: Get mock user profile from server
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: User Profile 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/profile' 
-  /api/auth/api-token:
-    post:
-      tags:
-        - Auth
-      summary: Generate API Key 
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: API Key
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/api_token'
-    get:
-      tags:
-        - Auth
-      summary: Get all the User IDs generated
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: User Profile 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/api_tokens'
-                
-            
+                $ref: '#/components/schemas/auth_check_response'
+           
   /api/b2b/bpp/search:
     post:
       tags:
@@ -506,9 +452,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ack'
-                
-  
-
 components:
   securitySchemes:
     bearerAuth:           
@@ -516,97 +459,12 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
-    signup:
+    auth_check_response:
       type: object
       properties:
-        email:
+        message:
           type: string
-        password:
-          type: string
-        org:
-          type: string
-    signup_response:
-      type: object
-      properties:
-        message: 
-          type: string
-        user: 
-          type: object
-          properties: 
-            id: 
-              type: string
-            createdAt: 
-              type: string
-              format: date-time
-            updatedAt: 
-              type: string
-              format: date-time
-            email: 
-              type: string
-            org: 
-              type: string
-    signin:
-      type: object
-      properties:
-        email:
-          type: string
-        password:
-          type: string
-    signin_response:
-      type: object
-      properties:
-          authToken: 
-            type: string
-    profile:
-      type: object 
-      properties: 
-        user: 
-          type: object
-          properties: 
-            id: 
-              type: string
-            createdAt: 
-              type: string
-              format: date-time
-            updatedAt: 
-              type: string
-              format: date-time
-            email: 
-              type: string
-            org: 
-              type: string
-            apiKeys: 
-              type: array
-              items: 
-                type: object
-                properties: 
-                  id: 
-                    type: string
-                  createdAt: 
-                    type: string
-                    format: date-time
-                  userId: 
-                    type: string
-    api_token:
-      type: object
-      properties: 
-        apiKey: 
-          type: string
-    api_tokens:
-      type: object 
-      properties: 
-        apiKeys: 
-          type: array
-          items: 
-            type: object
-            properties: 
-              id: 
-                type: string
-              createdAt: 
-                type: string
-                format: date-time
-              userId: 
-                type: string
+          example: "Valid Signature"
 
     on_search_ack:
       type: object
