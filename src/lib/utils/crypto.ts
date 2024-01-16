@@ -7,19 +7,21 @@ export const createSigningString = async (
 ) => {
 	//if (!created) created = Math.floor(new Date().getTime() / 1000).toString();
 	if (!created)
-		created = Math.floor(new Date().getTime() / 1000 - 1 * 60).toString(); //TO USE IN CASE OF TIME ISSUE
+		created = Math.floor(new Date().getTime() / 1000).toString(); //TO USE IN CASE OF TIME ISSUE
 	if (!expires) expires = (parseInt(created) + 1 * 60 * 60).toString(); //Add required time to create expired
 	//const digest = createBlakeHash('blake512').update(JSON.stringify(message)).digest("base64");
 	//const digest = blake2.createHash('blake2b', { digestLength: 64 }).update(Buffer.from(message)).digest("base64");
 	await _sodium.ready;
 	const sodium = _sodium;
 	const digest = sodium.crypto_generichash(64, sodium.from_string(message));
-	const digest_base64 = sodium.to_base64(digest, base64_variants.ORIGINAL);
-	// console.log("HASH", sodium.to_base64(sodium.crypto_generichash(64, "The quick brown fox jumps over the lazy dog"), base64_variants.ORIGINAL));
-	console.log("CREATED", created)
-	console.log("EXPIRES", expires)
-	console.log("DIGEST", digest_base64)
-	const signing_string = `${created} ${expires} ${digest_base64}`;
+	const digestBase64 = sodium.to_base64(digest, base64_variants.ORIGINAL);
+	
+
+	const signing_string = `(created): ${created}
+	(expires): ${expires}
+	digest: BLAKE-512=${digestBase64}`;
+
+	console.log("SIGNING STRING", signing_string)
 	
 	return { signing_string, expires, created };
 };
