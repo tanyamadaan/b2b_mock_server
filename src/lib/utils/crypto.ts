@@ -15,10 +15,12 @@ export const createSigningString = async (
 	const sodium = _sodium;
 	const digest = sodium.crypto_generichash(64, sodium.from_string(message));
 	const digest_base64 = sodium.to_base64(digest, base64_variants.ORIGINAL);
-	const signing_string = `(created): ${created}
-(expires): ${expires}
-digest: BLAKE-512=${digest_base64}`;
-	console.log(`Signing String:==>\n${signing_string}\n\n`);
+	// console.log("HASH", sodium.to_base64(sodium.crypto_generichash(64, "The quick brown fox jumps over the lazy dog"), base64_variants.ORIGINAL));
+	console.log("CREATED", created)
+	console.log("EXPIRES", expires)
+	console.log("DIGEST", digest_base64)
+	const signing_string = `${created} ${expires} ${digest_base64}`;
+	
 	return { signing_string, expires, created };
 };
 

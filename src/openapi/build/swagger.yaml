@@ -25,21 +25,17 @@ paths:
       tags:
         - Auth
       summary: Check the validity of a authorization token
-      parameters:
-        - name: authorization
-          in: header
-          description: Signed Authorization Header
-          required: true
-          type: string
+      security:
+        - ApiKeyAuth: []
       requestBody:
         description: Request Body should contain the log which is signed.
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/auth_check_response'
+              type: object
       responses:
         '200':
-          description: Response Signature is valid
+          description: Request Body should contain the log which is signed.
           content:
             application/json:
               schema:
@@ -50,12 +46,11 @@ paths:
         - B2B
       summary: Mock search request to BPP
       parameters:
-        - in: query
-          name: apiKey
-          schema:
-            type: string
+        - name: authorization
+          in: header
+          description: Signed Authorization Header
           required: true
-          description: API Key Generated from /api/auth/api-token
+          type: string
       requestBody:
         description: Search Request Log
         content:
@@ -142,12 +137,11 @@ paths:
         - B2B
       summary: Mock select request to BPP
       parameters:
-        - in: query
-          name: apiKey
-          schema:
-            type: string
+        - name: authorization
+          in: header
+          description: Signed Authorization Header
           required: true
-          description: API Key Generated from /api/auth/api-token
+          type: string
       requestBody:
         description: Select Request Log
         content:
@@ -187,12 +181,11 @@ paths:
         - B2B
       summary: Mock init request to BPP
       parameters:
-        - in: query
-          name: apiKey
-          schema:
-            type: string
+        - name: authorization
+          in: header
+          description: Signed Authorization Header
           required: true
-          description: API Key Generated from /api/auth/api-token
+          type: string
       requestBody:
         description: Init Request Log
         content:
@@ -1291,12 +1284,11 @@ paths:
         - B2B
       summary: Mock confirm request to BPP
       parameters:
-        - in: query
-          name: apiKey
-          schema:
-            type: string
+        - name: authorization
+          in: header
+          description: Signed Authorization Header
           required: true
-          description: API Key Generated from /api/auth/api-token
+          type: string
       requestBody:
         description: confirm Request Log
         content:
@@ -1336,12 +1328,11 @@ paths:
         - B2B
       summary: Mock update fulfillment request to BPP
       parameters:
-        - in: query
-          name: apiKey
-          schema:
-            type: string
+        - name: authorization
+          in: header
+          description: Signed Authorization Header
           required: true
-          description: API Key Generated from /api/auth/api-token
+          type: string
       requestBody:
         description: update fulfillment Request Log
         content:
@@ -1361,12 +1352,11 @@ paths:
         - B2B
       summary: Mock update prepaid request to BPP
       parameters:
-        - in: query
-          name: apiKey
-          schema:
-            type: string
+        - name: authorization
+          in: header
+          description: Signed Authorization Header
           required: true
-          description: API Key Generated from /api/auth/api-token
+          type: string
       requestBody:
         description: update prepaid Request Log
         content:
@@ -1412,12 +1402,11 @@ paths:
         - B2B
       summary: Mock status delivered request to BPP
       parameters:
-        - in: query
-          name: apiKey
-          schema:
-            type: string
+        - name: authorization
+          in: header
+          description: Signed Authorization Header
           required: true
-          description: API Key Generated from /api/auth/api-token
+          type: string
       requestBody:
         description: status delivered Request Log
         content:
@@ -1457,12 +1446,11 @@ paths:
         - B2B
       summary: Mock status out for delivery request to BPP
       parameters:
-        - in: query
-          name: apiKey
-          schema:
-            type: string
+        - name: authorization
+          in: header
+          description: Signed Authorization Header
           required: true
-          description: API Key Generated from /api/auth/api-token
+          type: string
       requestBody:
         description: status out for delivery Request Log
         content:
@@ -1482,12 +1470,11 @@ paths:
         - B2B
       summary: Mock status picked up request to BPP
       parameters:
-        - in: query
-          name: apiKey
-          schema:
-            type: string
+        - name: authorization
+          in: header
+          description: Signed Authorization Header
           required: true
-          description: API Key Generated from /api/auth/api-token
+          type: string
       requestBody:
         description: status picked up Request Log
         content:
@@ -1507,12 +1494,11 @@ paths:
         - B2B
       summary: Mock status proforma invoice request to BPP
       parameters:
-        - in: query
-          name: apiKey
-          schema:
-            type: string
+        - name: authorization
+          in: header
+          description: Signed Authorization Header
           required: true
-          description: API Key Generated from /api/auth/api-token
+          type: string
       requestBody:
         description: status proforma invoice Request Log
         content:
@@ -1532,12 +1518,11 @@ paths:
         - B2B
       summary: Mock on search request to BAP
       parameters:
-        - in: query
-          name: apiKey
-          schema:
-            type: string
+        - name: authorization
+          in: header
+          description: Signed Authorization Header
           required: true
-          description: API Key Generated from /api/auth/api-token
+          type: string
       requestBody:
         description: On Search Request Log
         content:
@@ -1728,12 +1713,11 @@ paths:
         - B2B
       summary: Mock on init request to BAP
       parameters:
-        - in: query
-          name: apiKey
-          schema:
-            type: string
+        - name: authorization
+          in: header
+          description: Signed Authorization Header
           required: true
-          description: API Key Generated from /api/auth/api-token
+          type: string
       requestBody:
         description: On Init Request Log
         content:
@@ -1785,12 +1769,11 @@ paths:
         - B2B
       summary: Mock on select request to BAP
       parameters:
-        - in: query
-          name: apiKey
-          schema:
-            type: string
+        - name: authorization
+          in: header
+          description: Signed Authorization Header
           required: true
-          description: API Key Generated from /api/auth/api-token
+          type: string
       requestBody:
         description: On Select Request Log
         content:
@@ -1829,12 +1812,11 @@ paths:
         - B2B
       summary: Mock on confirm request to BAP
       parameters:
-        - in: query
-          name: apiKey
-          schema:
-            type: string
+        - name: authorization
+          in: header
+          description: Signed Authorization Header
           required: true
-          description: API Key Generated from /api/auth/api-token
+          type: string
       requestBody:
         description: On Confirm Request Log
         content:
@@ -1875,12 +1857,11 @@ paths:
         - B2B
       summary: Mock on update request to BAP
       parameters:
-        - in: query
-          name: apiKey
-          schema:
-            type: string
+        - name: authorization
+          in: header
+          description: Signed Authorization Header
           required: true
-          description: API Key Generated from /api/auth/api-token
+          type: string
       requestBody:
         description: On Update Request Log
         content:
@@ -1921,12 +1902,11 @@ paths:
         - B2B
       summary: Mock on status request to BAP
       parameters:
-        - in: query
-          name: apiKey
-          schema:
-            type: string
+        - name: authorization
+          in: header
+          description: Signed Authorization Header
           required: true
-          description: API Key Generated from /api/auth/api-token
+          type: string
       requestBody:
         description: On Status Request Log
         content:
@@ -1962,6 +1942,11 @@ paths:
               schema:
                 $ref: '#/paths/~1api~1b2b~1bpp~1init/post/responses/200/content/application~1json/schema'
 components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: authorization
   schemas:
     auth_check_response:
       type: object
@@ -1969,3 +1954,5 @@ components:
         message:
           type: string
           example: Valid Signature
+security:
+  - ApiKeyAuth: []

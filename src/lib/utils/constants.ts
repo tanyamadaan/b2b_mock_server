@@ -1,6 +1,6 @@
 export const HOUR24 = 24 * 60 * 60 * 1000;
 
-export const REGISTRY_URL = "https://staging.registry.ondc.org/lookup";
+export const REGISTRY_URL = "https://preprod.registry.ondc.org/ondc/lookup";
 
 export const ACTIONS = {
 	search: "search",

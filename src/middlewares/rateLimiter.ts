@@ -1,20 +1,31 @@
 import { NextFunction, Request, Response } from "express";
 import { SubscriberDetail } from "../interfaces";
-import { prisma } from "../lib/utils";
+import { prisma, split_auth_header } from "../lib/utils";
 export const rateLimiter = async (
-	_req: Request,
+	req: Request,
 	res: Response,
 	next: NextFunction
 ) => {
-  if(process.env.RATE_LIMIT_MODE) {
-    const subscriberDetails: SubscriberDetail = res.locals.sender;
-		const subscriber = await prisma.user.findUnique({
+	if (process.env.RATE_LIMIT_MODE) {
+		const header = req.headers["authorization"] || "";
+		const parts = split_auth_header(header);
+		if (!parts || Object.keys(parts).length === 0) {
+			throw new Error("Header parsing failed");
+		}
+
+		const subscriber_id = parts["keyId"].split("|")[0] as string;
+		const unique_key_id = parts["keyId"].split("|")[1] as string;
+		const subscriberDetails: SubscriberDetail = res.locals.sender;
+		const subscriber = await prisma.user.findFirst({
 			where: {
-				subscriber_id: subscriberDetails.subscriber_id
-			}
+				subscriber_id: subscriberDetails.subscriber_id,
+			},
 		});
-		if((new Date()).getTime() - subscriber?.lastAccessed?.getTime()! < 24 * 60 * 60 * 1000) {
-			if(subscriber?.accessCount! > parseInt(process.env.RATE_LIMIT_24HR!)) {
+		if (
+			new Date().getTime() - subscriber?.lastAccessed?.getTime()! <
+			24 * 60 * 60 * 1000
+		) {
+			if (subscriber?.accessCount! > parseInt(process.env.RATE_LIMIT_24HR!)) {
 				res.status(401).json({
 					message: {
 						ack: {
@@ -27,6 +38,6 @@ export const rateLimiter = async (
 				});
 			}
 		}
-  }
+	}
 	next();
 };
