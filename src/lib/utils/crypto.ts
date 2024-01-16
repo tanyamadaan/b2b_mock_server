@@ -21,6 +21,7 @@ export const createSigningString = async (
 	(expires): ${expires}
 	digest: BLAKE-512=${digestBase64}`;
 
+	console.log("MESSAGE", message)
 	console.log("SIGNING STRING", signing_string)
 	
 	return { signing_string, expires, created };

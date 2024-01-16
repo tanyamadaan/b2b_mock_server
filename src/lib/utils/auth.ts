@@ -48,7 +48,7 @@ export async function verifyHeader(
 		for (const each of subscribers_details) {
 			const public_key = each.signing_public_key;
 			const { signing_string } = await createSigningString(
-				req.body,
+				JSON.stringify(req.body),
 				parts["created"],
 				parts["expires"]
 			);
