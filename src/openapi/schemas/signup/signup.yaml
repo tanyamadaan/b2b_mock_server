@@ -1,9 +1,0 @@
-signup:
-      type: object
-      properties:
-        email:
-          type: string
-        password:
-          type: string
-        org:
-          type: string

@@ -1,5 +1,0 @@
-signin_response:
-      type: object
-      properties:
-          authToken: 
-            type: string
