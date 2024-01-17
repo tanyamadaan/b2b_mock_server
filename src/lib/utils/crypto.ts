@@ -17,12 +17,10 @@ export const createSigningString = async (
 	const digestBase64 = sodium.to_base64(digest, base64_variants.ORIGINAL);
 	
 
-	const signing_string = `(created): ${created}
-	(expires): ${expires}
-	digest: BLAKE-512=${digestBase64}`;
+	const signing_string = `(created): ${created}\n(expires): ${expires}\ndigest: BLAKE-512=${digestBase64}`;
 
-	console.log("MESSAGE", message)
-	console.log("SIGNING STRING", signing_string)
+	// console.log("MESSAGE", message)
+	// console.log("SIGNING STRING", signing_string)
 	
 	return { signing_string, expires, created };
 };

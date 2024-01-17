@@ -10,14 +10,14 @@ export const authValidatorMiddleware = async (
 	try {
 
 		const auth_header = req.headers["authorization"] || "";
-		console.log(req.body?.context?.transaction_id, "headers", auth_header);
+		// console.log(req.body?.context?.transaction_id, "headers", auth_header);
 
 		var verified = await verifyHeader(auth_header, req, res);
-		console.log(
-			req.body?.context?.transaction_id,
-			"Verification status:",
-			verified
-		);
+		// console.log(
+		// 	req.body?.context?.transaction_id,
+		// 	"Verification status:",
+		// 	verified
+		// );
 
 		if (!verified) {
 			return res.status(401).json({

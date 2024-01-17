@@ -22,13 +22,13 @@ export async function getSubscriberDetails(
 		},
 	});
 
-	console.log(
-		"Registry Lookup Paramters",
-		JSON.stringify({
-			subscriber_id,
-			unique_key_id,
-		})
-	);
+	// console.log(
+	// 	"Registry Lookup Paramters",
+	// 	JSON.stringify({
+	// 		subscriber_id,
+	// 		unique_key_id,
+	// 	})
+	// );
 	if (subscribers.length === 0) {
 		const response = await axios.post(REGISTRY_URL, {
 			subscriber_id,
