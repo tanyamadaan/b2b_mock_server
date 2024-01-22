@@ -23,7 +23,7 @@ export const initController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		context.bap_uri,
+		`${context.bap_uri}/on_${ACTIONS.init}`,
 		`on_${ACTIONS.init}`
 	);
 };

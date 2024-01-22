@@ -52,28 +52,18 @@ export const responseBuilder = async (
 					authorization: header,
 				},
 			});
-			if (response.status !== 200) {
-				console.log(
-					"ERROR Ocurred while sending response to Mocker:",
-					response.statusText
-				);
-				return res.json({
-					message: {
-						ack: {
-							status: "NACK",
-						},
-					},
-				});
-			}
+			
 		} catch (error) {
 			console.log("ERROR Occured", error);
 			return res.json({
 				message: {
 					ack: {
-						status: "NACK",
-						message: (error as any).message
+						status: "NACK"
 					},
 				},
+				error: {
+					message: (error as any).message
+				}
 			});
 		}
 

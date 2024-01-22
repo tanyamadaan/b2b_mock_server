@@ -43,7 +43,7 @@ export const onSearchController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		context.bap_uri,
+		`${context.bap_uri}/${ACTIONS.select}`,
 		ACTIONS.select
 	);
 };

@@ -25,7 +25,7 @@ export const onSelectController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		context.bap_uri,
+		`${context.bap_uri}/${ACTIONS.init}`,
 		ACTIONS.init
 	);
 };

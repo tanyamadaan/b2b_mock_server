@@ -330,7 +330,7 @@ export const confirmSchema = {
                               type: "string",
                             },
                           },
-                          required: ["phone", "email"],
+                          required: ["phone"], // email will be compulsory here
                         },
                         customer: {
                           type: "object",

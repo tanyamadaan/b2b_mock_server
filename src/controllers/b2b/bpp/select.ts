@@ -33,7 +33,7 @@ export const selectController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		context.bap_uri,
+		`${context.bap_uri}/on_${ACTIONS.select}`,
 		`on_${ACTIONS.select}`
 	);
 };

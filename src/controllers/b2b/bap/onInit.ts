@@ -8,7 +8,7 @@ export const onInitController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		confirmDomestic.message,
-		req.body.context.bap_uri,
+		`${req.body.context.bap_uri}/${ACTIONS.confirm}`,
 		ACTIONS.confirm
 	);
 };

@@ -19,23 +19,18 @@ export const jsonSchemaValidator =
 		const isValid = validate(req.body);
 
 		if (!isValid) {
-      const regex = /^\/api\/b2b(?:\/.*)?$/;
-			if (regex.test(req.baseUrl)) {
-				return res.status(400).json({
-					message: {
-						ack: {
-							status: "NACK",
-						},
-						body: {
-							log_report: validate.errors,
-						},
+			res.status(400).json({
+				message: {
+					ack: {
+						status: "NACK",
 					},
-				});
-			} else {
-				return res
-					.status(400)
-					.json({ errors: validate.errors?.map(({ message }) => ({message})) });
-			}
+				},
+				error: {
+					type: "JSON-SCHEMA-ERROR",
+					code: "50009",
+					message: validate.errors?.map(({ message }) => ({ message })),
+				},
+			});
 		}
 		next();
 	};

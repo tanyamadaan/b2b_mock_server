@@ -41,7 +41,7 @@ export const confirmController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		context.bap_uri,
+		`${context.bap_uri}/on_${ACTIONS.confirm}`,
 		`on_${ACTIONS.confirm}`
 	);
 };
