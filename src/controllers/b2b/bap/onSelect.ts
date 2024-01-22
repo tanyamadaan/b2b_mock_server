@@ -1,14 +1,31 @@
 import { Request, Response } from "express";
-import { v4 as uuidv4 } from "uuid";
 import { initDomestic } from "../../../lib/examples";
 import { ACTIONS, responseBuilder } from "../../../lib/utils";
 
 export const onSelectController = (req: Request, res: Response) => {
+	const {
+		context,
+		message: {
+			order: { provider, items, payments, fulfillments },
+		},
+	} = req.body;
+	const responseMessage = {
+		order: {
+			...initDomestic.message.order,
+			provider,
+			items,
+			payments,
+			fulfillments: fulfillments.map((fulfillment: any) => ({
+				...initDomestic.message.order.fulfillments[0],
+				id: fulfillment.id,
+			})),
+		},
+	};
 	return responseBuilder(
 		res,
-		req.body.context,
-		initDomestic.message,
-		req.body.context.bap_uri,
+		context,
+		responseMessage,
+		context.bap_uri,
 		ACTIONS.init
 	);
 };
