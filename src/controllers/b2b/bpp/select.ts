@@ -14,7 +14,7 @@ export const selectController = (req: Request, res: Response) => {
 				type,
 				collected_by: "BPP",
 			})),
-			items: message.items.map(
+			items: message.order.items.map(
 				({
 					location_ids,
 					...remaining
@@ -25,7 +25,7 @@ export const selectController = (req: Request, res: Response) => {
 					remaining,
 				})
 			),
-			fulfillments: message.fulfillments,
+			fulfillments: message.order.fulfillments,
 			quote: quoteCreator(message.order.items)
 		},
 	};

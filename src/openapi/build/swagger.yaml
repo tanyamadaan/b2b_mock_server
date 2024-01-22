@@ -45,12 +45,6 @@ paths:
       tags:
         - B2B
       summary: Mock search request to BPP
-      parameters:
-        - name: authorization
-          in: header
-          description: Signed Authorization Header
-          required: true
-          type: string
       requestBody:
         description: Search Request Log
         content:
@@ -136,12 +130,6 @@ paths:
       tags:
         - B2B
       summary: Mock select request to BPP
-      parameters:
-        - name: authorization
-          in: header
-          description: Signed Authorization Header
-          required: true
-          type: string
       requestBody:
         description: Select Request Log
         content:
@@ -180,12 +168,6 @@ paths:
       tags:
         - B2B
       summary: Mock init request to BPP
-      parameters:
-        - name: authorization
-          in: header
-          description: Signed Authorization Header
-          required: true
-          type: string
       requestBody:
         description: Init Request Log
         content:
@@ -1283,12 +1265,6 @@ paths:
       tags:
         - B2B
       summary: Mock confirm request to BPP
-      parameters:
-        - name: authorization
-          in: header
-          description: Signed Authorization Header
-          required: true
-          type: string
       requestBody:
         description: confirm Request Log
         content:
@@ -1327,12 +1303,6 @@ paths:
       tags:
         - B2B
       summary: Mock update fulfillment request to BPP
-      parameters:
-        - name: authorization
-          in: header
-          description: Signed Authorization Header
-          required: true
-          type: string
       requestBody:
         description: update fulfillment Request Log
         content:
@@ -1350,13 +1320,7 @@ paths:
     post:
       tags:
         - B2B
-      summary: Mock update prepaid request to BPP
-      parameters:
-        - name: authorization
-          in: header
-          description: Signed Authorization Header
-          required: true
-          type: string
+      summary: Mock update prepaid request to BPPs
       requestBody:
         description: update prepaid Request Log
         content:
@@ -1401,12 +1365,6 @@ paths:
       tags:
         - B2B
       summary: Mock status delivered request to BPP
-      parameters:
-        - name: authorization
-          in: header
-          description: Signed Authorization Header
-          required: true
-          type: string
       requestBody:
         description: status delivered Request Log
         content:
@@ -1445,12 +1403,6 @@ paths:
       tags:
         - B2B
       summary: Mock status out for delivery request to BPP
-      parameters:
-        - name: authorization
-          in: header
-          description: Signed Authorization Header
-          required: true
-          type: string
       requestBody:
         description: status out for delivery Request Log
         content:
@@ -1469,12 +1421,6 @@ paths:
       tags:
         - B2B
       summary: Mock status picked up request to BPP
-      parameters:
-        - name: authorization
-          in: header
-          description: Signed Authorization Header
-          required: true
-          type: string
       requestBody:
         description: status picked up Request Log
         content:
@@ -1493,12 +1439,6 @@ paths:
       tags:
         - B2B
       summary: Mock status proforma invoice request to BPP
-      parameters:
-        - name: authorization
-          in: header
-          description: Signed Authorization Header
-          required: true
-          type: string
       requestBody:
         description: status proforma invoice Request Log
         content:
@@ -1517,12 +1457,6 @@ paths:
       tags:
         - B2B
       summary: Mock on search request to BAP
-      parameters:
-        - name: authorization
-          in: header
-          description: Signed Authorization Header
-          required: true
-          type: string
       requestBody:
         description: On Search Request Log
         content:
@@ -1712,12 +1646,6 @@ paths:
       tags:
         - B2B
       summary: Mock on init request to BAP
-      parameters:
-        - name: authorization
-          in: header
-          description: Signed Authorization Header
-          required: true
-          type: string
       requestBody:
         description: On Init Request Log
         content:
@@ -1768,12 +1696,6 @@ paths:
       tags:
         - B2B
       summary: Mock on select request to BAP
-      parameters:
-        - name: authorization
-          in: header
-          description: Signed Authorization Header
-          required: true
-          type: string
       requestBody:
         description: On Select Request Log
         content:
@@ -1811,12 +1733,6 @@ paths:
       tags:
         - B2B
       summary: Mock on confirm request to BAP
-      parameters:
-        - name: authorization
-          in: header
-          description: Signed Authorization Header
-          required: true
-          type: string
       requestBody:
         description: On Confirm Request Log
         content:
@@ -1856,12 +1772,6 @@ paths:
       tags:
         - B2B
       summary: Mock on update request to BAP
-      parameters:
-        - name: authorization
-          in: header
-          description: Signed Authorization Header
-          required: true
-          type: string
       requestBody:
         description: On Update Request Log
         content:
@@ -1901,12 +1811,6 @@ paths:
       tags:
         - B2B
       summary: Mock on status request to BAP
-      parameters:
-        - name: authorization
-          in: header
-          description: Signed Authorization Header
-          required: true
-          type: string
       requestBody:
         description: On Status Request Log
         content:

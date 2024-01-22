@@ -15,6 +15,7 @@ export const responseBuilder = async (
 	var ts = new Date((reqContext as any).timestamp);
 	ts.setSeconds(ts.getSeconds() + 1);
 	const sandboxMode = process.env.SANDBOX_MODE;
+	console.log("SANDBOX>", sandboxMode);
 	var async: { message: object; context?: object } = { message };
 
 	if (!action.startsWith("on_")) {
@@ -45,24 +46,37 @@ export const responseBuilder = async (
 	const header = await createResponseAuthHeader(async);
 	res.setHeader("authorization", header);
 	if (sandboxMode) {
-		const response = await axios.post(uri, async, {
-			headers: {
-				authorization: header,
-			},
-		});
-		if (response.status !== 200) {
-			console.log(
-				"ERROR Ocurred while sending response to Mocker:",
-				response.statusText
-			);
+		try {
+			const response = await axios.post(uri, async, {
+				headers: {
+					authorization: header,
+				},
+			});
+			if (response.status !== 200) {
+				console.log(
+					"ERROR Ocurred while sending response to Mocker:",
+					response.statusText
+				);
+				return res.json({
+					message: {
+						ack: {
+							status: "NACK",
+						},
+					},
+				});
+			}
+		} catch (error) {
+			console.log("ERROR Occured", error);
 			return res.json({
 				message: {
 					ack: {
 						status: "NACK",
+						message: (error as any).message
 					},
 				},
 			});
 		}
+
 		return res.json({
 			message: {
 				ack: {

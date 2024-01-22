@@ -15,10 +15,9 @@ export const rateLimiter = async (
 
 		const subscriber_id = parts["keyId"].split("|")[0] as string;
 		const unique_key_id = parts["keyId"].split("|")[1] as string;
-		const subscriberDetails: SubscriberDetail = res.locals.sender;
 		const subscriber = await prisma.user.findFirst({
 			where: {
-				subscriber_id: subscriberDetails.subscriber_id,
+				subscriber_id,
 			},
 		});
 		if (
