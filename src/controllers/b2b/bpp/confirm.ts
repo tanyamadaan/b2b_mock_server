@@ -16,7 +16,7 @@ export const confirmController = (req: Request, res: Response) => {
 			...message.provider,
 			rateable: true,
 		},
-		fulfillments: message.fulfillments.map((eachFulfillment: any) => ({
+		fulfillments: message.order.fulfillments.map((eachFulfillment: any) => ({
 			...eachFulfillment,
 			"@ondc/org/provider_name":
 				onConfirmDomestic.message.order.fulfillments[0][

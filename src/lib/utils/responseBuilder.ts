@@ -15,7 +15,7 @@ export const responseBuilder = async (
 	var ts = new Date((reqContext as any).timestamp);
 	ts.setSeconds(ts.getSeconds() + 1);
 	const sandboxMode = process.env.SANDBOX_MODE;
-	console.log("SANDBOX>", sandboxMode);
+	// console.log("SANDBOX>", sandboxMode);
 	var async: { message: object; context?: object } = { message };
 
 	if (!action.startsWith("on_")) {

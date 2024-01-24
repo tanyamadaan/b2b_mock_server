@@ -27,6 +27,7 @@ WORKDIR /app
 COPY --from=build /app/dist /app
 COPY --from=build /app/src/openapi /app/openapi
 COPY --from=build /app/node_modules /app/node_modules
+COPY --from=build /app/prisma /app/prisma
 
 # Expose the port your app will run on
 EXPOSE 3000
