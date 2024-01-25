@@ -34,13 +34,13 @@ export async function getSubscriberDetails(
 			subscriber_id,
 			ukId: unique_key_id,
 		});
-		console.log(
-			"RESPONSE RECEIVED FROM",
-			REGISTRY_URL,
-			response,
-			subscriber_id,
-			unique_key_id
-		);
+		// console.log(
+		// 	"RESPONSE RECEIVED FROM",
+		// 	REGISTRY_URL,
+		// 	response,
+		// 	subscriber_id,
+		// 	unique_key_id
+		// );
 		response.data
 			.map((data: object) => {
 				const { subscriber_url, ...subscriberData } = data as SubscriberDetail;

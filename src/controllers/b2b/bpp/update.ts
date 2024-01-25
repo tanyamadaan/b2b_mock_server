@@ -17,7 +17,7 @@ export const updatePrepaidController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		onUpdatePrepaid.message,
-		req.body.context.bap_uri,
+		`${req.body.context.bap_uri}/on_${ACTIONS.update}`,
 		`on_${ACTIONS.update}`
 	);
 };

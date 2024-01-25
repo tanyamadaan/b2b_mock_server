@@ -46,7 +46,7 @@ export const statusProformaInvoiceController = (
 		res,
 		req.body.context,
 		onStatusProformaInvoice.message,
-		req.body.context.bap_uri,
+		`${req.body.context.bap_uri}/on_${ACTIONS.status}`,
 		`on_${ACTIONS.status}`
 	);
 };

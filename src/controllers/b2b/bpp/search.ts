@@ -23,7 +23,7 @@ export const searchController = (req: Request, res: Response) => {
 			: domain === "ONDC:RET10"
 			? onSearchGrocery.message
 			: onSearch.message,
-		req.body.context.bap_uri,
+		`${req.body.context.bap_uri}/on_${ACTIONS.search}`,
 		`on_${ACTIONS.search}`
 	);
 };

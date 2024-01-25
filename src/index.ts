@@ -23,4 +23,5 @@ app.use("/api/auth", authRouter);
 
 app.listen(port, () => {
 	console.log(`[server]: Server is running at http://localhost:3000`);
+	// console.log("ENV:\n",process.env.SANDBOX_MODE, process.env.DATABASE_URL)
 });
