@@ -10,7 +10,8 @@ export const confirmController = (req: Request, res: Response) => {
 	end.setHours(end.getHours() + 2);
 
 	const responseMessage = {
-		...message,
+		order:{
+		...message.order,
 		state: "Accepted",
 		provider: {
 			...message.provider,
@@ -35,7 +36,7 @@ export const confirmController = (req: Request, res: Response) => {
 					},
 				},
 			],
-		})),
+		})),}
 	};
 	return responseBuilder(
 		res,
