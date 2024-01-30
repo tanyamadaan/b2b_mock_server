@@ -1,0 +1,52 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:16-alpine
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=mock
+    networks:
+      - ondc
+    healthcheck:
+      test: ["CMD", "pg_isready", "-q", "-d", "mock", "-h", "localhost", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  base:
+    build: .
+    image: ondc-mock-server
+    restart: always
+  
+  initDb:
+    extends: base
+    command: npx prisma migrate deploy --preview-feature
+    restart: 'on-failure'
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+    depends_on:
+      db:
+        condition: service_healthy
+  web:
+    extends: base
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - SANDBOX_MODE=${SANDBOX_MODE}
+      - RATE_LIMIT_MODE=${RATE_LIMIT_MODE}
+      - RATE_LIMIT_24HR=${RATE_LIMIT_24HR}
+      - PRIVATE_KEY=${PRIVATE_KEY}
+      - UNIQUE_KEY=${UNIQUE_KEY}
+      - SUBSCRIBER_ID=${SUBSCRIBER_ID}
+      - DATABASE_URL=${DATABASE_URL}
+    restart: always
+    depends_on:
+      - db
+      - initDb
+    networks:
+      - ondc
+networks:
+  ondc:

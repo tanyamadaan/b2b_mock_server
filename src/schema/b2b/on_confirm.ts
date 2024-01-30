@@ -385,7 +385,7 @@ export const onConfirmSchema = {
                               type: "string",
                             },
                           },
-                          required: ["phone", "email"],
+                          required: ["phone"], // email needs to be compulsory
                         },
                       },
                       required: ["type", "location", "time", "contact"],

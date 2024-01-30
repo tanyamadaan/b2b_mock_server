@@ -1,28 +1,48 @@
 import { Request, Response } from "express";
 import { onConfirmDomestic } from "../../../lib/examples";
+import { ACTIONS, responseBuilder } from "../../../lib/utils";
 
 export const confirmController = (req: Request, res: Response) => {
-	const domain = req.body.context.domain;
-	var ts = new Date(req.body.context.timestamp);
-	ts.setSeconds(ts.getSeconds() + 1);
-	const context = {
-		...req.body.context,
-		action: "on_confirm",
-		bpp_id: "b2b.ondc-mockserver.com",
-		bpp_uri: "b2b.ondc-mockserver.com/url",
-		timeStamp: ts.toISOString(),
-	};
-	return res.json({
-		sync: {
-			message: {
-				ack: {
-					status: "ACK",
+	const { context, message } = req.body;
+	const start = new Date(message.order.created_at);
+	start.setHours(start.getHours() + 1);
+	const end = new Date(message.order.created_at);
+	end.setHours(end.getHours() + 2);
+
+	const responseMessage = {
+		order:{
+		...message.order,
+		state: "Accepted",
+		provider: {
+			...message.provider,
+			rateable: true,
+		},
+		fulfillments: message.order.fulfillments.map((eachFulfillment: any) => ({
+			...eachFulfillment,
+			"@ondc/org/provider_name":
+				onConfirmDomestic.message.order.fulfillments[0][
+					"@ondc/org/provider_name"
+				],
+			state: onConfirmDomestic.message.order.fulfillments[0].state,
+			stops: [
+				...eachFulfillment.stops,
+				{
+					...onConfirmDomestic.message.order.fulfillments[0].stops[0],
+					time: {
+						range: {
+							start: start.toISOString(),
+							end: end.toISOString(),
+						},
+					},
 				},
-			},
-		},
-		async: {
-			context,
-			message: onConfirmDomestic.message,
-		},
-	});
+			],
+		})),}
+	};
+	return responseBuilder(
+		res,
+		context,
+		responseMessage,
+		`${context.bap_uri}/on_${ACTIONS.confirm}`,
+		`on_${ACTIONS.confirm}`
+	);
 };

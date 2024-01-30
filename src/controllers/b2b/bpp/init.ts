@@ -1,26 +1,29 @@
 import { Request, Response } from "express";
 import { onInitDomestic } from "../../../lib/examples";
+import { ACTIONS, quoteCreator, responseBuilder } from "../../../lib/utils";
 
 export const initController = (req: Request, res: Response) => {
-  const domain = req.body.context.domain;
-	var ts = new Date(req.body.context.timestamp);
-	ts.setSeconds(ts.getSeconds() + 1);
-	const context = {
-		...req.body.context,
-		action: "on_init",
-		bpp_id: "b2b.ondc-mockserver.com",
-		bpp_uri: "b2b.ondc-mockserver.com/url",
-		timeStamp: ts.toISOString(),
+	const { context, message } = req.body;
+	const { items, fulfillments, tags, billing, ...remainingMessage } =
+		message.order;
+	const {type, collected_by, ...staticPaymentInfo} = onInitDomestic.message.order.payments[0];
+	const responseMessage = {
+		order: {
+			items,
+			fulfillments,
+			tags,
+			billing,
+			provider: {id: remainingMessage.provider.id},
+			provider_location: remainingMessage.provider.locations[0],
+			payments: remainingMessage.payments.map((each: any) => ({...each, ...staticPaymentInfo})),
+			quote: quoteCreator(items)
+		},
 	};
-  return res.json({
-    sync: {message: {
-      ack: {
-        status: "ACK",
-      },
-    },},
-    async: {
-      context,
-      message: onInitDomestic.message
-    }
-  });
+	return responseBuilder(
+		res,
+		context,
+		responseMessage,
+		`${context.bap_uri}/on_${ACTIONS.init}`,
+		`on_${ACTIONS.init}`
+	);
 };

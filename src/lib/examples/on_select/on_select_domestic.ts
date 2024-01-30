@@ -94,7 +94,7 @@ export const onSelectDomestic = {
             "@ondc/org/item_quantity": {
               count: 200
             },
-            title: "Dhara Mustard Oil",
+            title: "Product Name Here",
             "@ondc/org/title_type": "item",
             price: {
               currency: "INR",

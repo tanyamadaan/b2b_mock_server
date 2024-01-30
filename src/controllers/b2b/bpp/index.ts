@@ -29,7 +29,6 @@ bppRouter.post("/init", jsonSchemaValidator(initSchema), initController);
 
 bppRouter.post("/select", jsonSchemaValidator(selectSchema), selectController);
 
-
 bppRouter.post(
   "/confirm",
   jsonSchemaValidator(confirmSchema),

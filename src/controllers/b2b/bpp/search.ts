@@ -6,39 +6,24 @@ import {
 	onSearchFashion,
 	onSearchGrocery,
 } from "../../../lib/examples";
+import { ACTIONS, responseBuilder } from "../../../lib/utils";
 
 export const searchController = (req: Request, res: Response) => {
 	const domain = req.body.context.domain;
-	var ts = new Date(req.body.context.timestamp);
-	ts.setSeconds(ts.getSeconds() + 1);
-	const context = {
-		...req.body.context,
-		action: "on_search",
-		bpp_id: "b2b.ondc-mockserver.com",
-		bpp_uri: "b2b.ondc-mockserver.com/url",
-		timeStamp: ts.toISOString(),
-	};
-	return res.json({
-		// context,
-		sync: {
-			message: {
-				ack: {
-					status: "ACK",
-				},
-			},
-		},
-		async: {
-			context,
-			message:
-				domain === "ONDC:RET13"
-					? onSearchBpc.message
-					: domain === "ONDC:RET14"
-					? onSearchElectronics.message
-					: domain === "ONDC:RET12"
-					? onSearchFashion.message
-					: domain === "ONDC:RET10"
-					? onSearchGrocery.message
-					: onSearch.message,
-		},
-	});
+
+	return responseBuilder(
+		res,
+		req.body.context,
+		domain === "ONDC:RET13"
+			? onSearchBpc.message
+			: domain === "ONDC:RET14"
+			? onSearchElectronics.message
+			: domain === "ONDC:RET12"
+			? onSearchFashion.message
+			: domain === "ONDC:RET10"
+			? onSearchGrocery.message
+			: onSearch.message,
+		`${req.body.context.bap_uri}/on_${ACTIONS.search}`,
+		`on_${ACTIONS.search}`
+	);
 };

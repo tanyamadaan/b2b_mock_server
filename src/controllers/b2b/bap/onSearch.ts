@@ -1,30 +1,49 @@
 import { Request, Response } from "express";
-import { v4 as uuidv4 } from 'uuid';
 import { selectDomestic } from "../../../lib/examples";
+import { ACTIONS, responseBuilder } from "../../../lib/utils";
 
 export const onSearchController = (req: Request, res: Response) => {
-	const domain = req.body.context.domain;
-	var ts = new Date(req.body.context.timestamp);
-	ts.setSeconds(ts.getSeconds() + 1);
-	const context = {
-		...req.body.context,
-		action: "select",
-		// bpp_id: "b2b.ondc-mockserver.com",
-		// bpp_uri: "b2b.ondc-mockserver.com/url",
-		message_id: uuidv4(),
-		timeStamp: ts.toISOString(),
-	};
-	return res.json({
-		sync: {
-			message: {
-				ack: {
-					status: "ACK",
-				},
+	const {context, message} = req.body;
+	const responseMessage = {
+		order: {
+			provider: {
+				id: message.catalog.providers[0].id,
+				locations: [
+					{
+						id: message.catalog.providers[0].items[0].location_ids[0]
+					}
+				],
+				ttl: "P1D"
 			},
-		},
-		async: {
-			context,
-			message: selectDomestic.message,
-		},
-	});
+			items: [
+				{
+					...selectDomestic.message.order.items[0],
+					id: message.catalog.providers[0].items[0].id,
+					location_ids: [
+						message.catalog.providers[0].items[0].location_ids[0]
+					],
+					fulfillment_ids: [
+						message.catalog.providers[0].items[0].fulfillment_ids[0]
+					]
+				}
+			],
+			fulfillments: [
+				{
+					...selectDomestic.message.order.fulfillments[0],
+					type: message.catalog.providers[0].items[0].fulfillment_ids[0]
+				}
+			],
+			payments: [
+				message.catalog.payments[0]
+			],
+			tags: selectDomestic.message.order.tags
+		}
+	}
+	return responseBuilder(
+		res,
+		context,
+		responseMessage,
+		`${context.bap_uri}/${ACTIONS.select}`,
+		ACTIONS.select
+	);
 };

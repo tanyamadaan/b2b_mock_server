@@ -1,28 +1,39 @@
 import { Request, Response } from "express";
 import { onSelectDomestic } from "../../../lib/examples";
+import { ACTIONS, quoteCreator, responseBuilder } from "../../../lib/utils";
 
 export const selectController = (req: Request, res: Response) => {
-	const domain = req.body.context.domain;
-	var ts = new Date(req.body.context.timestamp);
-	ts.setSeconds(ts.getSeconds() + 1);
-	const context = {
-		...req.body.context,
-		action: "on_select",
-		bpp_id: "b2b.ondc-mockserver.com",
-		bpp_uri: "b2b.ondc-mockserver.com/url",
-		timeStamp: ts.toISOString(),
+	const { context, message } = req.body;
+	const { ttl, ...provider } = message.order.provider;
+
+
+	var responseMessage = {
+		order: {
+			provider,
+			payments: message.order.payments.map(({ type }: { type: string }) => ({
+				type,
+				collected_by: "BPP",
+			})),
+			items: message.order.items.map(
+				({
+					location_ids,
+					...remaining
+				}: {
+					location_ids: any;
+					remaining: any;
+				}) => ({
+					remaining,
+				})
+			),
+			fulfillments: message.order.fulfillments,
+			quote: quoteCreator(message.order.items)
+		},
 	};
-	return res.json({
-		sync: {
-			message: {
-				ack: {
-					status: "ACK",
-				},
-			},
-		},
-		async: {
-			context,
-			message: onSelectDomestic.message,
-		},
-	});
+	return responseBuilder(
+		res,
+		context,
+		responseMessage,
+		`${context.bap_uri}/on_${ACTIONS.select}`,
+		`on_${ACTIONS.select}`
+	);
 };

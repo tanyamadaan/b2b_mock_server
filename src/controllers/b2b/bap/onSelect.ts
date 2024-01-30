@@ -1,30 +1,31 @@
 import { Request, Response } from "express";
-import { v4 as uuidv4 } from 'uuid';
 import { initDomestic } from "../../../lib/examples";
+import { ACTIONS, responseBuilder } from "../../../lib/utils";
 
 export const onSelectController = (req: Request, res: Response) => {
-	const domain = req.body.context.domain;
-	var ts = new Date(req.body.context.timestamp);
-	ts.setSeconds(ts.getSeconds() + 1);
-	const context = {
-		...req.body.context,
-		action: "init",
-		// bpp_id: "b2b.ondc-mockserver.com",
-		// bpp_uri: "b2b.ondc-mockserver.com/url",
-		message_id: uuidv4(),
-		timeStamp: ts.toISOString(),
+	const {
+		context,
+		message: {
+			order: { provider, items, payments, fulfillments },
+		},
+	} = req.body;
+	const responseMessage = {
+		order: {
+			...initDomestic.message.order,
+			provider,
+			items,
+			payments,
+			fulfillments: fulfillments.map((fulfillment: any) => ({
+				...initDomestic.message.order.fulfillments[0],
+				id: fulfillment.id,
+			})),
+		},
 	};
-	return res.json({
-		sync: {
-			message: {
-				ack: {
-					status: "ACK",
-				},
-			},
-		},
-		async: {
-			context,
-			message: initDomestic.message,
-		},
-	});
+	return responseBuilder(
+		res,
+		context,
+		responseMessage,
+		`${context.bap_uri}/${ACTIONS.init}`,
+		ACTIONS.init
+	);
 };

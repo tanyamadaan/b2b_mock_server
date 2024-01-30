@@ -2,27 +2,34 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id        String   @id @default(uuid())
+  id String @id @default(uuid())
+  subscriber_id String 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  email     String   @unique
-  password  String
-  org       String
-  apiKeys    ApiKey[]
+
+  unique_key_id      String
+  signing_public_key String
+  valid_until        String
+  type               NetworkPaticipantType
+
+  lastAccessed DateTime?
+  accessCount  Int       @default(1)
 }
 
-model ApiKey {
-  id        String   @id @default(uuid())
-  createdBy User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  userId    String
+enum NetworkPaticipantType {
+  BAP
+  BPP
+  BG
+  BREG
 }
