@@ -6,7 +6,7 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"dev": "nodemon ./src/index.ts",
-		"db:up": "docker compose up db -d",
+		"db:up": "docker compose up -d db",
 		"db:migrate:dev": "prisma migrate dev",
 		"build": "tsc",
 		"swagger:gen": "npx swagger-cli bundle ./src/openapi/openapi.yaml --outfile ./src/openapi/build/swagger.yaml -t yaml"
