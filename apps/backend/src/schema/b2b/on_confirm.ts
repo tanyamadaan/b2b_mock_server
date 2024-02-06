@@ -1,4 +1,4 @@
-import { DOMAIN, VERSION } from "./constants";
+import { B2B_BPP_TERMS, DOMAIN, TERMS, VERSION } from "./constants";
 
 export const onConfirmSchema = {
   $id: "onConfirmSchema",
@@ -246,7 +246,6 @@ export const onConfirmSchema = {
                   type: "string",
                 },
               },
-              additionalProperties: false,
               required: ["name", "address", "state", "city", "tax_id", "phone"],
             },
             fulfillments: {
@@ -719,7 +718,7 @@ export const onConfirmSchema = {
                     properties: {
                       code: {
                         type: "string",
-                        enum: ["buyer_id"],
+                        enum: TERMS,
                       },
                     },
                   },
@@ -732,7 +731,7 @@ export const onConfirmSchema = {
                           properties: {
                             code: {
                               type: "string",
-                              enum: ["buyer_id_code", "buyer_id_no"],
+                              enum: B2B_BPP_TERMS,
                             },
                           },
                         },

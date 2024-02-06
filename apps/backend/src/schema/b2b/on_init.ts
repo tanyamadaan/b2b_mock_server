@@ -1,4 +1,4 @@
-import { DOMAIN, VERSION } from "./constants";
+import { B2B_BPP_TERMS, DOMAIN, TERMS, VERSION } from "./constants";
 
 export const onInitSchema = {
   $id: "onInitSchema",
@@ -234,7 +234,6 @@ export const onInitSchema = {
                   type: "string",
                 },
               },
-              additionalProperties: false,
               required: ["name", "address", "state", "city", "tax_id", "phone"],
             },
             fulfillments: {
@@ -248,8 +247,18 @@ export const onInitSchema = {
                   type: {
                     type: "string",
                   },
+                  "@ondc/org/provider_name": {
+                    type: "string",
+                  },
                   tracking: {
                     type: "boolean",
+                  },
+                  "@ondc/org/category": {
+                    type: "string",
+                  },
+                  "@ondc/org/TAT": {
+                    type: "string",
+                    format: "duration",
                   },
                   stops: {
                     type: "array",
@@ -516,10 +525,32 @@ export const onInitSchema = {
               items: {
                 type: "object",
                 properties: {
+                  type: {
+                    type: "string",
+                    enum: [
+                      "PRE-FULFILLMENT",
+                      "ON-FULFILLMENT",
+                      "POST-FULFILLMENT",
+                    ],
+              
+                  },
+                  collected_by: {
+                    type: "string",
+                    enum: ["BAP", "BPP"],
+                  },
                   "@ondc/org/buyer_app_finder_fee_type": {
                     type: "string",
                   },
                   "@ondc/org/buyer_app_finder_fee_amount": {
+                    type: "string",
+                  },
+                  "@ondc/org/settlement_basis": {
+                    type: "string",
+                  },
+                  "@ondc/org/settlement_window": {
+                    type: "string",
+                  },
+                  "@ondc/org/withholding_amount": {
                     type: "string",
                   },
                   "@ondc/org/settlement_details": {
@@ -590,10 +621,27 @@ export const onInitSchema = {
                     },
                   },
                 },
-                required: [
-                  "@ondc/org/buyer_app_finder_fee_type",
-                  "@ondc/org/buyer_app_finder_fee_amount",
-                ],
+                if: { properties: { collected_by: { const: "BAP" } } },
+                then: {
+                  required: [
+                    "type",
+                    "collected_by",
+                    "@ondc/org/buyer_app_finder_fee_type",
+                    "@ondc/org/buyer_app_finder_fee_amount",
+                    "@ondc/org/settlement_details",
+                  ],
+                },
+                else: {
+                  required: [
+                    "type",
+                    "collected_by",
+                    "@ondc/org/buyer_app_finder_fee_type",
+                    "@ondc/org/buyer_app_finder_fee_amount",
+                    "@ondc/org/settlement_basis",
+                    "@ondc/org/settlement_window",
+                    "@ondc/org/withholding_amount",
+                  ],
+                },
               },
             },
             tags: {
@@ -605,7 +653,7 @@ export const onInitSchema = {
                     properties: {
                       code: {
                         type: "string",
-                        enum: ["buyer_id"],
+                        enum: TERMS,
                       },
                     },
                   },
@@ -618,7 +666,7 @@ export const onInitSchema = {
                           properties: {
                             code: {
                               type: "string",
-                              enum: ["buyer_id_code", "buyer_id_no"],
+                              enum: B2B_BPP_TERMS,
                             },
                           },
                         },
@@ -643,6 +691,7 @@ export const onInitSchema = {
             "fulfillments",
             "quote",
             "payments",
+            "tags"
           ],
         },
       },
