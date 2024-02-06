@@ -8,7 +8,7 @@ import {
   selectSchema,
   statusSchema,
   updateSchema,
-} from "../../../schema/b2b";
+} from "../../../lib/schema/b2b";
 import { initController } from "./init";
 import { selectController } from "./select";
 import { confirmController } from "./confirm";

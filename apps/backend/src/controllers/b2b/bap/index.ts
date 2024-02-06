@@ -7,7 +7,7 @@ import {
   onSelectSchema,
   onStatusSchema,
   onUpdateSchema,
-} from "../../../schema/b2b";
+} from "../../../lib/schema/b2b";
 import { onSearchController } from "./onSearch";
 import { onInitController } from "./onInit";
 import { onSelectController } from "./onSelect";

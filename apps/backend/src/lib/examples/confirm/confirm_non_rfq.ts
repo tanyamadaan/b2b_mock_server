@@ -1,4 +1,4 @@
-export const confirmExports = {
+export const confirmNonRFQ = {
   context: {
     domain: "ONDC:RET10",
     location: {
@@ -73,12 +73,12 @@ export const confirmExports = {
       ],
       billing: {
         name: "ONDC buyer",
-        address: "B005 aaspire heights, Jurong East, SGP, 680230",
+        address: "22, Mahatma Gandhi Rd, Craig Park Layout, Ashok Nagar, Bengaluru, Karnataka 560001",
         state: {
-          name: "Jurong East"
+          name: "Karnataka"
         },
         city: {
-          name: "Jurong East"
+          name: "Bengaluru"
         },
         tax_id: "XXXXXXXXXXXXXXX",
         email: "nobody@nomail.com",
@@ -93,17 +93,17 @@ export const confirmExports = {
             {
               type: "end",
               location: {
-                gps: "1.3806217468119772, 103.74636438437074",
+                gps: "12.974002,77.613458",
                 address: "My House #, My buildin",
                 city: {
-                  name: "Jurong East"
+                  name: "Bengaluru"
                 },
                 country: {
-                  code: "SGP"
+                  code: "IND"
                 },
-                area_code: "680230",
+                area_code: "560001",
                 state: {
-                  name: ""
+                  name: "Karnataka"
                 }
               },
               contact: {
@@ -115,27 +115,6 @@ export const confirmExports = {
                   name: "Ramu"
                 }
               }
-            }
-          ],
-          tags: [
-            {
-              descriptor: {
-                code: "DELIVERY_TERMS"
-              },
-              list: [
-                {
-                  descriptor: {
-                    code: "INCOTERMS"
-                  },
-                  value: "CIF"
-                },
-                {
-                  descriptor: {
-                    code: "NAMED_PLACE_OF_DELIVERY"
-                  },
-                  value: "SGP"
-                }
-              ]
             }
           ]
         }
@@ -218,7 +197,7 @@ export const confirmExports = {
             currency: "INR",
             amount: "53600"
           },
-          status: "NOT-PAID",
+          status: "PAID",
           type: "PRE-FULFILLMENT",
           collected_by: "BPP",
           "@ondc/org/buyer_app_finder_fee_type": "percent",
