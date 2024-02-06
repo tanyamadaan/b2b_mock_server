@@ -6,7 +6,7 @@ import swaggerUi from "swagger-ui-express";
 import { authRouter, b2bRouter } from "./controllers";
 import path from "path";
 const app: Express = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 const file = fs.readFileSync(path.join(__dirname, "./openapi/build/swagger.yaml"), "utf8");
 const swaggerDocument = YAML.parse(file);
@@ -18,10 +18,9 @@ app.get("/", (req: Request, res: Response) => {
 	res.send("Mock Server for NP");
 });
 
-app.use("/api/b2b", b2bRouter);
-app.use("/api/auth", authRouter);
+app.use("/b2b", b2bRouter);
+app.use("/auth", authRouter);
 
 app.listen(port, () => {
-	console.log(`[server]: Server is running at http://localhost:3000`);
-	// console.log("ENV:\n",process.env.SANDBOX_MODE, process.env.DATABASE_URL)
+	console.log(`[server]: Server is running at http://localhost:${port}`);
 });

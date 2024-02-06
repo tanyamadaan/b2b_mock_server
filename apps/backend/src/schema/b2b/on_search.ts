@@ -1,4 +1,4 @@
-import { domain, version } from "./constants";
+import { DOMAIN, VERSION } from "./constants";
 
 export const onSearchSchema = {
   $id: "onSearchSchema",
@@ -9,7 +9,7 @@ export const onSearchSchema = {
       properties: {
         domain: {
           type: "string",
-          enum: [domain.bpc, domain.electronics, domain.fashion, domain.grocery]
+          enum: [DOMAIN.bpc, DOMAIN.electronics, DOMAIN.fashion, DOMAIN.grocery]
         },
         location: {
           type: "object",
@@ -41,7 +41,7 @@ export const onSearchSchema = {
         },
         version: {
           type: "string",
-          const: version,
+          const: VERSION,
         },
         bap_id: {
           type: "string",

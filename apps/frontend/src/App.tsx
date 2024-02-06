@@ -7,6 +7,7 @@ import Textarea from "@mui/joy/Textarea";
 import {
 	Box,
 	Button,
+	Checkbox,
 	FormControl,
 	FormHelperText,
 	Stack,
@@ -14,13 +15,14 @@ import {
 } from "@mui/joy";
 import { useState } from "react";
 import { InfoOutlined } from "@mui/icons-material";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 function App() {
 	const [authHeader, setAuthHeader] = useState<string>();
 	const [log, setLog] = useState<string>();
 	const [action, setAction] = useState<string>();
 	const [logError, setLogError] = useState(false);
-	const [mockerNP, setMockerNP] = useState<boolean>(0); // false-> Buyer/BAP; true -> Seller/BPP
+	const [mockerNP, setMockerNP] = useState<boolean>(false); // false-> Buyer/BAP; true -> Seller/BPP
 	const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		try {
 			setLog(e.target.value);
@@ -50,14 +52,24 @@ function App() {
 					>
 						<Stack spacing={2} justifyContent="center" alignItems="center">
 							<Typography variant="h3">ONDC Mock Server</Typography>
-							<Switch
-								color={mockerNP ? "warning" : "danger"}
-								slotProps={{ input: { "aria-label": "dark mode" } }}
-								startDecorator={<Typography>Buyer</Typography>}
-								endDecorator={<Typography>Seller</Typography>}
-								checked={mockerNP}
-								onChange={() => setMockerNP((prev) => !prev)}
-							/>
+							<Box
+								sx={{
+									width: "100%",
+									display: "flex",
+									justifyContent: "space-between",
+									alignItems: "center",
+								}}
+							>
+								<Switch
+									color={mockerNP ? "warning" : "danger"}
+									slotProps={{ input: { "aria-label": "dark mode" } }}
+									startDecorator={<Typography>Buyer</Typography>}
+									endDecorator={<Typography>Seller</Typography>}
+									checked={mockerNP}
+									onChange={() => setMockerNP((prev) => !prev)}
+								/>
+								<FormControlLabel control={<Checkbox defaultChecked />} label="Sandbox Mode" />
+							</Box>
 							<Input
 								fullWidth
 								placeholder="Enter Your Auth Header..."
@@ -82,21 +94,17 @@ function App() {
 								)}
 							</FormControl>
 							{action && (
-								<Box
-									sx={{
-										width: "100%",
-										display: "flex",
-										justifyContent: "flex-start",
-										alignItems: "baseline",
-									}}
+								<Stack
+									direction="row"
+									spacing={1}
+									alignItems="center"
+									justifyContent="center"
 								>
-									<Typography variant="body1" mr={2}>
-										Detected Action:
-									</Typography>
+									<Typography variant="body1">Detected Action:</Typography>
 									<Typography color="text.secondary" variant="body2">
 										{action}
 									</Typography>
-								</Box>
+								</Stack>
 							)}
 							<Button variant="soft" onClick={handleSubmit}>
 								Submit

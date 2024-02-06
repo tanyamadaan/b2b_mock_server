@@ -33,8 +33,9 @@ services:
     extends: base
     build: .
     ports:
-      - "3000:3000"
+      - "3000:${PORT}"
     environment:
+      - PORT=${PORT}
       - SANDBOX_MODE=${SANDBOX_MODE}
       - RATE_LIMIT_MODE=${RATE_LIMIT_MODE}
       - RATE_LIMIT_24HR=${RATE_LIMIT_24HR}

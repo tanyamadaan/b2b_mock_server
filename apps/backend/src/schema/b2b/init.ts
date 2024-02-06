@@ -1,4 +1,4 @@
-import { domain, version } from "./constants";
+import { B2B_BPP_TERMS, DOMAIN, TERMS, VERSION } from "./constants";
 
 export const initSchema = {
   $id: "initSchema",
@@ -9,7 +9,7 @@ export const initSchema = {
       properties: {
         domain: {
           type: "string",
-          enum: [domain.grocery]
+          enum: [DOMAIN.grocery]
         },
         location: {
           type: "object",
@@ -41,7 +41,7 @@ export const initSchema = {
         },
         version: {
           type: "string",
-          const: version,
+          const: VERSION,
         },
         bap_id: {
           type: "string",
@@ -57,9 +57,6 @@ export const initSchema = {
         },
         transaction_id: {
           type: "string",
-          errorMessage:
-                "Transaction ID should be same across the transaction: ${/search/0/context/transaction_id}",
-
         },
         message_id: {
           type: "string",
@@ -70,7 +67,7 @@ export const initSchema = {
         },
         ttl: {
           type: "string",
-          errorMessage:"should match provider ttl - ${2/message/order/provider/ttl}"
+          const: "PT30S"
         },
       },
       required: [
@@ -112,12 +109,9 @@ export const initSchema = {
                     required: ["id"],
                   },
                 },
-                ttl: {
-                  type: "string",
-                  format: "duration"
-                },
               },
-              required: ["id", "locations", "ttl"],
+              required: ["id", "locations"],
+              additionalProperties:false
             },
             items: {
               type: "array",
@@ -202,7 +196,7 @@ export const initSchema = {
                     },
                   },
                 },
-                required: ["id", "quantity"],
+                required: ["id","fulfillment_ids", "quantity"],
               },
             },
             billing: {
@@ -242,6 +236,12 @@ export const initSchema = {
                 phone: {
                   type: "string",
                 },
+                created_at: {
+                  type: "string",
+                },
+                updated_at: {
+                  type: "string",
+                },
               },
               additionalProperties: false,
               required: ["name", "address", "state", "city", "tax_id", "phone"],
@@ -271,7 +271,7 @@ export const initSchema = {
                             gps: {
                               type: "string",
                               pattern: "^(-?[0-9]{1,3}(?:.[0-9]{6,15})?),( )*?(-?[0-9]{1,3}(?:.[0-9]{6,15})?)$",
-                              errorMessage: "Incorrect gps value",
+                              errorMessage: "Incorrect gps value (minimum of six decimal places are required)",
                             },
                             address: {
                               type: "string",
@@ -398,7 +398,7 @@ export const initSchema = {
                                 properties: {
                                   code: {
                                     type: "string",
-                                    enum: ["INCOTERMS", "DELIVERY_DUTY"],
+                                    enum: ["INCOTERMS", "NAMED_PLACE_OF_DELIVERY"],
                                   },
                                 },
                                 required: ["code"],
@@ -467,7 +467,7 @@ export const initSchema = {
                     properties: {
                       code: {
                         type: "string",
-                        enum: ["buyer_id"],
+                        enum: TERMS,
                       },
                     },
                   },
@@ -480,7 +480,7 @@ export const initSchema = {
                           properties: {
                             code: {
                               type: "string",
-                              enum: ["buyer_id_code", "buyer_id_no"],
+                              enum: B2B_BPP_TERMS,
                             },
                           },
                         },

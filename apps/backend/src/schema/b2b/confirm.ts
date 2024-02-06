@@ -1,4 +1,4 @@
-import {domain, version} from "./constants"
+import {B2B_BPP_TERMS, TERMS, DOMAIN, VERSION} from "./constants"
 export const confirmSchema = {
   $id: "confirmSchema",
   type: "object",
@@ -8,7 +8,7 @@ export const confirmSchema = {
       properties: {
         domain: {
           type: "string",
-          enum: [domain.grocery]
+          enum: [DOMAIN.grocery]
         },
         location: {
           type: "object",
@@ -40,7 +40,7 @@ export const confirmSchema = {
         },
         version: {
           type: "string",
-          const: version,
+          const: VERSION,
         },
         bap_id: {
           type: "string",
@@ -56,8 +56,6 @@ export const confirmSchema = {
         },
         transaction_id: {
           type: "string",
-          errorMessage:
-                "Transaction ID should be same across the transaction: ${/search/0/context/transaction_id}",
         },
         message_id: {
           type: "string"
@@ -243,7 +241,6 @@ export const confirmSchema = {
                   type: "string",
                 },
               },
-              additionalProperties: false,
               required: ["name", "address", "state", "city", "tax_id", "phone"],
             },
             fulfillments: {
@@ -275,7 +272,8 @@ export const confirmSchema = {
                             gps: {
                               type: "string",
                               pattern: "^(-?[0-9]{1,3}(?:.[0-9]{6,15})?),( )*?(-?[0-9]{1,3}(?:.[0-9]{6,15})?)$",
-                              errorMessage: "Incorrect gps value",
+                              errorMessage: 
+                              "Incorrect gps value (minimum of six decimal places are required)",
                             },
                             address: {
                               type: "string",
@@ -579,6 +577,15 @@ export const confirmSchema = {
                   "@ondc/org/buyer_app_finder_fee_amount": {
                     type: "string",
                   },
+                  "@ondc/org/settlement_basis": {
+                    type: "string",
+                  },
+                  "@ondc/org/settlement_window": {
+                    type: "string",
+                  },
+                  "@ondc/org/withholding_amount": {
+                    type: "string",
+                  },
                   "@ondc/org/settlement_details": {
                     type: "array",
                     items: {
@@ -647,14 +654,35 @@ export const confirmSchema = {
                     },
                   },
                 },
-                required: [
-                  "params",
-                  "status",
-                  "type",
-                  "collected_by",
-                  "@ondc/org/buyer_app_finder_fee_type",
-                  "@ondc/org/buyer_app_finder_fee_amount",
-                ],
+                if: { properties: { collected_by: { const: "BPP" } } },
+                then: {
+                  required: [
+                    "params",
+                    "status",
+                    "type",
+                    "collected_by",
+                    "@ondc/org/buyer_app_finder_fee_type",
+                    "@ondc/org/buyer_app_finder_fee_amount",
+                    "@ondc/org/settlement_basis",
+                    "@ondc/org/settlement_window",
+                    "@ondc/org/withholding_amount",
+                    "@ondc/org/settlement_details",
+                  ],
+                },
+                else: {
+                  required: [
+                    "params",
+                    "status",
+                    "type",
+                    "collected_by",
+                    "@ondc/org/buyer_app_finder_fee_type",
+                    "@ondc/org/buyer_app_finder_fee_amount",
+                    "@ondc/org/settlement_basis",
+                    "@ondc/org/settlement_window",
+                    "@ondc/org/withholding_amount",
+                  ],
+                },
+
               },
             },
             tags: {
@@ -666,7 +694,7 @@ export const confirmSchema = {
                     properties: {
                       code: {
                         type: "string",
-                        enum: ["buyer_id"],
+                        enum: TERMS,
                       },
                     },
                   },
@@ -679,7 +707,7 @@ export const confirmSchema = {
                           properties: {
                             code: {
                               type: "string",
-                              enum: ["buyer_id_code", "buyer_id_no"],
+                              enum: B2B_BPP_TERMS,
                             },
                           },
                         },
@@ -696,13 +724,9 @@ export const confirmSchema = {
             },
             created_at: {
               type: "string",
-              errorMessage:
-                "created_at does not match context timestamp - ${3/context/timestamp}",
             },
             updated_at: {
               type: "string",
-              errorMessage:
-                "updated_at does not match context timestamp - ${3/context/timestamp}",
             },
           },
           additionalProperties:false,
@@ -717,6 +741,7 @@ export const confirmSchema = {
             "payments",
             "created_at",
             "updated_at",
+            "tags"
           ],
         },
       },

@@ -1,4 +1,4 @@
-import { domain, version } from "./constants";
+import { DOMAIN, VERSION } from "./constants";
 
 export const onConfirmSchema = {
   $id: "onConfirmSchema",
@@ -9,7 +9,7 @@ export const onConfirmSchema = {
       properties: {
         domain: {
           type: "string",
-          enum: [domain.grocery]
+          enum: [DOMAIN.grocery]
         },
         location: {
           type: "object",
@@ -41,7 +41,7 @@ export const onConfirmSchema = {
         },
         version: {
           type: "string",
-          const: version,
+          const: VERSION,
         },
         bap_id: {
           type: "string",

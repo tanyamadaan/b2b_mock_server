@@ -18,32 +18,32 @@ import { onUpdateController } from "./onUpdate";
 export const bapRouter = Router();
 
 bapRouter.post(
-  "/onSearch",
+  "/on_search",
   jsonSchemaValidator(onSearchSchema),
   onSearchController
 );
 
-bapRouter.post("/onInit", jsonSchemaValidator(onInitSchema), onInitController);
+bapRouter.post("/on_init", jsonSchemaValidator(onInitSchema), onInitController);
 bapRouter.post(
-  "/onSelect",
+  "/on_select",
   jsonSchemaValidator(onSelectSchema),
   onSelectController
 );
 
 bapRouter.post(
-  "/onConfirm",
+  "/on_confirm",
   jsonSchemaValidator(onConfirmSchema),
   onConfirmController
 );
 
 bapRouter.post(
-  "/onStatus",
+  "/on_status",
   jsonSchemaValidator(onStatusSchema),
   onStatusController
 );
 
 bapRouter.post(
-  "/onUpdate",
+  "/on_update",
   jsonSchemaValidator(onUpdateSchema),
   onUpdateController
 );
