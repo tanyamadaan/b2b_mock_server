@@ -1,4 +1,4 @@
-export const onInitExports = {
+export const onInitDomesticPaymentBPPNonRFQ = {
   context: {
     domain: "ONDC:RET10",
     location: {
@@ -43,38 +43,17 @@ export const onInitExports = {
             {
               id: "78787723"
             }
-          ],
-          tags: [
-            {
-              descriptor: {
-                code: "BUYER_TERMS"
-              },
-              list: [
-                {
-                  descriptor: {
-                    code: "ITEM_REQ"
-                  },
-                  value: "free text on Item Customization"
-                },
-                {
-                  descriptor: {
-                    code: "PACKAGING_REQ"
-                  },
-                  value: "free text on packaging Customization"
-                }
-              ]
-            }
           ]
         }
       ],
       billing: {
         name: "ONDC buyer",
-        address: "B005 aaspire heights, Jurong East, SGP, 680230",
+        address: "22, Mahatma Gandhi Rd, Craig Park Layout, Ashok Nagar, Bengaluru, Karnataka 560001",
         state: {
-          name: "Jurong East"
+          name: "Karnataka"
         },
         city: {
-          name: "Jurong East"
+          name: "Bengaluru"
         },
         tax_id: "XXXXXXXXXXXXXXX",
         email: "nobody@nomail.com",
@@ -92,43 +71,22 @@ export const onInitExports = {
             {
               type: "end",
               location: {
-                gps: "1.3806217468119772, 103.74636438437074",
+                gps: "12.974002,77.613458",
                 address: "My House #, My buildin",
                 city: {
-                  name: "Jurong East"
+                  name: "Bengaluru"
                 },
                 country: {
-                  code: "SGP"
+                  code: "IND"
                 },
-                area_code: "680230",
+                area_code: "560001",
                 state: {
-                  name: ""
+                  name: "Karnataka"
                 }
               },
               contact: {
                 phone: "9886098860"
               }
-            }
-          ],
-          tags: [
-            {
-              descriptor: {
-                code: "DELIVERY_TERMS"
-              },
-              list: [
-                {
-                  descriptor: {
-                    code: "INCOTERMS"
-                  },
-                  value: "CIF"
-                },
-                {
-                  descriptor: {
-                    code: "NAMED_PLACE_OF_DELIVERY"
-                  },
-                  value: "SGP"
-                }
-              ]
             }
           ]
         }
@@ -209,11 +167,39 @@ export const onInitExports = {
         {
           type: "PRE-FULFILLMENT",
           collected_by: "BPP",
+          uri: "https://snp.com/pg",
           "@ondc/org/buyer_app_finder_fee_type": "percent",
           "@ondc/org/buyer_app_finder_fee_amount": "0",
           "@ondc/org/settlement_basis": "delivery",
           "@ondc/org/settlement_window": "P1D",
-          "@ondc/org/withholding_amount": "10.00"
+          "@ondc/org/withholding_amount": "10.00",
+          tags: [
+            {
+              descriptor: {
+                code: "BPP_payment"
+              },
+              list: [
+                {
+                  descriptor: {
+                    code: "signature"
+                  },
+                  value: "xxxxxxxxxxxxxx"
+                },
+                {
+                  descriptor: {
+                    code: "dsa"
+                  },
+                  value: "ED25519"
+                },
+                {
+                  descriptor: {
+                    code: "ttl"
+                  },
+                  value: "PT30M"
+                }
+              ]
+            }
+          ]
         }
       ],
       tags: [
@@ -233,43 +219,43 @@ export const onInitExports = {
                 code: "buyer_id_no"
               },
               value: "xxxxxxxxxxxxxxx"
+            }
+          ]
+        },
+        {
+          descriptor: {
+            code: "bpp_terms"
+          },
+          list: [
+            {
+              descriptor: {
+                code: "max_liability"
+              },
+              value: "2"
             },
             {
               descriptor: {
-                code: "bpp_terms"
+                code: "max_liability_cap"
               },
-              list: [
-                {
-                  descriptor: {
-                    code: "max_liability"
-                  },
-                  value: "2"
-                },
-                {
-                  descriptor: {
-                    code: "max_liability_cap"
-                  },
-                  value: "10000"
-                },
-                {
-                  descriptor: {
-                    code: "mandatory_arbitration"
-                  },
-                  value: "false"
-                },
-                {
-                  descriptor: {
-                    code: "court_jurisdiction"
-                  },
-                  value: "Bengaluru"
-                },
-                {
-                  descriptor: {
-                    code: "delay_interest"
-                  },
-                  value: "1000"
-                }
-              ]
+              value: "10000"
+            },
+            {
+              descriptor: {
+                code: "mandatory_arbitration"
+              },
+              value: "false"
+            },
+            {
+              descriptor: {
+                code: "court_jurisdiction"
+              },
+              value: "Bengaluru"
+            },
+            {
+              descriptor: {
+                code: "delay_interest"
+              },
+              value: "1000"
             }
           ]
         }

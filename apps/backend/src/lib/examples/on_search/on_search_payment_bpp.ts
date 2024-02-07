@@ -1,4 +1,4 @@
-export const onSearch = {
+export const onSearchPaymentBPP = {
   context: {
     domain: "ONDC:RET10",
     location: {
@@ -35,15 +35,18 @@ export const onSearch = {
       payments: [
         {
           id: "1",
-          type: "PRE-FULFILLMENT"
+          type: "PRE-FULFILLMENT",
+          collected_by: "BPP"
         },
         {
           id: "2",
-          type: "ON-FULFILLMENT"
+          type: "ON-FULFILLMENT",
+          collected_by: "BPP"
         },
         {
           id: "3",
-          type: "POST-FULFILLMENT"
+          type: "POST-FULFILLMENT",
+          collected_by: "BPP"
         }
       ],
       descriptor: {
@@ -190,7 +193,7 @@ export const onSearch = {
                 media: [
                   {
                     mimetype: "video/mp4",
-                    url: "https://abc.com/videos/207.mp4"
+                    url: "https://abc.com/images/207.mp4"
                   }
                 ]
               },
@@ -282,14 +285,7 @@ export const onSearch = {
                       code: "Pending"
                     }
                   },
-                  reason_required: false,
-                  cancellation_fee: {
-                    percentage: "0",
-                    amount: {
-                      currency: "IND",
-                      value: "0"
-                    }
-                  }
+                  refund_eligible: "true"
                 },
                 {
                   fulfillment_state: {
@@ -297,32 +293,25 @@ export const onSearch = {
                       code: "Packed"
                     }
                   },
-                  reason_required: false,
-                  cancellation_fee: {
-                    percentage: "0",
-                    amount: {
-                      currency: "IND",
-                      value: "0"
+                  refund_eligible: "true"
+                },
+                {
+                  fulfillment_state: {
+                    descriptor: {
+                      code: "Order-delivered"
+                    }
+                  },
+                  return_policy: {
+                    return_eligible: "true",
+                    return_within: "P7D",
+                    fulfillment_managed_by: "seller",
+                    return_location: {
+                      address: "RTO address",
+                      gps: "12.667555,77.349666"
                     }
                   }
                 }
               ],
-              return_terms: {
-                fulfillment_state: {
-                  descriptor: {
-                    code: "Order-delivered"
-                  }
-                },
-                return_eligible: true,
-                return_time: {
-                  duration: "P7D"
-                },
-                return_location: {
-                  address: "RTO address",
-                  gps: "12.667555,77.349666"
-                },
-                fulfillment_managed_by: "seller"
-              },
               replacement_terms: [
                 {
                   replace_within: "P7D"
@@ -399,6 +388,12 @@ export const onSearch = {
                         code: "tax_rate"
                       },
                       value: "12"
+                    },
+                    {
+                      descriptor: {
+                        code: "cancellable"
+                      },
+                      value: "true"
                     }
                   ]
                 },
@@ -562,6 +557,23 @@ export const onSearch = {
                 phone: "9886098860",
                 email: "abc@xyz.com"
               }
+            }
+          ],
+          payments: [
+            {
+              id: "1",
+              type: "PRE-FULFILLMENT",
+              collected_by: "BPP"
+            },
+            {
+              id: "2",
+              type: "ON-FULFILLMENT",
+              collected_by: "BPP"
+            },
+            {
+              id: "3",
+              type: "POST-FULFILLMENT",
+              collected_by: "BPP"
             }
           ]
         }

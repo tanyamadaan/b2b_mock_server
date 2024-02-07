@@ -10,13 +10,13 @@ export const onSearchGrocery = {
       }
     },
     action: "on_search",
-    version: "2.0.1",
+    version: "2.0.2",
     bap_id: "buyerapp.com",
     bap_uri: "https://buyerapp.com/grocery",
     bpp_id: "sellerapp.com",
     bpp_uri: "https://sellerapp.com/grocery",
-    transaction_id: "T1",
-    message_id: "M1",
+    transaction_id: "9568beb3-265a-4730-be4e-c00ba2e5e30a",
+    message_id: "86fb6231-ea67-42d1-b1ef-e43f1719a44f",
     timestamp: "2023-01-08T22:00:30.000Z",
     ttl: "PT30S"
   },
@@ -243,7 +243,7 @@ export const onSearchGrocery = {
                 media: [
                   {
                     mimetype: "video/mp4",
-                    url: "video_url"
+                    url: "https://abc.com/images/207.mp4"
                   }
                 ]
               },
@@ -278,14 +278,21 @@ export const onSearchGrocery = {
                     unit: "millilitre",
                     value: "500"
                   },
-                  count: "2000"
+                  count: 2000
                 },
                 maximum: {
                   measure: {
                     unit: "millilitre",
                     value: "500"
                   },
-                  count: "4000"
+                  count: 4000
+                },
+                minimum: {
+                  measure: {
+                    unit: "millilitre",
+                    value: "500"
+                  },
+                  count: 4000
                 }
               },
               category_ids: [
@@ -300,7 +307,7 @@ export const onSearchGrocery = {
               payment_ids: [
                 "2"
               ],
-              "add-ons": [
+              add_ons: [
                 {
                   id: "78787723",
                   descriptor: {
@@ -328,7 +335,14 @@ export const onSearchGrocery = {
                       code: "Pending"
                     }
                   },
-                  refund_eligible: "true"
+                  reason_required: false,
+                  cancellation_fee: {
+                    percentage: "0",
+                    amount: {
+                      currency: "IND",
+                      value: "0"
+                    }
+                  }
                 },
                 {
                   fulfillment_state: {
@@ -336,25 +350,32 @@ export const onSearchGrocery = {
                       code: "Packed"
                     }
                   },
-                  refund_eligible: "true"
-                },
-                {
-                  fulfillment_state: {
-                    descriptor: {
-                      code: "Order-delivered"
-                    }
-                  },
-                  return_policy: {
-                    return_eligible: "true",
-                    return_within: "P7D",
-                    fulfillment_managed_by: "seller",
-                    return_location: {
-                      address: "RTO address",
-                      gps: "12.667555,77.349666"
+                  reason_required: false,
+                  cancellation_fee: {
+                    percentage: "0",
+                    amount: {
+                      currency: "IND",
+                      value: "0"
                     }
                   }
                 }
               ],
+              return_terms: {
+                fulfillment_state: {
+                  descriptor: {
+                    code: "Order-delivered"
+                  }
+                },
+                return_eligible: true,
+                return_time: {
+                  duration: "P7D"
+                },
+                return_location: {
+                  address: "RTO address",
+                  gps: "12.667555,77.349666"
+                },
+                fulfillment_managed_by: "seller"
+              },
               replacement_terms: [
                 {
                   replace_within: "P7D"
@@ -367,8 +388,8 @@ export const onSearchGrocery = {
                   end: "2022-12-31T00:00:00.000Z"
                 }
               },
-              matched: "true",
-              recommended: "true",
+              matched: true,
+              recommended: true,
               tags: [
                 {
                   descriptor: {
@@ -431,6 +452,12 @@ export const onSearchGrocery = {
                         code: "tax_rate"
                       },
                       value: "12"
+                    },
+                    {
+                      descriptor: {
+                        code: "cancellable"
+                      },
+                      value: "true"
                     }
                   ]
                 },

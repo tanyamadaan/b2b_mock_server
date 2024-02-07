@@ -1,6 +1,6 @@
-export const onSearch = {
+export const onSearchConstructionAndBuilding = {
   context: {
-    domain: "ONDC:RET10",
+    domain: "ONDC:RET1C",
     location: {
       city: {
         code: "std:080"
@@ -12,11 +12,11 @@ export const onSearch = {
     action: "on_search",
     version: "2.0.2",
     bap_id: "buyerapp.com",
-    bap_uri: "https://buyerapp.com/grocery",
+    bap_uri: "https://buyerapp.com/fs",
     bpp_id: "sellerapp.com",
-    bpp_uri: "https://sellerapp.com/grocery",
-    transaction_id: "9568beb3-265a-4730-be4e-c00ba2e5e30a",
-    message_id: "86fb6231-ea67-42d1-b1ef-e43f1719a44f",
+    bpp_uri: "https://sellerapp.com/fs",
+    transaction_id: "T1",
+    message_id: "M1",
     timestamp: "2023-01-08T22:00:30.000Z",
     ttl: "PT30S"
   },
@@ -118,7 +118,7 @@ export const onSearch = {
                   descriptor: {
                     code: "category"
                   },
-                  value: "RET10-1042"
+                  value: "RET1C-1000"
                 },
                 {
                   descriptor: {
@@ -130,7 +130,7 @@ export const onSearch = {
                   descriptor: {
                     code: "val"
                   },
-                  value: "SGP"
+                  value: "IND"
                 },
                 {
                   descriptor: {
@@ -173,15 +173,76 @@ export const onSearch = {
               ]
             }
           ],
+          categories: [
+            {
+              id: "V1",
+              descriptor: {
+                name: "Variant Group 1"
+              },
+              tags: [
+                {
+                  descriptor: {
+                    code: "type"
+                  },
+                  list: [
+                    {
+                      descriptor: {
+                        code: "type"
+                      },
+                      value: "variant_group"
+                    }
+                  ]
+                },
+                {
+                  descriptor: {
+                    code: "attr"
+                  },
+                  list: [
+                    {
+                      descriptor: {
+                        code: "name"
+                      },
+                      value: "item.tags.attribute.<variant_attribute_name>"
+                    },
+                    {
+                      descriptor: {
+                        code: "seq"
+                      },
+                      value: "1"
+                    }
+                  ]
+                },
+                {
+                  descriptor: {
+                    code: "attr"
+                  },
+                  list: [
+                    {
+                      descriptor: {
+                        code: "name"
+                      },
+                      value: "item.tags.attribute.<variant_attribute_name>"
+                    },
+                    {
+                      descriptor: {
+                        code: "seq"
+                      },
+                      value: "2"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
           items: [
             {
               id: "I1",
-              parent_item_id: "PI1",
+              parent_item_id: "V1",
               descriptor: {
-                name: "Dhara Mustard Oil",
-                code: "UPC / EAN code",
-                short_desc: "Dhara refined mustard oil",
-                long_desc: "Dhara refined mustard oil",
+                name: "Gokul White PP Non Return Screwed Valve",
+                code: "UPC / EAN code / SKU code",
+                short_desc: "Gokul White PP Non Return Screwed Valve",
+                long_desc: "Gokul White PP Non Return Screwed Valve",
                 images: [
                   {
                     url: "https://abc.com/images/207.png"
@@ -190,20 +251,20 @@ export const onSearch = {
                 media: [
                   {
                     mimetype: "video/mp4",
-                    url: "https://abc.com/videos/207.mp4"
+                    url: "video_url"
                   }
                 ]
               },
               creator: {
                 descriptor: {
-                  name: "Mother Dairy",
+                  name: "xxxxx",
                   contact: {
-                    name: "Raj Kumar",
+                    name: "xxxx",
                     address: {
-                      full: "Mother Dairy Fruit & Vegetable Pvt Ltd,A-3, NDDB House, Sector-1, Noida,Uttar Pradesh-201301"
+                      full: "Gokul Poly Valves Private Limited,AT Post Bakrol Bujrang, Ahmedabad, Gujarat-382430"
                     },
                     phone: "18001801018",
-                    email: "consumer.services@motherdairy.com"
+                    email: "consumer.services@xxxx.com"
                   }
                 }
               },
@@ -216,34 +277,27 @@ export const onSearch = {
               quantity: {
                 unitized: {
                   measure: {
-                    unit: "millilitre",
-                    value: "500"
+                    unit: "unit",
+                    value: "1"
                   }
                 },
                 available: {
                   measure: {
-                    unit: "millilitre",
-                    value: "500"
+                    unit: "unit",
+                    value: "1"
                   },
-                  count: 2000
+                  count: "99"
                 },
                 maximum: {
                   measure: {
-                    unit: "millilitre",
-                    value: "500"
+                    unit: "unit",
+                    value: "1"
                   },
-                  count: 4000
-                },
-                minimum: {
-                  measure: {
-                    unit: "millilitre",
-                    value: "500"
-                  },
-                  count: 4000
+                  count: "99"
                 }
               },
               category_ids: [
-                "RET10-1042"
+                "RET12-102F"
               ],
               fulfillment_ids: [
                 "1"
@@ -253,27 +307,6 @@ export const onSearch = {
               ],
               payment_ids: [
                 "2"
-              ],
-              add_ons: [
-                {
-                  id: "78787723",
-                  descriptor: {
-                    name: "Dhara Sunflower Oil",
-                    short_desc: "Dhara Sunflower Oil",
-                    long_desc: "Dhara Sunflower Oil",
-                    images: [
-                      {
-                        url: "https://abc.com/images/208.png"
-                      }
-                    ]
-                  },
-                  price: {
-                    currency: "INR",
-                    value: "170.0",
-                    offered_value: "100.0",
-                    maximum_value: "170.0"
-                  }
-                }
               ],
               cancellation_terms: [
                 {
@@ -335,8 +368,8 @@ export const onSearch = {
                   end: "2022-12-31T00:00:00.000Z"
                 }
               },
-              matched: true,
-              recommended: true,
+              matched: "true",
+              recommended: "true",
               tags: [
                 {
                   descriptor: {
@@ -372,14 +405,74 @@ export const onSearch = {
                 },
                 {
                   descriptor: {
-                    code: "veg_nonveg"
+                    code: "attribute"
                   },
                   list: [
                     {
                       descriptor: {
-                        code: "veg"
+                        code: "brand"
                       },
-                      value: "yes"
+                      value: "Gokul"
+                    },
+                    {
+                      descriptor: {
+                        code: "model"
+                      },
+                      value: "2 PICE FLANGEND"
+                    },
+                    {
+                      descriptor: {
+                        code: "item_condition"
+                      },
+                      value: "New"
+                    },
+                    {
+                      descriptor: {
+                        code: "material"
+                      },
+                      value: "pp"
+                    },
+                    {
+                      descriptor: {
+                        code: "warranty"
+                      },
+                      value: "2 years"
+                    },
+                    {
+                      descriptor: {
+                        code: "mount_type"
+                      },
+                      value: "wall mount"
+                    },
+                    {
+                      descriptor: {
+                        code: "thickness"
+                      },
+                      value: "1 mm"
+                    },
+                    {
+                      descriptor: {
+                        code: "power_output"
+                      },
+                      value: "2 HP"
+                    },
+                    {
+                      descriptor: {
+                        code: "hazardous"
+                      },
+                      value: "Yes"
+                    },
+                    {
+                      descriptor: {
+                        code: "form_factor"
+                      },
+                      value: "Powder"
+                    },
+                    {
+                      descriptor: {
+                        code: "diameter"
+                      },
+                      value: "15 mm"
                     }
                   ]
                 },
@@ -399,6 +492,12 @@ export const onSearch = {
                         code: "tax_rate"
                       },
                       value: "12"
+                    },
+                    {
+                      descriptor: {
+                        code: "cancellable"
+                      },
+                      value: "true"
                     }
                   ]
                 },
@@ -501,31 +600,6 @@ export const onSearch = {
                       value: "175"
                     }
                   ]
-                },
-                {
-                  descriptor: {
-                    code: "FSSAI_LICENSE_NO"
-                  },
-                  list: [
-                    {
-                      descriptor: {
-                        code: "BRAND_OWNER"
-                      },
-                      value: "12345678901234"
-                    },
-                    {
-                      descriptor: {
-                        code: "OTHER"
-                      },
-                      value: "12345678901234"
-                    },
-                    {
-                      descriptor: {
-                        code: "IMPORTER"
-                      },
-                      value: "12345678901234"
-                    }
-                  ]
                 }
               ]
             }
@@ -534,10 +608,10 @@ export const onSearch = {
             {
               id: "offer-1",
               descriptor: {
-                name: "Dhara Olive Oil",
+                name: "Scarf",
                 code: "FREEBIE",
-                short_desc: "Dhara Olive Oil",
-                long_desc: "Dhara Olive Oil",
+                short_desc: "Scarf",
+                long_desc: "Scarf",
                 images: [
                   {
                     url: "https://abc.com/images/207.png"

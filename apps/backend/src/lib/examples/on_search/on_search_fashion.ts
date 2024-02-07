@@ -10,13 +10,13 @@ export const onSearchFashion = {
       }
     },
     action: "on_search",
-    version: "2.0.1",
+    version: "2.0.2",
     bap_id: "buyerapp.com",
     bap_uri: "https://buyerapp.com/fs",
     bpp_id: "sellerapp.com",
     bpp_uri: "https://sellerapp.com/fs",
-    transaction_id: "T1",
-    message_id: "M1",
+    transaction_id: "9568beb3-265a-4730-be4e-c00ba2e5e30a",
+    message_id: "86fb6231-ea67-42d1-b1ef-e43f1719a44f",
     timestamp: "2023-01-08T22:00:30.000Z",
     ttl: "PT30S"
   },
@@ -104,48 +104,70 @@ export const onSearchFashion = {
           ],
           tags: [
             {
-              code: "serviceability",
+              descriptor: {
+                code: "serviceability"
+              },
               list: [
                 {
-                  code: "location",
+                  descriptor: {
+                    code: "location"
+                  },
                   value: "L1"
                 },
                 {
-                  code: "category",
-                  value: "RET10-1042"
+                  descriptor: {
+                    code: "category"
+                  },
+                  value: "RET1A-1012"
                 },
                 {
-                  code: "type",
+                  descriptor: {
+                    code: "type"
+                  },
                   value: "12"
                 },
                 {
-                  code: "val",
-                  value: "SGP"
+                  descriptor: {
+                    code: "val"
+                  },
+                  value: "IND"
                 },
                 {
-                  code: "unit",
+                  descriptor: {
+                    code: "unit"
+                  },
                   value: "country"
                 }
               ]
             },
             {
-              code: "seller_terms",
+              descriptor: {
+                code: "seller_terms"
+              },
               list: [
                 {
-                  code: "gst_credit_invoice",
+                  descriptor: {
+                    code: "gst_credit_invoice"
+                  },
                   value: "Y"
                 }
               ]
             },
             {
-              code: "seller_id",
+              descriptor: {
+                code: "seller_id"
+              },
               list: [
                 {
-                  code: "seller_id_code",
+                  descriptor: {
+                    code: "seller_id_code"
+                  },
                   value: "gst"
                 },
                 {
-                  code: "seller_id_no",
+                  descriptor: {
+                    code: "seller_id_no"
+                  },
                   value: "xxxxxxxxxxxxxxx"
                 }
               ]
@@ -156,39 +178,57 @@ export const onSearchFashion = {
               id: "V1",
               descriptor: {
                 name: "Variant Group 1"
-              },
+              }
+            },
+            {
               tags: [
                 {
-                  code: "type",
+                  descriptor: {
+                    code: "type"
+                  },
                   list: [
                     {
-                      code: "type",
+                      descriptor: {
+                        code: "type"
+                      },
                       value: "variant_group"
                     }
                   ]
                 },
                 {
-                  code: "attr",
+                  descriptor: {
+                    code: "attr"
+                  },
                   list: [
                     {
-                      code: "name",
+                      descriptor: {
+                        code: "name"
+                      },
                       value: "item.tags.attribute.colour"
                     },
                     {
-                      code: "seq",
+                      descriptor: {
+                        code: "seq"
+                      },
                       value: "1"
                     }
                   ]
                 },
                 {
-                  code: "attr",
+                  descriptor: {
+                    code: "attr"
+                  },
                   list: [
                     {
-                      code: "name",
+                      descriptor: {
+                        code: "name"
+                      },
                       value: "item.tags.attribute.size"
                     },
                     {
-                      code: "seq",
+                      descriptor: {
+                        code: "seq"
+                      },
                       value: "2"
                     }
                   ]
@@ -248,14 +288,21 @@ export const onSearchFashion = {
                     unit: "unit",
                     value: "1"
                   },
-                  count: "99"
+                  count: 99
                 },
                 maximum: {
                   measure: {
                     unit: "unit",
                     value: "1"
                   },
-                  count: "99"
+                  count: 99
+                },
+                minimum: {
+                  measure: {
+                    unit: "unit",
+                    value: "1"
+                  },
+                  count: 99
                 }
               },
               category_ids: [
@@ -277,7 +324,14 @@ export const onSearchFashion = {
                       code: "Pending"
                     }
                   },
-                  refund_eligible: "true"
+                  reason_required: false,
+                  cancellation_fee: {
+                    percentage: "0",
+                    amount: {
+                      currency: "IND",
+                      value: "0"
+                    }
+                  }
                 },
                 {
                   fulfillment_state: {
@@ -285,25 +339,32 @@ export const onSearchFashion = {
                       code: "Packed"
                     }
                   },
-                  refund_eligible: "true"
-                },
-                {
-                  fulfillment_state: {
-                    descriptor: {
-                      code: "Order-delivered"
-                    }
-                  },
-                  return_policy: {
-                    return_eligible: "true",
-                    return_within: "P7D",
-                    fulfillment_managed_by: "seller",
-                    return_location: {
-                      address: "RTO address",
-                      gps: "12.667555,77.349666"
+                  reason_required: false,
+                  cancellation_fee: {
+                    percentage: "0",
+                    amount: {
+                      currency: "IND",
+                      value: "0"
                     }
                   }
                 }
               ],
+              return_terms: {
+                fulfillment_state: {
+                  descriptor: {
+                    code: "Order-delivered"
+                  }
+                },
+                return_eligible: true,
+                return_time: {
+                  duration: "P7D"
+                },
+                return_location: {
+                  address: "RTO address",
+                  gps: "12.667555,77.349666"
+                },
+                fulfillment_managed_by: "seller"
+              },
               replacement_terms: [
                 {
                   replace_within: "P7D"
@@ -316,161 +377,241 @@ export const onSearchFashion = {
                   end: "2022-12-31T00:00:00.000Z"
                 }
               },
-              matched: "true",
-              recommended: "true",
+              matched: true,
+              recommended: true,
               tags: [
                 {
-                  code: "origin",
+                  descriptor: {
+                    code: "origin"
+                  },
                   list: [
                     {
-                      code: "country",
+                      descriptor: {
+                        code: "country"
+                      },
                       value: "IND"
                     }
                   ]
                 },
                 {
-                  code: "image",
+                  descriptor: {
+                    code: "image"
+                  },
                   list: [
                     {
-                      code: "type",
+                      descriptor: {
+                        code: "type"
+                      },
                       value: "back_image"
                     },
                     {
-                      code: "url",
+                      descriptor: {
+                        code: "url"
+                      },
                       value: "https://sellerNP.com/images/i1_back_image.png"
                     }
                   ]
                 },
                 {
-                  code: "attribute",
+                  descriptor: {
+                    code: "attribute"
+                  },
                   list: [
                     {
-                      code: "brand",
+                      descriptor: {
+                        code: "brand"
+                      },
                       value: "Allen Solly"
                     },
                     {
-                      code: "colour",
+                      descriptor: {
+                        code: "colour"
+                      },
                       value: "coral"
                     },
                     {
-                      code: "size",
-                      value: "S"
+                      descriptor: {
+                        code: "size"
+                      },
+                      value: "M"
                     },
                     {
-                      code: "gender",
+                      descriptor: {
+                        code: "gender"
+                      },
                       value: "male"
                     },
                     {
-                      code: "pattern",
+                      descriptor: {
+                        code: "pattern"
+                      },
                       value: "striped"
                     },
                     {
-                      code: "material",
+                      descriptor: {
+                        code: "material"
+                      },
                       value: "cotton"
                     },
                     {
-                      code: "occasion",
+                      descriptor: {
+                        code: "occasion"
+                      },
                       value: "casual"
                     },
                     {
-                      code: "season",
+                      descriptor: {
+                        code: "season"
+                      },
                       value: "summer"
                     },
                     {
-                      code: "trend",
+                      descriptor: {
+                        code: "trend"
+                      },
                       value: "tribal"
                     },
                     {
-                      code: "features",
+                      descriptor: {
+                        code: "features"
+                      },
                       value: "alpha"
                     },
                     {
-                      code: "material_finish",
+                      descriptor: {
+                        code: "material_finish"
+                      },
                       value: "embossed"
                     },
                     {
-                      code: "size_chart",
+                      descriptor: {
+                        code: "size_chart"
+                      },
                       value: "https://sellerNP.com/images/i1_size_chart.png"
                     }
                   ]
                 },
                 {
-                  code: "g2",
+                  descriptor: {
+                    code: "g2"
+                  },
                   list: [
                     {
-                      code: "time_to_ship",
+                      descriptor: {
+                        code: "time_to_ship"
+                      },
                       value: "P1D"
                     },
                     {
-                      code: "tax_rate",
+                      descriptor: {
+                        code: "tax_rate"
+                      },
                       value: "12"
+                    },
+                    {
+                      descriptor: {
+                        code: "cancellable"
+                      },
+                      value: "true"
                     }
                   ]
                 },
                 {
-                  code: "g3",
+                  descriptor: {
+                    code: "g3"
+                  },
                   list: [
                     {
-                      code: "brand",
+                      descriptor: {
+                        code: "brand"
+                      },
                       value: "Dhara"
                     },
                     {
-                      code: "pack_size",
+                      descriptor: {
+                        code: "pack_size"
+                      },
                       value: "5"
                     },
                     {
-                      code: "num_price_slabs",
+                      descriptor: {
+                        code: "num_price_slabs"
+                      },
                       value: "3"
                     }
                   ]
                 },
                 {
-                  code: "price_slab",
+                  descriptor: {
+                    code: "price_slab"
+                  },
                   list: [
                     {
-                      code: "min_pack_size",
+                      descriptor: {
+                        code: "min_pack_size"
+                      },
                       value: "1"
                     },
                     {
-                      code: "max_pack_size",
+                      descriptor: {
+                        code: "max_pack_size"
+                      },
                       value: "4"
                     },
                     {
-                      code: "unit_sale_price",
+                      descriptor: {
+                        code: "unit_sale_price"
+                      },
                       value: "250"
                     }
                   ]
                 },
                 {
-                  code: "price_slab",
+                  descriptor: {
+                    code: "price_slab"
+                  },
                   list: [
                     {
-                      code: "min_pack_size",
+                      descriptor: {
+                        code: "min_pack_size"
+                      },
                       value: "5"
                     },
                     {
-                      code: "max_pack_size",
+                      descriptor: {
+                        code: "max_pack_size"
+                      },
                       value: "9"
                     },
                     {
-                      code: "unit_sale_price",
+                      descriptor: {
+                        code: "unit_sale_price"
+                      },
                       value: "200"
                     }
                   ]
                 },
                 {
-                  code: "price_slab",
+                  descriptor: {
+                    code: "price_slab"
+                  },
                   list: [
                     {
-                      code: "min_pack_size",
+                      descriptor: {
+                        code: "min_pack_size"
+                      },
                       value: "10"
                     },
                     {
-                      code: "max_pack_size",
+                      descriptor: {
+                        code: "max_pack_size"
+                      },
                       value: ""
                     },
                     {
-                      code: "unit_sale_price",
+                      descriptor: {
+                        code: "unit_sale_price"
+                      },
                       value: "175"
                     }
                   ]
@@ -493,7 +634,7 @@ export const onSearchFashion = {
                 media: [
                   {
                     mimetype: "video/mp4",
-                    url: "video_url"
+                    url: "https://abc.com/images/207.mp4"
                   }
                 ]
               },
@@ -528,14 +669,14 @@ export const onSearchFashion = {
                     unit: "unit",
                     value: "1"
                   },
-                  count: "99"
+                  count: 99
                 },
                 maximum: {
                   measure: {
                     unit: "unit",
                     value: "1"
                   },
-                  count: "99"
+                  count: 99
                 }
               },
               category_ids: [
@@ -557,7 +698,14 @@ export const onSearchFashion = {
                       code: "Pending"
                     }
                   },
-                  refund_eligible: "true"
+                  reason_required: false,
+                  cancellation_fee: {
+                    percentage: "0",
+                    amount: {
+                      currency: "IND",
+                      value: "0"
+                    }
+                  }
                 },
                 {
                   fulfillment_state: {
@@ -565,25 +713,32 @@ export const onSearchFashion = {
                       code: "Packed"
                     }
                   },
-                  refund_eligible: "true"
-                },
-                {
-                  fulfillment_state: {
-                    descriptor: {
-                      code: "Order-delivered"
-                    }
-                  },
-                  return_policy: {
-                    return_eligible: "true",
-                    return_within: "P7D",
-                    fulfillment_managed_by: "seller",
-                    return_location: {
-                      address: "RTO address",
-                      gps: "12.667555,77.349666"
+                  reason_required: false,
+                  cancellation_fee: {
+                    percentage: "0",
+                    amount: {
+                      currency: "IND",
+                      value: "0"
                     }
                   }
                 }
               ],
+              return_terms: {
+                fulfillment_state: {
+                  descriptor: {
+                    code: "Order-delivered"
+                  }
+                },
+                return_eligible: true,
+                return_time: {
+                  duration: "P7D"
+                },
+                return_location: {
+                  address: "RTO address",
+                  gps: "12.667555,77.349666"
+                },
+                fulfillment_managed_by: "seller"
+              },
               replacement_terms: [
                 {
                   replace_within: "P7D"
@@ -596,161 +751,240 @@ export const onSearchFashion = {
                   end: "2022-12-31T00:00:00.000Z"
                 }
               },
-              matched: "true",
-              recommended: "true",
+              matched: true,
+              recommended: true,
               tags: [
                 {
-                  code: "origin",
+                  descriptor: {
+                    code: "origin"
+                  },
                   list: [
                     {
-                      code: "country",
+                      descriptor: {
+                        code: "country"
+                      },
                       value: "IND"
                     }
                   ]
                 },
                 {
-                  code: "image",
+                  descriptor: {
+                    code: "image"
+                  },
                   list: [
                     {
-                      code: "type",
+                      descriptor: {
+                        code: "type"
+                      },
                       value: "back_image"
                     },
                     {
-                      code: "url",
+                      descriptor: {
+                        code: "url"
+                      },
                       value: "https://sellerNP.com/images/i1_back_image.png"
                     }
                   ]
                 },
                 {
+                  descriptor: null,
                   code: "attribute",
                   list: [
                     {
-                      code: "brand",
+                      descriptor: {
+                        code: "brand"
+                      },
                       value: "Allen Solly"
                     },
                     {
-                      code: "colour",
+                      descriptor: {
+                        code: "colour"
+                      },
                       value: "coral"
                     },
                     {
-                      code: "size",
+                      descriptor: {
+                        code: "size"
+                      },
                       value: "M"
                     },
                     {
-                      code: "gender",
+                      descriptor: {
+                        code: "gender"
+                      },
                       value: "male"
                     },
                     {
-                      code: "pattern",
+                      descriptor: {
+                        code: "pattern"
+                      },
                       value: "striped"
                     },
                     {
-                      code: "material",
+                      descriptor: {
+                        code: "material"
+                      },
                       value: "cotton"
                     },
                     {
-                      code: "occasion",
+                      descriptor: {
+                        code: "occasion"
+                      },
                       value: "casual"
                     },
                     {
-                      code: "season",
+                      descriptor: {
+                        code: "season"
+                      },
                       value: "summer"
                     },
                     {
-                      code: "trend",
+                      descriptor: {
+                        code: "trend"
+                      },
                       value: "tribal"
                     },
                     {
-                      code: "features",
+                      descriptor: {
+                        code: "features"
+                      },
                       value: "alpha"
                     },
                     {
-                      code: "material_finish",
+                      descriptor: {
+                        code: "material_finish"
+                      },
                       value: "embossed"
                     },
                     {
-                      code: "size_chart",
+                      descriptor: {
+                        code: "size_chart"
+                      },
                       value: "https://sellerNP.com/images/i1_size_chart.png"
                     }
                   ]
                 },
                 {
-                  code: "g2",
+                  descriptor: {
+                    code: "g2"
+                  },
                   list: [
                     {
-                      code: "time_to_ship",
+                      descriptor: {
+                        code: "time_to_ship"
+                      },
                       value: "P1D"
                     },
                     {
-                      code: "tax_rate",
+                      descriptor: {
+                        code: "tax_rate"
+                      },
                       value: "12"
+                    },
+                    {
+                      descriptor: {
+                        code: "cancellable"
+                      },
+                      value: "true"
                     }
                   ]
                 },
                 {
-                  code: "g3",
+                  descriptor: {
+                    code: "g3"
+                  },
                   list: [
                     {
-                      code: "brand",
-                      value: "Allen Solly"
+                      descriptor: {
+                        code: "brand"
+                      },
+                      value: "Dhara"
                     },
                     {
-                      code: "pack_size",
+                      descriptor: {
+                        code: "pack_size"
+                      },
                       value: "5"
                     },
                     {
-                      code: "num_price_slabs",
+                      descriptor: {
+                        code: "num_price_slabs"
+                      },
                       value: "3"
                     }
                   ]
                 },
                 {
-                  code: "price_slab",
+                  descriptor: {
+                    code: "price_slab"
+                  },
                   list: [
                     {
-                      code: "min_pack_size",
+                      descriptor: {
+                        code: "min_pack_size"
+                      },
                       value: "1"
                     },
                     {
-                      code: "max_pack_size",
+                      descriptor: {
+                        code: "max_pack_size"
+                      },
                       value: "4"
                     },
                     {
-                      code: "unit_sale_price",
+                      descriptor: {
+                        code: "unit_sale_price"
+                      },
                       value: "250"
                     }
                   ]
                 },
                 {
-                  code: "price_slab",
+                  descriptor: {
+                    code: "price_slab"
+                  },
                   list: [
                     {
-                      code: "min_pack_size",
+                      descriptor: {
+                        code: "min_pack_size"
+                      },
                       value: "5"
                     },
                     {
-                      code: "max_pack_size",
+                      descriptor: {
+                        code: "max_pack_size"
+                      },
                       value: "9"
                     },
                     {
-                      code: "unit_sale_price",
+                      descriptor: {
+                        code: "unit_sale_price"
+                      },
                       value: "200"
                     }
                   ]
                 },
                 {
-                  code: "price_slab",
+                  descriptor: {
+                    code: "price_slab"
+                  },
                   list: [
                     {
-                      code: "min_pack_size",
+                      descriptor: {
+                        code: "min_pack_size"
+                      },
                       value: "10"
                     },
                     {
-                      code: "max_pack_size",
+                      descriptor: {
+                        code: "max_pack_size"
+                      },
                       value: ""
                     },
                     {
-                      code: "unit_sale_price",
+                      descriptor: {
+                        code: "unit_sale_price"
+                      },
                       value: "175"
                     }
                   ]

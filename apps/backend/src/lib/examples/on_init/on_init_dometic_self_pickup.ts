@@ -1,4 +1,4 @@
-export const onInitExports = {
+export const onInitDomesticSelfPickup = {
   context: {
     domain: "ONDC:RET10",
     location: {
@@ -32,7 +32,7 @@ export const onInitExports = {
         {
           id: "I1",
           fulfillment_ids: [
-            "F1"
+            "F2"
           ],
           quantity: {
             selected: {
@@ -69,12 +69,12 @@ export const onInitExports = {
       ],
       billing: {
         name: "ONDC buyer",
-        address: "B005 aaspire heights, Jurong East, SGP, 680230",
+        address: "22, Mahatma Gandhi Rd, Craig Park Layout, Ashok Nagar, Bengaluru, Karnataka 560001",
         state: {
-          name: "Jurong East"
+          name: "Karnataka"
         },
         city: {
-          name: "Jurong East"
+          name: "Bengaluru"
         },
         tax_id: "XXXXXXXXXXXXXXX",
         email: "nobody@nomail.com",
@@ -82,53 +82,31 @@ export const onInitExports = {
       },
       fulfillments: [
         {
-          id: "F1",
-          type: "Delivery",
-          "@ondc/org/provider_name": "Loadshare",
-          "@ondc/org/category": "Express Delivery",
-          "@ondc/org/TAT": "P7D",
+          id: "F2",
+          type: "Self-Pickup",
+          "@ondc/org/category": "Self-Pickup",
+          "@ondc/org/TAT": "P3D",
           tracking: false,
           stops: [
             {
-              type: "end",
+              type: "start",
               location: {
-                gps: "1.3806217468119772, 103.74636438437074",
-                address: "My House #, My buildin",
+                gps: "12.967555,77.749666",
+                address: "Jayanagar 4th Block",
                 city: {
-                  name: "Jurong East"
+                  name: "Bengaluru"
                 },
                 country: {
-                  code: "SGP"
+                  code: "IND"
                 },
-                area_code: "680230",
+                area_code: "560076",
                 state: {
-                  name: ""
+                  name: "Karnataka"
                 }
               },
               contact: {
                 phone: "9886098860"
               }
-            }
-          ],
-          tags: [
-            {
-              descriptor: {
-                code: "DELIVERY_TERMS"
-              },
-              list: [
-                {
-                  descriptor: {
-                    code: "INCOTERMS"
-                  },
-                  value: "CIF"
-                },
-                {
-                  descriptor: {
-                    code: "NAMED_PLACE_OF_DELIVERY"
-                  },
-                  value: "SGP"
-                }
-              ]
             }
           ]
         }
@@ -158,12 +136,12 @@ export const onInitExports = {
             }
           },
           {
-            "@ondc/org/item_id": "F1",
+            "@ondc/org/item_id": "F2",
             title: "Delivery charges",
             "@ondc/org/title_type": "delivery",
             price: {
               currency: "INR",
-              value: "4000"
+              value: "0"
             }
           },
           {
@@ -194,12 +172,12 @@ export const onInitExports = {
             }
           },
           {
-            "@ondc/org/item_id": "F1",
+            "@ondc/org/item_id": "F2",
             title: "Convenience Fee",
             "@ondc/org/title_type": "misc",
             price: {
               currency: "INR",
-              value: "100"
+              value: "0"
             }
           }
         ],
@@ -207,7 +185,7 @@ export const onInitExports = {
       },
       payments: [
         {
-          type: "PRE-FULFILLMENT",
+          type: "ON-FULFILLMENT",
           collected_by: "BPP",
           "@ondc/org/buyer_app_finder_fee_type": "percent",
           "@ondc/org/buyer_app_finder_fee_amount": "0",
@@ -233,43 +211,43 @@ export const onInitExports = {
                 code: "buyer_id_no"
               },
               value: "xxxxxxxxxxxxxxx"
+            }
+          ]
+        },
+        {
+          descriptor: {
+            code: "bpp_terms"
+          },
+          list: [
+            {
+              descriptor: {
+                code: "max_liability"
+              },
+              value: "2"
             },
             {
               descriptor: {
-                code: "bpp_terms"
+                code: "max_liability_cap"
               },
-              list: [
-                {
-                  descriptor: {
-                    code: "max_liability"
-                  },
-                  value: "2"
-                },
-                {
-                  descriptor: {
-                    code: "max_liability_cap"
-                  },
-                  value: "10000"
-                },
-                {
-                  descriptor: {
-                    code: "mandatory_arbitration"
-                  },
-                  value: "false"
-                },
-                {
-                  descriptor: {
-                    code: "court_jurisdiction"
-                  },
-                  value: "Bengaluru"
-                },
-                {
-                  descriptor: {
-                    code: "delay_interest"
-                  },
-                  value: "1000"
-                }
-              ]
+              value: "10000"
+            },
+            {
+              descriptor: {
+                code: "mandatory_arbitration"
+              },
+              value: "false"
+            },
+            {
+              descriptor: {
+                code: "court_jurisdiction"
+              },
+              value: "Bengaluru"
+            },
+            {
+              descriptor: {
+                code: "delay_interest"
+              },
+              value: "1000"
             }
           ]
         }

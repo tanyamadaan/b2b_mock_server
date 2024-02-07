@@ -10,13 +10,13 @@ export const onInitDomestic = {
       }
     },
     action: "on_init",
-    version: "2.0.1",
+    version: "2.0.2",
     bap_id: "buyerapp.com",
     bap_uri: "https://buyerapp.com/grocery",
     bpp_id: "sellerapp.com",
     bpp_uri: "https://sellerapp.com/grocery",
-    transaction_id: "T1",
-    message_id: "M1",
+    transaction_id: "9568beb3-265a-4730-be4e-c00ba2e5e30a",
+    message_id: "582eb99f-a7c1-46ae-8174-936757d2d96f",
     timestamp: "2023-01-08T22:00:30.000Z",
     ttl: "PT30S"
   },
@@ -39,7 +39,7 @@ export const onInitDomestic = {
               count: 200
             }
           },
-          "add-ons": [
+          add_ons: [
             {
               id: "78787723"
             }
@@ -192,20 +192,7 @@ export const onInitDomestic = {
           "@ondc/org/buyer_app_finder_fee_amount": "0",
           "@ondc/org/settlement_basis": "delivery",
           "@ondc/org/settlement_window": "P1D",
-          "@ondc/org/withholding_amount": "10.00",
-          "@ondc/org/settlement_details": [
-            {
-              settlement_counterparty: "buyer-app",
-              settlement_phase: "sale-amount",
-              settlement_type: "upi",
-              beneficiary_name: "xxxxx",
-              upi_address: "gft@oksbi",
-              settlement_bank_account_no: "XXXXXXXXXX",
-              settlement_ifsc_code: "XXXXXXXXX",
-              bank_name: "xxxx",
-              branch_name: "xxxx"
-            }
-          ]
+          "@ondc/org/withholding_amount": "10.00"
         }
       ],
       tags: [
@@ -225,6 +212,43 @@ export const onInitDomestic = {
                 code: "buyer_id_no"
               },
               value: "xxxxxxxxxxxxxxx"
+            },
+            {
+              descriptor: {
+                code: "bpp_terms"
+              },
+              list: [
+                {
+                  descriptor: {
+                    code: "max_liability"
+                  },
+                  value: "2"
+                },
+                {
+                  descriptor: {
+                    code: "max_liability_cap"
+                  },
+                  value: "10000"
+                },
+                {
+                  descriptor: {
+                    code: "mandatory_arbitration"
+                  },
+                  value: "false"
+                },
+                {
+                  descriptor: {
+                    code: "court_jurisdiction"
+                  },
+                  value: "Bengaluru"
+                },
+                {
+                  descriptor: {
+                    code: "delay_interest"
+                  },
+                  value: "1000"
+                }
+              ]
             }
           ]
         }
