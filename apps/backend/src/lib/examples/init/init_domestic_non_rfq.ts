@@ -1,4 +1,4 @@
-export const initDomestic = {
+export const initDomesticNonRFQ = {
   context: {
     domain: "ONDC:RET10",
     location: {
@@ -15,8 +15,8 @@ export const initDomestic = {
     bap_uri: "https://buyerapp.com/grocery",
     bpp_id: "sellerapp.com",
     bpp_uri: "https://sellerapp.com/grocery",
-    transaction_id: "9568beb3-265a-4730-be4e-c00ba2e5e30a",
-    message_id: "582eb99f-a7c1-46ae-8174-936757d2d96f",
+    transaction_id: "T1",
+    message_id: "M1",
     timestamp: "2023-01-08T22:00:30.000Z",
     ttl: "PT30S"
   },
@@ -44,27 +44,6 @@ export const initDomestic = {
           add_ons: [
             {
               id: "78787723"
-            }
-          ],
-          tags: [
-            {
-              descriptor: {
-                code: "BUYER_TERMS"
-              },
-              list: [
-                {
-                  descriptor: {
-                    code: "ITEM_REQ"
-                  },
-                  value: "free text on Item Customization"
-                },
-                {
-                  descriptor: {
-                    code: "PACKAGING_REQ"
-                  },
-                  value: "free text on packaging Customization"
-                }
-              ]
             }
           ]
         }

@@ -1,4 +1,4 @@
-export const onConfirmDomestic = {
+export const onConfirmDomesticNonRFQ = {
   context: {
     domain: "ONDC:RET10",
     location: {
@@ -47,27 +47,6 @@ export const onConfirmDomestic = {
           add_ons: [
             {
               id: "78787723"
-            }
-          ],
-          tags: [
-            {
-              descriptor: {
-                code: "BUYER_TERMS"
-              },
-              list: [
-                {
-                  descriptor: {
-                    code: "ITEM_REQ"
-                  },
-                  value: "free text on Item Customization"
-                },
-                {
-                  descriptor: {
-                    code: "PACKAGING_REQ"
-                  },
-                  value: "free text on packaging Customization"
-                }
-              ]
             }
           ]
         }
@@ -224,7 +203,6 @@ export const onConfirmDomestic = {
             amount: "53600"
           },
           status: "NOT-PAID",
-          uri: "https://snp.com/pg",
           type: "PRE-FULFILLMENT",
           collected_by: "BPP",
           "@ondc/org/buyer_app_finder_fee_type": "percent",
@@ -243,33 +221,6 @@ export const onConfirmDomestic = {
               settlement_ifsc_code: "XXXXXXXXX",
               bank_name: "xxxx",
               branch_name: "xxxx"
-            }
-          ],
-          tags: [
-            {
-              descriptor: {
-                code: "BPP_payment"
-              },
-              list: [
-                {
-                  descriptor: {
-                    code: "signature"
-                  },
-                  value: "xxxxxxxxxxxxxx"
-                },
-                {
-                  descriptor: {
-                    code: "dsa"
-                  },
-                  value: "ED25519"
-                },
-                {
-                  descriptor: {
-                    code: "ttl"
-                  },
-                  value: "PT30M"
-                }
-              ]
             }
           ]
         }

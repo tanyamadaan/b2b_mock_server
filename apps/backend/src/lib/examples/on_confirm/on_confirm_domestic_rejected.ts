@@ -1,4 +1,4 @@
-export const onConfirmDomestic = {
+export const onConfirmRejected = {
   context: {
     domain: "ONDC:RET10",
     location: {
@@ -23,7 +23,7 @@ export const onConfirmDomestic = {
   message: {
     order: {
       id: "O1",
-      state: "Accepted",
+      state: "Cancelled",
       provider: {
         id: "P1",
         locations: [
@@ -105,16 +105,6 @@ export const onConfirmDomestic = {
                   name: "ABC Store"
                 },
                 gps: "12.956399,77.636803"
-              },
-              time: {
-                range: {
-                  start: "2023-02-03T10:00:00.000Z",
-                  end: "2023-02-03T10:30:00.000Z"
-                }
-              },
-              instructions: {
-                name: "Status for pickup",
-                short_desc: "Pickup Confirmation Code"
               },
               contact: {
                 phone: "9886098860",
@@ -348,5 +338,10 @@ export const onConfirmDomestic = {
       created_at: "2023-02-03T09:30:00.000Z",
       updated_at: "2023-02-03T09:31:30.000Z"
     }
+  },
+  error: {
+    type: "DOMAIN-ERROR",
+    code: "30019",
+    message: "PO rejected due to xx reason"
   }
 }

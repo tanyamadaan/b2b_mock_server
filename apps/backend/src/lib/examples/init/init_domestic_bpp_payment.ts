@@ -1,4 +1,4 @@
-export const initDomestic = {
+export const initDomesticBPPPayment = {
   context: {
     domain: "ONDC:RET10",
     location: {
@@ -112,7 +112,7 @@ export const initDomestic = {
       ],
       payments: [
         {
-          type: "ON-FULFILLMENT",
+          type: "PRE-FULFILLMENT",
           collected_by: "BPP"
         }
       ],

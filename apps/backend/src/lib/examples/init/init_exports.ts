@@ -10,13 +10,13 @@ export const initExports = {
       }
     },
     action: "init",
-    version: "2.0.1",
+    version: "2.0.2",
     bap_id: "buyerapp.com",
     bap_uri: "https://buyerapp.com/grocery",
     bpp_id: "sellerapp.com",
     bpp_uri: "https://sellerapp.com/grocery",
-    transaction_id: "T1",
-    message_id: "M1",
+    transaction_id: "9568beb3-265a-4730-be4e-c00ba2e5e30a",
+    message_id: "582eb99f-a7c1-46ae-8174-936757d2d96f",
     timestamp: "2023-01-08T22:00:30.000Z",
     ttl: "PT30S"
   },
@@ -41,7 +41,7 @@ export const initExports = {
               count: 200
             }
           },
-          "add-ons": [
+          add_ons: [
             {
               id: "78787723"
             }
