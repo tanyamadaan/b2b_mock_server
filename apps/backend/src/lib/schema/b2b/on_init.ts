@@ -140,7 +140,7 @@ export const onInitSchema = {
 										},
 										required: ["selected"],
 									},
-									"add-ons": {
+									add_ons: {
 										type: "array",
 										items: {
 											type: "object",

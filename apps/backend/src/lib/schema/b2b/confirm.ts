@@ -147,7 +147,7 @@ export const confirmSchema = {
 										},
 										required: ["selected"],
 									},
-									"add-ons": {
+									add_ons: {
 										type: "array",
 										items: {
 											type: "object",

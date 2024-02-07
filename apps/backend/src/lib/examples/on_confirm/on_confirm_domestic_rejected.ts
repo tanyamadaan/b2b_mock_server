@@ -280,7 +280,7 @@ export const onConfirmRejected = {
               descriptor: {
                 code: "buyer_id_no"
               },
-              value: "xxxxxxxxxxxxxxx"
+              value: "12345678"
             }
           ]
         },

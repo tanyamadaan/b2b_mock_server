@@ -1,4 +1,4 @@
-export const onSelectExports = {
+export const onSelectDomesticNonRFQ = {
   context: {
     domain: "ONDC:RET10",
     location: {
@@ -15,8 +15,8 @@ export const onSelectExports = {
     bap_uri: "https://buyerapp.com/grocery",
     bpp_id: "sellerapp.com",
     bpp_uri: "https://sellerapp.com/grocery",
-    transaction_id: "9568beb3-265a-4730-be4e-c00ba2e5e30a",
-    message_id: "4e90afaf-2d02-4ed9-9659-45d702a82f8e",
+    transaction_id: "T1",
+    message_id: "M1",
     timestamp: "2023-01-08T22:00:30.000Z",
     ttl: "PT30S"
   },
@@ -45,27 +45,6 @@ export const onSelectExports = {
             {
               id: "78787723"
             }
-          ],
-          tags: [
-            {
-              descriptor: {
-                code: "BUYER_TERMS"
-              },
-              list: [
-                {
-                  descriptor: {
-                    code: "ITEM_REQ"
-                  },
-                  value: "free text on Item Customization"
-                },
-                {
-                  descriptor: {
-                    code: "PACKAGING_REQ"
-                  },
-                  value: "free text on packaging Customization"
-                }
-              ]
-            }
           ]
         }
       ],
@@ -80,28 +59,7 @@ export const onSelectExports = {
             descriptor: {
               code: "Serviceable"
             }
-          },
-          tags: [
-            {
-              descriptor: {
-                code: "DELIVERY_TERMS"
-              },
-              list: [
-                {
-                  descriptor: {
-                    code: "INCOTERMS"
-                  },
-                  value: "CIF"
-                },
-                {
-                  descriptor: {
-                    code: "NAMED_PLACE_OF_DELIVERY"
-                  },
-                  value: "SGP"
-                }
-              ]
-            }
-          ]
+          }
         }
       ],
       quote: {
@@ -165,7 +123,7 @@ export const onSelectExports = {
             }
           },
           {
-            "@ondc/org/item_id": "F1",
+            "d": "F1",
             title: "Convenience Fee",
             "@ondc/org/title_type": "misc",
             price: {

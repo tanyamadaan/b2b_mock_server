@@ -3,27 +3,25 @@ export const searchByCategory = {
     domain: "ONDC:RET10",
     location: {
       city: {
-        code: "std:080",
+        code: "std:080"
       },
       country: {
-        code: "IND",
-      },
+        code: "IND"
+      }
     },
     action: "search",
-    version: "2.0.1",
+    version: "2.0.2",
     bap_id: "buyerapp.com",
     bap_uri: "https://buyerapp.com/grocery",
-    transaction_id: "T1",
-    message_id: "M1",
+    transaction_id: "9568beb3-265a-4730-be4e-c00ba2e5e30a",
+    message_id: "86fb6231-ea67-42d1-b1ef-e43f1719a44f",
     timestamp: "2023-01-08T22:00:00.000Z",
-    ttl: "PT30S",
+    ttl: "PT30S"
   },
   message: {
     intent: {
-      item: {
-        category: {
-          id: "RET10-*",
-        },
+      category: {
+        id: "RET10-*"
       },
       fulfillment: {
         type: "Delivery",
@@ -32,68 +30,68 @@ export const searchByCategory = {
             type: "end",
             location: {
               gps: "12.974002,77.613458",
-              area_code: "560001",
-            },
+              area_code: "560001"
+            }
           },
           {
             type: "end",
             location: {
               gps: "12.944002,77.603458",
-              area_code: "560004",
-            },
+              area_code: "560004"
+            }
           },
           {
             type: "end",
             location: {
               gps: "12.904002,77.593458",
-              area_code: "560076",
-            },
-          },
-        ],
+              area_code: "560076"
+            }
+          }
+        ]
       },
       payment: {
-        type: "ON-FULFILLMENT",
+        type: "ON-FULFILLMENT"
       },
       tags: [
         {
           descriptor: {
-            code: "bap_terms",
+            code: "bap_terms"
           },
           list: [
             {
               descriptor: {
-                code: "finder_fee_type",
+                code: "finder_fee_type"
               },
-              value: "percent",
+              value: "percent"
             },
             {
               descriptor: {
-                code: "finder_fee_amount",
+                code: "finder_fee_amount"
               },
-              value: "10",
-            },
-          ],
+              value: "10"
+            }
+          ]
         },
         {
           descriptor: {
-            code: "buyer_id",
+            code: "buyer_id"
           },
           list: [
             {
               descriptor: {
-                code: "buyer_id_code",
+                code: "buyer_id_code"
               },
-              value: "gst",
+              value: "gst"
             },
             {
               descriptor: {
-                code: "buyer_id_no",
+                code: "buyer_id_no"
               },
-              value: "xxxxxxxxxxxxxxx",
-            },
-          ],
-        },
-      ],
-    },
-  },
-};
+              value: "12345678"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

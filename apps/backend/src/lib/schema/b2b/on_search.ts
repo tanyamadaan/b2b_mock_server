@@ -605,7 +605,7 @@ export const onSearchSchema = {
 														type: "string",
 													},
 												},
-												"add-ons": {
+												add_ons: {
 													type: "array",
 													items: {
 														type: "object",

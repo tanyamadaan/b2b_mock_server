@@ -1,4 +1,4 @@
-export const onSelectExports = {
+export const onSelectDomesticSelfPickup = {
   context: {
     domain: "ONDC:RET10",
     location: {
@@ -33,7 +33,7 @@ export const onSelectExports = {
       items: [
         {
           fulfillment_ids: [
-            "F1"
+            "F2"
           ],
           id: "I1",
           quantity: {
@@ -71,37 +71,15 @@ export const onSelectExports = {
       ],
       fulfillments: [
         {
-          id: "F1",
-          "@ondc/org/provider_name": "Loadshare",
+          id: "F2",
           tracking: false,
-          "@ondc/org/category": "Express Delivery",
-          "@ondc/org/TAT": "P7D",
+          "@ondc/org/category": "Self-Pickup",
+          "@ondc/org/TAT": "P3D",
           state: {
             descriptor: {
               code: "Serviceable"
             }
-          },
-          tags: [
-            {
-              descriptor: {
-                code: "DELIVERY_TERMS"
-              },
-              list: [
-                {
-                  descriptor: {
-                    code: "INCOTERMS"
-                  },
-                  value: "CIF"
-                },
-                {
-                  descriptor: {
-                    code: "NAMED_PLACE_OF_DELIVERY"
-                  },
-                  value: "SGP"
-                }
-              ]
-            }
-          ]
+          }
         }
       ],
       quote: {
@@ -126,15 +104,6 @@ export const onSelectExports = {
                 currency: "INR",
                 value: "250"
               }
-            }
-          },
-          {
-            "@ondc/org/item_id": "F1",
-            title: "Delivery charges",
-            "@ondc/org/title_type": "delivery",
-            price: {
-              currency: "INR",
-              value: "4000"
             }
           },
           {

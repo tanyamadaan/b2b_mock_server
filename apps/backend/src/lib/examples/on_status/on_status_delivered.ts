@@ -10,13 +10,13 @@ export const onStatusDelivered = {
       }
     },
     action: "on_status",
-    version: "2.0.1",
+    version: "2.0.2",
     bap_id: "buyerapp.com",
     bap_uri: "https://buyerapp.com/grocery",
     bpp_id: "sellerapp.com",
     bpp_uri: "https://sellerapp.com/grocery",
-    transaction_id: "T1",
-    message_id: "M1",
+    transaction_id: "9568beb3-265a-4730-be4e-c00ba2e5e30a",
+    message_id: "2052ef5e-2ec7-4c21-96f7-dec4b2309010",
     timestamp: "2023-01-08T22:00:30.000Z",
     ttl: "PT30S"
   },
@@ -233,6 +233,9 @@ export const onStatusDelivered = {
           collected_by: "BAP",
           "@ondc/org/buyer_app_finder_fee_type": "percent",
           "@ondc/org/buyer_app_finder_fee_amount": "3",
+          "@ondc/org/settlement_basis": "delivery",
+          "@ondc/org/settlement_window": "P1D",
+          "@ondc/org/withholding_amount": "10.00",
           "@ondc/org/settlement_details": [
             {
               settlement_counterparty: "seller-app",

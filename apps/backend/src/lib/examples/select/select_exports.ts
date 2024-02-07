@@ -10,15 +10,15 @@ export const selectExports = {
       }
     },
     action: "select",
-    version: "2.0.1",
+    version: "2.0.2",
     bap_id: "buyerapp.com",
     bap_uri: "https://buyerapp.com/grocery",
     bpp_id: "sellerapp.com",
     bpp_uri: "https://sellerapp.com/grocery",
-    transaction_id: "T1",
-    message_id: "M1",
+    transaction_id: "9568beb3-265a-4730-be4e-c00ba2e5e30a",
+    message_id: "4e90afaf-2d02-4ed9-9659-45d702a82f8e",
     timestamp: "2023-01-08T22:00:30.000Z",
-    ttl: "PT1D"
+    ttl: "P1D"
   },
   message: {
     order: {
@@ -45,7 +45,7 @@ export const selectExports = {
               count: 200
             }
           },
-          "add-ons": [
+          add_ons: [
             {
               id: "78787723"
             }
@@ -155,7 +155,7 @@ export const selectExports = {
               descriptor: {
                 code: "buyer_id_no"
               },
-              value: "xxxxxxxxxxxxxxx"
+              value: "12345678"
             }
           ]
         }

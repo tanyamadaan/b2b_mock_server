@@ -1,4 +1,4 @@
-export const onStatusOutForDelivery = {
+export const onStatusBPPPayment = {
   context: {
     domain: "ONDC:RET10",
     location: {
@@ -22,8 +22,6 @@ export const onStatusOutForDelivery = {
   },
   message: {
     order: {
-      id: "O1",
-      state: "In-progress",
       provider: {
         id: "P1",
         locations: [
@@ -43,107 +41,6 @@ export const onStatusOutForDelivery = {
               count: 200
             }
           }
-        }
-      ],
-      billing: {
-        name: "ONDC buyer",
-        address: "B005 aaspire heights, Jurong East, SGP, 680230",
-        state: {
-          name: "Jurong East"
-        },
-        city: {
-          name: "Jurong East"
-        },
-        email: "nobody@nomail.com",
-        phone: "9886098860"
-      },
-      fulfillments: [
-        {
-          id: "F1",
-          "@ondc/org/provider_name": "Loadshare",
-          type: "Delivery",
-          tracking: false,
-          state: {
-            descriptor: {
-              code: "Out-for-delivery"
-            }
-          },
-          stops: [
-            {
-              type: "start",
-              location: {
-                id: "L1",
-                descriptor: {
-                  name: "ABC Store",
-                  images: [
-                    "https://gf-integration/images/5.png"
-                  ]
-                },
-                gps: "12.956399,77.636803"
-              },
-              time: {
-                range: {
-                  start: "2023-02-03T10:00:00.000Z",
-                  end: "2023-02-03T10:30:00.000Z"
-                },
-                timestamp: "2023-02-03T10:25:00.000Z"
-              },
-              instructions: {
-                name: "Proof of pickup",
-                short_desc: "Proof of pickup details",
-                long_desc: "Proof of pickup details",
-                images: [
-                  "https://image1_url.png"
-                ]
-              },
-              contact: {
-                phone: "9886098860",
-                email: "nobody@nomail.com"
-              }
-            },
-            {
-              type: "end",
-              location: {
-                gps: "1.3806217468119772, 103.74636438437074",
-                address: "My House #, My buildin",
-                city: {
-                  name: "Jurong East"
-                },
-                country: {
-                  code: "SGP"
-                },
-                area_code: "680230",
-                state: {
-                  name: ""
-                }
-              },
-              time: {
-                range: {
-                  start: "2023-02-03T11:00:00.000Z",
-                  end: "2023-02-03T11:30:00.000Z"
-                }
-              },
-              instructions: {
-                name: "Proof of delivery",
-                short_desc: "Proof of delivery details",
-                long_desc: "Proof of delivery details",
-                images: [
-                  "https://image1_url.png"
-                ]
-              },
-              contact: {
-                phone: "9886098860"
-              },
-              agent: {
-                person: {
-                  name: "Ramu"
-                },
-                contact: {
-                  phone: "9886098860"
-                }
-              }
-            }
-          ]
         }
       ],
       quote: {
@@ -237,12 +134,9 @@ export const onStatusOutForDelivery = {
           "@ondc/org/withholding_amount": "10.00",
           "@ondc/org/settlement_details": [
             {
-              settlement_counterparty: "seller-app",
-              settlement_phase: "sale-amount",
+              settlement_counterparty: "buyer-app",
+              settlement_phase: "finder-fee",
               beneficiary_name: "xxxxx",
-              settlement_reference: "XXXX",
-              settlement_status: "PAID",
-              settlement_timestamp: "2023-02-04T10:00:00.000Z",
               settlement_type: "upi",
               upi_address: "gft@oksbi",
               settlement_bank_account_no: "XXXXXXXXXX",

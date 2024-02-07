@@ -236,7 +236,7 @@ export const confirmNonRFQ = {
               descriptor: {
                 code: "buyer_id_no"
               },
-              value: "xxxxxxxxxxxxxxx"
+              value: "12345678"
             }
           ]
         },

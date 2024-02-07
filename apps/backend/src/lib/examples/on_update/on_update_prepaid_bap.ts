@@ -1,4 +1,4 @@
-export const onUpdatePrepaid = {
+export const onUpdatePrepaidBAP = {
   context: {
     domain: "ONDC:RET10",
     location: {
@@ -48,7 +48,7 @@ export const onUpdatePrepaid = {
           },
           status: "PAID",
           type: "PRE-FULFILLMENT",
-          collected_by: "BPP",
+          collected_by: "BAP",
           "@ondc/org/buyer_app_finder_fee_type": "percent",
           "@ondc/org/buyer_app_finder_fee_amount": "0",
           "@ondc/org/settlement_basis": "delivery",
@@ -56,7 +56,7 @@ export const onUpdatePrepaid = {
           "@ondc/org/withholding_amount": "10.00",
           "@ondc/org/settlement_details": [
             {
-              settlement_counterparty: "buyer-app",
+              settlement_counterparty: "seller-app",
               settlement_phase: "finder-fee",
               settlement_type: "upi",
               upi_address: "gft@oksbi",

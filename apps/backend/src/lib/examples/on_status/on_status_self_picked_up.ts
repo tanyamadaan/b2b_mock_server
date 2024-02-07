@@ -1,4 +1,4 @@
-export const onInitDomesticPaymentBPPNonRFQ = {
+export const onStatusSelfPickedUp = {
   context: {
     domain: "ONDC:RET10",
     location: {
@@ -9,24 +9,28 @@ export const onInitDomesticPaymentBPPNonRFQ = {
         code: "IND"
       }
     },
-    action: "on_init",
+    action: "on_status",
     version: "2.0.2",
     bap_id: "buyerapp.com",
     bap_uri: "https://buyerapp.com/grocery",
     bpp_id: "sellerapp.com",
     bpp_uri: "https://sellerapp.com/grocery",
     transaction_id: "9568beb3-265a-4730-be4e-c00ba2e5e30a",
-    message_id: "582eb99f-a7c1-46ae-8174-936757d2d96f",
+    message_id: "2052ef5e-2ec7-4c21-96f7-dec4b2309010",
     timestamp: "2023-01-08T22:00:30.000Z",
     ttl: "PT30S"
   },
   message: {
     order: {
+      id: "O1",
+      state: "Completed",
       provider: {
-        id: "P1"
-      },
-      provider_location: {
-        id: "L1"
+        id: "P1",
+        locations: [
+          {
+            id: "L1"
+          }
+        ]
       },
       items: [
         {
@@ -38,54 +42,62 @@ export const onInitDomesticPaymentBPPNonRFQ = {
             selected: {
               count: 200
             }
-          },
-          add_ons: [
-            {
-              id: "78787723"
-            }
-          ]
+          }
         }
       ],
       billing: {
         name: "ONDC buyer",
-        address: "22, Mahatma Gandhi Rd, Craig Park Layout, Ashok Nagar, Bengaluru, Karnataka 560001",
+        address: "B005 aaspire heights, Jurong East, SGP, 680230",
         state: {
-          name: "Karnataka"
+          name: "Jurong East"
         },
         city: {
-          name: "Bengaluru"
+          name: "Jurong East"
         },
-        tax_id: "XXXXXXXXXXXXXXX",
         email: "nobody@nomail.com",
         phone: "9886098860"
       },
       fulfillments: [
         {
-          id: "F1",
-          type: "Delivery",
-          "@ondc/org/provider_name": "Loadshare",
-          "@ondc/org/category": "Express Delivery",
-          "@ondc/org/TAT": "P7D",
+          id: "F2",
+          type: "Self-Pickup",
           tracking: false,
+          state: {
+            descriptor: {
+              code: "Order-picked-up"
+            }
+          },
           stops: [
             {
-              type: "end",
+              type: "start",
               location: {
-                gps: "12.974002,77.613458",
-                address: "My House #, My buildin",
-                city: {
-                  name: "Bengaluru"
+                id: "L1",
+                descriptor: {
+                  name: "ABC Store",
+                  images: [
+                    "https://gf-integration/images/5.png"
+                  ]
                 },
-                country: {
-                  code: "IND"
+                gps: "12.956399,77.636803"
+              },
+              time: {
+                range: {
+                  start: "2023-02-03T10:00:00.000Z",
+                  end: "2023-02-03T10:30:00.000Z"
                 },
-                area_code: "560001",
-                state: {
-                  name: "Karnataka"
-                }
+                timestamp: "2023-02-03T10:25:00.000Z"
+              },
+              instructions: {
+                name: "Proof of pickup",
+                short_desc: "Proof of pickup details",
+                long_desc: "Proof of pickup details",
+                images: [
+                  "https://image1_url.png"
+                ]
               },
               contact: {
-                phone: "9886098860"
+                phone: "9886098860",
+                email: "nobody@nomail.com"
               }
             }
           ]
@@ -165,101 +177,41 @@ export const onInitDomesticPaymentBPPNonRFQ = {
       },
       payments: [
         {
+          uri: "https://ondc.transaction.com/payment",
+          tl_method: "http/get",
+          params: {
+            currency: "INR",
+            transaction_id: "3937",
+            amount: "53600"
+          },
+          status: "PAID",
           type: "PRE-FULFILLMENT",
           collected_by: "BPP",
-          uri: "https://snp.com/pg",
           "@ondc/org/buyer_app_finder_fee_type": "percent",
-          "@ondc/org/buyer_app_finder_fee_amount": "0",
+          "@ondc/org/buyer_app_finder_fee_amount": "3",
           "@ondc/org/settlement_basis": "delivery",
           "@ondc/org/settlement_window": "P1D",
           "@ondc/org/withholding_amount": "10.00",
-          tags: [
+          "@ondc/org/settlement_details": [
             {
-              descriptor: {
-                code: "BPP_payment"
-              },
-              list: [
-                {
-                  descriptor: {
-                    code: "signature"
-                  },
-                  value: "xxxxxxxxxxxxxx"
-                },
-                {
-                  descriptor: {
-                    code: "dsa"
-                  },
-                  value: "ED25519"
-                },
-                {
-                  descriptor: {
-                    code: "ttl"
-                  },
-                  value: "PT30M"
-                }
-              ]
+              settlement_counterparty: "seller-app",
+              settlement_phase: "sale-amount",
+              beneficiary_name: "xxxxx",
+              settlement_reference: "XXXX",
+              settlement_status: "PAID",
+              settlement_timestamp: "2023-02-04T10:00:00.000Z",
+              settlement_type: "upi",
+              upi_address: "gft@oksbi",
+              settlement_bank_account_no: "XXXXXXXXXX",
+              settlement_ifsc_code: "XXXXXXXXX",
+              bank_name: "xxxx",
+              branch_name: "xxxx"
             }
           ]
         }
       ],
-      tags: [
-        {
-          descriptor: {
-            code: "buyer_id"
-          },
-          list: [
-            {
-              descriptor: {
-                code: "buyer_id_code"
-              },
-              value: "gst"
-            },
-            {
-              descriptor: {
-                code: "buyer_id_no"
-              },
-              value: "12345678"
-            }
-          ]
-        },
-        {
-          descriptor: {
-            code: "bpp_terms"
-          },
-          list: [
-            {
-              descriptor: {
-                code: "max_liability"
-              },
-              value: "2"
-            },
-            {
-              descriptor: {
-                code: "max_liability_cap"
-              },
-              value: "10000"
-            },
-            {
-              descriptor: {
-                code: "mandatory_arbitration"
-              },
-              value: "false"
-            },
-            {
-              descriptor: {
-                code: "court_jurisdiction"
-              },
-              value: "Bengaluru"
-            },
-            {
-              descriptor: {
-                code: "delay_interest"
-              },
-              value: "1000"
-            }
-          ]
-        }
-      ]
+      created_at: "2023-02-03T09:30:00.000Z",
+      updated_at: "2023-02-03T10:00:00.201Z"
     }
   }
 }

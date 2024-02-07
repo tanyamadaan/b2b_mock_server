@@ -10,13 +10,13 @@ export const onUpdateFulfillments = {
       }
     },
     action: "on_update",
-    version: "2.0.1",
+    version: "2.0.2",
     bap_id: "buyerapp.com",
     bap_uri: "https://buyerapp.com/grocery",
     bpp_id: "sellerapp.com",
     bpp_uri: "https://sellerapp.com/grocery",
-    transaction_id: "T1",
-    message_id: "M1",
+    transaction_id: "9568beb3-265a-4730-be4e-c00ba2e5e30a",
+    message_id: "21d9d8b4-723b-44b4-a205-16626cbbfe4f",
     timestamp: "2023-01-08T22:00:30.000Z",
     ttl: "PT30S"
   },
