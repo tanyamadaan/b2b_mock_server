@@ -8,6 +8,23 @@ export const authValidatorMiddleware = async (
 	next: NextFunction
 ) => {
 	try {
+		const mode = req.query.mode as string;
+		console.log("MODE", mode, ["sandbox", "mock"].includes(mode));
+		if (!mode || !["sandbox", "mock"].includes(mode))
+			return res.status(400).json({
+				message: {
+					ack: {
+						status: "NACK",
+					},
+				},
+				error: {
+					message: "Mode Not specified or Invalid",
+				},
+			});
+
+		res.setHeader("mode", mode);
+
+		if (mode === "mock") next(); //skipping auth header validation in "mock" mode
 
 		const auth_header = req.headers["authorization"] || "";
 		// console.log(req.body?.context?.transaction_id, "headers", auth_header);

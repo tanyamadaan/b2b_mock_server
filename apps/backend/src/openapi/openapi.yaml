@@ -26,7 +26,7 @@ tags:
   - name: Auth
     description: Endpoints for Authentication
 paths:
-  /api/auth/signCheck:
+  /auth/signCheck:
     post:
       tags:
         - Auth
@@ -53,8 +53,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/auth_check_response'
            
-  /api/b2b/bpp/search:
+  /b2b/bpp/search:
     post:
+      parameters:
+        - in: query
+          name: mode
+          required: true
+          schema:
+            type: string
+            enum:
+              - sandbox
+              - mock
+          description: The Mode the Server needs to run the request in
       tags:
         - B2B
       summary: Mock search request to BPP
@@ -71,8 +81,18 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /api/b2b/bpp/select:
+  /b2b/bpp/select:
     post:
+      parameters:
+        - in: query
+          name: mode
+          required: true
+          schema:
+            type: string
+            enum:
+              - sandbox
+              - mock
+          description: The Mode the Server needs to run the request in    
       tags:
         - B2B
       summary: Mock select request to BPP
@@ -89,8 +109,18 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /api/b2b/bpp/init:
+  /b2b/bpp/init:
     post:
+      parameters:
+        - in: query
+          name: mode
+          required: true
+          schema:
+            type: string
+            enum:
+              - sandbox
+              - mock
+          description: The Mode the Server needs to run the request in
       tags:
         - B2B
       summary: Mock init request to BPP
@@ -107,8 +137,18 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /api/b2b/bpp/confirm:
+  /b2b/bpp/confirm:
     post:
+      parameters:
+        - in: query
+          name: mode
+          required: true
+          schema:
+            type: string
+            enum:
+              - sandbox
+              - mock
+          description: The Mode the Server needs to run the request in
       tags:
         - B2B
       summary: Mock confirm request to BPP
@@ -125,8 +165,18 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /api/b2b/bpp/update-fulfillment:
+  /b2b/bpp/update-fulfillment:
     post:
+      parameters:
+        - in: query
+          name: mode
+          required: true
+          schema:
+            type: string
+            enum:
+              - sandbox
+              - mock
+          description: The Mode the Server needs to run the request in
       tags:
         - B2B
       summary: Mock update fulfillment request to BPP
@@ -143,8 +193,18 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /api/b2b/bpp/update-prepaid:
+  /b2b/bpp/update-prepaid:
     post:
+      parameters:
+        - in: query
+          name: mode
+          required: true
+          schema:
+            type: string
+            enum:
+              - sandbox
+              - mock
+          description: The Mode the Server needs to run the request in
       tags:
         - B2B
       summary: Mock update prepaid request to BPPs
@@ -161,8 +221,18 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /api/b2b/bpp/status-delivered:
+  /b2b/bpp/status-delivered:
     post:
+      parameters:
+        - in: query
+          name: mode
+          required: true
+          schema:
+            type: string
+            enum:
+              - sandbox
+              - mock
+          description: The Mode the Server needs to run the request in
       tags:
         - B2B
       summary: Mock status delivered request to BPP
@@ -179,8 +249,18 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /api/b2b/bpp/status-out-for-delivery:
+  /b2b/bpp/status-out-for-delivery:
     post:
+      parameters:
+        - in: query
+          name: mode
+          required: true
+          schema:
+            type: string
+            enum:
+              - sandbox
+              - mock
+          description: The Mode the Server needs to run the request in
       tags:
         - B2B
       summary: Mock status out for delivery request to BPP
@@ -197,8 +277,18 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /api/b2b/bpp/status-picked-up:
+  /b2b/bpp/status-picked-up:
     post:
+      parameters:
+        - in: query
+          name: mode
+          required: true
+          schema:
+            type: string
+            enum:
+              - sandbox
+              - mock
+          description: The Mode the Server needs to run the request in
       tags:
         - B2B
       summary: Mock status picked up request to BPP
@@ -215,8 +305,18 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /api/b2b/bpp/status-proforma-invoice:
+  /b2b/bpp/status-proforma-invoice:
     post:
+      parameters:
+        - in: query
+          name: mode
+          required: true
+          schema:
+            type: string
+            enum:
+              - sandbox
+              - mock
+          description: The Mode the Server needs to run the request in
       tags:
         - B2B
       summary: Mock status proforma invoice request to BPP
@@ -233,8 +333,18 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /api/b2b/bap/onSearch:
+  /b2b/bap/onSearch:
     post:
+      parameters:
+        - in: query
+          name: mode
+          required: true
+          schema:
+            type: string
+            enum:
+              - sandbox
+              - mock
+          description: The Mode the Server needs to run the request in
       tags:
         - B2B
       summary: Mock on search request to BAP
@@ -251,8 +361,18 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /api/b2b/bap/onInit:
+  /b2b/bap/onInit:
     post:
+      parameters:
+        - in: query
+          name: mode
+          required: true
+          schema:
+            type: string
+            enum:
+              - sandbox
+              - mock
+          description: The Mode the Server needs to run the request in
       tags:
         - B2B
       summary: Mock on init request to BAP
@@ -269,8 +389,18 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /api/b2b/bap/onSelect:
+  /b2b/bap/onSelect:
     post:
+      parameters:
+        - in: query
+          name: mode
+          required: true
+          schema:
+            type: string
+            enum:
+              - sandbox
+              - mock
+          description: The Mode the Server needs to run the request in
       tags:
         - B2B
       summary: Mock on select request to BAP
@@ -287,8 +417,18 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /api/b2b/bap/onConfirm:
+  /b2b/bap/onConfirm:
     post:
+      parameters:
+        - in: query
+          name: mode
+          required: true
+          schema:
+            type: string
+            enum:
+              - sandbox
+              - mock
+          description: The Mode the Server needs to run the request in
       tags:
         - B2B
       summary: Mock on confirm request to BAP
@@ -305,8 +445,18 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /api/b2b/bap/onUpdate:
+  /b2b/bap/onUpdate:
     post:
+      parameters:
+        - in: query
+          name: mode
+          required: true
+          schema:
+            type: string
+            enum:
+              - sandbox
+              - mock
+          description: The Mode the Server needs to run the request in
       tags:
         - B2B
       summary: Mock on update request to BAP
@@ -323,8 +473,18 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /api/b2b/bap/onStatus:
+  /b2b/bap/onStatus:
     post:
+      parameters:
+        - in: query
+          name: mode
+          required: true
+          schema:
+            type: string
+            enum:
+              - sandbox
+              - mock
+          description: The Mode the Server needs to run the request in
       tags:
         - B2B
       summary: Mock on status request to BAP

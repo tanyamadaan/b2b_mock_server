@@ -14,9 +14,9 @@ export const responseBuilder = async (
 ) => {
 	var ts = new Date((reqContext as any).timestamp);
 	ts.setSeconds(ts.getSeconds() + 1);
-	const sandboxMode = process.env.SANDBOX_MODE;
+	const sandboxMode = res.getHeader("mode") === "sandbox";
 	// console.log("SANDBOX>", sandboxMode);
-	var async: { message: object; context?: object } = { message };
+	var async: { message: object; context?: object } = { context: {}, message };
 
 	if (!action.startsWith("on_")) {
 		const { bap_uri, bap_id, ...context } = reqContext as any;
@@ -40,6 +40,7 @@ export const responseBuilder = async (
 				bap_uri: MOCKSERVER_URL,
 				timeStamp: ts.toISOString(),
 				message_id: uuidv4(),
+				action
 			},
 		};
 	}
@@ -54,7 +55,7 @@ export const responseBuilder = async (
 			});
 			
 		} catch (error) {
-			console.log("ERROR Occured", error);
+			console.log("ERROR Occured", (error as any).message);
 			return res.json({
 				message: {
 					ack: {

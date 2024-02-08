@@ -22,7 +22,7 @@ If you wish to use Docker to run the mock server, then follow just step 2 of the
 The Environment Variables will help run the server in Sandbox mode and/or Rate Limiting Mode. The variables with their significance are listed below:
 | **ENV Variable** | **Function** |
 | - | - |
-| SANDBOX_MODE | If present then Server is run in Sandbox mode. |
+| PORT | Port to run the server on. |
 | RATE_LIMIT_MODE | If present then Server limits the request rate from _mocker_ in a 24 hour period. |
 | RATE_LIMIT_24HR | The number of request permitted per mocker. Required if RATE_LIMIT_MODE is enabled. |
 | PRIVATE_KEY | The Private key the mock server uses for signing auth header on response |
