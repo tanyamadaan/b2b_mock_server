@@ -1,5 +1,4 @@
 import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import Grow from "@mui/material/Grow";
@@ -11,14 +10,14 @@ import Toolbar from "@mui/material/Toolbar";
 import useTheme from "@mui/material/styles/useTheme";
 import React from "react";
 
-const drawerWidth = 240;
+const drawerWidth = 200;
 
 type CustomDrawerProps = {
 	children: React.ReactNode;
 };
 
 export const CustomDrawer = ({ children }: CustomDrawerProps) => {
-  const theme = useTheme();
+	const theme = useTheme();
 	const [mobileOpen, setMobileOpen] = React.useState(false);
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [_isClosing, setIsClosing] = React.useState(false);
@@ -42,14 +41,14 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 			<Toolbar />
 			<Divider />
 			<List>
-				{["Mock Server", "Swagger Defination"].map((text, index) => (
-          <Grow in={true} timeout={1000}>
-					<ListItem key={index} disablePadding >
-						<ListItemButton>
-							<ListItemText primary={text} />
-						</ListItemButton>
-					</ListItem>
-          </Grow>
+				{["Mock Server", "Sandbox"].map((text, index) => (
+					<Grow in={true} timeout={1000}>
+						<ListItem key={index} disablePadding>
+							<ListItemButton>
+								<ListItemText primary={text} />
+							</ListItemButton>
+						</ListItem>
+					</Grow>
 				))}
 			</List>
 			<Divider />
@@ -82,12 +81,12 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 				</Drawer>
 				<Drawer
 					variant="permanent"
-          PaperProps={{
-            sx: {
-              backgroundColor: theme.palette.primary.dark,
-              color: theme.palette.primary.contrastText
-            }
-          }}
+					PaperProps={{
+						sx: {
+							backgroundColor: theme.palette.primary.dark,
+							color: theme.palette.primary.contrastText,
+						},
+					}}
 					sx={{
 						display: { xs: "none", sm: "block" },
 						"& .MuiDrawer-paper": {
@@ -100,18 +99,18 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 					{drawer}
 				</Drawer>
 			</Box>
-			<Container
+			<Box
 				component="main"
 				sx={{
 					flexGrow: 1,
 					// p: 3,
-          height: "100vh",
+					height: "100vh",
 					width: { sm: `calc(100% - ${drawerWidth}px)` },
-          backgroundColor: theme.palette.grey[100]
+					backgroundColor: theme.palette.grey[100],
 				}}
 			>
 				{children}
-			</Container>
+			</Box>
 		</Box>
 	);
 };
