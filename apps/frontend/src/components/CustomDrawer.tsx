@@ -9,14 +9,26 @@ import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
 import useTheme from "@mui/material/styles/useTheme";
 import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const drawerWidth = 200;
-
+const NAV_LINKS = [
+	{
+		name: "Mock Server",
+		path: "/",
+	},
+	{
+		name: "Sandbox",
+		path: "/sandbox",
+	},
+];
 type CustomDrawerProps = {
 	children: React.ReactNode;
 };
 
 export const CustomDrawer = ({ children }: CustomDrawerProps) => {
+	const navigate = useNavigate();
+	const location = useLocation();
 	const theme = useTheme();
 	const [mobileOpen, setMobileOpen] = React.useState(false);
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -36,16 +48,25 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 	// 		setMobileOpen(!mobileOpen);
 	// 	}
 	// };
+	console.log("HELLO", location.pathname === "/sandbox");
 	const drawer = (
 		<div>
 			<Toolbar />
 			<Divider />
 			<List>
-				{["Mock Server", "Sandbox"].map((text, index) => (
+				{NAV_LINKS.map((link, index) => (
 					<Grow in={true} timeout={1000}>
 						<ListItem key={index} disablePadding>
-							<ListItemButton>
-								<ListItemText primary={text} />
+							<ListItemButton
+								onClick={() => navigate(link.path)}
+								selected={location.pathname === link.path}
+								sx={{
+									"&.Mui-selected": {
+										backgroundColor: theme.palette.primary.main,
+									},
+								}}
+							>
+								<ListItemText primary={link.name} />
 							</ListItemButton>
 						</ListItem>
 					</Grow>

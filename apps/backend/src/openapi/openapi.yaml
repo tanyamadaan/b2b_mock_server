@@ -333,7 +333,7 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /b2b/bap/onSearch:
+  /b2b/bap/on_search:
     post:
       parameters:
         - in: query
@@ -361,7 +361,7 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /b2b/bap/onInit:
+  /b2b/bap/on_init:
     post:
       parameters:
         - in: query
@@ -389,7 +389,7 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /b2b/bap/onSelect:
+  /b2b/bap/on_select:
     post:
       parameters:
         - in: query
@@ -417,7 +417,7 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /b2b/bap/onConfirm:
+  /b2b/bap/on_confirm:
     post:
       parameters:
         - in: query
@@ -445,7 +445,7 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /b2b/bap/onUpdate:
+  /b2b/bap/on_update:
     post:
       parameters:
         - in: query
@@ -473,7 +473,7 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /b2b/bap/onStatus:
+  /b2b/bap/on_status:
     post:
       parameters:
         - in: query

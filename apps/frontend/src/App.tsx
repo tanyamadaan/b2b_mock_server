@@ -1,16 +1,22 @@
-
-import { CustomDrawer } from "./components";
+import {
+	RouterProvider,
+	createBrowserRouter,
+} from "react-router-dom";
+import { Layout } from "./layout/Layout";
 import { Mock, Sandbox } from "./pages";
 
-function App() {
-	return (
-		<>
-			<CustomDrawer>
-				<Mock />
-				<Sandbox />
-			</CustomDrawer>
-		</>
-	);
-}
+const router = createBrowserRouter([
+	{
+		path: "/",
+		Component: Layout,
+		children: [
 
-export default App;
+			{ path: "/", Component: Mock },
+			{ path: "/sandbox", Component: Sandbox },
+		]
+	}
+]);
+
+export default function App() {
+	return <RouterProvider router={router} />;
+}
