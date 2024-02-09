@@ -21,6 +21,10 @@ const NAV_LINKS = [
 		name: "Sandbox",
 		path: "/sandbox",
 	},
+	{
+		name: "Swagger",
+		path: "/swagger"
+	}
 ];
 type CustomDrawerProps = {
 	children: React.ReactNode;

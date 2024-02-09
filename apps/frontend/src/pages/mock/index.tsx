@@ -9,26 +9,35 @@ import Fade from "@mui/material/Fade";
 import FormControl from "@mui/material/FormControl";
 import FormHelperText from "@mui/material/FormHelperText";
 import Grid from "@mui/material/Grid";
-import Input from "@mui/joy/Input";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Select, { selectClasses } from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
 import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";
+import { SCENARIOS } from "../../utils";
 
 export const Mock = () => {
-	const [authHeader, setAuthHeader] = useState<string>();
 	const [log, setLog] = useState<string>();
 	const [action, setAction] = useState<string>();
 	const [logError, setLogError] = useState(false);
 	const [mockerNP, setMockerNP] = useState<boolean>(false); // false-> Buyer/BAP; true -> Seller/BPP
+	const [scenarios, setScenarios] = useState<object>();
 	const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		try {
 			setLog(e.target.value);
 			const parsedLog = JSON.parse(e.target.value);
 			if (!parsedLog.context!.action) setLogError(true);
-			setAction(parsedLog.context.action);
+			const parsedAction = parsedLog.context.action 
+			setAction(parsedAction);
+			const scenarioKey = Object.keys(SCENARIOS).filter(
+				(key) => key === parsedAction
+			)[0];
+			if(scenarioKey){
+
+				setScenarios(SCENARIOS[scenarioKey as keyof typeof SCENARIOS])
+			}
+
 			setLogError(false);
 		} catch (error) {
 			console.log("Error Occurred in LOG", error);
@@ -37,7 +46,7 @@ export const Mock = () => {
 		}
 	};
 	const handleSubmit = () => {
-		console.log("Form Values", authHeader, log);
+		console.log("Form Values", log);
 	};
 	return (
 		<Container>
@@ -72,14 +81,6 @@ export const Mock = () => {
 										onChange={() => setMockerNP((prev) => !prev)}
 									/>
 								</Box>
-								<Input
-									fullWidth
-									placeholder="Enter Your Auth Header..."
-									value={authHeader}
-									onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-										setAuthHeader(e.target.value)
-									}
-								/>
 								<FormControl error={logError} sx={{ width: "100%" }}>
 									<Textarea
 										minRows={5}
@@ -113,7 +114,7 @@ export const Mock = () => {
 												</Typography>
 											</Box>
 										</Grid>
-										<Grid item xs={12} md={6} >
+										<Grid item xs={12} md={6}>
 											<Select
 												placeholder="Select a scenario"
 												indicator={<KeyboardArrowDown />}

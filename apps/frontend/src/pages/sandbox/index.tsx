@@ -158,22 +158,6 @@ export const Sandbox = () => {
 							</Paper>
 						</Fade>
 					</Grid>
-					<Grid container item xs={6} lg={12}>
-						<Fade in={true} timeout={2500}>
-							<Paper
-								sx={{
-									width: "100%",
-									p: 1,
-									px: 2,
-								}}
-							>
-								<Typography variant="h6">Async:</Typography>
-								<Typography color="text.secondary" variant="subtitle2">
-									Awaiting Request
-								</Typography>
-							</Paper>
-						</Fade>
-					</Grid>
 				</Grid>
 			</Grid>
 		</Container>
