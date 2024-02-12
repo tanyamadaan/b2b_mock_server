@@ -31,6 +31,7 @@ export const jsonSchemaValidator =
 					message: validate.errors?.map(({ message }) => ({ message })),
 				},
 			});
+			return
 		}
 		next();
 	};
