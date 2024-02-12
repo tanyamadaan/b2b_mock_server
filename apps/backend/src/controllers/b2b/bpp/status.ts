@@ -8,6 +8,36 @@ import {
 
 import { ACTIONS, responseBuilder } from "../../../lib/utils";
 
+export const statusController = (req: Request, res: Response) => {
+	const { scenario } = req.query
+	switch (scenario) {
+		case 'delivered':
+			statusDeliveredController(req, res)
+			break;
+		case 'out-for-delivery':
+			statusOutForDeliveryController(req, res)
+			break;
+		case 'picked-up':
+			statusPickedUpController(req, res)
+			break;
+		case 'proforma-invoice':
+			statusProformaInvoiceController(req, res)
+			break;
+		default:
+			return res.status(404).json({
+				message: {
+					ack: {
+						status: "NACK",
+					},
+				},
+				error: {
+					message: "Invalid scenario",
+				},
+			});
+			break;
+	}
+}
+
 export const statusDeliveredController = (req: Request, res: Response) => {
 	return responseBuilder(
 		res,
