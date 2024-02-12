@@ -4,6 +4,8 @@ import { jsonSchemaValidator } from "../../../middlewares/jsonSchemaValidator";
 import {
   confirmSchema,
   initSchema,
+  onStatusSchema,
+  onUpdateSchema,
   searchSchema,
   selectSchema,
   statusSchema,
@@ -16,9 +18,13 @@ import {
   statusDeliveredController,
   statusOutForDeliveryController,
   statusPickedUpController,
-  statusProformaInvoiceController } from "./status";
-import { updateFulfillmentController,
-  updatePrepaidController } from "./update";
+  statusProformaInvoiceController,
+  statusController
+} from "./status";
+import {
+  updateFulfillmentController,
+  updatePrepaidController, updateController
+} from "./update";
 
 export const bppRouter = Router();
 
@@ -42,3 +48,5 @@ bppRouter.post("/status-proforma-invoice", jsonSchemaValidator(statusSchema), st
 
 bppRouter.post("/update-fulfillment", jsonSchemaValidator(updateSchema), updateFulfillmentController);
 bppRouter.post("/update-prepaid", jsonSchemaValidator(updateSchema), updatePrepaidController);
+bppRouter.post("/update", jsonSchemaValidator(onUpdateSchema), updateController);
+bppRouter.post("/status", jsonSchemaValidator(onStatusSchema), statusController);
