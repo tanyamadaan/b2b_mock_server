@@ -129,7 +129,7 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 				sx={{
 					flexGrow: 1,
 					// p: 3,
-					height: "100vh",
+					minHeight: "100vh",
 					width: { sm: `calc(100% - ${drawerWidth}px)` },
 					backgroundColor: theme.palette.grey[100],
 				}}

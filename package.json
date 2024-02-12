@@ -8,5 +8,10 @@
   },
   "workspaces": [
     "apps/*"
-  ]
+  ],
+  "dependencies": {
+    "@types/swagger-ui-react": "^4.18.3",
+    "lodash": "^4.17.21",
+    "swagger-ui-react": "^5.11.3"
+  }
 }
