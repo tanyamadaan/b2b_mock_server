@@ -18,6 +18,8 @@ export const useAction = () => {
 			)[0];
 			if (scenarioKey) {
 				setScenarios(SCENARIOS[scenarioKey as keyof typeof SCENARIOS]);
+			} else {
+				setScenarios([])
 			}
 
 			setLogError(false);

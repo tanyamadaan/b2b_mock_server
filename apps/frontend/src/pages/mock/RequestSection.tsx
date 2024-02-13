@@ -20,9 +20,9 @@ import { useAction } from "../../utils/hooks";
 export const RequestSection = () => {
 	const [log, setLog] = useState<string>();
 	const [mockerNP, setMockerNP] = useState<boolean>(false); // false-> Buyer/BAP; true -> Seller/BPP
-  const [showCurl, setShowCurl] = useState(false);
+	const [showCurl, setShowCurl] = useState(false);
 	const [activeScenario, setActiveScenario] = useState<object>();
-	const {action, detectAction, logError, scenarios} = useAction();  
+	const { action, detectAction, logError, scenarios } = useAction();
 
 	const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		setLog(e.target.value);
@@ -30,17 +30,18 @@ export const RequestSection = () => {
 	};
 
 	const handleSubmit = () => {
-		console.log("Form Values", log, activeScenario);
-    setShowCurl(prev => !prev)
+		const url = `${[import.meta.env.VITE_SERVER_URL]}/`;
+		console.log("Form Values", log, activeScenario, url);
+		setShowCurl((prev) => !prev);
 	};
 	return (
-    <>
+		<>
 			<Fade in={true} timeout={2000}>
 				<Paper
 					sx={{
 						p: 2,
 					}}
-          elevation={5}
+					elevation={5}
 				>
 					<Stack spacing={2} justifyContent="center" alignItems="center">
 						<Box
@@ -112,6 +113,7 @@ export const RequestSection = () => {
 										) => {
 											setActiveScenario(newValue);
 										}}
+										disabled={scenarios?.length === 0}
 									>
 										{scenarios?.map((scenario, index) => (
 											<Option value={scenario} key={"scenario-" + index}>
@@ -122,13 +124,17 @@ export const RequestSection = () => {
 								</Grid>
 							</Grid>
 						)}
-						<Button variant="solid" onClick={handleSubmit}>
+						<Button
+							variant="solid"
+							onClick={handleSubmit}
+							disabled={logError || !log}
+						>
 							Submit
 						</Button>
 					</Stack>
 				</Paper>
 			</Fade>
-			<CurlDisplay slideIn={showCurl}/>
+			<CurlDisplay slideIn={showCurl} />
 		</>
 	);
 };

@@ -17,7 +17,7 @@ const localTheme = createTheme({
 });
 type CurlDisplayProps = {
 	slideIn: boolean;
-	curl: string;
+	curl?: string;
 };
 export const CurlDisplay = ({
 	slideIn,
