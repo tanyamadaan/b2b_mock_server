@@ -19,11 +19,11 @@ export const responseBuilder = async (
 	var async: { message: object; context?: object } = { context: {}, message };
 
 	if (!action.startsWith("on_")) {
-		const { bap_uri, bap_id, ...context } = reqContext as any;
+		const { bap_uri, bap_id, ...remainingContext } = reqContext as any;
 		async = {
 			...async,
 			context: {
-				...context,
+				...remainingContext,
 				bpp_id: MOCKSERVER_ID,
 				bpp_uri: MOCKSERVER_URL,
 				timeStamp: ts.toISOString(),
@@ -31,11 +31,11 @@ export const responseBuilder = async (
 			},
 		};
 	} else {
-		const { bpp_uri, bpp_id, ...context } = reqContext as any;
+		const { bpp_uri, bpp_id, ...remainingContext } = reqContext as any;
 		async = {
 			...async,
 			context: {
-				...context,
+				...remainingContext,
 				bap_id: MOCKSERVER_ID,
 				bap_uri: MOCKSERVER_URL,
 				timeStamp: ts.toISOString(),
