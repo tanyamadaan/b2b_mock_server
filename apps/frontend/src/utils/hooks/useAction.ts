@@ -28,6 +28,6 @@ export const useAction = () => {
 			setLogError(true);
 			setAction(undefined);
 		}
-	}, 2500);
+	}, 1500);
 	return { action, logError, scenarios, detectAction };
 };

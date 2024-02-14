@@ -10,6 +10,11 @@ import DoneAllIcon from "@mui/icons-material/DoneAll";
 import { MouseEvent, useRef, useState } from "react";
 import Fade from "@mui/material/Fade";
 
+import { UnControlled as CodeMirror } from "react-codemirror2";
+import "codemirror/lib/codemirror.css";
+import "codemirror/theme/material.css";
+import "codemirror/mode/javascript/javascript.js";
+
 const localTheme = createTheme({
 	palette: {
 		mode: "dark",
@@ -36,7 +41,6 @@ export const CurlDisplay = ({
 		setDisplay(false);
 	};
 	const copyCurl = () => {
-
 		navigator.clipboard
 			.writeText(curl)
 			.then(() => {
@@ -67,24 +71,64 @@ export const CurlDisplay = ({
 					<Paper
 						sx={{
 							p: 2,
-							position: "relative",
+							// position: "relative",
 						}}
 						onMouseEnter={(e) => showButton(e)}
 						onMouseLeave={(e) => hideButton(e)}
 					>
 						<Box
-							sx={{
-								// position: "absolute",
-								// top: 0,
-								// left: 0,
-								zIndex: 50,
-							}}
+							sx={
+								{
+									// position: "absolute",
+									// top: 0,
+									// left: 0,
+									// zIndex: 50,
+								}
+							}
 						>
-							<Typography variant="h6" mr={2}>
-								Curl:
-							</Typography>
+							<Box
+								sx={{
+									display: "flex",
+									justifyContent: "space-between",
+									alignItems: "center",
+									my:1
+								}}
+							>
+								<Typography variant="h6" mr={2}>
+									Curl:
+								</Typography>
+								<Fade in={display} timeout={600}>
+									<IconButton
+										size="small"
+										// sx={{
+										// 	display: display ? "block" : "none",
+										// }}
+										onClick={copyCurl}
+									>
+										{copied ? (
+											<DoneAllIcon color="success" />
+										) : (
+											<ContentCopyIcon />
+										)}
+									</IconButton>
+								</Fade>
+							</Box>
 
-							<Typography color="text.secondary">{curl}</Typography>
+							<CodeMirror
+								value={curl}
+								autoCursor={false}
+								options={{
+									readOnly: "nocursor",
+									theme: "material",
+									height: "auto",
+									viewportMargin: Infinity,
+									mode: "shell",
+									lineNumbers: true,
+									lineWrapping: true,
+									indentWithTabs: false,
+									tabSize: 2,
+								}}
+							/>
 						</Box>
 						<Box
 							sx={{
@@ -99,19 +143,7 @@ export const CurlDisplay = ({
 								alignItems: "center",
 								background: display ? "rgba(255, 255, 255, 0.08)" : "none",
 							}}
-						>
-							<Fade in={display} timeout={600}>
-								<IconButton
-									size="small"
-									// sx={{
-									// 	display: display ? "block" : "none",
-									// }}
-									onClick={copyCurl}
-								>
-									{copied ? <DoneAllIcon color="success"/> : <ContentCopyIcon />}
-								</IconButton>
-							</Fade>
-						</Box>
+						></Box>
 					</Paper>
 				</Slide>
 			</ThemeProvider>
