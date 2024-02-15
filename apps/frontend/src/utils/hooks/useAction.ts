@@ -18,6 +18,8 @@ export const useAction = () => {
 			)[0];
 			if (scenarioKey) {
 				setScenarios(SCENARIOS[scenarioKey as keyof typeof SCENARIOS]);
+			} else {
+				setScenarios([])
 			}
 
 			setLogError(false);
@@ -26,6 +28,6 @@ export const useAction = () => {
 			setLogError(true);
 			setAction(undefined);
 		}
-	}, 2500);
+	}, 1500);
 	return { action, logError, scenarios, detectAction };
 };

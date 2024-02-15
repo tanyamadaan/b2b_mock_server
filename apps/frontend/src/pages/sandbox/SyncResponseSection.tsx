@@ -1,15 +1,15 @@
 import Fade from "@mui/material/Fade";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import { useMock } from "../../utils/hooks";
+import { useSandbox } from "../../utils/hooks";
 
 import { UnControlled as CodeMirror } from "react-codemirror2";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/material.css";
 import "codemirror/mode/javascript/javascript.js";
 
-export const AsyncResponseSection = () => {
-	const { asyncResponse } = useMock();
+export const SyncResponseSection = () => {
+	const { syncResponse } = useSandbox();
 	return (
 		<Fade in={true} timeout={2500}>
 			<Paper
@@ -19,10 +19,10 @@ export const AsyncResponseSection = () => {
 					px: 2,
 				}}
 			>
-				<Typography variant="h6">Async:</Typography>
-				{asyncResponse ? (
+				<Typography variant="h6">Sync:</Typography>
+				{syncResponse ? (
 					<CodeMirror
-						value={JSON.stringify(asyncResponse, null, 2)}
+						value={JSON.stringify(syncResponse, null, 2)}
 						autoCursor={false}
 						options={{
 							readOnly: "nocursor",

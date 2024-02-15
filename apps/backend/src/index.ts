@@ -5,11 +5,14 @@ import swaggerUi from "swagger-ui-express";
 
 import { authRouter, b2bRouter } from "./controllers";
 import path from "path";
+import cors from "cors";
 const app: Express = express();
 const port = process.env.PORT || 3000;
 
 const file = fs.readFileSync(path.join(__dirname, "./openapi/build/swagger.yaml"), "utf8");
 const swaggerDocument = YAML.parse(file);
+
+app.use(cors())
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 

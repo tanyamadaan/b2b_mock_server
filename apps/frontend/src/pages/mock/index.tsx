@@ -5,28 +5,31 @@ import Typography from "@mui/material/Typography";
 import { RequestSection } from "./RequestSection";
 import { SyncResponseSection } from "./SyncResponseSection";
 import { AsyncResponseSection } from "./AsyncResponseSection";
+import { MockProvider } from "../../utils/context";
 
 export const Mock = () => {
 	return (
-		<Container sx={{ py: 2 }}>
-			<Grid container spacing={2}>
-				<Grid item xs={12}>
-					<Typography variant="h3" my={2} align="center">
-						ONDC Mock Server
-					</Typography>
-				</Grid>
-				<Grid item xs={12} lg={8}>
-					<RequestSection />
-				</Grid>
-				<Grid container item xs={12} lg={4} spacing={2}>
-					<Grid item xs={6} lg={12}>
-						<SyncResponseSection />
+		<MockProvider>
+			<Container sx={{ py: 2 }}>
+				<Grid container spacing={2}>
+					<Grid item xs={12}>
+						<Typography variant="h3" my={2} align="center">
+							ONDC Mock Server
+						</Typography>
 					</Grid>
-					<Grid item xs={6} lg={12}>
-						<AsyncResponseSection />
+					<Grid item xs={12} lg={8}>
+						<RequestSection />
+					</Grid>
+					<Grid container item xs={12} lg={4} spacing={2}>
+						<Grid item xs={6} lg={12}>
+							<SyncResponseSection />
+						</Grid>
+						<Grid item xs={6} lg={12}>
+							<AsyncResponseSection />
+						</Grid>
 					</Grid>
 				</Grid>
-			</Grid>
-		</Container>
+			</Container>
+		</MockProvider>
 	);
 };
