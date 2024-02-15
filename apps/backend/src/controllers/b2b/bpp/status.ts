@@ -24,7 +24,7 @@ export const statusController = (req: Request, res: Response) => {
 			statusProformaInvoiceController(req, res)
 			break;
 		default:
-			return res.status(404).json({
+			res.status(404).json({
 				message: {
 					ack: {
 						status: "NACK",
