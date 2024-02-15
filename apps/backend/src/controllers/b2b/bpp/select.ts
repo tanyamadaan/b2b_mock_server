@@ -38,41 +38,41 @@ export const selectController = (req: Request, res: Response) => {
 	}
 }
 
-// export const selectController = (req: Request, res: Response) => {
-// 	const { context, message } = req.body;
-// 	const { ttl, ...provider } = message.order.provider;
+export const selectDomesticController = (req: Request, res: Response) => {
+	const { context, message } = req.body;
+	const { ttl, ...provider } = message.order.provider;
 
 
-// 	var responseMessage = {
-// 		order: {
-// 			provider,
-// 			payments: message.order.payments.map(({ type }: { type: string }) => ({
-// 				type,
-// 				collected_by: "BPP",
-// 			})),
-// 			items: message.order.items.map(
-// 				({
-// 					location_ids,
-// 					...remaining
-// 				}: {
-// 					location_ids: any;
-// 					remaining: any;
-// 				}) => ({
-// 					remaining,
-// 				})
-// 			),
-// 			fulfillments: message.order.fulfillments,
-// 			quote: quoteCreator(message.order.items)
-// 		},
-// 	};
-// 	return responseBuilder(
-// 		res,
-// 		context,
-// 		responseMessage,
-// 		`${context.bap_uri}/on_${ACTIONS.select}`,
-// 		`on_${ACTIONS.select}`
-// 	);
-// };
+	var responseMessage = {
+		order: {
+			provider,
+			payments: message.order.payments.map(({ type }: { type: string }) => ({
+				type,
+				collected_by: "BPP",
+			})),
+			items: message.order.items.map(
+				({
+					location_ids,
+					...remaining
+				}: {
+					location_ids: any;
+					remaining: any;
+				}) => ({
+					remaining,
+				})
+			),
+			fulfillments: message.order.fulfillments,
+			quote: quoteCreator(message.order.items)
+		},
+	};
+	return responseBuilder(
+		res,
+		context,
+		responseMessage,
+		`${context.bap_uri}/on_${ACTIONS.select}`,
+		`on_${ACTIONS.select}`
+	);
+};
 
 export const selectDomesticNonRfqController = (req: Request, res: Response) => {
 	return responseBuilder(
@@ -84,15 +84,15 @@ export const selectDomesticNonRfqController = (req: Request, res: Response) => {
 	);
 };
 
-export const selectDomesticController = (req: Request, res: Response) => {
-	return responseBuilder(
-		res,
-		req.body.context,
-		onSelectDomestic.message,
-		req.body.context.bap_uri,
-		`on_${ACTIONS.select}`
-	);
-};
+// export const selectDomesticController = (req: Request, res: Response) => {
+// 	return responseBuilder(
+// 		res,
+// 		req.body.context,
+// 		onSelectDomestic.message,
+// 		req.body.context.bap_uri,
+// 		`on_${ACTIONS.select}`
+// 	);
+// };
 
 export const selectDomesticSelfPickupController = (req: Request, res: Response) => {
 	return responseBuilder(
