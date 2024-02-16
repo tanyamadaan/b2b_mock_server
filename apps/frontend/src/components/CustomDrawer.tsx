@@ -2,6 +2,7 @@ import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import Grow from "@mui/material/Grow";
+import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -10,6 +11,9 @@ import Toolbar from "@mui/material/Toolbar";
 import useTheme from "@mui/material/styles/useTheme";
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+
+import MenuIcon from "@mui/icons-material/Menu";
+import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 
 const drawerWidth = 200;
 const NAV_LINKS = [
@@ -23,8 +27,8 @@ const NAV_LINKS = [
 	},
 	{
 		name: "Swagger",
-		path: "/swagger"
-	}
+		path: "/swagger",
+	},
 ];
 type CustomDrawerProps = {
 	children: React.ReactNode;
@@ -36,7 +40,7 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 	const theme = useTheme();
 	const [mobileOpen, setMobileOpen] = React.useState(false);
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const [_isClosing, setIsClosing] = React.useState(false);
+	const [isClosing, setIsClosing] = React.useState(false);
 
 	const handleDrawerClose = () => {
 		setIsClosing(true);
@@ -47,11 +51,11 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 		setIsClosing(false);
 	};
 
-	// const handleDrawerToggle = () => {
-	// 	if (!isClosing) {
-	// 		setMobileOpen(!mobileOpen);
-	// 	}
-	// };
+	const handleDrawerToggle = () => {
+		if (!isClosing) {
+			setMobileOpen(!mobileOpen);
+		}
+	};
 	console.log("HELLO", location.pathname === "/sandbox");
 	const drawer = (
 		<div>
@@ -94,6 +98,12 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 					ModalProps={{
 						keepMounted: true, // Better open performance on mobile.
 					}}
+					PaperProps={{
+						sx: {
+							backgroundColor: theme.palette.primary.dark,
+							color: theme.palette.primary.contrastText,
+						},
+					}}
 					sx={{
 						display: { xs: "block", sm: "none" },
 						"& .MuiDrawer-paper": {
@@ -102,6 +112,14 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 						},
 					}}
 				>
+					<Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+						<IconButton
+							sx={{ color: theme.palette.primary.contrastText }}
+							onClick={handleDrawerClose}
+						>
+							<MenuOpenIcon />
+						</IconButton>
+					</Box>
 					{drawer}
 				</Drawer>
 				<Drawer
@@ -134,6 +152,9 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 					backgroundColor: theme.palette.grey[100],
 				}}
 			>
+				<IconButton sx={{ mx: "auto" }} onClick={handleDrawerToggle}>
+					<MenuIcon />
+				</IconButton>
 				{children}
 			</Box>
 		</Box>
