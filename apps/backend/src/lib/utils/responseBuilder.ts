@@ -18,7 +18,7 @@ export const responseBuilder = async (
 	// console.log("SANDBOX>", sandboxMode);
 	var async: { message: object; context?: object } = { context: {}, message };
 
-	if (!action.startsWith("on_")) {
+	if (action.startsWith("on_")) {
 		const { bap_uri, bap_id, ...remainingContext } = reqContext as any;
 		async = {
 			...async,

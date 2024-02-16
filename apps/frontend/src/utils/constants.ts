@@ -30,100 +30,125 @@ export const SCENARIOS = {
 	select: [
 		{
 			name: "Domestic",
+			scenario: "domestic",
 		},
 		{
 			name: "Domestic Self-Pickup",
+			scenario: "domestic-self-pickup",
 		},
 		{
 			name: "Domestic Non-RFQ",
+			scenario: "domestic-non-rfq",
 		},
 		{
 			name: "BAP Chat",
+			scenario: "bap-chat",
 		},
 		{
 			name: "Exports",
+			scenario: "exports",
 		},
 	],
 	on_select: [
 		{
 			name: "Domestic",
+			scenario: "domestic",
 		},
 		{
 			name: "Domestic Self-Pickup",
+			scenario: "domestic-self-pickup",
 		},
 		{
 			name: "Domestic Non-RFQ",
-		},
-		{
-			name: "BAP Chat",
+			scenario: "domestic-non-rfq",
 		},
 		{
 			name: "Exports",
+			scenario: "exports",
 		},
 		{
 			name: "Non Serviceable",
+			scenario: "non-serviceable",
 		},
 		{
 			name: "Quantity Unavailable",
+			scenario: "quantity-unavailable",
 		},
 	],
 	init: [
 		{
 			name: "Domestic",
+			scenario: "domestic",
 		},
 		{
 			name: "Domestic Non-RFQ",
+			scenario: "domestic-non-rfq",
 		},
 		{
 			name: "Domestic BPP Payment",
+			scenario: "domestic-bpp-payment",
 		},
 		{
 			name: "Exports",
+			scenario: "exports",
 		},
 	],
 	on_init: [
 		{
 			name: "Domestic",
+			scenario: "domestic",
 		},
 		{
 			name: "Domestic Non-RFQ",
+			scenario: "domestic-non-rfq",
 		},
 		{
 			name: "Domestic Payment BPP Non-RFQ",
+			scenario: "domestic-payment-bpp-non-rfq",
 		},
 		{
 			name: "Domestic Self-Pickup",
+			scenario: "domestic-self-pickup",
 		},
 		{
-			name: "Domestic Exports",
+			name: "Exports",
+			scenario: "exports",
 		},
 		{
 			name: "Reject RFQ",
+			scenario: "reject-rfq",
 		},
 	],
 	confirm: [
 		{
 			name: "Domestic",
+			scenario: "domestic",
 		},
 		{
 			name: "Exports",
+			scenario: "exports",
 		},
 		{
-			name: "Non-RFQ",
+			name: "Domestic Non-RFQ",
+			scenario: "domestic-non-rfq",
 		},
 	],
 	on_confirm: [
 		{
 			name: "Domestic Non-RFQ",
+			scenario: "domestic-non-rfq",
 		},
 		{
 			name: "Domestic Rejected",
+			scenario: "domestic-rejected",
 		},
 		{
 			name: "Domestic",
+			scenario: "domestic",
 		},
 		{
 			name: "Exports",
+			scenario: "exports",
 		},
 	],
 	on_status: [
@@ -135,15 +160,19 @@ export const SCENARIOS = {
 		},
 		{
 			name: "Delivered",
+			scenario: "delivered",
 		},
 		{
 			name: "Out for Delivery",
+			scenario: "out-for-delivery",
 		},
 		{
 			name: "Pickup Up",
+			scenario: "picked-up",
 		},
 		{
 			name: "Proforma Invoice",
+			scenario: "proforma-invoice",
 		},
 		{
 			name: "Self Pickup-up",
@@ -152,12 +181,14 @@ export const SCENARIOS = {
 	on_update: [
 		{
 			name: "Fulfillments",
+			scenario: "fulfillment",
 		},
 		{
 			name: "Prepaid BAP",
 		},
 		{
 			name: "Prepaid",
+			scenario: "prepaid",
 		},
 	],
 };

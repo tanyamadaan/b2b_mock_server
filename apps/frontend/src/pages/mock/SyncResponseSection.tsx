@@ -22,7 +22,7 @@ export const SyncResponseSection = () => {
 					overflow:"hidden"
 				}}
 			>
-				<Typography variant="h6">Sync:</Typography>
+				<Typography variant="h6" my={1}>Sync:</Typography>
 				{syncResponse ? (
 					<CodeMirror
 						value={JSON.stringify(syncResponse, null, 2)}
@@ -46,7 +46,7 @@ export const SyncResponseSection = () => {
 					/>
 				) : (
 					<Typography color="text.secondary" variant="subtitle2">
-						Awaiting Request
+						Click on Submit to initiate Response
 					</Typography>
 				)}
 			</Paper>

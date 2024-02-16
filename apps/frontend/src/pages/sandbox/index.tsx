@@ -1,7 +1,5 @@
 import Container from "@mui/material/Container";
-import Fade from "@mui/material/Fade";
 import Grid from "@mui/material/Grid";
-import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import { RequestSection } from "./RequestSection";
 import { SandboxProvider } from "../../utils/context";
@@ -20,7 +18,7 @@ export const Sandbox = () => {
 					<Grid item xs={12} lg={8}>
 						<RequestSection />
 					</Grid>
-					<Grid item xs={12} lg={4} spacing={2}>
+					<Grid item xs={12} lg={4}>
 						<SyncResponseSection />
 					</Grid>
 				</Grid>
