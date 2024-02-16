@@ -8,7 +8,7 @@ export const selectController = (req: Request, res: Response) => {
 		case 'domestic':
 			selectDomesticController(req, res)
 			break;
-		case 'non-rfq':
+		case 'domestic-non-rfq':
 			selectDomesticNonRfqController(req, res)
 			break;
 		case 'domestic-self-pickup':

@@ -146,6 +146,18 @@ paths:
             enum:
               - sandbox
               - mock
+        - in: query
+          name: scenario
+          required: true
+          schema:
+            type: string
+            enum:
+              - domestic
+              - domestic-non-rfq
+              - domestic-self-pickup
+              - exports
+              - non-serviceable
+              - quantity-unavailable
           description: The Mode the Server needs to run the request in
       tags:
         - B2B
@@ -194,6 +206,18 @@ paths:
             enum:
               - sandbox
               - mock
+        - in: query
+          name: scenario
+          required: true
+          schema:
+            type: string
+            enum:
+              - domestic
+              - domestic-non-rfq
+              - domestic-payment-bpp-non-rfq
+              - domestic-self-pickup
+              - exports
+              - reject-rfq
           description: The Mode the Server needs to run the request in
       tags:
         - B2B
@@ -1301,6 +1325,16 @@ paths:
             enum:
               - sandbox
               - mock
+        - in: query
+          name: scenario
+          required: true
+          schema:
+            type: string
+            enum:
+              - domestic
+              - domestic-non-rfq
+              - exports
+              - domestic-rejected
           description: The Mode the Server needs to run the request in
       tags:
         - B2B
@@ -1338,7 +1372,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/paths/~1b2b~1bpp~1init/post/responses/200/content/application~1json/schema'
-  /b2b/bpp/update-fulfillment:
+  /b2b/bpp/update:
     post:
       parameters:
         - in: query
@@ -1349,40 +1383,20 @@ paths:
             enum:
               - sandbox
               - mock
-          description: The Mode the Server needs to run the request in
-      tags:
-        - B2B
-      summary: Mock update fulfillment request to BPP
-      requestBody:
-        description: update fulfillment Request Log
-        content:
-          application/json:
-            schema:
-              $ref: '#/paths/~1b2b~1bpp~1update-prepaid/post/requestBody/content/application~1json/schema'
-      responses:
-        '200':
-          description: Successfull response from BPP
-          content:
-            application/json:
-              schema:
-                $ref: '#/paths/~1b2b~1bpp~1init/post/responses/200/content/application~1json/schema'
-  /b2b/bpp/update-prepaid:
-    post:
-      parameters:
         - in: query
-          name: mode
+          name: scenario
           required: true
           schema:
             type: string
             enum:
-              - sandbox
-              - mock
+              - fulfillment
+              - prepaid
           description: The Mode the Server needs to run the request in
       tags:
         - B2B
-      summary: Mock update prepaid request to BPPs
+      summary: Mock update request to BPP
       requestBody:
-        description: update prepaid Request Log
+        description: update Request Log
         content:
           application/json:
             schema:
@@ -1420,7 +1434,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/paths/~1b2b~1bpp~1init/post/responses/200/content/application~1json/schema'
-  /b2b/bpp/status-delivered:
+  /b2b/bpp/status:
     post:
       parameters:
         - in: query
@@ -1431,12 +1445,22 @@ paths:
             enum:
               - sandbox
               - mock
+        - in: query
+          name: scenario
+          required: true
+          schema:
+            type: string
+            enum:
+              - delivered
+              - out-for-delivery
+              - picked-up
+              - proforma-invoice
           description: The Mode the Server needs to run the request in
       tags:
         - B2B
-      summary: Mock status delivered request to BPP
+      summary: Mock status request to BPP
       requestBody:
-        description: status delivered Request Log
+        description: status Request Log
         content:
           application/json:
             schema:
@@ -1468,90 +1492,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/paths/~1b2b~1bpp~1init/post/responses/200/content/application~1json/schema'
-  /b2b/bpp/status-out-for-delivery:
-    post:
-      parameters:
-        - in: query
-          name: mode
-          required: true
-          schema:
-            type: string
-            enum:
-              - sandbox
-              - mock
-          description: The Mode the Server needs to run the request in
-      tags:
-        - B2B
-      summary: Mock status out for delivery request to BPP
-      requestBody:
-        description: status out for delivery Request Log
-        content:
-          application/json:
-            schema:
-              $ref: '#/paths/~1b2b~1bpp~1status-delivered/post/requestBody/content/application~1json/schema'
-      responses:
-        '200':
-          description: Successfull response from BPP
-          content:
-            application/json:
-              schema:
-                $ref: '#/paths/~1b2b~1bpp~1init/post/responses/200/content/application~1json/schema'
-  /b2b/bpp/status-picked-up:
-    post:
-      parameters:
-        - in: query
-          name: mode
-          required: true
-          schema:
-            type: string
-            enum:
-              - sandbox
-              - mock
-          description: The Mode the Server needs to run the request in
-      tags:
-        - B2B
-      summary: Mock status picked up request to BPP
-      requestBody:
-        description: status picked up Request Log
-        content:
-          application/json:
-            schema:
-              $ref: '#/paths/~1b2b~1bpp~1status-delivered/post/requestBody/content/application~1json/schema'
-      responses:
-        '200':
-          description: Successfull response from BPP
-          content:
-            application/json:
-              schema:
-                $ref: '#/paths/~1b2b~1bpp~1init/post/responses/200/content/application~1json/schema'
-  /b2b/bpp/status-proforma-invoice:
-    post:
-      parameters:
-        - in: query
-          name: mode
-          required: true
-          schema:
-            type: string
-            enum:
-              - sandbox
-              - mock
-          description: The Mode the Server needs to run the request in
-      tags:
-        - B2B
-      summary: Mock status proforma invoice request to BPP
-      requestBody:
-        description: status proforma invoice Request Log
-        content:
-          application/json:
-            schema:
-              $ref: '#/paths/~1b2b~1bpp~1status-delivered/post/requestBody/content/application~1json/schema'
-      responses:
-        '200':
-          description: Successfull response from BPP
-          content:
-            application/json:
-              schema:
-                $ref: '#/paths/~1b2b~1bpp~1init/post/responses/200/content/application~1json/schema'
   /b2b/bap/on_search:
     post:
       parameters:
@@ -1563,6 +1503,17 @@ paths:
             enum:
               - sandbox
               - mock
+        - in: query
+          name: scenario
+          required: true
+          schema:
+            type: string
+            enum:
+              - domestic
+              - domestic-non-rfq
+              - domestic-self-pickup
+              - exports
+              - bap-chat
           description: The Mode the Server needs to run the request in
       tags:
         - B2B
@@ -1762,6 +1713,15 @@ paths:
             enum:
               - sandbox
               - mock
+        - in: query
+          name: scenario
+          required: true
+          schema:
+            type: string
+            enum:
+              - domestic
+              - domestic-non-rfq
+              - exports
           description: The Mode the Server needs to run the request in
       tags:
         - B2B
@@ -1822,6 +1782,16 @@ paths:
             enum:
               - sandbox
               - mock
+        - in: query
+          name: scenario
+          required: true
+          schema:
+            type: string
+            enum:
+              - domestic
+              - domestic-non-rfq
+              - exports
+              - domestic-bpp-payment
           description: The Mode the Server needs to run the request in
       tags:
         - B2B
