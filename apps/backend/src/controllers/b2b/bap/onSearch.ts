@@ -5,13 +5,13 @@ import { ACTIONS, responseBuilder } from "../../../lib/utils";
 export const onSearchController = (req: Request, res: Response) => {
 	const { scenario } = req.query
 	switch (scenario) {
-		case 'domestic':
+		case 'rfq':
 			onSearchDomesticController(req, res)
 			break;
-		case 'domestic-non-rfq':
+		case 'non-rfq':
 			onSearchDomesticNonRfqController(req, res)
 			break;
-		case 'domestic-self-pickup':
+		case 'self-pickup':
 			onSearchDomesticSelfPickupController(req, res)
 			break;
 		case 'exports':

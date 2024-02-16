@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
-import { confirmDomestic, confirmExports, confirmNonRFQ, selectDomesticNonRFQ } from "../../../lib/examples";
+import { confirmExports, confirmNonRFQ } from "../../../lib/examples";
 import { ACTIONS, responseBuilder } from "../../../lib/utils";
 
 export const onInitController = (req: Request, res: Response) => {
 	const { scenario } = req.query
 	switch (scenario) {
-		case 'domestic':
+		case 'rfq':
 			onInitDomesticController(req, res)
 			break;
-		case 'domestic-non-rfq':
+		case 'non-rfq':
 			onInitDomesticNonRfqController(req, res)
 			break;
 		case 'exports':

@@ -1,3 +1,0 @@
-[submodule "apps/backend/beckn-core"]
-	path = apps/backend/beckn-core
-	url = https://github.com/beckn/protocol-specifications

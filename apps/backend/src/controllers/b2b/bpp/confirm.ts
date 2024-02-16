@@ -51,16 +51,16 @@ export const confirmDomesticController = (req: Request, res: Response) => {
 export const confirmController = (req: Request, res: Response) => {
 	const { scenario } = req.query
 	switch (scenario) {
-		case 'domestic':
+		case 'rfq':
 			confirmDomesticController(req, res)
 			break;
-		case 'domestic-non-rfq':
+		case 'non-rfq':
 			confirmDomesticNonRfq(req, res)
 			break;
 		case 'exports':
 			confirmExports(req, res)
 			break;
-		case 'domestic-rejected':
+		case 'rejected':
 			confirmDomesticRejected(req, res)
 			break;
 		default:

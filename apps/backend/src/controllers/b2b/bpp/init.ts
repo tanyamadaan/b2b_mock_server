@@ -31,16 +31,16 @@ export const initDomesticController = (req: Request, res: Response) => {
 export const initController = (req: Request, res: Response) => {
 	const { scenario } = req.query
 	switch (scenario) {
-		case 'domestic':
+		case 'rfq':
 			initDomesticController(req, res)
 			break;
-		case 'domestic-non-rfq':
+		case 'non-rfq':
 			initDomesticNonRfq(req, res)
 			break;
-		case 'domestic-payment-bpp-non-rfq':
+		case 'payment-bpp-non-rfq':
 			initDomesticPaymentBppNonRfq(req, res)
 			break;
-		case 'domestic-self-pickup':
+		case 'self-pickup':
 			initDomesticSelfPickup(req, res)
 			break;
 		case 'exports':
