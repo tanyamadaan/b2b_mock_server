@@ -21,10 +21,10 @@ export const Mock = () => {
 						<RequestSection />
 					</Grid>
 					<Grid container item xs={12} lg={4} spacing={2}>
-						<Grid item xs={6} lg={12}>
+						<Grid item xs={12} sm={6} lg={12}>
 							<SyncResponseSection />
 						</Grid>
-						<Grid item xs={6} lg={12}>
+						<Grid item xs={12} sm={6} lg={12}>
 							<AsyncResponseSection />
 						</Grid>
 					</Grid>
