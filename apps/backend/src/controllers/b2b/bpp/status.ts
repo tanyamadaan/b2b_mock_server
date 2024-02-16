@@ -1,9 +1,12 @@
 import { Request, Response } from "express";
 import {
+	onStatusBPPPayment,
+	onStatusBPPPaymentError,
 	onStatusDelivered,
 	onStatusOutForDelivery,
 	onStatusPickedUp,
 	onStatusProformaInvoice,
+	onStatusSelfPickedUp,
 } from "../../../lib/examples";
 
 import { ACTIONS, responseBuilder } from "../../../lib/utils";
@@ -21,6 +24,15 @@ export const statusController = (req: Request, res: Response) => {
 			statusPickedUpController(req, res)
 			break;
 		case 'proforma-invoice':
+			statusProformaInvoiceController(req, res)
+			break;
+		case 'bpp_payment_error':
+			statusProformaInvoiceController(req, res)
+			break;
+		case 'bpp_payment':
+			statusProformaInvoiceController(req, res)
+			break;
+		case 'self_picked_up':
 			statusProformaInvoiceController(req, res)
 			break;
 		default:
@@ -76,6 +88,45 @@ export const statusProformaInvoiceController = (
 		res,
 		req.body.context,
 		onStatusProformaInvoice.message,
+		`${req.body.context.bap_uri}/on_${ACTIONS.status}`,
+		`on_${ACTIONS.status}`
+	);
+};
+
+export const statusBPPpaymentErrorController = (
+	req: Request,
+	res: Response
+) => {
+	return responseBuilder(
+		res,
+		req.body.context,
+		onStatusBPPPaymentError.message,
+		`${req.body.context.bap_uri}/on_${ACTIONS.status}`,
+		`on_${ACTIONS.status}`
+	);
+};
+
+export const statusBPPpaymentController = (
+	req: Request,
+	res: Response
+) => {
+	return responseBuilder(
+		res,
+		req.body.context,
+		onStatusBPPPayment.message,
+		`${req.body.context.bap_uri}/on_${ACTIONS.status}`,
+		`on_${ACTIONS.status}`
+	);
+};
+
+export const statusSelfPickedUpController = (
+	req: Request,
+	res: Response
+) => {
+	return responseBuilder(
+		res,
+		req.body.context,
+		onStatusSelfPickedUp.message,
 		`${req.body.context.bap_uri}/on_${ACTIONS.status}`,
 		`on_${ACTIONS.status}`
 	);
