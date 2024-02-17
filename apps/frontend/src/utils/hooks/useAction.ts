@@ -5,7 +5,7 @@ import { NEXT_ACTION, SCENARIOS } from "../constants";
 export const useAction = () => {
 	const [action, setAction] = useState<string>();
 	const [logError, setLogError] = useState(false);
-	const [scenarios, setScenarios] = useState<{ name: string }[]>();
+	const [scenarios, setScenarios] = useState<{ name: string, scenario?: string }[]>();
 
 	const detectAction = _.debounce((log: string) => {
 		try {

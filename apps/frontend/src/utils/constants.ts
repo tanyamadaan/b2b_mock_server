@@ -29,16 +29,16 @@ export const NEXT_ACTION = {
 export const SCENARIOS = {
 	select: [
 		{
-			name: "Domestic",
-			scenario: "domestic",
+			name: "RFQ",
+			scenario: "rfq",
 		},
 		{
-			name: "Domestic Self-Pickup",
-			scenario: "domestic-self-pickup",
+			name: "Self-Pickup",
+			scenario: "self-pickup",
 		},
 		{
-			name: "Domestic Non-RFQ",
-			scenario: "domestic-non-rfq",
+			name: "Non-RFQ",
+			scenario: "non-rfq",
 		},
 		{
 			name: "BAP Chat",
@@ -51,16 +51,16 @@ export const SCENARIOS = {
 	],
 	on_select: [
 		{
-			name: "Domestic",
-			scenario: "domestic",
+			name: "RFQ",
+			scenario: "rfq",
 		},
 		{
-			name: "Domestic Self-Pickup",
-			scenario: "domestic-self-pickup",
+			name: "Self-Pickup",
+			scenario: "self-pickup",
 		},
 		{
-			name: "Domestic Non-RFQ",
-			scenario: "domestic-non-rfq",
+			name: "Non-RFQ",
+			scenario: "non-rfq",
 		},
 		{
 			name: "Exports",
@@ -77,16 +77,16 @@ export const SCENARIOS = {
 	],
 	init: [
 		{
-			name: "Domestic",
-			scenario: "domestic",
+			name: "RFQ",
+			scenario: "rfq",
 		},
 		{
-			name: "Domestic Non-RFQ",
-			scenario: "domestic-non-rfq",
+			name: "Non-RFQ",
+			scenario: "non-rfq",
 		},
 		{
-			name: "Domestic BPP Payment",
-			scenario: "domestic-bpp-payment",
+			name: "BPP Payment",
+			scenario: "bpp-payment",
 		},
 		{
 			name: "Exports",
@@ -95,20 +95,20 @@ export const SCENARIOS = {
 	],
 	on_init: [
 		{
-			name: "Domestic",
-			scenario: "domestic",
+			name: "RFQ",
+			scenario: "rfq",
 		},
 		{
-			name: "Domestic Non-RFQ",
-			scenario: "domestic-non-rfq",
+			name: "Non-RFQ",
+			scenario: "non-rfq",
 		},
 		{
-			name: "Domestic Payment BPP Non-RFQ",
-			scenario: "domestic-payment-bpp-non-rfq",
+			name: "Payment BPP Non-RFQ",
+			scenario: "payment-bpp-non-rfq",
 		},
 		{
-			name: "Domestic Self-Pickup",
-			scenario: "domestic-self-pickup",
+			name: "Self-Pickup",
+			scenario: "self-pickup",
 		},
 		{
 			name: "Exports",
@@ -121,30 +121,30 @@ export const SCENARIOS = {
 	],
 	confirm: [
 		{
-			name: "Domestic",
-			scenario: "domestic",
+			name: "RFQ",
+			scenario: "rfq",
 		},
 		{
 			name: "Exports",
 			scenario: "exports",
 		},
 		{
-			name: "Domestic Non-RFQ",
-			scenario: "domestic-non-rfq",
+			name: "Non-RFQ",
+			scenario: "non-rfq",
 		},
 	],
 	on_confirm: [
 		{
-			name: "Domestic Non-RFQ",
-			scenario: "domestic-non-rfq",
+			name: "Non-RFQ",
+			scenario: "non-rfq",
 		},
 		{
-			name: "Domestic Rejected",
-			scenario: "domestic-rejected",
+			name: "Rejected",
+			scenario: "rejected",
 		},
 		{
-			name: "Domestic",
-			scenario: "domestic",
+			name: "RFQ",
+			scenario: "rfq",
 		},
 		{
 			name: "Exports",

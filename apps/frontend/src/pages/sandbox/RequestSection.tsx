@@ -17,13 +17,16 @@ import Button from "@mui/joy/Button";
 import Option from "@mui/joy/Option";
 import { useAction, useSandbox } from "../../utils/hooks";
 import { URL_MAPPING } from "../../utils";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 export const RequestSection = () => {
 	const [authHeader, setAuthHeader] = useState<string>();
 	const [log, setLog] = useState<string>();
 	const [showCurl, setShowCurl] = useState(false);
-	const [activeScenario, setActiveScenario] = useState<object>();
+	const [activeScenario, setActiveScenario] = useState<{
+		name: string;
+		scenario: string;
+	}>();
 	const { action, detectAction, logError, scenarios } = useAction();
 	const { setSyncResponse } = useSandbox();
 	const [curl, setCurl] = useState<string>();
@@ -33,12 +36,12 @@ export const RequestSection = () => {
 		detectAction(e.target.value);
 	};
 	const handleSubmit = async () => {
-		const url = `${[import.meta.env.VITE_SERVER_URL]}/${Object.keys(
+		const url = `${[import.meta.env.VITE_SERVER_URL]}/b2b/${Object.keys(
 			URL_MAPPING
 		).filter((key) =>
 			URL_MAPPING[key as keyof typeof URL_MAPPING].includes(action as string)
-		)}/${action}?mode=sandbox`;
-		console.log("Form Values", log, activeScenario, url);
+		)}/${action}?mode=sandbox&scenario=${activeScenario?.scenario}`;
+
 		setCurl(`curl -X POST \\
 		  ${url} \\
 		-H 'accept: application/json' \\
@@ -46,19 +49,19 @@ export const RequestSection = () => {
 		-H 'authorization: ${authHeader} \\
 		-d '${log}'`);
 		try {
-			console.log("SENDING REQUEST");
 			const response = await axios.post(url, JSON.parse(log as string), {
 				headers: {
 					"Content-Type": "application/json",
 					authorization: authHeader,
 				},
 			});
-			console.log("RESPONSE RECEIVED", response);
+
 			if (response.data.error) {
 				setSyncResponse(response.data);
 			} else setSyncResponse(response.data.sync);
 		} catch (error) {
 			console.log("ERROR Occured while pinging backend:", error);
+			if (error instanceof AxiosError) setSyncResponse(error.response!.data);
 		}
 		setShowCurl(true);
 	};
@@ -142,8 +145,14 @@ export const RequestSection = () => {
 										}}
 									>
 										{scenarios?.map((scenario, index) => (
-											<Option value={scenario} key={"scenario-" + index}>
-												{scenario.name}
+											<Option
+												value={scenario}
+												key={"scenario-" + index}
+												disabled={!scenario.scenario}
+											>
+												{scenario.name + scenario.scenario
+													? ``
+													: "(Work In-Progress)"}
 											</Option>
 										))}
 									</Select>

@@ -152,7 +152,7 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 					backgroundColor: theme.palette.grey[100],
 				}}
 			>
-				<IconButton sx={{ mx: "auto" }} onClick={handleDrawerToggle}>
+				<IconButton sx={{ mx: "auto", display: {xs: "block", sm: "none"}}} onClick={handleDrawerToggle}>
 					<MenuIcon />
 				</IconButton>
 				{children}

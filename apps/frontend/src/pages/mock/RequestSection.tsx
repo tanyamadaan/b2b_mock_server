@@ -16,12 +16,12 @@ import { useState } from "react";
 import { CurlDisplay } from "../../components";
 import { useAction, useMock } from "../../utils/hooks";
 import { URL_MAPPING } from "../../utils";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 export const RequestSection = () => {
 	const [log, setLog] = useState<string>();
 	const [showCurl, setShowCurl] = useState(false);
-	const [activeScenario, setActiveScenario] = useState<object>();
+	const [activeScenario, setActiveScenario] = useState<{name: string, scenario: string}>();
 	const { action, detectAction, logError, scenarios } = useAction();
 	const { setAsyncResponse, setSyncResponse } = useMock();
 	const [curl, setCurl] = useState<string>();
@@ -32,11 +32,11 @@ export const RequestSection = () => {
 	};
 
 	const handleSubmit = async () => {
-		const url = `${[import.meta.env.VITE_SERVER_URL]}/${Object.keys(
+		const url = `${[import.meta.env.VITE_SERVER_URL]}/b2b/${Object.keys(
 			URL_MAPPING
 		).filter((key) =>
 			URL_MAPPING[key as keyof typeof URL_MAPPING].includes(action as string)
-		)}/${action}?mode=mock`;
+		)}/${action}?mode=mock&scenario=${activeScenario?.scenario}`;
 		console.log("Form Values", log, activeScenario, url);
 		setCurl(`curl -X POST \\
 		  ${url} \\
@@ -44,17 +44,20 @@ export const RequestSection = () => {
 		-H 'Content-Type: application/json' \\
 		-d '${log}'`);
 		try {
-			console.log("SENDING REQUEST");
+
 			const response = await axios.post(url, JSON.parse(log as string), {
 				headers: {
 					"Content-Type": "application/json",
 				},
 			});
-			console.log("RESPONSE RECEIVED", response);
+
 			setSyncResponse(response.data.sync);
 			setAsyncResponse(response.data.async);
 		} catch (error) {
 			console.log("ERROR Occured while pinging backend:", error);
+			setAsyncResponse({})
+			if(error instanceof AxiosError)
+			setSyncResponse(error.response!.data)
 		}
 		setShowCurl(true);
 	};
@@ -120,11 +123,12 @@ export const RequestSection = () => {
 										) => {
 											setActiveScenario(newValue);
 										}}
+										defaultValue={scenarios![0]}
 										disabled={scenarios?.length === 0}
 									>
 										{scenarios?.map((scenario, index) => (
-											<Option value={scenario} key={"scenario-" + index}>
-												{scenario.name}
+											<Option value={scenario} key={"scenario-" + index} disabled={!scenario.scenario}>
+												{scenario.name + scenario.scenario ? `` : "(Work In-Progress)"}
 											</Option>
 										))}
 									</Select>
