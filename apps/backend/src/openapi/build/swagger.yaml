@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: ONDC Mock Server - OpenAPI 3.0
+  title: ONDC B2B Mock Implementaion
   description: 'This is a Mock Server for integrating with ONDC. Currently, it supports B2B. An easy way to get started would be to ask yourself the two question - _"which network participant am I going to send to?"_ and _"what would be the action/on_action I am going to send?"_. With these you can easily construct the URL you need to mock and then find that among this list. <br />'
   contact:
     email: team@ondc.org
@@ -11,6 +11,9 @@ info:
 externalDocs:
   description: Find out more about ONDC
   url: 'https://ondc.org'
+servers:
+  - url: /b2b/bpp
+  - url: /b2b/bap
 tags:
   - name: B2B
     description: Everything for B2B domain
@@ -40,7 +43,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/auth_check_response'
-  /b2b/bpp/search:
+  /search:
     post:
       parameters:
         - in: query
@@ -64,7 +67,7 @@ paths:
               properties:
                 context:
                   allOf:
-                    - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0'
+                    - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0'
                     - properties:
                         action:
                           enum:
@@ -79,19 +82,19 @@ paths:
                         descriptor:
                           description: 'A raw description of the search intent. Free text search strings, raw audio, etc can be sent in this object.'
                           allOf:
-                            - $ref: '#/paths/~1b2b~1bap~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
+                            - $ref: '#/paths/~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
                         provider:
                           description: The provider from which the customer wants to place to the order from
                           allOf:
-                            - $ref: '#/paths/~1b2b~1bap~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/providers/items'
+                            - $ref: '#/paths/~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/providers/items'
                         fulfillment:
                           description: Details on how the customer wants their order fulfilled
                           allOf:
-                            - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/fulfillments/items'
+                            - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/fulfillments/items'
                         payment:
                           description: Details on how the customer wants to pay for the order
                           allOf:
-                            - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/payments/items'
+                            - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/payments/items'
                         category:
                           description: Details on the item category
                           allOf:
@@ -102,29 +105,29 @@ paths:
                                   description: ID of the category
                                   type: string
                                 parent_category_id:
-                                  $ref: '#/paths/~1b2b~1bpp~1search/post/requestBody/content/application~1json/schema/properties/message/properties/intent/properties/category/allOf/0/properties/id'
+                                  $ref: '#/paths/~1search/post/requestBody/content/application~1json/schema/properties/message/properties/intent/properties/category/allOf/0/properties/id'
                                 descriptor:
-                                  $ref: '#/paths/~1b2b~1bap~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
+                                  $ref: '#/paths/~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
                                 time:
-                                  $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items/properties/time'
+                                  $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items/properties/time'
                                 ttl:
                                   description: Time to live for an instance of this schema
                                 tags:
                                   type: array
                                   items:
-                                    $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/tags/items'
+                                    $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/tags/items'
                         offer:
                           description: details on the offer the customer wants to avail
                           allOf:
-                            - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items'
+                            - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items'
                         item:
                           description: Details of the item that the consumer wants to order
                           allOf:
-                            - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items'
+                            - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items'
                         tags:
                           type: array
                           items:
-                            $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/tags/items'
+                            $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/tags/items'
               required:
                 - context
                 - message
@@ -134,8 +137,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1b2b~1bpp~1init/post/responses/200/content/application~1json/schema'
-  /b2b/bpp/select:
+                $ref: '#/paths/~1init/post/responses/200/content/application~1json/schema'
+  /select:
     post:
       parameters:
         - in: query
@@ -152,9 +155,9 @@ paths:
           schema:
             type: string
             enum:
-              - domestic
-              - domestic-non-rfq
-              - domestic-self-pickup
+              - rfq
+              - non-rfq
+              - self-pickup
               - exports
               - non-serviceable
               - quantity-unavailable
@@ -171,7 +174,7 @@ paths:
               properties:
                 context:
                   allOf:
-                    - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0'
+                    - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0'
                     - properties:
                         action:
                           enum:
@@ -182,7 +185,7 @@ paths:
                   type: object
                   properties:
                     order:
-                      $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order'
+                      $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order'
                   required:
                     - order
               required:
@@ -194,8 +197,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1b2b~1bpp~1init/post/responses/200/content/application~1json/schema'
-  /b2b/bpp/init:
+                $ref: '#/paths/~1init/post/responses/200/content/application~1json/schema'
+  /init:
     post:
       parameters:
         - in: query
@@ -212,10 +215,10 @@ paths:
           schema:
             type: string
             enum:
-              - domestic
-              - domestic-non-rfq
-              - domestic-payment-bpp-non-rfq
-              - domestic-self-pickup
+              - rfq
+              - non-rfq
+              - payment-bpp-non-rfq
+              - self-pickup
               - exports
               - reject-rfq
           description: The Mode the Server needs to run the request in
@@ -247,7 +250,7 @@ paths:
                                 id:
                                   type: string
                                 descriptor:
-                                  $ref: '#/paths/~1b2b~1bap~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
+                                  $ref: '#/paths/~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
                                 map_url:
                                   description: The url to the map of the location. This can be a globally recognized map url or the one specified by the network policy.
                                   type: string
@@ -281,7 +284,7 @@ paths:
                                 state:
                                   description: 'The state this location is, or is located within'
                                   allOf:
-                                    - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/refund_terms/items/properties/fulfillment_state/allOf/0'
+                                    - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/refund_terms/items/properties/fulfillment_state/allOf/0'
                                 country:
                                   description: 'The country this location is, or is located within'
                                   allOf:
@@ -301,7 +304,7 @@ paths:
                                   type: object
                                   properties:
                                     gps:
-                                      $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/gps/allOf/0'
+                                      $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/gps/allOf/0'
                                     radius:
                                       description: Describes a scalar
                                       type: object
@@ -312,18 +315,18 @@ paths:
                                             - CONSTANT
                                             - VARIABLE
                                         value:
-                                          $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/price/allOf/0/properties/value'
+                                          $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/price/allOf/0/properties/value'
                                         estimated_value:
-                                          $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/price/allOf/0/properties/value'
+                                          $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/price/allOf/0/properties/value'
                                         computed_value:
-                                          $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/price/allOf/0/properties/value'
+                                          $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/price/allOf/0/properties/value'
                                         range:
                                           type: object
                                           properties:
                                             min:
-                                              $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/price/allOf/0/properties/value'
+                                              $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/price/allOf/0/properties/value'
                                             max:
-                                              $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/price/allOf/0/properties/value'
+                                              $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/price/allOf/0/properties/value'
                                         unit:
                                           type: string
                                 polygon:
@@ -335,7 +338,7 @@ paths:
                                 rating:
                                   description: The rating of this location
                                   allOf:
-                                    - $ref: '#/paths/~1b2b~1bap~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/providers/items/properties/rating'
+                                    - $ref: '#/paths/~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/providers/items/properties/rating'
                         action:
                           description: The Beckn protocol method being called by the sender and executed at the receiver.
                           type: string
@@ -356,11 +359,11 @@ paths:
                         bpp_id:
                           description: Subscriber ID of the BPP
                           allOf:
-                            - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/bap_id/allOf/0'
+                            - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/bap_id/allOf/0'
                         bpp_uri:
                           description: Subscriber URL of the BPP for accepting calls from BAPs.
                           allOf:
-                            - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/bap_uri/allOf/0'
+                            - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/bap_uri/allOf/0'
                         transaction_id:
                           description: 'This is a unique value which persists across all API calls from `search` through `confirm`. This is done to indicate an active user session across multiple requests. The BPPs can use this value to push personalized recommendations, and dynamic offerings related to an ongoing transaction despite being unaware of the user active on the BAP.'
                           type: string
@@ -418,7 +421,7 @@ paths:
                         provider:
                           description: Details of the provider whose catalog items have been selected.
                           allOf:
-                            - $ref: '#/paths/~1b2b~1bap~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/providers/items'
+                            - $ref: '#/paths/~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/providers/items'
                         items:
                           description: The items purchased / availed in this order
                           type: array
@@ -432,15 +435,15 @@ paths:
                               parent_item_id:
                                 description: 'ID of the item, this item is a variant of'
                                 allOf:
-                                  - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/id'
+                                  - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/id'
                               parent_item_quantity:
                                 description: The number of units of the parent item this item is a multiple of
                                 allOf:
-                                  - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/quantity/allOf/0'
+                                  - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/quantity/allOf/0'
                               descriptor:
                                 description: Physical description of the item
                                 allOf:
-                                  - $ref: '#/paths/~1b2b~1bap~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
+                                  - $ref: '#/paths/~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
                               creator:
                                 description: The creator of this item
                                 allOf:
@@ -448,25 +451,25 @@ paths:
                                     type: object
                                     properties:
                                       descriptor:
-                                        $ref: '#/paths/~1b2b~1bap~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
+                                        $ref: '#/paths/~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
                                       address:
                                         description: The postal address of the organization
                                         allOf:
-                                          - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/address/allOf/0'
+                                          - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/address/allOf/0'
                                       state:
                                         description: The state where the organization's address is registered
                                         allOf:
-                                          - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/refund_terms/items/properties/fulfillment_state/allOf/0'
+                                          - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/refund_terms/items/properties/fulfillment_state/allOf/0'
                                       city:
                                         description: The city where the the organization's address is registered
                                         allOf:
-                                          - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/city/allOf/0'
+                                          - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/city/allOf/0'
                                       contact:
-                                        $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/fulfillments/items/properties/contact'
+                                        $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/fulfillments/items/properties/contact'
                               price:
                                 description: 'The price of this item, if it has intrinsic value'
                                 allOf:
-                                  - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/add_ons/items/properties/price'
+                                  - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/add_ons/items/properties/price'
                               quantity:
                                 description: The selling quantity of the item
                                 allOf:
@@ -481,7 +484,7 @@ paths:
                                             type: integer
                                             minimum: 0
                                           measure:
-                                            $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/circle/properties/radius'
+                                            $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/circle/properties/radius'
                                       available:
                                         description: This represents the exact quantity available for purchase of the item. The buyer can only purchase multiples of this
                                         type: object
@@ -490,7 +493,7 @@ paths:
                                             type: integer
                                             minimum: 0
                                           measure:
-                                            $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/circle/properties/radius'
+                                            $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/circle/properties/radius'
                                       maximum:
                                         description: This represents the maximum quantity allowed for purchase of the item
                                         type: object
@@ -499,7 +502,7 @@ paths:
                                             type: integer
                                             minimum: 1
                                           measure:
-                                            $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/circle/properties/radius'
+                                            $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/circle/properties/radius'
                                       minimum:
                                         description: This represents the minimum quantity allowed for purchase of the item
                                         type: object
@@ -508,7 +511,7 @@ paths:
                                             type: integer
                                             minimum: 0
                                           measure:
-                                            $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/circle/properties/radius'
+                                            $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/circle/properties/radius'
                                       selected:
                                         description: This represents the quantity selected for purchase of the item
                                         type: object
@@ -517,7 +520,7 @@ paths:
                                             type: integer
                                             minimum: 0
                                           measure:
-                                            $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/circle/properties/radius'
+                                            $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/circle/properties/radius'
                                       unitized:
                                         description: This represents the quantity available in a single unit of the item
                                         type: object
@@ -527,70 +530,70 @@ paths:
                                             minimum: 1
                                             maximum: 1
                                           measure:
-                                            $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/circle/properties/radius'
+                                            $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/circle/properties/radius'
                               category_ids:
                                 description: Categories this item can be listed under
                                 type: array
                                 items:
                                   allOf:
-                                    - $ref: '#/paths/~1b2b~1bpp~1search/post/requestBody/content/application~1json/schema/properties/message/properties/intent/properties/category/allOf/0/properties/id'
+                                    - $ref: '#/paths/~1search/post/requestBody/content/application~1json/schema/properties/message/properties/intent/properties/category/allOf/0/properties/id'
                               fulfillment_ids:
                                 description: Modes through which this item can be fulfilled
                                 type: array
                                 items:
                                   allOf:
-                                    - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/fulfillments/items/properties/id'
+                                    - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/fulfillments/items/properties/id'
                               location_ids:
                                 description: Provider Locations this item is available in
                                 type: array
                                 items:
                                   allOf:
-                                    - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/id'
+                                    - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/id'
                               payment_ids:
                                 description: Payment modalities through which this item can be ordered
                                 type: array
                                 items:
                                   allOf:
-                                    - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/payments/items/properties/id'
+                                    - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/payments/items/properties/id'
                               add_ons:
                                 type: array
                                 items:
-                                  $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/add_ons/items'
+                                  $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/add_ons/items'
                               cancellation_terms:
                                 description: Cancellation terms of this item
                                 type: array
                                 items:
-                                  $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/cancellation_terms/items'
+                                  $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/cancellation_terms/items'
                               refund_terms:
                                 description: Refund terms of this item
                                 type: array
                                 items:
-                                  $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/refund_terms/items'
+                                  $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/refund_terms/items'
                               replacement_terms:
                                 description: Terms that are applicable be met when this item is replaced
                                 type: array
                                 items:
-                                  $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/replacement_terms/items'
+                                  $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/replacement_terms/items'
                               return_terms:
                                 description: Terms that are applicable when this item is returned
                                 type: array
                                 items:
-                                  $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/return_terms/items'
+                                  $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/return_terms/items'
                               xinput:
                                 description: Additional input required from the customer to purchase / avail this item
                                 allOf:
-                                  - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/xinput/allOf/0'
+                                  - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/xinput/allOf/0'
                               time:
                                 description: Temporal attributes of this item. This property is used when the item exists on the catalog only for a limited period of time.
                                 allOf:
-                                  - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items/properties/time'
+                                  - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items/properties/time'
                               rateable:
                                 description: Whether this item can be rated
                                 type: boolean
                               rating:
                                 description: The rating of the item
                                 allOf:
-                                  - $ref: '#/paths/~1b2b~1bap~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/providers/items/properties/rating'
+                                  - $ref: '#/paths/~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/providers/items/properties/rating'
                               matched:
                                 description: Whether this item is an exact match of the request
                                 type: boolean
@@ -606,7 +609,7 @@ paths:
                               tags:
                                 type: array
                                 items:
-                                  $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/tags/items'
+                                  $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/tags/items'
                         add_ons:
                           description: The add-ons purchased / availed in this order
                           type: array
@@ -618,7 +621,7 @@ paths:
                                 description: Provider-defined ID of the add-on
                                 type: string
                               descriptor:
-                                $ref: '#/paths/~1b2b~1bap~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
+                                $ref: '#/paths/~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
                               price:
                                 description: Describes the price of a product or service
                                 type: object
@@ -630,17 +633,17 @@ paths:
                                     type: string
                                     pattern: '[+-]?([0-9]*[.])?[0-9]+'
                                   estimated_value:
-                                    $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/price/allOf/0/properties/value'
+                                    $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/price/allOf/0/properties/value'
                                   computed_value:
-                                    $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/price/allOf/0/properties/value'
+                                    $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/price/allOf/0/properties/value'
                                   listed_value:
-                                    $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/price/allOf/0/properties/value'
+                                    $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/price/allOf/0/properties/value'
                                   offered_value:
-                                    $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/price/allOf/0/properties/value'
+                                    $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/price/allOf/0/properties/value'
                                   minimum_value:
-                                    $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/price/allOf/0/properties/value'
+                                    $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/price/allOf/0/properties/value'
                                   maximum_value:
-                                    $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/price/allOf/0/properties/value'
+                                    $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/price/allOf/0/properties/value'
                         offers:
                           description: The offers applied in this order
                           type: array
@@ -651,19 +654,19 @@ paths:
                               id:
                                 type: string
                               descriptor:
-                                $ref: '#/paths/~1b2b~1bap~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
+                                $ref: '#/paths/~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
                               location_ids:
                                 type: array
                                 items:
-                                  $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/id'
+                                  $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/id'
                               category_ids:
                                 type: array
                                 items:
-                                  $ref: '#/paths/~1b2b~1bpp~1search/post/requestBody/content/application~1json/schema/properties/message/properties/intent/properties/category/allOf/0/properties/id'
+                                  $ref: '#/paths/~1search/post/requestBody/content/application~1json/schema/properties/message/properties/intent/properties/category/allOf/0/properties/id'
                               item_ids:
                                 type: array
                                 items:
-                                  $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/id'
+                                  $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/id'
                               time:
                                 description: 'Describes time in its various forms. It can be a single point in time; duration; or a structured timetable of operations<br>This has properties like label, time stamp,duration,range, days, schedule'
                                 type: object
@@ -674,7 +677,7 @@ paths:
                                     type: string
                                     format: date-time
                                   duration:
-                                    $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/quote/allOf/0/properties/ttl'
+                                    $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/quote/allOf/0/properties/ttl'
                                   range:
                                     type: object
                                     properties:
@@ -692,7 +695,7 @@ paths:
                                     type: object
                                     properties:
                                       frequency:
-                                        $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/quote/allOf/0/properties/ttl'
+                                        $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/quote/allOf/0/properties/ttl'
                                       holidays:
                                         type: array
                                         items:
@@ -706,7 +709,7 @@ paths:
                               tags:
                                 type: array
                                 items:
-                                  $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/tags/items'
+                                  $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/tags/items'
                         billing:
                           description: The billing details of this order
                           allOf:
@@ -719,19 +722,19 @@ paths:
                                 organization:
                                   description: Details of the organization being billed.
                                   allOf:
-                                    - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/creator/allOf/0'
+                                    - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/creator/allOf/0'
                                 address:
                                   description: The address of the billable entity
                                   allOf:
-                                    - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/address/allOf/0'
+                                    - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/address/allOf/0'
                                 state:
                                   description: The state where the billable entity resides. This is important for state-level tax calculation
                                   allOf:
-                                    - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/refund_terms/items/properties/fulfillment_state/allOf/0'
+                                    - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/refund_terms/items/properties/fulfillment_state/allOf/0'
                                 city:
                                   description: The city where the billable entity resides.
                                   allOf:
-                                    - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/city/allOf/0'
+                                    - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0/properties/city/allOf/0'
                                 email:
                                   description: Email address where the bill is sent to
                                   type: string
@@ -742,7 +745,7 @@ paths:
                                 time:
                                   description: Details regarding the billing period
                                   allOf:
-                                    - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items/properties/time'
+                                    - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items/properties/time'
                                 tax_id:
                                   description: ID of the billable entity as recognized by the taxation authority
                                   type: string
@@ -765,7 +768,7 @@ paths:
                               rating:
                                 description: The rating value of the fulfullment service.
                                 allOf:
-                                  - $ref: '#/paths/~1b2b~1bap~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/providers/items/properties/rating'
+                                  - $ref: '#/paths/~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/providers/items/properties/rating'
                               state:
                                 description: The current state of fulfillment. The BPP must set this value whenever the state of the order fulfillment changes and fire an unsolicited `on_status` call.
                                 allOf:
@@ -773,7 +776,7 @@ paths:
                                     type: object
                                     properties:
                                       descriptor:
-                                        $ref: '#/paths/~1b2b~1bap~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
+                                        $ref: '#/paths/~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
                                       updated_at:
                                         type: string
                                         format: date-time
@@ -791,9 +794,9 @@ paths:
                                     type: object
                                     properties:
                                       person:
-                                        $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/provider/allOf/0/properties/fulfillments/items/properties/agent/allOf/0/properties/person'
+                                        $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/provider/allOf/0/properties/fulfillments/items/properties/agent/allOf/0/properties/person'
                                       contact:
-                                        $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/fulfillments/items/properties/contact'
+                                        $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/fulfillments/items/properties/contact'
                               agent:
                                 description: The agent that is currently handling the fulfillment of the order
                                 allOf:
@@ -814,11 +817,11 @@ paths:
                                             description: the name of the person
                                             type: string
                                           image:
-                                            $ref: '#/paths/~1b2b~1bap~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor/properties/images/items'
+                                            $ref: '#/paths/~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor/properties/images/items'
                                           age:
                                             description: Age of the person
                                             allOf:
-                                              - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/quote/allOf/0/properties/ttl'
+                                              - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/quote/allOf/0/properties/ttl'
                                           dob:
                                             description: Date of birth of the person
                                             type: string
@@ -864,13 +867,13 @@ paths:
                                           tags:
                                             type: array
                                             items:
-                                              $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/tags/items'
+                                              $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/tags/items'
                                       contact:
-                                        $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/fulfillments/items/properties/contact'
+                                        $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/fulfillments/items/properties/contact'
                                       organization:
-                                        $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/creator/allOf/0'
+                                        $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/creator/allOf/0'
                                       rating:
-                                        $ref: '#/paths/~1b2b~1bap~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/providers/items/properties/rating'
+                                        $ref: '#/paths/~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/providers/items/properties/rating'
                               contact:
                                 description: Describes the contact information of an entity
                                 type: object
@@ -928,26 +931,26 @@ paths:
                                     location:
                                       description: Location of the stop
                                       allOf:
-                                        - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0'
+                                        - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0'
                                     type:
                                       description: The type of stop. Allowed values of this property can be defined by the network policy.
                                       type: string
                                     time:
                                       description: Timings applicable at the stop.
                                       allOf:
-                                        - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items/properties/time'
+                                        - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items/properties/time'
                                     instructions:
                                       description: Instructions that need to be followed at the stop
                                       allOf:
-                                        - $ref: '#/paths/~1b2b~1bap~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
+                                        - $ref: '#/paths/~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
                                     contact:
                                       description: Contact details of the stop
                                       allOf:
-                                        - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/fulfillments/items/properties/contact'
+                                        - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/fulfillments/items/properties/contact'
                                     person:
                                       description: The details of the person present at the stop
                                       allOf:
-                                        - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/provider/allOf/0/properties/fulfillments/items/properties/agent/allOf/0/properties/person'
+                                        - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/provider/allOf/0/properties/fulfillments/items/properties/agent/allOf/0/properties/person'
                                     authorization:
                                       description: 'Describes an authorization mechanism used to start or end the fulfillment of an order. For example, in the mobility sector, the driver may require a one-time password to initiate the ride. In the healthcare sector, a patient may need to provide a password to open a video conference link during a teleconsultation.'
                                       type: object
@@ -975,7 +978,7 @@ paths:
                               tags:
                                 type: array
                                 items:
-                                  $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/tags/items'
+                                  $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/tags/items'
                         cancellation:
                           description: The cancellation details of this order
                           allOf:
@@ -1000,11 +1003,11 @@ paths:
                                         id:
                                           type: string
                                         descriptor:
-                                          $ref: '#/paths/~1b2b~1bap~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
+                                          $ref: '#/paths/~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
                                 additional_description:
                                   description: Any additional information regarding the nature of cancellation
                                   allOf:
-                                    - $ref: '#/paths/~1b2b~1bap~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
+                                    - $ref: '#/paths/~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
                         cancellation_terms:
                           description: Cancellation terms of this item
                           type: array
@@ -1015,14 +1018,14 @@ paths:
                               fulfillment_state:
                                 description: The state of fulfillment during which this term is applicable.
                                 allOf:
-                                  - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/fulfillments/items/properties/state/allOf/0'
+                                  - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/fulfillments/items/properties/state/allOf/0'
                               reason_required:
                                 description: Indicates whether a reason is required to cancel the order
                                 type: boolean
                               cancel_by:
                                 description: Information related to the time of cancellation.
                                 allOf:
-                                  - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items/properties/time'
+                                  - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items/properties/time'
                               cancellation_fee:
                                 description: A fee applied on a particular entity
                                 type: object
@@ -1030,15 +1033,15 @@ paths:
                                   percentage:
                                     description: Percentage of a value
                                     allOf:
-                                      - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/price/allOf/0/properties/value'
+                                      - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items/properties/price/allOf/0/properties/value'
                                   amount:
                                     description: A fixed value
                                     allOf:
-                                      - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/add_ons/items/properties/price'
+                                      - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/add_ons/items/properties/price'
                               xinput:
-                                $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/xinput/allOf/0'
+                                $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/xinput/allOf/0'
                               external_ref:
-                                $ref: '#/paths/~1b2b~1bap~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor/properties/media/items'
+                                $ref: '#/paths/~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor/properties/media/items'
                         refund_terms:
                           description: Refund terms of this item
                           type: array
@@ -1064,9 +1067,9 @@ paths:
                               refund_within:
                                 description: Time within which refund will be processed after successful cancellation.
                                 allOf:
-                                  - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items/properties/time'
+                                  - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items/properties/time'
                               refund_amount:
-                                $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/add_ons/items/properties/price'
+                                $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/add_ons/items/properties/price'
                         replacement_terms:
                           description: Replacement terms of this item
                           type: array
@@ -1077,13 +1080,13 @@ paths:
                               fulfillment_state:
                                 description: The state of fulfillment during which this term is applicable.
                                 allOf:
-                                  - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/refund_terms/items/properties/fulfillment_state/allOf/0'
+                                  - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/refund_terms/items/properties/fulfillment_state/allOf/0'
                               replace_within:
                                 description: 'Applicable only for buyer managed returns where the buyer has to replace the item before a certain date-time, failing which they will not be eligible for replacement'
                                 allOf:
-                                  - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items/properties/time'
+                                  - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items/properties/time'
                               external_ref:
-                                $ref: '#/paths/~1b2b~1bap~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor/properties/media/items'
+                                $ref: '#/paths/~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor/properties/media/items'
                         return_terms:
                           description: Return terms of this item
                           type: array
@@ -1094,18 +1097,18 @@ paths:
                               fulfillment_state:
                                 description: The state of fulfillment during which this term IETF''s applicable.
                                 allOf:
-                                  - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/refund_terms/items/properties/fulfillment_state/allOf/0'
+                                  - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/refund_terms/items/properties/fulfillment_state/allOf/0'
                               return_eligible:
                                 description: Indicates whether the item is eligible for return
                                 type: boolean
                               return_time:
                                 description: 'Applicable only for buyer managed returns where the buyer has to return the item to the origin before a certain date-time, failing which they will not be eligible for refund.'
                                 allOf:
-                                  - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items/properties/time'
+                                  - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items/properties/time'
                               return_location:
                                 description: The location where the item or order must / will be returned to
                                 allOf:
-                                  - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0'
+                                  - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0'
                               fulfillment_managed_by:
                                 description: The entity that will perform the return
                                 type: string
@@ -1125,7 +1128,7 @@ paths:
                                 price:
                                   description: The total quoted price
                                   allOf:
-                                    - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/add_ons/items/properties/price'
+                                    - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/add_ons/items/properties/price'
                                 breakup:
                                   description: the breakup of the total quoted price
                                   type: array
@@ -1133,11 +1136,11 @@ paths:
                                     type: object
                                     properties:
                                       item:
-                                        $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items'
+                                        $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items'
                                       title:
                                         type: string
                                       price:
-                                        $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/add_ons/items/properties/price'
+                                        $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/add_ons/items/properties/price'
                                 ttl:
                                   description: Describes duration as per ISO8601 format
                                   type: string
@@ -1192,11 +1195,11 @@ paths:
                                   - PAID
                                   - NOT-PAID
                               time:
-                                $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items/properties/time'
+                                $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items/properties/time'
                               tags:
                                 type: array
                                 items:
-                                  $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/tags/items'
+                                  $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/tags/items'
                         created_at:
                           description: The date-time of creation of this order
                           type: string
@@ -1249,7 +1252,7 @@ paths:
                               descriptor:
                                 description: 'Description of the TagGroup, can be used to store detailed information.'
                                 allOf:
-                                  - $ref: '#/paths/~1b2b~1bap~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
+                                  - $ref: '#/paths/~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
                               list:
                                 description: 'An array of Tag objects listed under this group. This property can be set by BAPs during search to narrow the `search` and achieve more relevant results. When received during `on_search`, BAPs must render this list under the heading described by the `name` property of this schema.'
                                 type: array
@@ -1260,7 +1263,7 @@ paths:
                                     descriptor:
                                       description: 'Description of the Tag, can be used to store detailed information.'
                                       allOf:
-                                        - $ref: '#/paths/~1b2b~1bap~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
+                                        - $ref: '#/paths/~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
                                     value:
                                       description: The value of the tag. This set by the BPP and rendered as-is by the BAP.
                                       type: string
@@ -1302,7 +1305,7 @@ paths:
                                       description: A list of tags containing any additional information sent along with the Acknowledgement.
                                       type: array
                                       items:
-                                        $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/tags/items'
+                                        $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/tags/items'
                                 - properties:
                                     status:
                                       enum:
@@ -1311,10 +1314,10 @@ paths:
                           required:
                             - ack
                         error:
-                          $ref: '#/paths/~1b2b~1bap~1on_init/post/requestBody/content/application~1json/schema/properties/error'
+                          $ref: '#/paths/~1on_init/post/requestBody/content/application~1json/schema/properties/error'
                       required:
                         - message
-  /b2b/bpp/confirm:
+  /confirm:
     post:
       parameters:
         - in: query
@@ -1331,10 +1334,10 @@ paths:
           schema:
             type: string
             enum:
-              - domestic
-              - domestic-non-rfq
+              - rfq
+              - non-rfq
               - exports
-              - domestic-rejected
+              - rejected
           description: The Mode the Server needs to run the request in
       tags:
         - B2B
@@ -1348,7 +1351,7 @@ paths:
               properties:
                 context:
                   allOf:
-                    - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0'
+                    - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0'
                     - properties:
                         action:
                           enum:
@@ -1359,7 +1362,7 @@ paths:
                   type: object
                   properties:
                     order:
-                      $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order'
+                      $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order'
                   required:
                     - order
               required:
@@ -1371,8 +1374,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1b2b~1bpp~1init/post/responses/200/content/application~1json/schema'
-  /b2b/bpp/update:
+                $ref: '#/paths/~1init/post/responses/200/content/application~1json/schema'
+  /update:
     post:
       parameters:
         - in: query
@@ -1391,6 +1394,7 @@ paths:
             enum:
               - fulfillment
               - prepaid
+              - prepaid_bap
           description: The Mode the Server needs to run the request in
       tags:
         - B2B
@@ -1404,7 +1408,7 @@ paths:
               properties:
                 context:
                   allOf:
-                    - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0'
+                    - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0'
                     - properties:
                         action:
                           enum:
@@ -1420,7 +1424,7 @@ paths:
                     order:
                       description: Updated order object
                       allOf:
-                        - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order'
+                        - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order'
                   required:
                     - update_target
                     - order
@@ -1433,8 +1437,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1b2b~1bpp~1init/post/responses/200/content/application~1json/schema'
-  /b2b/bpp/status:
+                $ref: '#/paths/~1init/post/responses/200/content/application~1json/schema'
+  /status:
     post:
       parameters:
         - in: query
@@ -1455,6 +1459,9 @@ paths:
               - out-for-delivery
               - picked-up
               - proforma-invoice
+              - bpp_payment_error
+              - bpp_payment
+              - self_picked_up
           description: The Mode the Server needs to run the request in
       tags:
         - B2B
@@ -1468,7 +1475,7 @@ paths:
               properties:
                 context:
                   allOf:
-                    - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0'
+                    - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0'
                     - properties:
                         action:
                           enum:
@@ -1479,7 +1486,7 @@ paths:
                   type: object
                   properties:
                     order_id:
-                      $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/id'
+                      $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/id'
                   required:
                     - order_id
               required:
@@ -1491,8 +1498,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1b2b~1bpp~1init/post/responses/200/content/application~1json/schema'
-  /b2b/bap/on_search:
+                $ref: '#/paths/~1init/post/responses/200/content/application~1json/schema'
+  /on_search:
     post:
       parameters:
         - in: query
@@ -1509,9 +1516,9 @@ paths:
           schema:
             type: string
             enum:
-              - domestic
-              - domestic-non-rfq
-              - domestic-self-pickup
+              - rfq
+              - non-rfq
+              - self-pickup
               - exports
               - bap-chat
           description: The Mode the Server needs to run the request in
@@ -1527,7 +1534,7 @@ paths:
               properties:
                 context:
                   allOf:
-                    - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0'
+                    - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0'
                     - properties:
                         action:
                           enum:
@@ -1613,17 +1620,17 @@ paths:
                           description: Fulfillment modes offered at the BPP level. This is used when a BPP itself offers fulfillments on behalf of the providers it has onboarded.
                           type: array
                           items:
-                            $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/fulfillments/items'
+                            $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/fulfillments/items'
                         payments:
                           description: Payment terms offered by the BPP for all transactions. This can be overriden at the provider level.
                           type: array
                           items:
-                            $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/payments/items'
+                            $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/payments/items'
                         offers:
                           description: Offers at the BPP-level. This is common across all providers onboarded by the BPP.
                           type: array
                           items:
-                            $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items'
+                            $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items'
                         providers:
                           type: array
                           items:
@@ -1634,7 +1641,7 @@ paths:
                                 type: string
                                 description: Id of the provider
                               descriptor:
-                                $ref: '#/paths/~1b2b~1bap~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
+                                $ref: '#/paths/~1on_search/post/requestBody/content/application~1json/schema/properties/message/properties/catalog/properties/descriptor'
                               category_id:
                                 type: string
                                 description: Category Id of the provider at the BPP-level catalog
@@ -1642,31 +1649,31 @@ paths:
                                 description: 'Rating value given to the object. This can be a single value or can also contain an inequality operator like gt, gte, lt, lte. This can also contain an inequality expression containing logical operators like && and ||.'
                                 type: string
                               time:
-                                $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items/properties/time'
+                                $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items/properties/time'
                               categories:
                                 type: array
                                 items:
-                                  $ref: '#/paths/~1b2b~1bpp~1search/post/requestBody/content/application~1json/schema/properties/message/properties/intent/properties/category/allOf/0'
+                                  $ref: '#/paths/~1search/post/requestBody/content/application~1json/schema/properties/message/properties/intent/properties/category/allOf/0'
                               fulfillments:
                                 type: array
                                 items:
-                                  $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/fulfillments/items'
+                                  $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/fulfillments/items'
                               payments:
                                 type: array
                                 items:
-                                  $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/payments/items'
+                                  $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/payments/items'
                               locations:
                                 type: array
                                 items:
-                                  $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0'
+                                  $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0/properties/location/allOf/0'
                               offers:
                                 type: array
                                 items:
-                                  $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items'
+                                  $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/offers/items'
                               items:
                                 type: array
                                 items:
-                                  $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items'
+                                  $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/items/items'
                               exp:
                                 type: string
                                 description: Time after which catalog has to be refreshed
@@ -1681,7 +1688,7 @@ paths:
                               tags:
                                 type: array
                                 items:
-                                  $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/tags/items'
+                                  $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order/properties/tags/items'
                         exp:
                           description: Timestamp after which catalog will expire
                           type: string
@@ -1692,7 +1699,7 @@ paths:
                   required:
                     - catalog
                 error:
-                  $ref: '#/paths/~1b2b~1bap~1on_init/post/requestBody/content/application~1json/schema/properties/error'
+                  $ref: '#/paths/~1on_init/post/requestBody/content/application~1json/schema/properties/error'
               required:
                 - context
       responses:
@@ -1701,8 +1708,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1b2b~1bpp~1init/post/responses/200/content/application~1json/schema'
-  /b2b/bap/on_init:
+                $ref: '#/paths/~1init/post/responses/200/content/application~1json/schema'
+  /on_init:
     post:
       parameters:
         - in: query
@@ -1719,8 +1726,8 @@ paths:
           schema:
             type: string
             enum:
-              - domestic
-              - domestic-non-rfq
+              - rfq
+              - non-rfq
               - exports
           description: The Mode the Server needs to run the request in
       tags:
@@ -1735,7 +1742,7 @@ paths:
               properties:
                 context:
                   allOf:
-                    - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0'
+                    - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0'
                     - properties:
                         action:
                           enum:
@@ -1746,7 +1753,7 @@ paths:
                   type: object
                   properties:
                     order:
-                      $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order'
+                      $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order'
                   required:
                     - order
                 error:
@@ -1770,8 +1777,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1b2b~1bpp~1init/post/responses/200/content/application~1json/schema'
-  /b2b/bap/on_select:
+                $ref: '#/paths/~1init/post/responses/200/content/application~1json/schema'
+  /on_select:
     post:
       parameters:
         - in: query
@@ -1788,10 +1795,10 @@ paths:
           schema:
             type: string
             enum:
-              - domestic
-              - domestic-non-rfq
+              - rfq
+              - non-rfq
               - exports
-              - domestic-bpp-payment
+              - bpp-payment
           description: The Mode the Server needs to run the request in
       tags:
         - B2B
@@ -1805,7 +1812,7 @@ paths:
               properties:
                 context:
                   allOf:
-                    - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0'
+                    - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0'
                     - properties:
                         action:
                           enum:
@@ -1816,9 +1823,9 @@ paths:
                   type: object
                   properties:
                     order:
-                      $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order'
+                      $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order'
                 error:
-                  $ref: '#/paths/~1b2b~1bap~1on_init/post/requestBody/content/application~1json/schema/properties/error'
+                  $ref: '#/paths/~1on_init/post/requestBody/content/application~1json/schema/properties/error'
               required:
                 - context
       responses:
@@ -1827,8 +1834,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1b2b~1bpp~1init/post/responses/200/content/application~1json/schema'
-  /b2b/bap/on_confirm:
+                $ref: '#/paths/~1init/post/responses/200/content/application~1json/schema'
+  /on_confirm:
     post:
       parameters:
         - in: query
@@ -1852,7 +1859,7 @@ paths:
               properties:
                 context:
                   allOf:
-                    - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0'
+                    - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0'
                     - properties:
                         action:
                           enum:
@@ -1863,11 +1870,11 @@ paths:
                   type: object
                   properties:
                     order:
-                      $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order'
+                      $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order'
                   required:
                     - order
                 error:
-                  $ref: '#/paths/~1b2b~1bap~1on_init/post/requestBody/content/application~1json/schema/properties/error'
+                  $ref: '#/paths/~1on_init/post/requestBody/content/application~1json/schema/properties/error'
               required:
                 - context
       responses:
@@ -1876,8 +1883,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1b2b~1bpp~1init/post/responses/200/content/application~1json/schema'
-  /b2b/bap/on_update:
+                $ref: '#/paths/~1init/post/responses/200/content/application~1json/schema'
+  /on_update:
     post:
       parameters:
         - in: query
@@ -1901,7 +1908,7 @@ paths:
               properties:
                 context:
                   allOf:
-                    - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0'
+                    - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0'
                     - properties:
                         action:
                           enum:
@@ -1912,11 +1919,11 @@ paths:
                   type: object
                   properties:
                     order:
-                      $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order'
+                      $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order'
                   required:
                     - order
                 error:
-                  $ref: '#/paths/~1b2b~1bap~1on_init/post/requestBody/content/application~1json/schema/properties/error'
+                  $ref: '#/paths/~1on_init/post/requestBody/content/application~1json/schema/properties/error'
               required:
                 - context
       responses:
@@ -1925,8 +1932,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1b2b~1bpp~1init/post/responses/200/content/application~1json/schema'
-  /b2b/bap/on_status:
+                $ref: '#/paths/~1init/post/responses/200/content/application~1json/schema'
+  /on_status:
     post:
       parameters:
         - in: query
@@ -1950,7 +1957,7 @@ paths:
               properties:
                 context:
                   allOf:
-                    - $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0'
+                    - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/context/allOf/0'
                     - properties:
                         action:
                           enum:
@@ -1961,11 +1968,11 @@ paths:
                   type: object
                   properties:
                     order:
-                      $ref: '#/paths/~1b2b~1bpp~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order'
+                      $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/properties/message/properties/order'
                   required:
                     - order
                 error:
-                  $ref: '#/paths/~1b2b~1bap~1on_init/post/requestBody/content/application~1json/schema/properties/error'
+                  $ref: '#/paths/~1on_init/post/requestBody/content/application~1json/schema/properties/error'
               required:
                 - context
       responses:
@@ -1974,7 +1981,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1b2b~1bpp~1init/post/responses/200/content/application~1json/schema'
+                $ref: '#/paths/~1init/post/responses/200/content/application~1json/schema'
 components:
   securitySchemes:
     ApiKeyAuth:

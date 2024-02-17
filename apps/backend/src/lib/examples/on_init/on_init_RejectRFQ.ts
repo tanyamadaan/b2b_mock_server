@@ -3,7 +3,7 @@ export const onInitRejectRFQ = {
     domain: "ONDC:RET10",
     location: {
       city: {
-        code: "std:080"
+        code: "std:999"
       },
       country: {
         code: "IND"

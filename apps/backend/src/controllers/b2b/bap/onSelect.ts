@@ -5,16 +5,16 @@ import { ACTIONS, responseBuilder } from "../../../lib/utils";
 export const onSelectController = (req: Request, res: Response) => {
 	const { scenario } = req.query
 	switch (scenario) {
-		case 'domestic':
+		case 'rfq':
 			onSelectDomesticController(req, res)
 			break;
-		case 'domestic-non-rfq':
+		case 'non-rfq':
 			onSelectDomesticNonRfqController(req, res)
 			break;
 		case 'exports':
 			onSelectExportsController(req, res)
 			break;
-		case 'domestic-bpp-payment':
+		case 'bpp-payment':
 			onSelectDomesticBPPPaymentController(req, res)
 			break;
 		default:

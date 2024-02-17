@@ -5,13 +5,13 @@ import { ACTIONS, quoteCreator, responseBuilder } from "../../../lib/utils";
 export const selectController = (req: Request, res: Response) => {
 	const { scenario } = req.query
 	switch (scenario) {
-		case 'domestic':
+		case 'rfq':
 			selectDomesticController(req, res)
 			break;
-		case 'domestic-non-rfq':
+		case 'non-rfq':
 			selectDomesticNonRfqController(req, res)
 			break;
-		case 'domestic-self-pickup':
+		case 'self-pickup':
 			selectDomesticSelfPickupController(req, res)
 			break;
 		case 'exports':

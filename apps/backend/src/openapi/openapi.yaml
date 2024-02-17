@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: ONDC Mock Server - OpenAPI 3.0
+  title: ONDC B2B Mock Implementaion
   description: >-
     This is a Mock Server for integrating with ONDC. Currently, it supports B2B.
     An easy way to get started would be to ask yourself the two question -
@@ -16,6 +16,9 @@ info:
 externalDocs:
   description: Find out more about ONDC
   url: https://ondc.org
+servers:
+  - url: /b2b/bpp
+  - url: /b2b/bap
 tags:
   - name: B2B
     description: Everything for B2B domain
@@ -53,7 +56,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/auth_check_response'
            
-  /b2b/bpp/search:
+  /search:
     post:
       parameters:
         - in: query
@@ -81,7 +84,7 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /b2b/bpp/select:
+  /select:
     post:
       parameters:
         - in: query
@@ -98,9 +101,9 @@ paths:
           schema:
             type: string
             enum:
-              - domestic
-              - domestic-non-rfq
-              - domestic-self-pickup
+              - rfq
+              - non-rfq
+              - self-pickup
               - exports
               - non-serviceable
               - quantity-unavailable
@@ -121,7 +124,7 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /b2b/bpp/init:
+  /init:
     post:
       parameters:
         - in: query
@@ -138,10 +141,10 @@ paths:
           schema:
             type: string
             enum:
-              - domestic
-              - domestic-non-rfq
-              - domestic-payment-bpp-non-rfq
-              - domestic-self-pickup
+              - rfq
+              - non-rfq
+              - payment-bpp-non-rfq
+              - self-pickup
               - exports
               - reject-rfq
           description: The Mode the Server needs to run the request in
@@ -161,7 +164,7 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /b2b/bpp/confirm:
+  /confirm:
     post:
       parameters:
         - in: query
@@ -178,10 +181,10 @@ paths:
           schema:
             type: string
             enum:
-              - domestic
-              - domestic-non-rfq
+              - rfq
+              - non-rfq
               - exports
-              - domestic-rejected
+              - rejected
           description: The Mode the Server needs to run the request in
       tags:
         - B2B
@@ -199,7 +202,7 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /b2b/bpp/update:
+  /update:
     post:
       parameters:
         - in: query
@@ -218,6 +221,7 @@ paths:
             enum:
               - fulfillment
               - prepaid
+              - prepaid_bap
           description: The Mode the Server needs to run the request in
       tags:
         - B2B
@@ -235,7 +239,7 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml 
-  /b2b/bpp/status:
+  /status:
     post:
       parameters:
         - in: query
@@ -256,6 +260,9 @@ paths:
               - out-for-delivery
               - picked-up
               - proforma-invoice
+              - bpp_payment_error
+              - bpp_payment
+              - self_picked_up
           description: The Mode the Server needs to run the request in
       tags:
         - B2B
@@ -273,7 +280,7 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /b2b/bap/on_search:
+  /on_search:
     post:
       parameters:
         - in: query
@@ -290,9 +297,9 @@ paths:
           schema:
             type: string
             enum:
-              - domestic
-              - domestic-non-rfq
-              - domestic-self-pickup
+              - rfq
+              - non-rfq
+              - self-pickup
               - exports
               - bap-chat
           description: The Mode the Server needs to run the request in
@@ -312,7 +319,7 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /b2b/bap/on_init:
+  /on_init:
     post:
       parameters:
         - in: query
@@ -329,8 +336,8 @@ paths:
           schema:
             type: string
             enum:
-              - domestic
-              - domestic-non-rfq
+              - rfq
+              - non-rfq
               - exports
           description: The Mode the Server needs to run the request in
       tags:
@@ -349,7 +356,7 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /b2b/bap/on_select:
+  /on_select:
     post:
       parameters:
         - in: query
@@ -366,10 +373,10 @@ paths:
           schema:
             type: string
             enum:
-              - domestic
-              - domestic-non-rfq
+              - rfq
+              - non-rfq
               - exports
-              - domestic-bpp-payment
+              - bpp-payment
           description: The Mode the Server needs to run the request in
       tags:
         - B2B
@@ -387,7 +394,7 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /b2b/bap/on_confirm:
+  /on_confirm:
     post:
       parameters:
         - in: query
@@ -415,7 +422,7 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /b2b/bap/on_update:
+  /on_update:
     post:
       parameters:
         - in: query
@@ -443,7 +450,7 @@ paths:
             application/json:
               schema:
                 $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
-  /b2b/bap/on_status:
+  /on_status:
     post:
       parameters:
         - in: query
