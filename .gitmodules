@@ -1,3 +1,7 @@
+[submodule "apps/backend/domain-repos/@retail-b2b/2.0.2"]
+	path = apps/backend/domain-repos/@retail-b2b/2.0.2
+	url = https://github.com/ONDC-Official/ONDC-RET-Specifications
+	branch = release-2.0.2
 [submodule "apps/backend/beckn-core"]
 	path = apps/backend/beckn-core
 	url = https://github.com/beckn/protocol-specifications

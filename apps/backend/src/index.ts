@@ -9,12 +9,12 @@ import cors from "cors";
 const app: Express = express();
 const port = process.env.PORT || 3000;
 
-const file = fs.readFileSync(path.join(__dirname, "./openapi/build/swagger.yaml"), "utf8");
-const swaggerDocument = YAML.parse(file);
+const file = fs.readFileSync(path.join(__dirname, "./openapi/retail-b2b/build/swagger.yaml"), "utf8");
+const b2bSwaggerDocument = YAML.parse(file);
 
 app.use(cors())
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use("/api-docs/b2b", swaggerUi.serve, swaggerUi.setup(b2bSwaggerDocument));
 
 app.use(express.json({ limit: "50mb" }));
 app.get("/", (req: Request, res: Response) => {
