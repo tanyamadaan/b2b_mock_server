@@ -74,6 +74,7 @@ export const RequestSection = () => {
 						<FormControl error={logError} sx={{ width: "100%" }}>
 							<Textarea
 								minRows={5}
+								maxRows={15}
 								sx={{ width: "100%" }}
 								placeholder="Enter Your Log..."
 								value={log}
@@ -128,7 +129,7 @@ export const RequestSection = () => {
 									>
 										{scenarios?.map((scenario, index) => (
 											<Option value={scenario} key={"scenario-" + index} disabled={!scenario.scenario}>
-												{scenario.name + scenario.scenario ? `` : "(Work In-Progress)"}
+												{scenario.name + (scenario.scenario ? `` : "(Work In-Progress)")}
 											</Option>
 										))}
 									</Select>
@@ -138,7 +139,7 @@ export const RequestSection = () => {
 						<Button
 							variant="solid"
 							onClick={handleSubmit}
-							disabled={logError || !action}
+							disabled={logError || !action || !activeScenario}
 						>
 							Submit
 						</Button>

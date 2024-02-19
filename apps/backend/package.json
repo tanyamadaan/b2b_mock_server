@@ -48,6 +48,6 @@
 		"typescript": "^5.3.3"
 	},
 	"exports": {
-		"./swagger.yaml": "./src/openapi/build/swagger.yaml"
+		"./retail-b2b/swagger.yaml": "./src/openapi/retail-b2b/build/swagger.yaml"
 	}
 }

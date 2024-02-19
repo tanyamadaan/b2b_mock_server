@@ -129,15 +129,20 @@ paths:
               $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/Select.yaml
             examples:
               select_BAP_chat:
-                $ref: ../../../apps/backend/domain-repos/@retail-b2b/2.0.2/api/components/Examples/B2B/select/select_BAP_chat.yaml#/value
+                value:
+                  $ref: ../../../apps/backend/domain-repos/@retail-b2b/2.0.2/api/components/Examples/B2B/select/select_BAP_chat.yaml#/value
               select_domestic_SelfPickup:
-                $ref: ../../../apps/backend/domain-repos/@retail-b2b/2.0.2/api/components/Examples/B2B/select/select_domestic_SelfPickup.yaml#/value
+                value:
+                  $ref: ../../../apps/backend/domain-repos/@retail-b2b/2.0.2/api/components/Examples/B2B/select/select_domestic_SelfPickup.yaml#/value
               select_domestic:
-                $ref: ../../../apps/backend/domain-repos/@retail-b2b/2.0.2/api/components/Examples/B2B/select/select_domestic.yaml#/value
+                value:
+                  $ref: ../../../apps/backend/domain-repos/@retail-b2b/2.0.2/api/components/Examples/B2B/select/select_domestic.yaml#/value
               select_domestic(Non RFQ):
-                $ref: ../../../apps/backend/domain-repos/@retail-b2b/2.0.2/api/components/Examples/B2B/select/select_domestic(Non RFQ).yaml#/value
+                value:
+                  $ref: ../../../apps/backend/domain-repos/@retail-b2b/2.0.2/api/components/Examples/B2B/select/select_domestic(Non RFQ).yaml#/value
               select_exports:
-                $ref: ../../../apps/backend/domain-repos/@retail-b2b/2.0.2/api/components/Examples/B2B/select/select_exports.yaml#/value
+                value:
+                  $ref: ../../../apps/backend/domain-repos/@retail-b2b/2.0.2/api/components/Examples/B2B/select/select_exports.yaml#/value
       responses:
         '200':
           description: Successfull response from BPP

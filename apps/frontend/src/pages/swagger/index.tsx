@@ -1,10 +1,10 @@
 import Container from "@mui/material/Container";
-import { CustomSwagger } from "./CustomSwagger";
+import { Outlet } from "react-router-dom";
 
 export const Swagger = () => {
 	return (
 		<Container>
-			<CustomSwagger />
+			<Outlet/>
 		</Container>
 	);
 };

@@ -14,6 +14,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
+import Typography from "@mui/material/Typography";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import AccordionDetails from "@mui/material/AccordionDetails";
 
 const drawerWidth = 200;
 const NAV_LINKS = [
@@ -28,10 +33,70 @@ const NAV_LINKS = [
 	{
 		name: "Swagger",
 		path: "/swagger",
+		nested: true,
+		children: [
+			{
+				name: "B2B",
+				path: "/swagger/b2b",
+			},
+		],
 	},
 ];
 type CustomDrawerProps = {
 	children: React.ReactNode;
+};
+
+type NestedMenuProps = {
+	name: string;
+	childPath: { name: string; path: string }[];
+};
+
+const NestedMenu = ({ name, childPath }: NestedMenuProps) => {
+	const theme = useTheme();
+	const navigate = useNavigate();
+	const [accordionOpened, setAccordionOpened] = React.useState(false);
+	return (
+		<Accordion
+			sx={{
+				bgcolor: theme.palette.primary.dark,
+				color: theme.palette.primary.contrastText,
+				"&.Mui-selected": {
+					backgroundColor: theme.palette.primary.main,
+				},
+			}}
+			elevation={0}
+			onChange={(_event, expanded) => setAccordionOpened(expanded)}
+		>
+			<AccordionSummary
+				expandIcon={<ArrowDropDownIcon sx={{color: theme.palette.primary.contrastText}}/>}
+				aria-controls="panel2-content"
+				id="nav-nested-menu"
+			>
+				<Typography>{name}</Typography>
+			</AccordionSummary>
+			<AccordionDetails sx={{ bgcolor: theme.palette.primary.main, p:0 }}>
+				<List>
+					{childPath.map((link, index) => (
+						<Grow in={accordionOpened} timeout={800}>
+							<ListItem key={index} disablePadding>
+								<ListItemButton
+									onClick={() => navigate(link.path)}
+									selected={location.pathname === link.path}
+									sx={{
+										"&.Mui-selected": {
+											backgroundColor: theme.palette.primary.dark,
+										},
+									}}
+								>
+									<ListItemText primary={link.name} sx={{textAlign: "center"}}/>
+								</ListItemButton>
+							</ListItem>
+						</Grow>
+					))}
+				</List>
+			</AccordionDetails>
+		</Accordion>
+	);
 };
 
 export const CustomDrawer = ({ children }: CustomDrawerProps) => {
@@ -63,21 +128,27 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 			<Divider />
 			<List>
 				{NAV_LINKS.map((link, index) => (
-					<Grow in={true} timeout={1000}>
-						<ListItem key={index} disablePadding>
-							<ListItemButton
-								onClick={() => navigate(link.path)}
-								selected={location.pathname === link.path}
-								sx={{
-									"&.Mui-selected": {
-										backgroundColor: theme.palette.primary.main,
-									},
-								}}
-							>
-								<ListItemText primary={link.name} />
-							</ListItemButton>
-						</ListItem>
-					</Grow>
+					<>
+						{link.nested ? (
+							<NestedMenu name={link.name} childPath={link.children} />
+						) : (
+							<Grow in={true} timeout={1000}>
+								<ListItem key={index} disablePadding>
+									<ListItemButton
+										onClick={() => navigate(link.path)}
+										selected={location.pathname === link.path}
+										sx={{
+											"&.Mui-selected": {
+												backgroundColor: theme.palette.primary.main,
+											},
+										}}
+									>
+										<ListItemText primary={link.name} />
+									</ListItemButton>
+								</ListItem>
+							</Grow>
+						)}
+					</>
 				))}
 			</List>
 			<Divider />
@@ -152,7 +223,10 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 					backgroundColor: theme.palette.grey[100],
 				}}
 			>
-				<IconButton sx={{ mx: "auto", display: {xs: "block", sm: "none"}}} onClick={handleDrawerToggle}>
+				<IconButton
+					sx={{ mx: "auto", display: { xs: "block", sm: "none" } }}
+					onClick={handleDrawerToggle}
+				>
 					<MenuIcon />
 				</IconButton>
 				{children}

@@ -94,6 +94,7 @@ export const RequestSection = () => {
 						<FormControl error={logError} sx={{ width: "100%" }}>
 							<Textarea
 								minRows={5}
+								maxRows={15}
 								sx={{ width: "100%" }}
 								placeholder="Enter Your Log..."
 								value={log}
