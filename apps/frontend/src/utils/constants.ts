@@ -154,9 +154,11 @@ export const SCENARIOS = {
 	on_status: [
 		{
 			name: "BPP Payment",
+			scenario: "bpp-payment"
 		},
 		{
 			name: "BPP Payment Error",
+			scenario: "bpp-payment-error"
 		},
 		{
 			name: "Delivered",
@@ -175,7 +177,8 @@ export const SCENARIOS = {
 			scenario: "proforma-invoice",
 		},
 		{
-			name: "Self Pickup-up",
+			name: "Self Pickup",
+			scenario: "self-picked-up"
 		},
 	],
 	on_update: [
@@ -185,6 +188,7 @@ export const SCENARIOS = {
 		},
 		{
 			name: "Prepaid BAP",
+			scenario: "prepaid-bap"
 		},
 		{
 			name: "Prepaid",

@@ -12,7 +12,7 @@ export const updateController = (req: Request, res: Response) => {
 		case 'prepaid':
 			updateFulfillmentController(req, res)
 			break;
-		case 'prepaid_bap':
+		case 'prepaid-bap':
 			updatePrepaidBAPController(req, res)
 			break;
 		default:

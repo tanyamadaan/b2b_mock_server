@@ -221,7 +221,7 @@ paths:
             enum:
               - fulfillment
               - prepaid
-              - prepaid_bap
+              - prepaid-bap
           description: The Mode the Server needs to run the request in
       tags:
         - B2B
@@ -260,9 +260,9 @@ paths:
               - out-for-delivery
               - picked-up
               - proforma-invoice
-              - bpp_payment_error
-              - bpp_payment
-              - self_picked_up
+              - bpp-payment-error
+              - bpp-payment
+              - self-picked-up
           description: The Mode the Server needs to run the request in
       tags:
         - B2B

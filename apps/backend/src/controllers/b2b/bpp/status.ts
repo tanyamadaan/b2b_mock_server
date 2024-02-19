@@ -26,13 +26,13 @@ export const statusController = (req: Request, res: Response) => {
 		case 'proforma-invoice':
 			statusProformaInvoiceController(req, res)
 			break;
-		case 'bpp_payment_error':
+		case 'bpp-payment-error':
 			statusProformaInvoiceController(req, res)
 			break;
-		case 'bpp_payment':
+		case 'bpp-payment':
 			statusProformaInvoiceController(req, res)
 			break;
-		case 'self_picked_up':
+		case 'self-picked-up':
 			statusProformaInvoiceController(req, res)
 			break;
 		default:
