@@ -10,7 +10,8 @@
 		"db:up": "docker compose up -d db",
 		"db:migrate:dev": "prisma migrate dev",
 		"build": "tsc",
-		"swagger:gen": "npx swagger-cli bundle ./src/openapi/openapi.yaml --outfile ./src/openapi/build/swagger.yaml -t yaml"
+		"swagger:gen": "node ./script/generateSwagger.js"
+		
 	},
 	"author": "Abhik Banerjee",
 	"license": "ISC",
@@ -18,6 +19,7 @@
 		"@apidevtools/json-schema-ref-parser": "^11.1.0",
 		"@prisma/client": "^5.7.1",
 		"@types/cors": "^2.8.17",
+		"@types/js-yaml": "^4.0.9",
 		"@types/jsonwebtoken": "^9.0.5",
 		"@types/libsodium-wrappers": "^0.7.13",
 		"@types/swagger-ui-express": "^4.1.6",
@@ -28,6 +30,7 @@
 		"axios": "^1.6.5",
 		"cors": "^2.8.5",
 		"express": "^4.18.2",
+		"js-yaml": "^4.1.0",
 		"jsonwebtoken": "^9.0.2",
 		"libsodium-wrappers": "^0.7.13",
 		"swagger-ui-express": "^5.0.0",

@@ -76,14 +76,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: ../../beckn-core/api/transaction/components/io/Search.yaml
+              $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/Search.yaml
       responses:
         '200':
           description: Successfull response from BPP
           content:
             application/json:
               schema:
-                $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
+                $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/Response.yaml
   /select:
     post:
       parameters:
@@ -116,14 +116,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: ../../beckn-core/api/transaction/components/io/Select.yaml
+              $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/Select.yaml
       responses:
         '200':
           description: Successfull response from BPP
           content:
             application/json:
               schema:
-                $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
+                $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/Response.yaml
   /init:
     post:
       parameters:
@@ -156,14 +156,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: ../../beckn-core/api/transaction/components/io/Init.yaml
+              $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/Init.yaml
       responses:
         '200':
           description: Successfull response from BPP
           content:
             application/json:
               schema:
-                $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
+                $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/Response.yaml
   /confirm:
     post:
       parameters:
@@ -194,14 +194,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: ../../beckn-core/api/transaction/components/io/Confirm.yaml
+              $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/Confirm.yaml
       responses:
         '200':
           description: Successfull response from BPP
           content:
             application/json:
               schema:
-                $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
+                $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/Response.yaml
   /update:
     post:
       parameters:
@@ -231,14 +231,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: ../../beckn-core/api/transaction/components/io/Update.yaml
+              $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/Update.yaml
       responses:
         '200':
           description: Successfull response from BPP
           content:
             application/json:
               schema:
-                $ref: ../../beckn-core/api/transaction/components/io/Response.yaml 
+                $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/Response.yaml 
   /status:
     post:
       parameters:
@@ -272,14 +272,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: ../../beckn-core/api/transaction/components/io/Status.yaml
+              $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/Status.yaml
       responses:
         '200':
           description: Successfull response from BPP
           content:
             application/json:
               schema:
-                $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
+                $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/Response.yaml
   /on_search:
     post:
       parameters:
@@ -311,14 +311,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: ../../beckn-core/api/transaction/components/io/OnSearch.yaml
+              $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/OnSearch.yaml
       responses:
         '200':
           description: Successfull response from BAP
           content:
             application/json:
               schema:
-                $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
+                $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/Response.yaml
   /on_init:
     post:
       parameters:
@@ -348,14 +348,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: ../../beckn-core/api/transaction/components/io/OnInit.yaml
+              $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/OnInit.yaml
       responses:
         '200':
           description: Successfull response from BAP
           content:
             application/json:
               schema:
-                $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
+                $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/Response.yaml
   /on_select:
     post:
       parameters:
@@ -386,14 +386,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: ../../beckn-core/api/transaction/components/io/OnSelect.yaml
+              $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/OnSelect.yaml
       responses:
         '200':
           description: Successfull response from BAP
           content:
             application/json:
               schema:
-                $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
+                $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/Response.yaml
   /on_confirm:
     post:
       parameters:
@@ -414,14 +414,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: ../../beckn-core/api/transaction/components/io/OnConfirm.yaml
+              $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/OnConfirm.yaml
       responses:
         '200':
           description: Successfull response from BAP
           content:
             application/json:
               schema:
-                $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
+                $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/Response.yaml
   /on_update:
     post:
       parameters:
@@ -442,14 +442,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: ../../beckn-core/api/transaction/components/io/OnUpdate.yaml
+              $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/OnUpdate.yaml
       responses:
         '200':
           description: Successfull response from BAP
           content:
             application/json:
               schema:
-                $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
+                $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/Response.yaml
   /on_status:
     post:
       parameters:
@@ -470,14 +470,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: ../../beckn-core/api/transaction/components/io/OnStatus.yaml
+              $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/OnStatus.yaml
       responses:
         '200':
           description: Successfull response from BAP
           content:
             application/json:
               schema:
-                $ref: ../../beckn-core/api/transaction/components/io/Response.yaml
+                $ref: ../../../apps/backend/beckn-core/api/transaction/components/io/Response.yaml
 components:
   securitySchemes:
     ApiKeyAuth:        # arbitrary name for the security scheme
