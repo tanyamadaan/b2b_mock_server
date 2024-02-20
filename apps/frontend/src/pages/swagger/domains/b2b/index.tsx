@@ -5,11 +5,18 @@ import { Toolbar } from "@mui/material";
 import { Button } from "@mui/joy";
 import { Download } from "@mui/icons-material";
 import swaggerSpec from "backend/retail-b2b/swagger.yaml";
+import { useMemo } from "react";
 
 export const B2B = () => {
-  swaggerSpec.servers = swaggerSpec.servers.map((each: { url: string }) => ({
-		url: import.meta.env.VITE_SERVER_URL + each.url,
-	}));
+	swaggerSpec.servers = swaggerSpec.servers.map(({ url }: { url: string }) =>
+		url.startsWith(import.meta.env.VITE_SERVER_URL)
+			? { url }
+			: {
+					url: import.meta.env.VITE_SERVER_URL + url
+			  // eslint-disable-next-line no-mixed-spaces-and-tabs
+			  }
+	);
+
 	return (
 		<>
 			<Toolbar
