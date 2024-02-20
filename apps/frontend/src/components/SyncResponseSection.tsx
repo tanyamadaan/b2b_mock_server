@@ -2,15 +2,16 @@ import { UnControlled as CodeMirror } from "react-codemirror2";
 import Fade from "@mui/material/Fade";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import { useMock } from "../../utils/hooks";
 
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/material.css";
 import "codemirror/mode/javascript/javascript.js";
 
-export const SyncResponseSection = () => {
-	const { syncResponse } = useMock();
-	console.log("SYNC RESPONSE", JSON.stringify(syncResponse));
+type SyncResponseSectionProp = {
+	syncResponse: object | undefined
+}
+
+export const SyncResponseSection = ({syncResponse}: SyncResponseSectionProp) => {
 	return (
 		<Fade in={true} timeout={2500}>
 			<Paper

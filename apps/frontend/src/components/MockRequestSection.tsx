@@ -1,26 +1,28 @@
-import { useState } from "react";
-import { CurlDisplay } from "../../components";
-import Fade from "@mui/material/Fade";
-import Paper from "@mui/material/Paper";
-import Stack from "@mui/material/Stack";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Input from "@mui/joy/Input";
-import FormControl from "@mui/joy/FormControl";
-import Textarea from "@mui/joy/Textarea";
-import FormHelperText from "@mui/joy/FormHelperText";
 import { InfoOutlined } from "@mui/icons-material";
-import Grid from "@mui/material/Grid";
-import Select, { selectClasses } from "@mui/joy/Select";
 import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";
 import Button from "@mui/joy/Button";
+import FormControl from "@mui/joy/FormControl";
+import FormHelperText from "@mui/joy/FormHelperText";
+import Select, { selectClasses } from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
-import { useAction, useSandbox } from "../../utils/hooks";
-import { URL_MAPPING } from "../../utils";
+import Textarea from "@mui/joy/Textarea";
+import Box from "@mui/material/Box";
+import Fade from "@mui/material/Fade/Fade";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import { useState } from "react";
+import { CurlDisplay } from ".";
+import { useAction, useMock } from "../utils/hooks";
+import { URL_MAPPING } from "../utils";
 import axios, { AxiosError } from "axios";
 
-export const RequestSection = () => {
-	const [authHeader, setAuthHeader] = useState<string>();
+type MockRequestSectionProp = {
+	domain: string;
+};
+
+export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 	const [log, setLog] = useState<string>();
 	const [showCurl, setShowCurl] = useState(false);
 	const [activeScenario, setActiveScenario] = useState<{
@@ -28,39 +30,38 @@ export const RequestSection = () => {
 		scenario: string;
 	}>();
 	const { action, detectAction, logError, scenarios } = useAction();
-	const { setSyncResponse } = useSandbox();
+	const { setAsyncResponse, setSyncResponse } = useMock();
 	const [curl, setCurl] = useState<string>();
 
 	const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		setLog(e.target.value);
 		detectAction(e.target.value);
 	};
+
 	const handleSubmit = async () => {
-		const url = `${[import.meta.env.VITE_SERVER_URL]}/b2b/${Object.keys(
+		const url = `${[import.meta.env.VITE_SERVER_URL]}/${domain}/${Object.keys(
 			URL_MAPPING
 		).filter((key) =>
 			URL_MAPPING[key as keyof typeof URL_MAPPING].includes(action as string)
-		)}/${action}?mode=sandbox&scenario=${activeScenario?.scenario}`;
-
+		)}/${action}?mode=mock&scenario=${activeScenario?.scenario}`;
+		console.log("Form Values", log, activeScenario, url);
 		setCurl(`curl -X POST \\
 		  ${url} \\
 		-H 'accept: application/json' \\
 		-H 'Content-Type: application/json' \\
-		-H 'authorization: ${authHeader} \\
 		-d '${log}'`);
 		try {
 			const response = await axios.post(url, JSON.parse(log as string), {
 				headers: {
 					"Content-Type": "application/json",
-					authorization: authHeader,
 				},
 			});
 
-			if (response.data.error) {
-				setSyncResponse(response.data);
-			} else setSyncResponse(response.data.sync);
+			setSyncResponse(response.data.sync);
+			setAsyncResponse(response.data.async);
 		} catch (error) {
 			console.log("ERROR Occured while pinging backend:", error);
+			setAsyncResponse({});
 			if (error instanceof AxiosError) setSyncResponse(error.response!.data);
 		}
 		setShowCurl(true);
@@ -75,22 +76,6 @@ export const RequestSection = () => {
 					elevation={5}
 				>
 					<Stack spacing={2} justifyContent="center" alignItems="center">
-						<Box
-							sx={{
-								width: "100%",
-								display: "flex",
-								justifyContent: "space-between",
-								alignItems: "center",
-							}}
-						></Box>
-						<Input
-							fullWidth
-							placeholder="Enter Your Auth Header..."
-							value={authHeader}
-							onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-								setAuthHeader(e.target.value)
-							}
-						/>
 						<FormControl error={logError} sx={{ width: "100%" }}>
 							<Textarea
 								minRows={5}
@@ -144,6 +129,8 @@ export const RequestSection = () => {
 										) => {
 											setActiveScenario(newValue);
 										}}
+										defaultValue={scenarios![0]}
+										disabled={scenarios?.length === 0}
 									>
 										{scenarios?.map((scenario, index) => (
 											<Option
@@ -151,17 +138,19 @@ export const RequestSection = () => {
 												key={"scenario-" + index}
 												disabled={!scenario.scenario}
 											>
-												{scenario.name + scenario.scenario
-													? ``
-													: "(Work In-Progress)"}
+												{scenario.name +
+													(scenario.scenario ? `` : "(Work In-Progress)")}
 											</Option>
 										))}
 									</Select>
 								</Grid>
 							</Grid>
 						)}
-
-						<Button variant="soft" onClick={handleSubmit} disabled={!action}>
+						<Button
+							variant="solid"
+							onClick={handleSubmit}
+							disabled={logError || !action || !activeScenario}
+						>
 							Submit
 						</Button>
 					</Stack>

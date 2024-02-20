@@ -5,9 +5,8 @@ import { Toolbar } from "@mui/material";
 import { Button } from "@mui/joy";
 import { Download } from "@mui/icons-material";
 import swaggerSpec from "backend/retail-b2b/swagger.yaml";
-import { useMemo } from "react";
 
-export const B2B = () => {
+export const B2BSwagger = () => {
 	swaggerSpec.servers = swaggerSpec.servers.map(({ url }: { url: string }) =>
 		url.startsWith(import.meta.env.VITE_SERVER_URL)
 			? { url }

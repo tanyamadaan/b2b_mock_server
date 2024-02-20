@@ -1,7 +1,7 @@
 import Fade from "@mui/material/Fade";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import { useMock } from "../../utils/hooks";
+import { useMock } from "../utils/hooks";
 
 import { UnControlled as CodeMirror } from "react-codemirror2";
 import "codemirror/lib/codemirror.css";
@@ -13,8 +13,13 @@ import IconButton from "@mui/material/IconButton";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 
-export const AsyncResponseSection = () => {
-	const { asyncResponse } = useMock();
+type AsyncResponseSectionProp = {
+	asyncResponse: object | undefined;
+};
+
+export const AsyncResponseSection = ({
+	asyncResponse,
+}: AsyncResponseSectionProp) => {
 	const [display, setDisplay] = useState(false);
 	const [copied, setCopied] = useState(false);
 	const showButton = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
@@ -56,7 +61,7 @@ export const AsyncResponseSection = () => {
 						display: "flex",
 						justifyContent: "space-between",
 						alignItems: "center",
-						my: 1
+						my: 1,
 					}}
 				>
 					<Typography variant="h6">Async:</Typography>

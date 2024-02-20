@@ -2,12 +2,14 @@ import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 
-import { RequestSection } from "./RequestSection";
-import { SyncResponseSection } from "./SyncResponseSection";
-import { AsyncResponseSection } from "./AsyncResponseSection";
+import { SyncResponseSection } from "../../components/SyncResponseSection";
+import { AsyncResponseSection } from "../../components/AsyncResponseSection";
 import { MockProvider } from "../../utils/context";
+import { Outlet } from "react-router-dom";
+import { useMock } from "../../utils/hooks";
 
 export const Mock = () => {
+	const { syncResponse, asyncResponse } = useMock();
 	return (
 		<MockProvider>
 			<Container sx={{ py: 2 }}>
@@ -18,14 +20,14 @@ export const Mock = () => {
 						</Typography>
 					</Grid>
 					<Grid item xs={12} lg={8}>
-						<RequestSection />
+						<Outlet />
 					</Grid>
 					<Grid container item xs={12} lg={4} spacing={2}>
 						<Grid item xs={12} sm={6} lg={12}>
-							<SyncResponseSection />
+							<SyncResponseSection syncResponse={syncResponse} />
 						</Grid>
 						<Grid item xs={12} sm={6} lg={12}>
-							<AsyncResponseSection />
+							<AsyncResponseSection asyncResponse={asyncResponse} />
 						</Grid>
 					</Grid>
 				</Grid>
