@@ -513,7 +513,7 @@ export const onSearchSchema = {
 																	required: ["unit", "value"],
 																},
 																count: {
-																	type: "string",
+																	type: "integer",
 																},
 															},
 															required: ["measure", "count"],
@@ -543,7 +543,7 @@ export const onSearchSchema = {
 																	required: ["unit", "value"],
 																},
 																count: {
-																	type: "string",
+																	type: "integer",
 																},
 															},
 															required: ["measure", "count"],
@@ -573,7 +573,7 @@ export const onSearchSchema = {
 																	required: ["unit", "value"],
 																},
 																count: {
-																	type: "string",
+																	type: "integer",
 																},
 															},
 															required: ["measure", "count"],
@@ -605,7 +605,7 @@ export const onSearchSchema = {
 														type: "string",
 													},
 												},
-												add_ons: {
+												"add-ons": {
 													type: "array",
 													items: {
 														type: "object",
@@ -788,10 +788,10 @@ export const onSearchSchema = {
 													required: ["label", "range"],
 												},
 												matched: {
-													type: "string",
+													type: "boolean",
 												},
 												recommended: {
-													type: "string",
+													type: "boolean",
 												},
 												tags: {
 													type: "array",
