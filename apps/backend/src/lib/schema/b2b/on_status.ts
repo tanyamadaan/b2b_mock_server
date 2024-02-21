@@ -732,7 +732,6 @@ export const onStatusSchema = {
 						"fulfillments",
 						"quote",
 						"payments",
-						"documents",
 						"created_at",
 						"updated_at",
 					],

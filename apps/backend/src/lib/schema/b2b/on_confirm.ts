@@ -388,7 +388,7 @@ export const onConfirmSchema = {
 													required: ["phone"], // email needs to be compulsory
 												},
 											},
-											required: ["type", "location", "time", "contact"],
+											required: ["type", "location", "contact"],
 										},
 									},
 									rateable: {

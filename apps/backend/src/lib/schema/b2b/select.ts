@@ -125,7 +125,9 @@ export const selectSchema = {
 									format: "duration",
 								},
 							},
-							required: ["id", "locations", "ttl"],
+							required: ["id", "locations"],
+							errorMessage:
+								"id, locations are mandatory attributes and ttl is required for RFQ Flow",
 						},
 						items: {
 							type: "array",
@@ -369,7 +371,9 @@ export const selectSchema = {
 									},
 								},
 								additionalProperties: false,
-								required: ["id", "type", "stops"],
+								if: { properties: { type: { const: "Delivery" } } },
+								then: { required: ["id", "type", "stops"] },
+								else: { required: ["id", "type"] },
 							},
 						},
 						payments: {
