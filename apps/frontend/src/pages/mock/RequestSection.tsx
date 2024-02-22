@@ -36,7 +36,8 @@ export const RequestSection = () => {
 			URL_MAPPING
 		).filter((key) =>
 			URL_MAPPING[key as keyof typeof URL_MAPPING].includes(action as string)
-		)}/${action}?mode=mock&scenario=${activeScenario?.scenario}`;
+		)}/${action}?mode=mock${(activeScenario?.scenario) ? `&scenario=${activeScenario?.scenario}` : ``}`;
+		// )}/${action}?mode=mock}` + (activeScenario?.scenario) ? `&scenario=${activeScenario?.scenario}` : ``;
 		console.log("Form Values", log, activeScenario, url);
 		setCurl(`curl -X POST \\
 		  ${url} \\
@@ -51,13 +52,13 @@ export const RequestSection = () => {
 				},
 			});
 
-			setSyncResponse(response.data.sync);
+			setSyncResponse(response.data.sync || response.data?.message);
 			setAsyncResponse(response.data.async);
 		} catch (error) {
 			console.log("ERROR Occured while pinging backend:", error);
 			setAsyncResponse({})
 			if(error instanceof AxiosError)
-			setSyncResponse(error.response!.data)
+				setSyncResponse(error.response!.data)
 		}
 		setShowCurl(true);
 	};
@@ -139,7 +140,8 @@ export const RequestSection = () => {
 						<Button
 							variant="solid"
 							onClick={handleSubmit}
-							disabled={logError || !action || !activeScenario}
+							// disabled={logError || !action || !activeScenario}
+							disabled={logError || !action}
 						>
 							Submit
 						</Button>
