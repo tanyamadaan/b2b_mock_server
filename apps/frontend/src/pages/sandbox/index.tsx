@@ -10,11 +10,11 @@ export const Sandbox = () => {
 		<SandboxProvider>
 			<Container sx={{ py: 2 }}>
 				<Grid container spacing={2}>
-					<Grid item xs={12}>
+					{/* <Grid item xs={12}>
 						<Typography variant="h3" my={2} align="center">
 							ONDC Sandbox Server
 						</Typography>
-					</Grid>
+					</Grid> */}
 					<Grid item xs={12} lg={8}>
 						<RequestSection />
 					</Grid>

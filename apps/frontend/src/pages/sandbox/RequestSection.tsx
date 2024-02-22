@@ -96,7 +96,7 @@ export const RequestSection = () => {
 								minRows={5}
 								maxRows={15}
 								sx={{ width: "100%" }}
-								placeholder="Enter Your Log..."
+								placeholder="Enter Your Request Body..."
 								value={log}
 								onChange={handleLogChange}
 							/>

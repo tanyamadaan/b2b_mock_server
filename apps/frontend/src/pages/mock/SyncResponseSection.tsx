@@ -22,7 +22,7 @@ export const SyncResponseSection = () => {
 					overflow:"hidden"
 				}}
 			>
-				<Typography variant="h6" my={1}>Sync:</Typography>
+				<Typography variant="h6" my={1}>Sync Response:</Typography>
 				{syncResponse ? (
 					<CodeMirror
 						value={JSON.stringify(syncResponse, null, 2)}
