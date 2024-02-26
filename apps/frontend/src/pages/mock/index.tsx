@@ -1,6 +1,5 @@
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
 
 import { SyncResponseSection } from "../../components/SyncResponseSection";
 import { AsyncResponseSection } from "../../components/AsyncResponseSection";
@@ -14,11 +13,6 @@ export const Mock = () => {
 		<MockProvider>
 			<Container sx={{ py: 2 }}>
 				<Grid container spacing={2}>
-					<Grid item xs={12}>
-						<Typography variant="h3" my={2} align="center">
-							ONDC Mock Server
-						</Typography>
-					</Grid>
 					<Grid item xs={12} lg={8}>
 						<Outlet />
 					</Grid>

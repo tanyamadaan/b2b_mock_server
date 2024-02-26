@@ -4,7 +4,7 @@ import { SWAGGER_BUILD_LINK } from "../../../../utils";
 import { Toolbar } from "@mui/material";
 import { Button } from "@mui/joy";
 import { Download } from "@mui/icons-material";
-import swaggerSpec from "backend/retail-b2b/swagger.yaml";
+import swaggerSpec from "backend/retail-b2b.yaml";
 
 export const B2BSwagger = () => {
 	swaggerSpec.servers = swaggerSpec.servers.map(({ url }: { url: string }) =>

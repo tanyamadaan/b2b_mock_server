@@ -12,16 +12,16 @@ import YAML from "yaml";
 export const selectController = (req: Request, res: Response) => {
 	const { scenario } = req.query;
 	switch (scenario) {
-		case "consult-confirm":
+		case "consultation-confirmed":
 			selectConsultationConfirmController(req, res);
 			break;
-		case "consult-reject":
+		case "consultation-rejected":
 			selectConsultationRejectController(req, res);
 			break;
-		case "service-confirm":
+		case "service-confirmed":
 			selectServiceConfirmController(req, res);
 			break;
-		case "service-reject":
+		case "service-rejected":
 			selectServiceRejectController(req, res);
 			break;
 		case "nack":

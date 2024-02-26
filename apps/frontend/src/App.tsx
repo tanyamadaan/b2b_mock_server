@@ -1,10 +1,14 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Layout } from "./layout/Layout";
 import { Mock, Sandbox, Swagger } from "./pages";
-import { B2BSwagger } from "./pages/swagger/domains";
+import {
+	AuthSwagger,
+	B2BSwagger,
+	ServicesSwagger,
+} from "./pages/swagger/domains";
 import { MockProvider, SandboxProvider } from "./utils/context";
-import { B2BMock } from "./pages/mock/domains";
-import { B2BSandbox } from "./pages/sandbox/domains";
+import { B2BMock, ServicesMock } from "./pages/mock/domains";
+import { B2BSandbox, ServicesSandbox } from "./pages/sandbox/domains";
 import { Landing } from "./pages/landing";
 
 const router = createBrowserRouter([
@@ -14,7 +18,7 @@ const router = createBrowserRouter([
 		children: [
 			{
 				path: "/",
-				Component: Landing
+				Component: Landing,
 			},
 			{
 				path: "/mock",
@@ -27,6 +31,10 @@ const router = createBrowserRouter([
 					{
 						path: "b2b",
 						Component: B2BMock,
+					},
+					{
+						path: "services",
+						Component: ServicesMock,
 					},
 				],
 			},
@@ -42,12 +50,20 @@ const router = createBrowserRouter([
 						path: "b2b",
 						Component: B2BSandbox,
 					},
+					{
+						path: "services",
+						Component: ServicesSandbox,
+					},
 				],
 			},
 			{
 				path: "/swagger",
 				Component: Swagger,
-				children: [{ path: "b2b", Component: B2BSwagger }],
+				children: [
+					{ path: "b2b", Component: B2BSwagger },
+					{ path: "services", Component: ServicesSwagger },
+					{ path: "auth", Component: AuthSwagger },
+				],
 			},
 		],
 	},

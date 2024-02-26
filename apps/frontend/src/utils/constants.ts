@@ -28,7 +28,7 @@ export const NEXT_ACTION = {
 	cancel: "on_cancel",
 };
 
-export const SCENARIOS = {
+export const B2B_SCENARIOS = {
 	select: [
 		{
 			name: "RFQ",

@@ -1,0 +1,60 @@
+openapi: 3.0.3
+info:
+  title: ONDC B2B Mock Implemention
+  description: >-
+    This is a Mock Server for integrating with ONDC. Currently, it supports B2B.
+    An easy way to get started would be to ask yourself the two question -
+    _"which network participant am I going to send to?"_ and _"what would be the
+    action/on_action I am going to send?"_. With these you can easily construct
+    the URL you need to mock and then find that among this list. <br />
+  contact:
+    email: team@ondc.org
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+externalDocs:
+  description: Find out more about ONDC
+  url: https://ondc.org
+servers:
+  - url: /b2b/bpp
+  - url: /b2b/bap
+tags:
+  - name: B2B
+    description: Everything for B2B domain
+    externalDocs:
+      description: Find out more
+      url: >-
+        https://github.com/ONDC-Official/ONDC-RET-Specifications/tree/release-2.0.2
+  - name: Auth
+    description: Endpoints for Authentication
+paths:
+  /auth/signCheck:
+    post:
+      tags:
+        - Auth
+      summary: Check the validity of a authorization token
+      # parameters:
+      #   - name: authorization
+      #     in: header
+      #     description: Signed Authorization Header
+      #     required: true
+      #     type: string
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        description: Request Body should contain the log which is signed.
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Request Body should contain the log which is signed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auth_check_response'
+ 
+security:
+  - ApiKeyAuth: [] 

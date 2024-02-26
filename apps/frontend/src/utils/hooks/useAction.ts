@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 import { useState } from "react";
-import { NEXT_ACTION, SCENARIOS } from "../constants";
+import { B2B_SCENARIOS, NEXT_ACTION } from "../constants";
 
 export const useAction = () => {
 	const [action, setAction] = useState<string>();
@@ -13,11 +13,11 @@ export const useAction = () => {
 			if (!parsedLog.context!.action) setLogError(true);
 			const parsedAction = parsedLog.context.action;
 			setAction(parsedAction);
-			const scenarioKey = Object.keys(SCENARIOS).filter(
+			const scenarioKey = Object.keys(B2B_SCENARIOS).filter(
 				(key) => key === NEXT_ACTION[parsedAction as keyof typeof NEXT_ACTION]
 			)[0];
 			if (scenarioKey) {
-				setScenarios(SCENARIOS[scenarioKey as keyof typeof SCENARIOS]);
+				setScenarios(B2B_SCENARIOS[scenarioKey as keyof typeof B2B_SCENARIOS]);
 			} else {
 				setScenarios([])
 			}

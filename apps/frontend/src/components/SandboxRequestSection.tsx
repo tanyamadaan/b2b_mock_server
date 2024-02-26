@@ -97,10 +97,10 @@ export const SandboxRequestSection = ({domain}: SandboxRequestSectionProp) => {
 						/>
 						<FormControl error={logError} sx={{ width: "100%" }}>
 							<Textarea
-								minRows={5}
+								minRows={10}
 								maxRows={15}
 								sx={{ width: "100%" }}
-								placeholder="Enter Your Log..."
+								placeholder="Request Body..."
 								value={log}
 								onChange={handleLogChange}
 							/>
