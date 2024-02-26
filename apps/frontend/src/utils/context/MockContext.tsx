@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 
 type MockProviderType = {
 	children: React.ReactNode;
@@ -19,6 +19,10 @@ export const MockContext = createContext<MockContextType>({
 export const MockProvider = ({ children }: MockProviderType) => {
 	const [syncResponse, setSyncResponse] = useState<object>();
 	const [asyncResponse, setAsyncResponse] = useState<object>();
+	useEffect(() => {
+		setSyncResponse(undefined);
+		setAsyncResponse(undefined);
+	}, []);
 	return (
 		<MockContext.Provider
 			value={{ syncResponse, setSyncResponse, asyncResponse, setAsyncResponse }}

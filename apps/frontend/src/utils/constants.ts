@@ -1,3 +1,5 @@
+export const SUPPORTED_DOMAINS=["B2B"]
+
 export const SWAGGER_BUILD_LINK =
 	"https://raw.githubusercontent.com/abhik-wil/b2b_mock_server/feat-monorepo/apps/backend/src/openapi/build/swagger.yaml";
 export const URL_MAPPING = {

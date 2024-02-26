@@ -1,4 +1,4 @@
-import Box from "@mui/material/Box";
+
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import Grow from "@mui/material/Grow";
@@ -19,12 +19,13 @@ import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import AccordionDetails from "@mui/material/AccordionDetails";
+import Box from "@mui/material/Box";
 
 const drawerWidth = 200;
 const NAV_LINKS = [
 	{
 		name: "Mock Server",
-		path: "/",
+		path: "/mock",
 	},
 	{
 		name: "Sandbox",
@@ -33,13 +34,14 @@ const NAV_LINKS = [
 	{
 		name: "Swagger",
 		path: "/swagger",
+	},
+];
+const DOMAIN_NAVS = [
+	{
+		name: "B2B",
 		nested: true,
-		children: [
-			{
-				name: "B2B",
-				path: "/swagger/b2b",
-			},
-		],
+		path: "/b2b",
+		children: NAV_LINKS,
 	},
 ];
 type CustomDrawerProps = {
@@ -47,11 +49,13 @@ type CustomDrawerProps = {
 };
 
 type NestedMenuProps = {
+	id: string;
 	name: string;
 	childPath: { name: string; path: string }[];
+	parentPath: string;
 };
 
-const NestedMenu = ({ name, childPath }: NestedMenuProps) => {
+const NestedMenu = ({ id, name, childPath, parentPath }: NestedMenuProps) => {
 	const theme = useTheme();
 	const navigate = useNavigate();
 	const [accordionOpened, setAccordionOpened] = React.useState(false);
@@ -68,27 +72,34 @@ const NestedMenu = ({ name, childPath }: NestedMenuProps) => {
 			onChange={(_event, expanded) => setAccordionOpened(expanded)}
 		>
 			<AccordionSummary
-				expandIcon={<ArrowDropDownIcon sx={{color: theme.palette.primary.contrastText}}/>}
+				expandIcon={
+					<ArrowDropDownIcon
+						sx={{ color: theme.palette.primary.contrastText }}
+					/>
+				}
 				aria-controls="panel2-content"
-				id="nav-nested-menu"
+				id={id}
 			>
 				<Typography>{name}</Typography>
 			</AccordionSummary>
-			<AccordionDetails sx={{ bgcolor: theme.palette.primary.main, p:0 }}>
+			<AccordionDetails sx={{ bgcolor: theme.palette.primary.main, p: 0 }}>
 				<List>
 					{childPath.map((link, index) => (
 						<Grow in={accordionOpened} timeout={800}>
 							<ListItem key={index} disablePadding>
 								<ListItemButton
-									onClick={() => navigate(link.path)}
-									selected={location.pathname === link.path}
+									onClick={() => navigate(link.path + parentPath)}
+									selected={location.pathname === link.path + parentPath}
 									sx={{
 										"&.Mui-selected": {
 											backgroundColor: theme.palette.primary.dark,
 										},
 									}}
 								>
-									<ListItemText primary={link.name} sx={{textAlign: "center"}}/>
+									<ListItemText
+										primary={link.name}
+										sx={{ textAlign: "center" }}
+									/>
 								</ListItemButton>
 							</ListItem>
 						</Grow>
@@ -127,10 +138,15 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 			<Toolbar />
 			<Divider />
 			<List>
-				{NAV_LINKS.map((link, index) => (
+				{DOMAIN_NAVS.map((link, index) => (
 					<>
 						{link.nested ? (
-							<NestedMenu name={link.name} childPath={link.children} />
+							<NestedMenu
+								name={link.name}
+								childPath={link.children}
+								parentPath={link.path}
+								id={"nav-nested-menu-" + index}
+							/>
 						) : (
 							<Grow in={true} timeout={1000}>
 								<ListItem key={index} disablePadding>
