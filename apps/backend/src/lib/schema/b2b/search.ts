@@ -95,16 +95,16 @@ export const searchSchema = {
 									},
 									required: ["name"],
 								},
-								category: {
-									type: "object",
-									properties: {
-										id: {
-											type: "string",
-										},
-									},
-									required: ["id"],
+							},
+						},
+						category: {
+							type: "object",
+							properties: {
+								id: {
+									type: "string",
 								},
 							},
+							required: ["id"],
 						},
 						fulfillment: {
 							type: "object",
