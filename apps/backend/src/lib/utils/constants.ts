@@ -2,6 +2,8 @@ export const HOUR24 = 24 * 60 * 60 * 1000;
 
 export const REGISTRY_URL = "https://preprod.registry.ondc.org/ondc/lookup";
 
+export const SERVICES_EXAMPLES_PATH = "./domain-repos/@services/draft-services/api/components/Examples/Services_home_service_yaml"
+
 export const ACTIONS = {
 	search: "search",
 	select: "select",
