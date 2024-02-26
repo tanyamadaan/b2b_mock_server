@@ -8,14 +8,21 @@ import swaggerSpec from "backend/retail-b2b/swagger.yaml";
 import { useMemo } from "react";
 
 export const B2B = () => {
-	swaggerSpec.servers = swaggerSpec.servers.map(({ url }: { url: string }) =>
-		url.startsWith(import.meta.env.VITE_SERVER_URL)
-			? { url }
-			: {
-					url: import.meta.env.VITE_SERVER_URL + url
-			  // eslint-disable-next-line no-mixed-spaces-and-tabs
-			  }
-	);
+	// swaggerSpec.servers = swaggerSpec.servers.map(({ description, url }: { description: string, url: string }) =>
+	// 	url.startsWith(import.meta.env.VITE_SERVER_URL)
+	// 		? { url }
+	// 		: {
+	// 				url: import.meta.env.VITE_SERVER_URL + url,
+	// 				description
+	// 		  // eslint-disable-next-line no-mixed-spaces-and-tabs
+	// 		  }
+	// );
+
+	swaggerSpec.servers = swaggerSpec.servers.map(({ description, url }: { description: string, url: string }) => ({
+		description,
+		url: url.startsWith(import.meta.env.VITE_SERVER_URL) ? url : import.meta.env.VITE_SERVER_URL + url
+	}));
+
 
 	return (
 		<>

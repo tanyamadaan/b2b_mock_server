@@ -17,8 +17,10 @@ externalDocs:
   description: Find out more about ONDC
   url: https://ondc.org
 servers:
-  - url: /b2b/bpp
-  - url: /b2b/bap
+  - url: http://localhost:3000/b2b/bpp
+    description: Sandbox as a Seller App
+  - url: http://localhost:3000/b2b/bap
+    description: Sandbox as a Buyer App
 tags:
   - name: B2B
     description: Everything for B2B domain
