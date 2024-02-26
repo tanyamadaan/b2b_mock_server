@@ -27,6 +27,12 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/b2b", b2bRouter);
 app.use("/auth", authRouter);
 app.use("/services", servicesRouter);
+app.use("/detect_app_installation", (req: Request, res: Response) => {
+	const headers = req.headers;
+	return res.json({
+		headers: headers
+	})
+});
 
 app.listen(port, () => {
 	console.log(`[server]: Server is running at http://localhost:${port}`);
