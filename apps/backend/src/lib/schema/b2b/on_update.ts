@@ -117,11 +117,12 @@ export const onUpdateSchema = {
 									quantity: {
 										type: "object",
 										properties: {
-											count: {
-												type: "integer",
+											selected: {
+												count: {
+													type: "integer",
+												},
 											},
 										},
-										required: ["count"],
 									},
 									fulfillment_ids: {
 										type: "array",
@@ -130,7 +131,7 @@ export const onUpdateSchema = {
 										},
 									},
 								},
-								required: ["id", "quantity", "fulfillment_ids"],
+								required: ["id", "quantity"],
 							},
 						},
 						payment: {
@@ -413,7 +414,7 @@ export const onUpdateSchema = {
 															type: "string",
 														},
 													},
-													required: ["phone", "email"],
+													required: ["phone"],
 												},
 											},
 											required: [
