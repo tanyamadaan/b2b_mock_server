@@ -5,7 +5,7 @@ import swaggerUi from "swagger-ui-express";
 import { NextFunction, Request, Response } from "express";
 
 const authFile = fs.readFileSync(
-	path.join(__dirname, "../../openapi/auth/openapi.yaml"),
+	path.join(__dirname, "../openapi/auth/openapi.yaml"),
 	"utf8"
 );
 const authSwaggerDocument = YAML.parse(authFile);
@@ -16,7 +16,7 @@ export const authSwagger =
 	};
 
 const servicesFile = fs.readFileSync(
-	path.join(__dirname, "../../openapi/services/build/swagger.yaml"),
+	path.join(__dirname, "../openapi/services/build/swagger.yaml"),
 	"utf8"
 );
 const servicesSwaggerDocument = YAML.parse(servicesFile);
@@ -27,7 +27,7 @@ export const servicesSwagger =
 	};
 
 const b2bFile = fs.readFileSync(
-	path.join(__dirname, "../../openapi/retail-b2b/build/swagger.yaml"),
+	path.join(__dirname, "../openapi/retail-b2b/build/swagger.yaml"),
 	"utf8"
 );
 const b2bSwaggerDocument = YAML.parse(b2bFile);

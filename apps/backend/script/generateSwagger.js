@@ -3,7 +3,7 @@ const fs = require("fs");
 const $RefParser = require("@apidevtools/json-schema-ref-parser");
 const { execSync } = require("child_process");
 const path = require("path");
-const {ACTIONS, B2B_SCENARIOS, SERVICES_SCENARIOS} = require("./constants")
+const { ACTIONS, B2B_SCENARIOS, SERVICES_SCENARIOS } = require("./constants");
 
 const swaggerParse = async (swaggerPath) => {
 	const file = fs.readFileSync(swaggerPath, "utf8");
@@ -25,6 +25,12 @@ const generateSwagger = async (
 	servers = []
 ) => {
 	const schema = await swaggerParse(inputPath);
+	var exampleSet = schema["x-examples"][Object.keys(schema["x-examples"])[0]];
+
+	schema["info"]["title"] = exampleSet["summary"];
+	schema["info"]["description"] = exampleSet["description"];
+	exampleSet = exampleSet["example_set"];
+
 	if (servers.length > 0) {
 		schema.servers = servers;
 	}
@@ -41,6 +47,7 @@ const generateSwagger = async (
 				},
 			},
 		];
+
 		if (scenarios[ACTIONS.next[key]]) {
 			schema.paths[i].post.parameters.push({
 				in: "query",
@@ -48,9 +55,14 @@ const generateSwagger = async (
 				required: true,
 				schema: {
 					type: "string",
-					enum: scenarios[ACTIONS.next[key]].map(each => each.scenario),
+					enum: scenarios[ACTIONS.next[key]].map((each) => each.scenario),
 				},
 			});
+		}
+		if (exampleSet[key]) {
+			// console.log("key", key);
+			schema.paths[i].post.requestBody.content["application/json"].examples =
+				exampleSet[key].examples;
 		}
 	}
 	// console.log("SCHEMA", schema);
