@@ -21,13 +21,13 @@ export const statusController = (req: Request, res: Response) => {
 			statusProformaInvoiceController(req, res)
 			break;
 		case 'bpp-payment-error':
-			statusProformaInvoiceController(req, res)
+			statusBPPpaymentErrorController(req, res)
 			break;
 		case 'bpp-payment':
-			statusProformaInvoiceController(req, res)
+			statusBPPpaymentController(req, res)
 			break;
 		case 'self-picked-up':
-			statusProformaInvoiceController(req, res)
+			statusSelfPickedUpController(req, res)
 			break;
 		default:
 			res.status(404).json({
