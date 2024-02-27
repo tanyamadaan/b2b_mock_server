@@ -1,4 +1,4 @@
-export const SUPPORTED_DOMAINS=["B2B"]
+export const SUPPORTED_DOMAINS = ["B2B", "SERVICES"];
 
 export const SWAGGER_BUILD_LINK =
 	"https://raw.githubusercontent.com/abhik-wil/b2b_mock_server/feat-monorepo/apps/backend/src/openapi/build/swagger.yaml";
@@ -156,11 +156,11 @@ export const B2B_SCENARIOS = {
 	on_status: [
 		{
 			name: "BPP Payment",
-			scenario: "bpp-payment"
+			scenario: "bpp-payment",
 		},
 		{
 			name: "BPP Payment Error",
-			scenario: "bpp-payment-error"
+			scenario: "bpp-payment-error",
 		},
 		{
 			name: "Delivered",
@@ -180,7 +180,7 @@ export const B2B_SCENARIOS = {
 		},
 		{
 			name: "Self Pickup",
-			scenario: "self-picked-up"
+			scenario: "self-picked-up",
 		},
 	],
 	on_update: [
@@ -190,11 +190,136 @@ export const B2B_SCENARIOS = {
 		},
 		{
 			name: "Prepaid BAP",
-			scenario: "prepaid-bap"
+			scenario: "prepaid-bap",
 		},
 		{
 			name: "Prepaid",
 			scenario: "prepaid",
+		},
+	],
+};
+
+export const SERVICES_SCENARIOS = {
+	select: [
+		{
+			name: "Consultation",
+			scenario: "consultation",
+		},
+		{
+			name: "Consultation Reschedule",
+			scenario: "consultation-reschedule",
+		},
+		{
+			name: "Service",
+			scenario: "service",
+		},
+		{
+			name: "Without Schedule",
+			scenario: "without-schedule",
+		},
+	],
+	on_select: [
+		{
+			name: "Consultation Confirmed",
+			scenario: "consultation-confirmed",
+		},
+		{
+			name: "Consultation Rejected",
+			scenario: "consultation-rejected",
+		},
+		{
+			name: "Service Confirmed",
+			scenario: "service-confirmed",
+		},
+		{
+			name: "Service Rejected",
+			scenario: "service-rejected",
+		},
+		{
+			name: "NACK",
+			scenario: "nack",
+		},
+	],
+	init: [
+		{
+			name: "Consultation",
+			scenario: "consultation",
+		},
+		{
+			name: "Service",
+			scenario: "service",
+		},
+	],
+	on_init: [
+		{
+			name: "Consultation",
+			scenario: "consultation",
+		},
+		{
+			name: "Service",
+			scenario: "service",
+		},
+	],
+	confirm: [
+		{
+			name: "Consultation",
+			scenario: "consultation",
+		},
+		{
+			name: "Service",
+			scenario: "service",
+		},
+	],
+	on_confirm: [
+		{
+			name: "Consultation",
+			scenario: "consultation",
+		},
+		{
+			name: "Service",
+			scenario: "service",
+		},
+	],
+	on_status: [
+		{
+			name: "Completed",
+			scenario: "completed",
+		},
+		{
+			name: "In Transit",
+			scenario: "in-transit",
+		},
+		{
+			name: "Reached Re-OTP",
+			scenario: "reached-re-otp",
+		},
+		{
+			name: "Reached",
+			scenario: "reached",
+		},
+		{
+			name: "Service Started",
+			scenario: "service-started",
+		},
+	],
+	on_update: [
+		{
+			name: "Requote",
+			scenario: "requote",
+		},
+		{
+			name: "Reschedule",
+			scenario: "reschedule",
+		},
+	],
+	on_cancel: [
+		{
+			name: "ACK",
+			scenario: "ack",
+		},
+		{
+			name: "Merchant",
+			scenario: "merchant",
 		},
 	],
 };

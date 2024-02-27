@@ -51,6 +51,7 @@
 	"exports": {
 		"./auth.yaml": "./src/openapi/auth/openapi.yaml",
 		"./retail-b2b.yaml": "./src/openapi/retail-b2b/build/swagger.yaml",
-		"./services.yaml": "./src/openapi/services/build/swagger.yaml"
+		"./services.yaml": "./src/openapi/services/build/swagger.yaml",
+		"./constants.js": "./script/constants.js"
 	}
 }

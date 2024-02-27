@@ -2,6 +2,6 @@ import { MockRequestSection } from '../../../../components'
 
 export const ServicesMock = () => {
   return (
-    <MockRequestSection domain='services'/>
+    <MockRequestSection domain='Services'/>
   )
 }

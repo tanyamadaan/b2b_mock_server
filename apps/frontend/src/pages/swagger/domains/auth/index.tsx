@@ -24,7 +24,7 @@ export const AuthSwagger = () => {
 					justifyContent: "flex-end",
 				}}
 			>
-				<a href={SWAGGER_BUILD_LINK} target="_blank" download="ONDC Swagger">
+				<a href={SWAGGER_BUILD_LINK} target="_blank" download="ONDC Auth Swagger.yaml">
 					<Button startDecorator={<Download />}>Download Collection</Button>
 				</a>
 			</Toolbar>

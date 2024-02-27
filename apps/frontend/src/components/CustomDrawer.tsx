@@ -62,7 +62,7 @@ type CustomDrawerProps = {
 type NestedMenuProps = {
 	id: string;
 	name: string;
-	childPath: { name: string; path: string }[];
+	childPath: { name: string; path: string }[] | undefined;
 	parentPath: string;
 };
 
@@ -104,7 +104,7 @@ const NestedMenu = ({ id, name, childPath, parentPath }: NestedMenuProps) => {
 				}}
 			>
 				<List sx={{py: 0}}>
-					{childPath.map((link, index) => (
+					{childPath?.map((link, index) => (
 						<Grow in={accordionOpened} timeout={800}>
 							<ListItem key={index} disablePadding>
 								<ListItemButton

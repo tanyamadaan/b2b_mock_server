@@ -29,7 +29,7 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 		name: string;
 		scenario: string;
 	}>();
-	const { action, detectAction, logError, scenarios } = useAction();
+	const { action, detectAction, logError, scenarios } = useAction(domain);
 	const { setAsyncResponse, setSyncResponse } = useMock();
 	const [curl, setCurl] = useState<string>();
 
@@ -39,7 +39,7 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 	};
 
 	const handleSubmit = async () => {
-		const url = `${[import.meta.env.VITE_SERVER_URL]}/${domain}/${Object.keys(
+		const url = `${[import.meta.env.VITE_SERVER_URL]}/${domain.toLowerCase()}/${Object.keys(
 			URL_MAPPING
 		).filter((key) =>
 			URL_MAPPING[key as keyof typeof URL_MAPPING].includes(action as string)
@@ -76,6 +76,7 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 					elevation={5}
 				>
 					<Stack spacing={2} justifyContent="center" alignItems="center">
+						<Typography variant="h5">Domain: {domain}</Typography>
 						<FormControl error={logError} sx={{ width: "100%" }}>
 							<Textarea
 								minRows={10}

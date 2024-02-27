@@ -17,15 +17,8 @@ externalDocs:
   description: Find out more about ONDC
   url: https://ondc.org
 servers:
-  - url: /b2b/bpp
-  - url: /b2b/bap
+  - url: /auth
 tags:
-  - name: B2B
-    description: Everything for B2B domain
-    externalDocs:
-      description: Find out more
-      url: >-
-        https://github.com/ONDC-Official/ONDC-RET-Specifications/tree/release-2.0.2
   - name: Auth
     description: Endpoints for Authentication
 paths:

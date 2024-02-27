@@ -91,11 +91,15 @@ export const CurlDisplay = ({
 									display: "flex",
 									justifyContent: "space-between",
 									alignItems: "center",
-									my:1
+									my: 1,
 								}}
 							>
 								<Typography variant="h6" mr={2}>
 									Curl:
+								</Typography>
+								<Typography color="text.secondary">
+									You can just paste this CURL in your CLI and see it work
+									yourself
 								</Typography>
 								<Fade in={display} timeout={600}>
 									<IconButton
