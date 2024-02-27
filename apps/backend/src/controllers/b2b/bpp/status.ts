@@ -1,15 +1,9 @@
 import { Request, Response } from "express";
-import {
-	onStatusBPPPayment,
-	onStatusBPPPaymentError,
-	onStatusDelivered,
-	onStatusOutForDelivery,
-	onStatusPickedUp,
-	onStatusProformaInvoice,
-	onStatusSelfPickedUp,
-} from "../../../lib/examples";
+import fs from "fs";
+import path from "path";
+import YAML from "yaml";
 
-import { ACTIONS, responseBuilder } from "../../../lib/utils";
+import { ACTIONS, responseBuilder, B2B_EXAMPLES_PATH } from "../../../lib/utils";
 
 export const statusController = (req: Request, res: Response) => {
 	const { scenario } = req.query
@@ -51,30 +45,46 @@ export const statusController = (req: Request, res: Response) => {
 }
 
 export const statusDeliveredController = (req: Request, res: Response) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "on_status/on_status_delivered.yaml")
+	);
+
+	const response = YAML.parse(file.toString());
+
 	return responseBuilder(
 		res,
 		req.body.context,
-		onStatusDelivered.message,
+		response.value.message,
 		req.body.context.bap_uri,
 		`on_${ACTIONS.status}`
 	);
 };
 
 export const statusOutForDeliveryController = (req: Request, res: Response) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "on_status/on_status_out_for_delivery.yaml")
+	);
+
+	const response = YAML.parse(file.toString());
 	return responseBuilder(
 		res,
 		req.body.context,
-		onStatusOutForDelivery.message,
+		response.value.message,
 		req.body.context.bap_uri,
 		`on_${ACTIONS.status}`
 	);
 };
 
 export const statusPickedUpController = (req: Request, res: Response) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "on_status/on_status_pickup_up.yaml")
+	);
+
+	const response = YAML.parse(file.toString());
 	return responseBuilder(
 		res,
 		req.body.context,
-		onStatusPickedUp.message,
+		response.value.message,
 		req.body.context.bap_uri,
 		`on_${ACTIONS.status}`
 	);
@@ -84,10 +94,16 @@ export const statusProformaInvoiceController = (
 	req: Request,
 	res: Response
 ) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "on_status/on_status_proforma_invoice.yaml")
+	);
+
+	const response = YAML.parse(file.toString());
+
 	return responseBuilder(
 		res,
 		req.body.context,
-		onStatusProformaInvoice.message,
+		response.value.message,
 		`${req.body.context.bap_uri}/on_${ACTIONS.status}`,
 		`on_${ACTIONS.status}`
 	);
@@ -97,10 +113,16 @@ export const statusBPPpaymentErrorController = (
 	req: Request,
 	res: Response
 ) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "on_status/on_status_BPP_payment_error.yaml")
+	);
+
+	const response = YAML.parse(file.toString());
+
 	return responseBuilder(
 		res,
 		req.body.context,
-		onStatusBPPPaymentError.message,
+		response.value.message,
 		`${req.body.context.bap_uri}/on_${ACTIONS.status}`,
 		`on_${ACTIONS.status}`
 	);
@@ -110,10 +132,16 @@ export const statusBPPpaymentController = (
 	req: Request,
 	res: Response
 ) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "on_status/on_status_BPP_payment.yaml")
+	);
+
+	const response = YAML.parse(file.toString());
+
 	return responseBuilder(
 		res,
 		req.body.context,
-		onStatusBPPPayment.message,
+		response.value.message,
 		`${req.body.context.bap_uri}/on_${ACTIONS.status}`,
 		`on_${ACTIONS.status}`
 	);
@@ -123,10 +151,16 @@ export const statusSelfPickedUpController = (
 	req: Request,
 	res: Response
 ) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "on_status/on_status_self_picked_up.yaml")
+	);
+
+	const response = YAML.parse(file.toString());
+
 	return responseBuilder(
 		res,
 		req.body.context,
-		onStatusSelfPickedUp.message,
+		response.value.message,
 		`${req.body.context.bap_uri}/on_${ACTIONS.status}`,
 		`on_${ACTIONS.status}`
 	);

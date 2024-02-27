@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
-import { onSelectDomestic, onSelectDomesticNonRFQ, onSelectDomesticSelfPickup, onSelectExports, onSelectNonServiceable, onSelectQuantityUnavailable } from "../../../lib/examples";
-import { ACTIONS, quoteCreator, responseBuilder } from "../../../lib/utils";
+import { ACTIONS, quoteCreator, B2B_EXAMPLES_PATH, responseBuilder } from "../../../lib/utils";
+import fs from "fs";
+import path from "path";
+import YAML from "yaml";
 
 export const selectController = (req: Request, res: Response) => {
 	const { scenario } = req.query
@@ -22,6 +24,12 @@ export const selectController = (req: Request, res: Response) => {
 			break;
 		case 'quantity-unavailable':
 			selectQuantityUnavailableController(req, res)
+			break
+		case 'prepaid-bap-non-rfq':
+			selectPrepaidBapNonRFQController(req, res)
+			break;
+		case 'prepaid-bap':
+			selectPrepaidBapController(req, res)
 			break;
 		default:
 			res.status(404).json({
@@ -41,7 +49,6 @@ export const selectController = (req: Request, res: Response) => {
 export const selectDomesticController = (req: Request, res: Response) => {
 	const { context, message } = req.body;
 	const { ttl, ...provider } = message.order.provider;
-
 
 	var responseMessage = {
 		order: {
@@ -74,11 +81,17 @@ export const selectDomesticController = (req: Request, res: Response) => {
 	);
 };
 
-export const selectDomesticNonRfqController = (req: Request, res: Response) => {
+const selectDomesticNonRfqController = (req: Request, res: Response) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "on_select/on_select_domestic_non_rfq.yaml")
+	);
+
+	const response = YAML.parse(file.toString());
+
 	return responseBuilder(
 		res,
 		req.body.context,
-		onSelectDomesticNonRFQ.message,
+		response.value.message,
 		req.body.context.bap_uri,
 		`on_${ACTIONS.select}`
 	);
@@ -95,40 +108,90 @@ export const selectDomesticNonRfqController = (req: Request, res: Response) => {
 // };
 
 export const selectDomesticSelfPickupController = (req: Request, res: Response) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "on_select/on_select_domestic_self_pickup.yaml")
+	);
+
+	const response = YAML.parse(file.toString());
 	return responseBuilder(
 		res,
 		req.body.context,
-		onSelectDomesticSelfPickup.message,
+		response.value.message,
 		req.body.context.bap_uri,
 		`on_${ACTIONS.select}`
 	);
 };
 
 export const selectExportsController = (req: Request, res: Response) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "on_select/on_select_exports.yaml")
+	);
+
+	const response = YAML.parse(file.toString());
 	return responseBuilder(
 		res,
 		req.body.context,
-		onSelectExports.message,
+		response.value.message,
 		req.body.context.bap_uri,
 		`on_${ACTIONS.select}`
 	);
 };
 
 export const selectNonServiceableController = (req: Request, res: Response) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "on_select/on_select_non_serviceable.yaml")
+	);
+
+	const response = YAML.parse(file.toString());
 	return responseBuilder(
 		res,
 		req.body.context,
-		onSelectNonServiceable.message,
+		response.value.message,
 		req.body.context.bap_uri,
 		`on_${ACTIONS.select}`
 	);
 };
 
 export const selectQuantityUnavailableController = (req: Request, res: Response) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "on_select/on_select_quantity_unavailable.yaml")
+	);
+
+	const response = YAML.parse(file.toString());
 	return responseBuilder(
 		res,
 		req.body.context,
-		onSelectQuantityUnavailable.message,
+		response.value.message,
+		req.body.context.bap_uri,
+		`on_${ACTIONS.select}`
+	);
+};
+
+export const selectPrepaidBapNonRFQController = (req: Request, res: Response) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "on_select/on_select_prepaid_bap_non_rfq.yaml")
+	);
+
+	const response = YAML.parse(file.toString());
+	return responseBuilder(
+		res,
+		req.body.context,
+		response.value.message,
+		req.body.context.bap_uri,
+		`on_${ACTIONS.select}`
+	);
+};
+
+export const selectPrepaidBapController = (req: Request, res: Response) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "on_select/on_select_prepaid_bap.yaml")
+	);
+
+	const response = YAML.parse(file.toString());
+	return responseBuilder(
+		res,
+		req.body.context,
+		response.value.message,
 		req.body.context.bap_uri,
 		`on_${ACTIONS.select}`
 	);

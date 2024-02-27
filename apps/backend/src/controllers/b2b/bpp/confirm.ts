@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
-import { onConfirmDomestic, onConfirmDomesticNonRFQ, onConfirmExports, onConfirmRejected } from "../../../lib/examples";
-import { ACTIONS, responseBuilder } from "../../../lib/utils";
+import { ACTIONS, responseBuilder, B2B_EXAMPLES_PATH } from "../../../lib/utils";
+import fs from "fs";
+import path from "path";
+import YAML from "yaml";
 
 export const confirmDomesticController = (req: Request, res: Response) => {
 	const { context, message } = req.body;
@@ -8,6 +10,12 @@ export const confirmDomesticController = (req: Request, res: Response) => {
 	start.setHours(start.getHours() + 1);
 	const end = new Date(message.order.created_at);
 	end.setHours(end.getHours() + 2);
+
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "on_confirm/on_confirm_domestic.yaml")
+	);
+
+	const response = YAML.parse(file.toString());
 
 	const responseMessage = {
 		order: {
@@ -20,14 +28,14 @@ export const confirmDomesticController = (req: Request, res: Response) => {
 			fulfillments: message.order.fulfillments.map((eachFulfillment: any) => ({
 				...eachFulfillment,
 				"@ondc/org/provider_name":
-					onConfirmDomestic.message.order.fulfillments[0][
+					response.value.message.order.fulfillments[0][
 					"@ondc/org/provider_name"
 					],
-				state: onConfirmDomestic.message.order.fulfillments[0].state,
+				state: response.value.message.order.fulfillments[0].state,
 				stops: [
 					...eachFulfillment.stops,
 					{
-						...onConfirmDomestic.message.order.fulfillments[0].stops[0],
+						...response.value.message.order.fulfillments[0].stops[0],
 						time: {
 							range: {
 								start: start.toISOString(),
@@ -89,30 +97,48 @@ export const confirmController = (req: Request, res: Response) => {
 // };
 
 export const confirmDomesticNonRfq = (req: Request, res: Response) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "on_confirm/on_confirm_domestic_non_rfq.yaml")
+	);
+
+	const response = YAML.parse(file.toString());
+
 	return responseBuilder(
 		res,
 		req.body.context,
-		onConfirmDomesticNonRFQ.message,
+		response.value.message,
 		req.body.context.bap_uri,
 		`on_${ACTIONS.confirm}`
 	);
 };
 
 export const confirmExports = (req: Request, res: Response) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "on_confirm/on_confirm_exports.yaml")
+	);
+
+	const response = YAML.parse(file.toString());
+
 	return responseBuilder(
 		res,
 		req.body.context,
-		onConfirmExports.message,
+		response.value.message,
 		req.body.context.bap_uri,
 		`on_${ACTIONS.confirm}`
 	);
 };
 
 export const confirmDomesticRejected = (req: Request, res: Response) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "on_confirm/on_confirm_domestic_rejected.yaml")
+	);
+
+	const response = YAML.parse(file.toString());
+
 	return responseBuilder(
 		res,
 		req.body.context,
-		onConfirmRejected.message,
+		response.value.message,
 		req.body.context.bap_uri,
 		`on_${ACTIONS.confirm}`
 	);

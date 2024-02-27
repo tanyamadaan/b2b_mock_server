@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
-import { selectBapChat, selectDomestic, selectDomesticNonRFQ, selectDomesticSelfPickup, selectExports } from "../../../lib/examples";
-import { ACTIONS, responseBuilder } from "../../../lib/utils";
+import { ACTIONS, responseBuilder, B2B_EXAMPLES_PATH } from "../../../lib/utils";
+import fs from "fs";
+import path from "path";
+import YAML from "yaml";
 
 export const onSearchController = (req: Request, res: Response) => {
 	const { scenario } = req.query
@@ -37,6 +39,11 @@ export const onSearchController = (req: Request, res: Response) => {
 
 export const onSearchDomesticController = (req: Request, res: Response) => {
 	const { context, message } = req.body;
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "select/select_domestic.yaml")
+	);
+	const response = YAML.parse(file.toString());
+
 	const responseMessage = {
 		order: {
 			provider: {
@@ -50,7 +57,7 @@ export const onSearchDomesticController = (req: Request, res: Response) => {
 			},
 			items: [
 				{
-					...selectDomestic.message.order.items[0],
+					...response.value.message.order.items[0],
 					id: message.catalog.providers[0].items[0].id,
 					location_ids: [
 						message.catalog.providers[0].items[0].location_ids[0]
@@ -62,14 +69,14 @@ export const onSearchDomesticController = (req: Request, res: Response) => {
 			],
 			fulfillments: [
 				{
-					...selectDomestic.message.order.fulfillments[0],
+					...response.value.message.order.fulfillments[0],
 					type: message.catalog.providers[0].items[0].fulfillment_ids[0]
 				}
 			],
 			payments: [
 				message.catalog.payments[0]
 			],
-			tags: selectDomestic.message.order.tags
+			tags: response.value.message.order.tags
 		}
 	}
 	return responseBuilder(
@@ -82,40 +89,60 @@ export const onSearchDomesticController = (req: Request, res: Response) => {
 };
 
 export const onSearchDomesticNonRfqController = (req: Request, res: Response) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "select/select_domestic(Non RFQ).yaml")
+	);
+	const response = YAML.parse(file.toString());
+
 	return responseBuilder(
 		res,
 		req.body.context,
-		selectDomesticNonRFQ.message,
+		response.value.message,
 		req.body.context.bpp_uri,
 		`${ACTIONS.select}`
 	);
 };
 
 export const onSearchDomesticSelfPickupController = (req: Request, res: Response) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "select/select_domestic_SelfPickup.yaml")
+	);
+	const response = YAML.parse(file.toString());
+
 	return responseBuilder(
 		res,
 		req.body.context,
-		selectDomesticSelfPickup.message,
+		response.value.message,
 		req.body.context.bpp_uri,
 		`${ACTIONS.select}`
 	);
 };
 
 export const onSearchExportsController = (req: Request, res: Response) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "select/select_exports.yaml")
+	);
+	const response = YAML.parse(file.toString());
+
 	return responseBuilder(
 		res,
 		req.body.context,
-		selectExports.message,
+		response.value.message,
 		req.body.context.bpp_uri,
 		`${ACTIONS.select}`
 	);
 };
 
 export const onSearchBAPchatController = (req: Request, res: Response) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "select/select_BAP_chat.yaml")
+	);
+	const response = YAML.parse(file.toString());
+
 	return responseBuilder(
 		res,
 		req.body.context,
-		selectBapChat.message,
+		response.value.message,
 		req.body.context.bpp_uri,
 		`${ACTIONS.select}`
 	);
