@@ -3,7 +3,7 @@ const fs = require("fs");
 const $RefParser = require("@apidevtools/json-schema-ref-parser");
 const { execSync } = require("child_process");
 const path = require("path");
-const { ACTIONS, B2B_SCENARIOS, SERVICES_SCENARIOS } = require("./constants");
+const { ACTIONS, B2B_SCENARIOS, SERVICES_SCENARIOS, DOMAINS } = require("./constants")
 
 const swaggerParse = async (swaggerPath) => {
 	const file = fs.readFileSync(swaggerPath, "utf8");
@@ -25,12 +25,10 @@ const generateSwagger = async (
 	servers = []
 ) => {
 	const schema = await swaggerParse(inputPath);
-	var exampleSet = schema["x-examples"][Object.keys(schema["x-examples"])[0]];
-
-	schema["info"]["title"] = exampleSet["summary"];
-	schema["info"]["description"] = exampleSet["description"];
-	exampleSet = exampleSet["example_set"];
-
+	schema.externalDocs = {
+		description: 'User guide',
+		url: 'https://github/path/to/user_guide.md',
+	}
 	if (servers.length > 0) {
 		schema.servers = servers;
 	}
@@ -59,13 +57,26 @@ const generateSwagger = async (
 				},
 			});
 		}
-		if (exampleSet[key]) {
-			// console.log("key", key);
-			schema.paths[i].post.requestBody.content["application/json"].examples =
-				exampleSet[key].examples;
+		if (schema['x-examples'].hasOwnProperty(DOMAINS.b2b)) {
+			if (schema['x-examples'][DOMAINS.b2b].example_set[key]) {
+				schema.paths[i].post.requestBody.content['application/json'].examples = {}
+				schema['x-examples'][DOMAINS.b2b].example_set[key].examples.forEach((example) => {
+					schema.paths[i].post.requestBody.content['application/json'].examples[example.summary] = {
+						value: example.value
+					}
+				})
+			}
+		} else if (schema['x-examples'].hasOwnProperty(DOMAINS.services)) {
+			if (schema['x-examples'][DOMAINS.services].example_set[key]) {
+				schema.paths[i].post.requestBody.content['application/json'].examples = {}
+				schema['x-examples'][DOMAINS.services].example_set[key].examples.forEach((example) => {
+					schema.paths[i].post.requestBody.content['application/json'].examples[example.summary] = {
+						value: example.value
+					}
+				})
+			}
 		}
 	}
-	// console.log("SCHEMA", schema);
 	const build = yaml.dump(schema);
 	fs.writeFileSync(path.join(outputPath, "openapi-temp.yaml"), build, "utf8");
 	const command = `npx swagger-cli bundle ${path.join(
@@ -77,12 +88,12 @@ const generateSwagger = async (
 };
 
 generateSwagger(
-	"./domain-repos/@retail-b2b/2.0.2/api/build/build.yaml",
+	"./domain-repos/@retail-b2b/draft-2.x/api/build/build.yaml",
 	"./src/openapi/retail-b2b",
 	B2B_SCENARIOS,
 	[
-		{ url: "/api/b2b/bpp", description: "Provider Platform" },
-		{ url: "/api/b2b/bap", description: "Customer Platform" },
+		{ url: "/api/b2b/bpp", description: "Sandbox as seller " },
+		{ url: "/api/b2b/bap", description: "Sandbox as buyer" },
 	]
 );
 
@@ -91,7 +102,7 @@ generateSwagger(
 	"./src/openapi/services",
 	SERVICES_SCENARIOS,
 	[
-		{ url: "/api/services/bpp", description: "Provider Platform" },
-		{ url: "/api/services/bap", description: "Customer Platform" },
+		{ url: "/api/services/bpp", description: "Sandbox as seller" },
+		{ url: "/api/services/bap", description: "Sandbox as buyer" },
 	]
 )

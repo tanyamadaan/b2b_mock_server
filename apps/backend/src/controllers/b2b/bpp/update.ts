@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { onUpdateFulfillments, onUpdatePrepaid, onUpdatePrepaidBAP } from "../../../lib/examples";
-import { ACTIONS, responseBuilder } from "../../../lib/utils";
-
+import { ACTIONS, responseBuilder, B2B_EXAMPLES_PATH } from "../../../lib/utils";
+import fs from "fs";
+import path from "path";
+import YAML from "yaml";
 
 export const updateController = (req: Request, res: Response) => {
 	const { scenario } = req.query
@@ -10,7 +11,7 @@ export const updateController = (req: Request, res: Response) => {
 			updateFulfillmentController(req, res)
 			break;
 		case 'prepaid':
-			updateFulfillmentController(req, res)
+			updatePrepaidController(req, res)
 			break;
 		case 'prepaid-bap':
 			updatePrepaidBAPController(req, res)
@@ -33,30 +34,45 @@ export const updateController = (req: Request, res: Response) => {
 
 
 export const updateFulfillmentController = (req: Request, res: Response) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "on_update/on_update_fulfillments.yaml")
+	);
+
+	const response = YAML.parse(file.toString());
 	return responseBuilder(
 		res,
 		req.body.context,
-		onUpdateFulfillments.message,
+		response.value.message,
 		req.body.context.bap_uri,
 		`on_${ACTIONS.update}`
 	);
 };
 
 export const updatePrepaidController = (req: Request, res: Response) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "on_update/on_update_prepaid.yaml")
+	);
+
+	const response = YAML.parse(file.toString());
 	return responseBuilder(
 		res,
 		req.body.context,
-		onUpdatePrepaid.message,
+		response.value.message,
 		`${req.body.context.bap_uri}/on_${ACTIONS.update}`,
 		`on_${ACTIONS.update}`
 	);
 };
 
 export const updatePrepaidBAPController = (req: Request, res: Response) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "on_update/on_update_prepaid_BAP.yaml")
+	);
+
+	const response = YAML.parse(file.toString());
 	return responseBuilder(
 		res,
 		req.body.context,
-		onUpdatePrepaidBAP.message,
+		response.value.message,
 		`${req.body.context.bap_uri}/on_${ACTIONS.update}`,
 		`on_${ACTIONS.update}`
 	);

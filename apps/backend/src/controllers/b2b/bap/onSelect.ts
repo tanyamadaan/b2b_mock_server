@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
-import { initDomestic, initDomesticBPPPayment, initDomesticNonRFQ, initExports } from "../../../lib/examples";
-import { ACTIONS, responseBuilder } from "../../../lib/utils";
+import { ACTIONS, responseBuilder, B2B_EXAMPLES_PATH } from "../../../lib/utils";
+import fs from "fs";
+import path from "path";
+import YAML from "yaml";
 
 export const onSelectController = (req: Request, res: Response) => {
 	const { scenario } = req.query
@@ -33,6 +35,11 @@ export const onSelectController = (req: Request, res: Response) => {
 };
 
 export const onSelectDomesticController = (req: Request, res: Response) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "init/init_domestic.yaml")
+	);
+	const response = YAML.parse(file.toString());
+
 	const {
 		context,
 		message: {
@@ -41,12 +48,12 @@ export const onSelectDomesticController = (req: Request, res: Response) => {
 	} = req.body;
 	const responseMessage = {
 		order: {
-			...initDomestic.message.order,
+			...response.value.message.order,
 			provider,
 			items,
 			payments,
 			fulfillments: fulfillments.map((fulfillment: any) => ({
-				...initDomestic.message.order.fulfillments[0],
+				...response.value.message.order.fulfillments[0],
 				id: fulfillment.id,
 			})),
 		},
@@ -61,30 +68,45 @@ export const onSelectDomesticController = (req: Request, res: Response) => {
 };
 
 export const onSelectDomesticNonRfqController = (req: Request, res: Response) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "init/init_domestic_non_rfq.yaml")
+	);
+	const response = YAML.parse(file.toString());
+
 	return responseBuilder(
 		res,
 		req.body.context,
-		initDomesticNonRFQ.message,
+		response.value.message,
 		req.body.context.bpp_uri,
 		`${ACTIONS.init}`
 	);
 };
 
 export const onSelectExportsController = (req: Request, res: Response) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "init/init_exports.yaml")
+	);
+	const response = YAML.parse(file.toString());
+
 	return responseBuilder(
 		res,
 		req.body.context,
-		initExports.message,
+		response.value.message,
 		req.body.context.bpp_uri,
 		`${ACTIONS.init}`
 	);
 };
 
 export const onSelectDomesticBPPPaymentController = (req: Request, res: Response) => {
+	const file = fs.readFileSync(
+		path.join(B2B_EXAMPLES_PATH, "init/init_domestic_BPP_payment.yaml")
+	);
+	const response = YAML.parse(file.toString());
+
 	return responseBuilder(
 		res,
 		req.body.context,
-		initDomesticBPPPayment.message,
+		response.value.message,
 		req.body.context.bpp_uri,
 		`${ACTIONS.init}`
 	);

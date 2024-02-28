@@ -7,3 +7,5 @@ dev.db*
 dist
 
 .turbo
+
+openapi-temp.yaml
