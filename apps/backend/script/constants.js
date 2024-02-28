@@ -307,4 +307,8 @@ module.exports = {
       }
     ]
 	},
+	DOMAINS : {
+		b2b: 'B2B',
+		services: 'Services - Home Services'
+	}
 };
