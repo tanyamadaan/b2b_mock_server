@@ -38,6 +38,11 @@ const NAV_LINKS = [
 ];
 const DOMAIN_NAVS = [
 	{
+		name: "Home",
+		nested: false,
+		path: "/"
+	},
+	{
 		name: "B2B",
 		nested: true,
 		path: "/b2b",

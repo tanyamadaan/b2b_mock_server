@@ -3,7 +3,12 @@ const fs = require("fs");
 const $RefParser = require("@apidevtools/json-schema-ref-parser");
 const { execSync } = require("child_process");
 const path = require("path");
-const { ACTIONS, B2B_SCENARIOS, SERVICES_SCENARIOS, DOMAINS } = require("./constants")
+const {
+	ACTIONS,
+	B2B_SCENARIOS,
+	SERVICES_SCENARIOS,
+	DOMAINS,
+} = require("./constants");
 
 const swaggerParse = async (swaggerPath) => {
 	const file = fs.readFileSync(swaggerPath, "utf8");
@@ -26,9 +31,15 @@ const generateSwagger = async (
 ) => {
 	const schema = await swaggerParse(inputPath);
 	schema.externalDocs = {
-		description: 'User guide',
-		url: 'https://github/path/to/user_guide.md',
-	}
+		description: "User guide",
+		url: "https://github/path/to/user_guide.md",
+	};
+
+	schema["info"]["title"] =
+		schema["x-examples"][Object.keys(schema["x-examples"])[0]]["summary"];
+	schema["info"]["description"] =
+		schema["x-examples"][Object.keys(schema["x-examples"])[0]]["description"];
+
 	if (servers.length > 0) {
 		schema.servers = servers;
 	}
@@ -57,23 +68,33 @@ const generateSwagger = async (
 				},
 			});
 		}
-		if (schema['x-examples'].hasOwnProperty(DOMAINS.b2b)) {
-			if (schema['x-examples'][DOMAINS.b2b].example_set[key]) {
-				schema.paths[i].post.requestBody.content['application/json'].examples = {}
-				schema['x-examples'][DOMAINS.b2b].example_set[key].examples.forEach((example) => {
-					schema.paths[i].post.requestBody.content['application/json'].examples[example.summary] = {
-						value: example.value
+		if (schema["x-examples"].hasOwnProperty(DOMAINS.b2b)) {
+			if (schema["x-examples"][DOMAINS.b2b].example_set[key]) {
+				schema.paths[i].post.requestBody.content["application/json"].examples =
+					{};
+				schema["x-examples"][DOMAINS.b2b].example_set[key].examples.forEach(
+					(example) => {
+						schema.paths[i].post.requestBody.content[
+							"application/json"
+						].examples[example.summary] = {
+							value: example.value,
+						};
 					}
-				})
+				);
 			}
-		} else if (schema['x-examples'].hasOwnProperty(DOMAINS.services)) {
-			if (schema['x-examples'][DOMAINS.services].example_set[key]) {
-				schema.paths[i].post.requestBody.content['application/json'].examples = {}
-				schema['x-examples'][DOMAINS.services].example_set[key].examples.forEach((example) => {
-					schema.paths[i].post.requestBody.content['application/json'].examples[example.summary] = {
-						value: example.value
-					}
-				})
+		} else if (schema["x-examples"].hasOwnProperty(DOMAINS.services)) {
+			if (schema["x-examples"][DOMAINS.services].example_set[key]) {
+				schema.paths[i].post.requestBody.content["application/json"].examples =
+					{};
+				schema["x-examples"][DOMAINS.services].example_set[
+					key
+				].examples.forEach((example) => {
+					schema.paths[i].post.requestBody.content["application/json"].examples[
+						example.summary
+					] = {
+						value: example.value,
+					};
+				});
 			}
 		}
 	}
@@ -105,4 +126,4 @@ generateSwagger(
 		{ url: "/api/services/bpp", description: "Sandbox as seller" },
 		{ url: "/api/services/bap", description: "Sandbox as buyer" },
 	]
-)
+);

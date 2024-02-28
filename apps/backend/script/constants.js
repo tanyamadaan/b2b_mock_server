@@ -1,4 +1,5 @@
 module.exports = {
+	USER_GUIDE_LINK: "", 
 	ACTIONS: {
 		next: {
 			search: "on_search",

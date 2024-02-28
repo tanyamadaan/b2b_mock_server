@@ -1,7 +1,21 @@
-# How to use
+# ONDC Mock & Sandbox
+This is the monorepo for the ONDC Mock & Sandbox. It features an ExpressJS Web Server, a Vite ReactJS App. This README specifies the instructions on how to use it.
+## How to use
 To start, first you have to ask yourself two things. "_To which service I am making requests to(BAP or BPP)?"_ and "_what would be the action/on_action I am going to use_". With these you can easily construct the URL you need to mock and then find that among this list.
 
 **_NOTE:_** Currently mocker server supports only B2B and Services.
+
+## Steps to Run:
+There are 2 ways to run the project. You may either run it without docker or with docker. By default, Postgres DB will be ran in docker. But you can have your own Postgres instance running. To run the project without docker, follow these steps:
+1. Clone the Repo, move into the project root and run `npm i`.
+2. Copy the `copy.env` and name the copy `.env`. Fill the required values
+4. If you wish to run Postgres in a docker instance then run `docker compose up db`. Otherwise, fill in the DB URI env var accordingly (Refer **[Postgres](#postgres)** section below).
+3. To run the mock server in dev mode, run `npm run dev`.
+
+This will start the Frontend on port 5173 by default and the backend on port 3000. The Swagger docs for the backend are hosted on routes:
+1. `/api-docs/auth` - For Auth Swagger
+2. `/api-docs/b2b` - For B2B Swagger
+3. `/api-docs/services` - For Services Swagger
 
 ## Servers
 There are two type of NPs one is BPP(Seller app) and BAP(Buyer app). 
