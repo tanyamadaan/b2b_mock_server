@@ -40,14 +40,14 @@ const DOMAIN_NAVS = [
 	{
 		name: "Home",
 		nested: false,
-		path: "/"
+		path: "/",
 	},
 	{
 		name: "B2B",
 		nested: true,
 		path: "/b2b",
 		children: NAV_LINKS,
-	},	
+	},
 	{
 		name: "Services",
 		nested: true,
@@ -57,8 +57,8 @@ const DOMAIN_NAVS = [
 	{
 		name: "Sign Check",
 		nested: false,
-		path: "/swagger/auth"
-	}
+		path: "/swagger/auth",
+	},
 ];
 type CustomDrawerProps = {
 	children: React.ReactNode;
@@ -78,7 +78,7 @@ const NestedMenu = ({ id, name, childPath, parentPath }: NestedMenuProps) => {
 	return (
 		<Accordion
 			sx={{
-				my:0,
+				my: 0,
 				bgcolor: theme.palette.primary.dark,
 				color: theme.palette.primary.contrastText,
 				"&.Mui-selected": {
@@ -108,9 +108,9 @@ const NestedMenu = ({ id, name, childPath, parentPath }: NestedMenuProps) => {
 					p: 0,
 				}}
 			>
-				<List sx={{py: 0}}>
+				<List sx={{ py: 0 }}>
 					{childPath?.map((link, index) => (
-						<Grow in={accordionOpened} timeout={800}>
+						<Grow in={accordionOpened} timeout={800} key={id + index}>
 							<ListItem key={index} disablePadding>
 								<ListItemButton
 									onClick={() => navigate(link.path + parentPath)}
@@ -118,7 +118,9 @@ const NestedMenu = ({ id, name, childPath, parentPath }: NestedMenuProps) => {
 									sx={{
 										"&.Mui-selected": {
 											backgroundColor: theme.palette.primary.light,
-											color: theme.palette.getContrastText(theme.palette.primary.light)
+											color: theme.palette.getContrastText(
+												theme.palette.primary.light
+											),
 										},
 									}}
 								>
@@ -161,8 +163,8 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 								id={"nav-nested-menu-" + index}
 							/>
 						) : (
-							<Grow in={true} timeout={1000}>
-								<ListItem key={index} disablePadding>
+							<Grow in={true} timeout={1000} key={"nonnested-nav-" + index}>
+								<ListItem disablePadding key={index}>
 									<ListItemButton
 										onClick={() => navigate(link.path)}
 										selected={location.pathname === link.path}
@@ -173,8 +175,8 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 												backgroundColor: theme.palette.primary.light,
 											},
 											"&:hover": {
-												color: theme.palette.common.black
-											}
+												color: theme.palette.common.black,
+											},
 										}}
 									>
 										<ListItemText primary={link.name} />
