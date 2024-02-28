@@ -92,8 +92,8 @@ generateSwagger(
 	"./src/openapi/retail-b2b",
 	B2B_SCENARIOS,
 	[
-		{ url: "/api/b2b/bpp", description: "Provider Platform" },
-		{ url: "/api/b2b/bap", description: "Customer Platform" },
+		{ url: "/api/b2b/bpp", description: "Sandbox as seller " },
+		{ url: "/api/b2b/bap", description: "Sandbox as buyer" },
 	]
 );
 
@@ -102,7 +102,7 @@ generateSwagger(
 	"./src/openapi/services",
 	SERVICES_SCENARIOS,
 	[
-		{ url: "/api/services/bpp", description: "Provider Platform" },
-		{ url: "/api/services/bap", description: "Customer Platform" },
+		{ url: "/api/services/bpp", description: "Sandbox as seller" },
+		{ url: "/api/services/bap", description: "Sandbox as buyer" },
 	]
 )
