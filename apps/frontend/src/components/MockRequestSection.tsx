@@ -68,7 +68,7 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 			});
 			console.log("RESPONSE", response)
 			setSyncResponse(response.data.sync);
-			setAsyncResponse(response.data.async);
+			setAsyncResponse(response.data.async || {});
 		} catch (error) {
 			console.log("ERROR Occured while pinging backend:", error);
 			setAsyncResponse({});

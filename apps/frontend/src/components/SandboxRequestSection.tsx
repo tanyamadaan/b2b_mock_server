@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CurlDisplay } from ".";
 import Fade from "@mui/material/Fade";
 import Paper from "@mui/material/Paper";
