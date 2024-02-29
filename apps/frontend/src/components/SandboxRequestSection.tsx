@@ -46,11 +46,14 @@ export const SandboxRequestSection = ({
 		detectAction(e.target.value);
 	};
 	const handleSubmit = async () => {
-		const url = `${[import.meta.env.VITE_SERVER_URL]}/${
+		let url = `${[import.meta.env.VITE_SERVER_URL]}/${
 			domain.toLowerCase()
 		}/${Object.keys(URL_MAPPING).filter((key) =>
 			URL_MAPPING[key as keyof typeof URL_MAPPING].includes(action as string)
-		)}/${action}?mode=sandbox&scenario=${activeScenario?.scenario}`;
+		)}/${action}?mode=sandbox`
+		
+		if (activeScenario?.scenario)
+			url = url + `&scenario=${activeScenario?.scenario}`;
 
 		setCurl(`curl -X POST \\
 		  ${url} \\
