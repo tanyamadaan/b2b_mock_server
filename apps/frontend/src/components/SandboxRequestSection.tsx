@@ -47,7 +47,7 @@ export const SandboxRequestSection = ({
 	};
 	const handleSubmit = async () => {
 		const url = `${[import.meta.env.VITE_SERVER_URL]}/${
-			domain.toLowerCase
+			domain.toLowerCase()
 		}/${Object.keys(URL_MAPPING).filter((key) =>
 			URL_MAPPING[key as keyof typeof URL_MAPPING].includes(action as string)
 		)}/${action}?mode=sandbox&scenario=${activeScenario?.scenario}`;
