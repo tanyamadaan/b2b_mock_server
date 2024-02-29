@@ -12,7 +12,7 @@ import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CurlDisplay } from ".";
 import { useAction, useMock } from "../utils/hooks";
 import { URL_MAPPING } from "../utils";
@@ -31,6 +31,12 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 	}>();
 	const { action, detectAction, logError, scenarios } = useAction(domain);
 	const { setAsyncResponse, setSyncResponse } = useMock();
+
+	useEffect(() => {
+		setSyncResponse(undefined);
+		setAsyncResponse(undefined);
+	}, []);
+	
 	const [curl, setCurl] = useState<string>();
 
 	const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

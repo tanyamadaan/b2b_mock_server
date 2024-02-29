@@ -8,7 +8,6 @@ import { Outlet } from "react-router-dom";
 import { useMock } from "../../utils/hooks";
 
 export const Mock = () => {
-	const { syncResponse, asyncResponse } = useMock();
 	return (
 		<MockProvider>
 			<Container sx={{ py: 2 }}>
@@ -18,10 +17,10 @@ export const Mock = () => {
 					</Grid>
 					<Grid container item xs={12} lg={4} spacing={2}>
 						<Grid item xs={12} sm={6} lg={12}>
-							<SyncResponseSection syncResponse={syncResponse} />
+							<SyncResponseSection/>
 						</Grid>
 						<Grid item xs={12} sm={6} lg={12}>
-							<AsyncResponseSection asyncResponse={asyncResponse} />
+							<AsyncResponseSection />
 						</Grid>
 					</Grid>
 				</Grid>

@@ -6,12 +6,11 @@ import Typography from "@mui/material/Typography";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/material.css";
 import "codemirror/mode/javascript/javascript.js";
+import { useMock } from "../utils/hooks";
 
-type SyncResponseSectionProp = {
-	syncResponse: object | undefined
-}
-
-export const SyncResponseSection = ({syncResponse}: SyncResponseSectionProp) => {
+export const SyncResponseSection = () => {
+	const { syncResponse } = useMock();
+	console.log("SYNC RESPONSE", syncResponse);
 	return (
 		<Fade in={true} timeout={2500}>
 			<Paper
@@ -20,15 +19,16 @@ export const SyncResponseSection = ({syncResponse}: SyncResponseSectionProp) => 
 					height: "100%",
 					p: 1,
 					px: 2,
-					overflow:"hidden"
+					overflow: "hidden",
 				}}
 			>
-				<Typography variant="h6" my={1}>Sync Response:</Typography>
+				<Typography variant="h6" my={1}>
+					Sync Response:
+				</Typography>
 				{syncResponse ? (
 					<CodeMirror
 						value={JSON.stringify(syncResponse, null, 2)}
 						autoCursor={false}
-						
 						options={{
 							readOnly: "nocursor",
 							theme: "material",

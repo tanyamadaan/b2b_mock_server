@@ -35,6 +35,10 @@ export const SandboxRequestSection = ({
 	}>();
 	const { action, detectAction, logError, scenarios } = useAction(domain);
 	const { setSyncResponse } = useSandbox();
+	useEffect(() => {
+		setSyncResponse(undefined);
+	}, []);
+	
 	const [curl, setCurl] = useState<string>();
 
 	const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
