@@ -9,7 +9,7 @@ export const AuthSwagger = () => {
 		url.startsWith(import.meta.env.VITE_SERVER_URL)
 			? { url }
 			: {
-					url: import.meta.env.VITE_SERVER_URL + url
+					url: import.meta.env.VITE_SERVER_URL + url.replace("/api", "")
 			  // eslint-disable-next-line no-mixed-spaces-and-tabs
 			  }
 	);

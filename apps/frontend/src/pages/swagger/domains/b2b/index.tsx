@@ -5,13 +5,13 @@ import swaggerSpec from "backend/retail-b2b.yaml";
 import { SwaggerDownloadButton } from "../../../../components";
 
 export const B2BSwagger = () => {
-	swaggerSpec.servers = swaggerSpec.servers.map(({ url }: { url: string }) =>
-		url.startsWith(import.meta.env.VITE_SERVER_URL)
-			? { url }
-			: {
-					url: import.meta.env.VITE_SERVER_URL + url,
-					// eslint-disable-next-line no-mixed-spaces-and-tabs
-			  }
+	swaggerSpec.servers = swaggerSpec.servers.map(
+		({ url, description }: { url: string; description: string }) => ({
+			url: url.startsWith(import.meta.env.VITE_SERVER_URL)
+				? url
+				: import.meta.env.VITE_SERVER_URL + url.replace("/api", ""),
+			description,
+		})
 	);
 
 	return (
