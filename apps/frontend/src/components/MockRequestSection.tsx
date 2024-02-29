@@ -39,12 +39,16 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 	};
 
 	const handleSubmit = async () => {
-		const url = `${[import.meta.env.VITE_SERVER_URL]}/${domain.toLowerCase()}/${Object.keys(
-			URL_MAPPING
-		).filter((key) =>
+		let url = `${[
+			import.meta.env.VITE_SERVER_URL,
+		]}/${domain.toLowerCase()}/${Object.keys(URL_MAPPING).filter((key) =>
 			URL_MAPPING[key as keyof typeof URL_MAPPING].includes(action as string)
-		)}/${action}?mode=mock&scenario=${activeScenario?.scenario}`;
-		console.log("Form Values", log, activeScenario, url);
+		)}/${action}?mode=mock`;
+		if (activeScenario?.scenario)
+			url = url + `&scenario=${activeScenario?.scenario}`;
+
+		// console.log("Form Values", log, activeScenario, url);
+
 		setCurl(`curl -X POST \\
 		  ${url} \\
 		-H 'accept: application/json' \\
@@ -56,7 +60,7 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 					"Content-Type": "application/json",
 				},
 			});
-
+			console.log("RESPONSE", response)
 			setSyncResponse(response.data.sync);
 			setAsyncResponse(response.data.async);
 		} catch (error) {
@@ -150,7 +154,11 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 						<Button
 							variant="solid"
 							onClick={handleSubmit}
-							disabled={logError || !action || !activeScenario}
+							disabled={
+								logError ||
+								!action ||
+								(scenarios!.length > 0 && !activeScenario)
+							}
 						>
 							Submit
 						</Button>
