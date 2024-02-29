@@ -6,11 +6,13 @@ import Typography from "@mui/material/Typography";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/material.css";
 import "codemirror/mode/javascript/javascript.js";
-import { useMock } from "../utils/hooks";
 
-export const SyncResponseSection = () => {
-	const { syncResponse } = useMock();
-	console.log("SYNC RESPONSE", syncResponse);
+type SyncResponseSectionProps = {
+	syncResponse: object | undefined
+}
+
+export const SyncResponseSection = ({syncResponse}: SyncResponseSectionProps) => {
+
 	return (
 		<Fade in={true} timeout={2500}>
 			<Paper
