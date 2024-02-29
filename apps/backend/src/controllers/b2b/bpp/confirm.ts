@@ -130,7 +130,7 @@ export const confirmExports = (req: Request, res: Response) => {
 
 export const confirmDomesticRejected = (req: Request, res: Response) => {
 	const file = fs.readFileSync(
-		path.join(B2B_EXAMPLES_PATH, "on_confirm/on_confirm_domestic_rejected.yaml")
+		path.join(B2B_EXAMPLES_PATH, "on_confirm/on_confirm_domestic_Rejected.yaml")
 	);
 
 	const response = YAML.parse(file.toString());
