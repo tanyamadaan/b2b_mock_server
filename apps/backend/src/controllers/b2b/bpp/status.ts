@@ -77,7 +77,7 @@ export const statusOutForDeliveryController = (req: Request, res: Response) => {
 
 export const statusPickedUpController = (req: Request, res: Response) => {
 	const file = fs.readFileSync(
-		path.join(B2B_EXAMPLES_PATH, "on_status/on_status_pickup_up.yaml")
+		path.join(B2B_EXAMPLES_PATH, "on_status/on_status_picked_up.yaml")
 	);
 
 	const response = YAML.parse(file.toString());
