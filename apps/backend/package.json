@@ -16,6 +16,7 @@
 	"author": "Abhik Banerjee",
 	"license": "ISC",
 	"dependencies": {
+		"common": "*",
 		"@apidevtools/json-schema-ref-parser": "^11.1.0",
 		"@prisma/client": "^5.7.1",
 		"@types/cors": "^2.8.17",
@@ -48,6 +49,9 @@
 		"typescript": "^5.3.3"
 	},
 	"exports": {
-		"./retail-b2b/swagger.yaml": "./src/openapi/retail-b2b/build/swagger.yaml"
+		"./auth.yaml": "./src/openapi/auth/openapi.yaml",
+		"./retail-b2b.yaml": "./src/openapi/retail-b2b/build/swagger.yaml",
+		"./services.yaml": "./src/openapi/services/build/swagger.yaml",
+		"./constants.js": "./script/constants.js"
 	}
 }

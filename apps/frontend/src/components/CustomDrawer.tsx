@@ -1,4 +1,3 @@
-
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import Grow from "@mui/material/Grow";
@@ -20,6 +19,7 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Box from "@mui/material/Box";
+import AppBar from "@mui/material/AppBar";
 
 const drawerWidth = 200;
 const NAV_LINKS = [
@@ -38,10 +38,26 @@ const NAV_LINKS = [
 ];
 const DOMAIN_NAVS = [
 	{
+		name: "Home",
+		nested: false,
+		path: "/",
+	},
+	{
 		name: "B2B",
 		nested: true,
 		path: "/b2b",
 		children: NAV_LINKS,
+	},
+	{
+		name: "Services",
+		nested: true,
+		path: "/services",
+		children: NAV_LINKS,
+	},
+	{
+		name: "Sign Check",
+		nested: false,
+		path: "/swagger/auth",
 	},
 ];
 type CustomDrawerProps = {
@@ -51,7 +67,7 @@ type CustomDrawerProps = {
 type NestedMenuProps = {
 	id: string;
 	name: string;
-	childPath: { name: string; path: string }[];
+	childPath: { name: string; path: string }[] | undefined;
 	parentPath: string;
 };
 
@@ -62,12 +78,15 @@ const NestedMenu = ({ id, name, childPath, parentPath }: NestedMenuProps) => {
 	return (
 		<Accordion
 			sx={{
+				my: 0,
 				bgcolor: theme.palette.primary.dark,
 				color: theme.palette.primary.contrastText,
 				"&.Mui-selected": {
 					backgroundColor: theme.palette.primary.main,
 				},
 			}}
+			square={true}
+			disableGutters={true}
 			elevation={0}
 			onChange={(_event, expanded) => setAccordionOpened(expanded)}
 		>
@@ -82,17 +101,26 @@ const NestedMenu = ({ id, name, childPath, parentPath }: NestedMenuProps) => {
 			>
 				<Typography>{name}</Typography>
 			</AccordionSummary>
-			<AccordionDetails sx={{ bgcolor: theme.palette.primary.main, p: 0 }}>
-				<List>
-					{childPath.map((link, index) => (
-						<Grow in={accordionOpened} timeout={800}>
+			<AccordionDetails
+				sx={{
+					bgcolor: theme.palette.grey[100],
+					color: theme.palette.getContrastText(theme.palette.grey[100]),
+					p: 0,
+				}}
+			>
+				<List sx={{ py: 0 }}>
+					{childPath?.map((link, index) => (
+						<Grow in={accordionOpened} timeout={800} key={id + index}>
 							<ListItem key={index} disablePadding>
 								<ListItemButton
 									onClick={() => navigate(link.path + parentPath)}
 									selected={location.pathname === link.path + parentPath}
 									sx={{
 										"&.Mui-selected": {
-											backgroundColor: theme.palette.primary.dark,
+											backgroundColor: theme.palette.primary.light,
+											color: theme.palette.getContrastText(
+												theme.palette.primary.light
+											),
 										},
 									}}
 								>
@@ -116,23 +144,10 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 	const theme = useTheme();
 	const [mobileOpen, setMobileOpen] = React.useState(false);
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const [isClosing, setIsClosing] = React.useState(false);
-
-	const handleDrawerClose = () => {
-		setIsClosing(true);
-		setMobileOpen(false);
-	};
-
-	const handleDrawerTransitionEnd = () => {
-		setIsClosing(false);
-	};
 
 	const handleDrawerToggle = () => {
-		if (!isClosing) {
-			setMobileOpen(!mobileOpen);
-		}
+		setMobileOpen((prevState) => !prevState);
 	};
-	console.log("HELLO", location.pathname === "/sandbox");
 	const drawer = (
 		<div>
 			<Toolbar />
@@ -148,14 +163,19 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 								id={"nav-nested-menu-" + index}
 							/>
 						) : (
-							<Grow in={true} timeout={1000}>
-								<ListItem key={index} disablePadding>
+							<Grow in={true} timeout={1000} key={"nonnested-nav-" + index}>
+								<ListItem disablePadding key={index}>
 									<ListItemButton
 										onClick={() => navigate(link.path)}
 										selected={location.pathname === link.path}
 										sx={{
+											bgcolor: theme.palette.primary.dark,
+											color: theme.palette.primary.contrastText,
 											"&.Mui-selected": {
-												backgroundColor: theme.palette.primary.main,
+												backgroundColor: theme.palette.primary.light,
+											},
+											"&:hover": {
+												color: theme.palette.common.black,
 											},
 										}}
 									>
@@ -164,6 +184,7 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 								</ListItem>
 							</Grow>
 						)}
+						<Divider />
 					</>
 				))}
 			</List>
@@ -173,26 +194,41 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 
 	return (
 		<Box sx={{ display: "flex" }}>
-			<Box
-				component="nav"
-				sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-			>
+			<AppBar component="nav">
+				<Toolbar>
+					<IconButton
+						color="inherit"
+						aria-label="open drawer"
+						edge="start"
+						onClick={handleDrawerToggle}
+						sx={{ mr: 2 }}
+					>
+						<MenuIcon />
+					</IconButton>
+					<Typography
+						variant="h6"
+						component="div"
+						sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+					>
+						ONDC Mock & Sandbox
+					</Typography>
+				</Toolbar>
+			</AppBar>
+			<Box component="nav">
 				<Drawer
 					variant="temporary"
 					open={mobileOpen}
-					onTransitionEnd={handleDrawerTransitionEnd}
-					onClose={handleDrawerClose}
+					onClose={handleDrawerToggle}
 					ModalProps={{
 						keepMounted: true, // Better open performance on mobile.
 					}}
 					PaperProps={{
 						sx: {
-							backgroundColor: theme.palette.primary.dark,
-							color: theme.palette.primary.contrastText,
+							// backgroundColor: theme.palette.primary.dark,
+							// color: theme.palette.primary.contrastText,
 						},
 					}}
 					sx={{
-						display: { xs: "block", sm: "none" },
 						"& .MuiDrawer-paper": {
 							boxSizing: "border-box",
 							width: drawerWidth,
@@ -201,31 +237,12 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 				>
 					<Box sx={{ display: "flex", justifyContent: "flex-end" }}>
 						<IconButton
-							sx={{ color: theme.palette.primary.contrastText }}
-							onClick={handleDrawerClose}
+							// sx={{ color: theme.palette.primary.contrastText }}
+							onClick={handleDrawerToggle}
 						>
 							<MenuOpenIcon />
 						</IconButton>
 					</Box>
-					{drawer}
-				</Drawer>
-				<Drawer
-					variant="permanent"
-					PaperProps={{
-						sx: {
-							backgroundColor: theme.palette.primary.dark,
-							color: theme.palette.primary.contrastText,
-						},
-					}}
-					sx={{
-						display: { xs: "none", sm: "block" },
-						"& .MuiDrawer-paper": {
-							boxSizing: "border-box",
-							width: drawerWidth,
-						},
-					}}
-					open
-				>
 					{drawer}
 				</Drawer>
 			</Box>
@@ -235,16 +252,11 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 					flexGrow: 1,
 					// p: 3,
 					minHeight: "100vh",
-					width: { sm: `calc(100% - ${drawerWidth}px)` },
+					// width: { sm: `calc(100% - ${drawerWidth}px)` },
 					backgroundColor: theme.palette.grey[100],
 				}}
 			>
-				<IconButton
-					sx={{ mx: "auto", display: { xs: "block", sm: "none" } }}
-					onClick={handleDrawerToggle}
-				>
-					<MenuIcon />
-				</IconButton>
+				<Toolbar />
 				{children}
 			</Box>
 		</Box>

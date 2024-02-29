@@ -64,7 +64,7 @@ export const AsyncResponseSection = ({
 						my: 1,
 					}}
 				>
-					<Typography variant="h6">Async:</Typography>
+					<Typography variant="h6">Async Request/Response:</Typography>
 					{asyncResponse && (
 						<Fade in={display} timeout={600}>
 							<IconButton

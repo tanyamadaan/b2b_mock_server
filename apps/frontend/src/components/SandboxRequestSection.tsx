@@ -31,7 +31,7 @@ export const SandboxRequestSection = ({domain}: SandboxRequestSectionProp) => {
 		name: string;
 		scenario: string;
 	}>();
-	const { action, detectAction, logError, scenarios } = useAction();
+	const { action, detectAction, logError, scenarios } = useAction(domain);
 	const { setSyncResponse } = useSandbox();
 	const [curl, setCurl] = useState<string>();
 
@@ -40,7 +40,7 @@ export const SandboxRequestSection = ({domain}: SandboxRequestSectionProp) => {
 		detectAction(e.target.value);
 	};
 	const handleSubmit = async () => {
-		const url = `${[import.meta.env.VITE_SERVER_URL]}/${domain}/${Object.keys(
+		const url = `${[import.meta.env.VITE_SERVER_URL]}/${domain.toLowerCase}/${Object.keys(
 			URL_MAPPING
 		).filter((key) =>
 			URL_MAPPING[key as keyof typeof URL_MAPPING].includes(action as string)
@@ -79,6 +79,7 @@ export const SandboxRequestSection = ({domain}: SandboxRequestSectionProp) => {
 					elevation={5}
 				>
 					<Stack spacing={2} justifyContent="center" alignItems="center">
+						<Typography variant="h5">Domain: {domain}</Typography>
 						<Box
 							sx={{
 								width: "100%",
@@ -97,10 +98,10 @@ export const SandboxRequestSection = ({domain}: SandboxRequestSectionProp) => {
 						/>
 						<FormControl error={logError} sx={{ width: "100%" }}>
 							<Textarea
-								minRows={5}
+								minRows={10}
 								maxRows={15}
 								sx={{ width: "100%" }}
-								placeholder="Enter Your Log..."
+								placeholder="Request Body..."
 								value={log}
 								onChange={handleLogChange}
 							/>
