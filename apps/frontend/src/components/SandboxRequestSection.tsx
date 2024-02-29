@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CurlDisplay } from ".";
 import Fade from "@mui/material/Fade";
 import Paper from "@mui/material/Paper";
@@ -23,7 +23,9 @@ type SandboxRequestSectionProp = {
 	domain: string;
 };
 
-export const SandboxRequestSection = ({domain}: SandboxRequestSectionProp) => {
+export const SandboxRequestSection = ({
+	domain,
+}: SandboxRequestSectionProp) => {
 	const [authHeader, setAuthHeader] = useState<string>();
 	const [log, setLog] = useState<string>();
 	const [showCurl, setShowCurl] = useState(false);
@@ -33,6 +35,10 @@ export const SandboxRequestSection = ({domain}: SandboxRequestSectionProp) => {
 	}>();
 	const { action, detectAction, logError, scenarios } = useAction(domain);
 	const { setSyncResponse } = useSandbox();
+	useEffect(() => {
+		setSyncResponse(undefined);
+	}, []);
+	
 	const [curl, setCurl] = useState<string>();
 
 	const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -40,9 +46,9 @@ export const SandboxRequestSection = ({domain}: SandboxRequestSectionProp) => {
 		detectAction(e.target.value);
 	};
 	const handleSubmit = async () => {
-		const url = `${[import.meta.env.VITE_SERVER_URL]}/${domain.toLowerCase}/${Object.keys(
-			URL_MAPPING
-		).filter((key) =>
+		const url = `${[import.meta.env.VITE_SERVER_URL]}/${
+			domain.toLowerCase
+		}/${Object.keys(URL_MAPPING).filter((key) =>
 			URL_MAPPING[key as keyof typeof URL_MAPPING].includes(action as string)
 		)}/${action}?mode=sandbox&scenario=${activeScenario?.scenario}`;
 
@@ -166,7 +172,15 @@ export const SandboxRequestSection = ({domain}: SandboxRequestSectionProp) => {
 							</Grid>
 						)}
 
-						<Button variant="soft" onClick={handleSubmit} disabled={!action}>
+						<Button
+							variant="soft"
+							onClick={handleSubmit}
+							disabled={
+								logError ||
+								!action ||
+								(scenarios!.length > 0 && !activeScenario)
+							}
+						>
 							Submit
 						</Button>
 					</Stack>

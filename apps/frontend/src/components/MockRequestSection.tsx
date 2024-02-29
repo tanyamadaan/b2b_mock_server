@@ -12,7 +12,7 @@ import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CurlDisplay } from ".";
 import { useAction, useMock } from "../utils/hooks";
 import { URL_MAPPING } from "../utils";
@@ -31,6 +31,12 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 	}>();
 	const { action, detectAction, logError, scenarios } = useAction(domain);
 	const { setAsyncResponse, setSyncResponse } = useMock();
+
+	useEffect(() => {
+		setSyncResponse(undefined);
+		setAsyncResponse(undefined);
+	}, []);
+	
 	const [curl, setCurl] = useState<string>();
 
 	const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -39,12 +45,16 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 	};
 
 	const handleSubmit = async () => {
-		const url = `${[import.meta.env.VITE_SERVER_URL]}/${domain.toLowerCase()}/${Object.keys(
-			URL_MAPPING
-		).filter((key) =>
+		let url = `${[
+			import.meta.env.VITE_SERVER_URL,
+		]}/${domain.toLowerCase()}/${Object.keys(URL_MAPPING).filter((key) =>
 			URL_MAPPING[key as keyof typeof URL_MAPPING].includes(action as string)
-		)}/${action}?mode=mock&scenario=${activeScenario?.scenario}`;
-		console.log("Form Values", log, activeScenario, url);
+		)}/${action}?mode=mock`;
+		if (activeScenario?.scenario)
+			url = url + `&scenario=${activeScenario?.scenario}`;
+
+		// console.log("Form Values", log, activeScenario, url);
+
 		setCurl(`curl -X POST \\
 		  ${url} \\
 		-H 'accept: application/json' \\
@@ -56,9 +66,9 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 					"Content-Type": "application/json",
 				},
 			});
-
+			console.log("RESPONSE", response)
 			setSyncResponse(response.data.sync);
-			setAsyncResponse(response.data.async);
+			setAsyncResponse(response.data.async || {});
 		} catch (error) {
 			console.log("ERROR Occured while pinging backend:", error);
 			setAsyncResponse({});
@@ -150,7 +160,11 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 						<Button
 							variant="solid"
 							onClick={handleSubmit}
-							disabled={logError || !action || !activeScenario}
+							disabled={
+								logError ||
+								!action ||
+								(scenarios!.length > 0 && !activeScenario)
+							}
 						>
 							Submit
 						</Button>
