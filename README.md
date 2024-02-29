@@ -77,19 +77,10 @@ In case you use mock service you will receive both `sync` and `async` and in cas
 
 
 ### CURL request
-You can also make curl request from the CLI. You don't have to use only swagger or UI to make requests. You can also use the curl command to make the requests. A sample `/on_search` curl request would look like this 
+You can also make curl to directly make requests to sandbox environments. 
 
-```
-curl -X POST \
-		  http://localhost:3000/b2b/bap/on_search?mode=mock&scenario=self-pickup \
-		-H 'accept: application/json' \
-		-H 'Content-Type: application/json' \
-		-d '{
-  "context": {
-    ...
-  },
-  "message": {
-    ...
-    }
-}'
-```
+Curl host for Buyer instance:
+`` https://ret-mock.ondc.org/api/b2b/bap``
+
+Curl host for Seller instance:
+`` https://ret-mock.ondc.org/api/b2b/bpp``
