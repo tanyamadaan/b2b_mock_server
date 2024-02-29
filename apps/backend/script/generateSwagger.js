@@ -32,7 +32,7 @@ const generateSwagger = async (
 	const schema = await swaggerParse(inputPath);
 	schema.externalDocs = {
 		description: "User guide",
-		url: "https://github/path/to/user_guide.md",
+		url: "https://github.com/tanyamadaan/b2b_mock_server/blob/feat-monorepo/README.md",
 	};
 
 	schema["info"]["title"] =
