@@ -38,6 +38,7 @@ export const SandboxRequestSection = ({
 	useEffect(() => {
 		setSyncResponse(undefined);
 	}, []);
+	console.log(domain, scenarios, action)
 	
 	const [curl, setCurl] = useState<string>();
 
@@ -165,9 +166,7 @@ export const SandboxRequestSection = ({
 												key={"scenario-" + index}
 												disabled={!scenario.scenario}
 											>
-												{scenario.name + scenario.scenario
-													? ``
-													: "(Work In-Progress)"}
+												{scenario.name}
 											</Option>
 										))}
 									</Select>
