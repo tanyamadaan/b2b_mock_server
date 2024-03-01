@@ -1,0 +1,24 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "pipeline": {
+    "dev": {
+      "dependsOn": ["db:migrate:dev", "swagger:gen"],
+      "cache": false,
+      "persistent": true
+    },
+    "swagger:gen": {
+      "cache": false
+    },
+    "db:migrate:dev": {
+      "dependsOn": ["db:up"],
+      "cache": false
+    },
+    "db:up": {
+      "cache": false
+    },
+    "build": {
+      "outputs": ["dist/**"]
+    },
+    "type-check": {}
+  }
+}

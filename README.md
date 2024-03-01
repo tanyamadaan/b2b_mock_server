@@ -1,12 +1,9 @@
-# ONDC NP Mock Server
-This server is supposed to mock network participants and provide sample logs for better integration and onboarding to the network. 
+# ONDC Mock & Sandbox
+This is the monorepo for the ONDC Mock & Sandbox. It features an ExpressJS Web Server, a Vite ReactJS App. This README specifies the instructions on how to use it.
+## How to use
+To start, first you have to ask yourself two things. "_To which service I am making requests to(BAP or BPP)?"_ and "_what would be the action/on_action I am going to use_". With these you can easily construct the URL you need to mock and then find that among this list.
 
-## How it works:
- - If a B2B Buyer app NP is using this server, then an example of usage could be to mock a B2B seller app NP (BPP). Requests to `/api/b2b/bpp/*` would simulate requests that can be sent to B2B BPP. The response would have two properties `sync` and `async`. The `sync` property would be the response received immediately from BPP to signify the acknowledgement while the `async` property would denote the `on_<action>` response.
-
-## Current Mock Status:
-1. B2B BPP - **Done**
-2. B2B BAP - **Done**
+**_NOTE:_** Currently mocker server supports only B2B and Services.
 
 ## Steps to Run:
 There are 2 ways to run the project. You may either run it without docker or with docker. By default, Postgres DB will be ran in docker. But you can have your own Postgres instance running. To run the project without docker, follow these steps:
@@ -15,24 +12,75 @@ There are 2 ways to run the project. You may either run it without docker or wit
 4. If you wish to run Postgres in a docker instance then run `docker compose up db`. Otherwise, fill in the DB URI env var accordingly (Refer **[Postgres](#postgres)** section below).
 3. To run the mock server in dev mode, run `npm run dev`.
 
-If you wish to use Docker to run the mock server, then follow just step 2 of the above and then just run `docker compose up`. 
-> Note: If running the server first time using Docker, a build step is needed. In that case, run `docker compose up --build` instead of `docker compose up`.
+This will start the Frontend on port 5173 by default and the backend on port 3000. The Swagger docs for the backend are hosted on routes:
+1. `/api-docs/auth` - For Auth Swagger
+2. `/api-docs/b2b` - For B2B Swagger
+3. `/api-docs/services` - For Services Swagger
 
-## ENV variables
-The Environment Variables will help run the server in Sandbox mode and/or Rate Limiting Mode. The variables with their significance are listed below:
-| **ENV Variable** | **Function** |
-| - | - |
-| SANDBOX_MODE | If present then Server is run in Sandbox mode. |
-| RATE_LIMIT_MODE | If present then Server limits the request rate from _mocker_ in a 24 hour period. |
-| RATE_LIMIT_24HR | The number of request permitted per mocker. Required if RATE_LIMIT_MODE is enabled. |
-| PRIVATE_KEY | The Private key the mock server uses for signing auth header on response |
-| UNIQUE_KEY | Unique Key for the mock server. Used in Signature |
-| SUBSCRIBER_ID | Subscriber ID for the mock server. Used in Signature |
-| DATABASE_URL | Postgres Database URL. (Refer [Postgres](#postgres) section)|
+## Servers
+There are two type of NPs one is BPP(Seller app) and BAP(Buyer app). 
 
-## Postgres
-The Mock Server uses Postgres instance for maintaining a list of NPs. This is also used for rate limiting purposes. The devs can either run Postgres in a Docker container option as provided or use their own.
+* All the **actions** calls are hosted on the BPP server. So if you want to make mock requests to BPP, then select _/b2b/bpp_ from the servers dropdown.
 
-> By default, the Postgres user, password and db are specified as `postgres`, `123` and `mock`. While this works when testing the mock server in localhost, please make sure to not use these if hosting.
+* All the **on_actions** calls are hosted on the BAP server. So if you want make mock requests to BAP or the buyer app, then select _/b2b/bap_ from the servers dropdown.
 
-Running `docker compose up db` will start the Postgres instance in a Docker container. The Connection string by default is `postgresql://postgres:123@localhost:5434/mock?schema=public`. Do not use this in production use cases.
+## Make a request
+Since you have selected the desired server, now you can make the requests to that server. There are two serivces available to test with :
+  * Sandbox
+  * Mock
+
+You can select service from `mode` dropdown.
+
+### Sandbox
+To to use the sandbox you need to have an authorization header which is to be passed in the header to make requests. For creating the authorization header you can refer this [document](https://docs.google.com/document/d/1brvcltG_DagZ3kGr1ZZQk4hG4tze3zvcxmGV4NMTzr8/edit?pli=1#heading=h.hdylqyv4bn12)
+
+### Mock
+You can use Mock service to mock the requests. It doesn't require authorization header to be passed. 
+
+### Request body
+You can refer these [examples](https://github.com/ONDC-Official/ONDC-RET-Specifications/tree/release-2.0.2/api/components/Examples/B2B_json) for request body.
+
+__Note__: All the requests must pass the schema validation based on the examples. You can refer this [log utility](https://github.com/ONDC-Official/reference-implementations/tree/main/utilities/logistics-b2b/log-verification-utility) for the schema validations.
+
+### Response body
+1. In the case of schema validation failure, you will receive a `NACK`. A sample `NACK` response is as below:
+```json
+{
+  "message": {
+    "ack": {
+      "status": "NACK"
+    }
+  },
+  "error": {
+    "type": "JSON-SCHEMA-ERROR",
+    "code": "50009",
+    "message": [
+      {
+        "message": "must have required property 'domain'"
+      }
+    ]
+  }
+}
+```
+2. In the case of schema validation success 
+```json
+{
+  
+    "message": {
+      "ack": {
+        "status": "ACK"
+      }
+  },
+ ```
+   
+In case you use mock service you will receive both `sync` and `async` and in case of sandbox service you will receive only `sync` response with `ACK` and `async` response will be sent back to the respective NP.
+
+
+### CURL request
+You can also make curl to directly make requests to sandbox environments. 
+
+Curl host for Buyer instance:
+`` https://ret-mock.ondc.org/api/b2b/bap``
+
+Curl host for Seller instance:
+`` https://ret-mock.ondc.org/api/b2b/bpp``

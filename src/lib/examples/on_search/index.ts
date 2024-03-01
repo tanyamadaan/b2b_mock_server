@@ -1,5 +1,0 @@
-export * from "./on_search"
-export * from "./on_search_bpc"
-export * from "./on_search_electronics"
-export * from "./on_search_fashion"
-export * from "./on_search_grocery"

@@ -1,3 +1,15 @@
-[submodule "beckn-core"]
-	path = beckn-core
+[submodule "apps/backend/domain-repos/@retail-b2b/2.0.2"]
+	path = apps/backend/domain-repos/@retail-b2b/2.0.2
+	url = https://github.com/ONDC-Official/ONDC-RET-Specifications
+	branch = release-2.0.2
+[submodule "apps/backend/beckn-core"]
+	path = apps/backend/beckn-core
 	url = https://github.com/beckn/protocol-specifications
+[submodule "apps/backend/domain-repos/@services/draft-services"]
+	path = apps/backend/domain-repos/@services/draft-services
+	url = https://github.com/ONDC-Official/ONDC-SRV-Specifications
+	branch = draft-services
+[submodule "apps/backend/domain-repos/@retail-b2b/draft-2.x"]
+	path = apps/backend/domain-repos/@retail-b2b/draft-2.x
+	url = https://github.com/ONDC-Official/ONDC-RET-Specifications
+	branch = draft-2.x
