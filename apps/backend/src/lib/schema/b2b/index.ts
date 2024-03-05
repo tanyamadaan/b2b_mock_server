@@ -2,6 +2,17 @@ import { NextFunction, Request, Response } from "express";
 import Ajv, { ValidateFunction } from "ajv";
 import addFormats from "ajv-formats";
 import { searchSchema } from "./search";
+import { onSearchSchema } from "./on_search";
+import { onSelectSchema } from "./on_select";
+import { selectSchema } from "./select";
+import { confirmSchema } from "./confirm";
+import { initSchema } from "./init";
+import { onConfirmSchema } from "./on_confirm";
+import { onInitSchema } from "./on_init";
+import { onStatusSchema } from "./on_status";
+import { onUpdateSchema } from "./on_update";
+import { statusSchema } from "./status";
+import { updateSchema } from "./update";
 
 export const b2bSchemaValidator =
 	(
@@ -42,6 +53,39 @@ export const b2bSchemaValidator =
 		switch (action) {
 			case "search":
 				validate = ajv.compile(searchSchema);
+				break;
+			case "on_search":
+				validate = ajv.compile(onSearchSchema);
+				break;
+			case "select":
+				validate = ajv.compile(selectSchema);
+				break;
+			case "on_select":
+				validate = ajv.compile(onSelectSchema);
+				break;
+			case "init":
+				validate = ajv.compile(initSchema);
+				break;
+			case "on_init":
+				validate = ajv.compile(onInitSchema);
+				break;
+			case "confirm":
+				validate = ajv.compile(confirmSchema);
+				break;
+			case "on_confirm":
+				validate = ajv.compile(onConfirmSchema);
+				break;
+			case "status":
+				validate = ajv.compile(statusSchema);
+				break;
+			case "on_status":
+				validate = ajv.compile(onStatusSchema);
+				break;
+			case "update":
+				validate = ajv.compile(updateSchema);
+				break;
+			case "on_update":
+				validate = ajv.compile(onUpdateSchema);
 				break;
 
 			default:

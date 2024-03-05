@@ -23,7 +23,7 @@ export const jsonSchemaValidator = ({
 	domain,
 	action,
 }: JsonSchemaValidatorType) => {
-	if (domain === "b2b") {
-		return b2bSchemaValidator(action);
-	}
+	// if (domain === "b2b") {
+	return b2bSchemaValidator(action);
+	// }
 };
