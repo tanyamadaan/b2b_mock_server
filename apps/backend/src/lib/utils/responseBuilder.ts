@@ -3,7 +3,38 @@ import { Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import { MOCKSERVER_ID, MOCKSERVER_URL } from "./constants";
 import { createResponseAuthHeader } from "./responseAuth";
-import { onSelectDomestic } from "../examples";
+
+interface TagDescriptor {
+	code: string;
+}
+
+interface TagList {
+	descriptor: TagDescriptor;
+	value: string;
+}
+
+interface Quantity {
+	selected: {
+		count: number;
+	};
+}
+
+interface AddOn {
+	id: string;
+}
+
+interface Tag {
+	descriptor: TagDescriptor;
+	list: TagList[];
+}
+
+interface Item {
+	fulfillment_ids: string[];
+	id: string;
+	quantity: Quantity;
+	add_ons: AddOn[];
+	tags: Tag[];
+}
 
 export const responseBuilder = async (
 	res: Response,
@@ -40,7 +71,7 @@ export const responseBuilder = async (
 				bap_uri: MOCKSERVER_URL,
 				timeStamp: ts.toISOString(),
 				message_id: uuidv4(),
-				action
+				action,
 			},
 		};
 	}
@@ -53,18 +84,17 @@ export const responseBuilder = async (
 					authorization: header,
 				},
 			});
-			
 		} catch (error) {
 			console.log("ERROR Occured", (error as any).message);
 			return res.json({
 				message: {
 					ack: {
-						status: "NACK"
+						status: "NACK",
 					},
 				},
 				error: {
-					message: (error as any).message
-				}
+					message: (error as any).message,
+				},
 			});
 		}
 
@@ -89,22 +119,61 @@ export const responseBuilder = async (
 	}
 };
 
-export const quoteCreator = (
-	items: typeof onSelectDomestic.message.order.items
-) => {
+export const quoteCreator = (items: Item[]) => {
 	var breakup: any[] = [];
-	const onFulfillment = onSelectDomestic.message.order.quote.breakup.filter(
-		(each) => each["@ondc/org/item_id"] === "F1"
-	);
-	const onItem = onSelectDomestic.message.order.quote.breakup.filter(
-		(each) =>
-			each["@ondc/org/item_id"] === "I1" &&
-			each["@ondc/org/title_type"] !== "item"
-	);
+	const chargesOnFulfillment = [
+		{
+			"@ondc/org/item_id": "F1",
+			title: "Delivery charges",
+			"@ondc/org/title_type": "delivery",
+			price: {
+				currency: "INR",
+				value: "4000",
+			},
+		},
+		{
+			"@ondc/org/item_id": "F1",
+			title: "Packing charges",
+			"@ondc/org/title_type": "packing",
+			price: {
+				currency: "INR",
+				value: "500",
+			},
+		},
+		{
+			"@ondc/org/item_id": "F1",
+			title: "Convenience Fee",
+			"@ondc/org/title_type": "misc",
+			price: {
+				currency: "INR",
+				value: "100",
+			},
+		},
+	];
+	const chargesOnItem = [
+		{
+			"@ondc/org/item_id": "I1",
+			title: "Tax",
+			"@ondc/org/title_type": "tax",
+			price: {
+				currency: "INR",
+				value: "0",
+			},
+		},
+		{
+			"@ondc/org/item_id": "I1",
+			title: "Discount",
+			"@ondc/org/title_type": "discount",
+			price: {
+				currency: "INR",
+				value: "-1000",
+			},
+		},
+	];
 	items.forEach((item: any) => {
 		breakup = [
 			...breakup,
-			...onItem,
+			...chargesOnItem,
 			{
 				"@ondc/org/item_id": item.id,
 				"@ondc/org/item_quantity": {
@@ -127,7 +196,7 @@ export const quoteCreator = (
 		item.fulfillment_ids.forEach((eachId: string) => {
 			breakup = [
 				...breakup,
-				...onFulfillment.map((each) => ({
+				...chargesOnFulfillment.map((each) => ({
 					...each,
 					"@ondc/org/item_id": eachId,
 				})),
