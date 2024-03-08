@@ -6,7 +6,7 @@ This service will imitate various API behaviors like search, on_search, select, 
 - If you are a buyer app (BAP), you can provide /action APIs payload and you will receive the subsequent sync and async responses.
 You'll either get an ACK or NACK as a sync response based on schema validations performed on your provided payload.
 If you receive a NACK as sync response, it indicates there are schema errors in your payload that you need to address.
-- If you receive an ACK sync response, you'll then get the subsequent async response. For example, if you provided a payload for the /action API, you'll receive an async response for the subsequent /on_action API. A notable feature of this service is the ability to select from various scenarios such as RFQ, Non RFQ for B2B, etc.
+- If you receive an ACK sync response, you'll then get the subsequent async response. For example, if you provided a payload for the /action API, you'll receive an async response for the subsequent /on_action API. A notable feature of this service is the ability to select from various scenarios like location not serviceable, item out of stock, etc.
 
 - If you are a seller app (BPP), you can provide /on_action APIs payload and you will receive the subsequent sync and async request. Once you receive ACK as a sync response, you will receive the subsequent async request. For e.g. if you have provided the payload for /on_action API, then you will receive an async request for next /action API. 
 
