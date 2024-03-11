@@ -64,6 +64,8 @@ __Note__: All the requests must pass the schema validation based on the examples
 
 # Swagger
 
+Swagger UI can also be used to mock the APIs. The below steps can be followed to use Swagger as a mock or sandbox.
+
 **Choose a server**
 
 There are two type of NPs one is BPP (Seller app) and BAP (Buyer app). 
@@ -83,16 +85,16 @@ You can select service from `mode` dropdown.
 
 **Sandbox**
 
-To use the sandbox you need to have an authorization header which is to be passed in the header to make requests. For creating the authorization header you can refer this document
+To use the sandbox you need to have an authorization header which is to be passed in the header to make requests. For creating the authorization header you can refer this [document](https://github.com/ONDC-Official/developer-docs/blob/main/registry/signing-verification.md) and use the [utilities](https://github.com/ONDC-Official/reference-implementations/tree/main/utilities/signing_and_verification)
 
 **Mock**
 
 You can use Mock service to mock the requests. It doesn't require authorization header to be passed.
 
-In case you use mock service you will receive both `sync` and `async` and in case of sandbox service you will receive only `sync` response with `ACK` and `async` response will be sent back to the respective NP server.
+Then choose the API end point you want to mock, click on 'Try it out'. You may use the examples available from the dropdown or use your own. Then click on 'Execute'. 
+If you receive a NACK as sync response, it indicates there are schema errors in your payload that you need to address. If you receive an ACK sync response, you'll then get the subsequent async response/request.
 
-
-
+In case you use mock service you will receive both `sync` and `async` and in case of sandbox service you will receive only `sync` response with `ACK` and `async` response will be sent back to the respective API end point hosted on your server (bap_uri or bpp_uri sent in context part). 
 
 
 
