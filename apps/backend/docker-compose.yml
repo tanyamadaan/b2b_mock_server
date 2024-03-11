@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 services:
   db:
     image: postgres:16-alpine
@@ -11,7 +11,18 @@ services:
     networks:
       - ondc
     healthcheck:
-      test: ["CMD", "pg_isready", "-q", "-d", "mock", "-h", "localhost", "-U", "postgres"]
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-q",
+          "-d",
+          "mock",
+          "-h",
+          "localhost",
+          "-U",
+          "postgres",
+        ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -19,11 +30,11 @@ services:
     build: .
     image: ondc-mock-server
     restart: always
-  
+
   initDb:
     extends: base
     command: npx prisma migrate deploy --preview-feature
-    restart: 'on-failure'
+    restart: "on-failure"
     environment:
       - DATABASE_URL=${DATABASE_URL}
     depends_on:
@@ -32,7 +43,9 @@ services:
   redis:
     image: redis:7
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT:-6379}:6379"
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASS}
     networks:
       - ondc
   web:

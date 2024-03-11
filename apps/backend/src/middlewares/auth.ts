@@ -8,6 +8,10 @@ export const authValidatorMiddleware = async (
 	next: NextFunction
 ) => {
 	try {
+		if (req.originalUrl.includes("/auth")) {
+			next();
+			return;
+		}
 		const mode = req.query.mode as string;
 		// console.log("MODE", mode, ["sandbox", "mock"].includes(mode));
 		if (!mode || !["sandbox", "mock"].includes(mode))

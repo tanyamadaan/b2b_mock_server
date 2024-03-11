@@ -3,6 +3,7 @@ import { Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import { MOCKSERVER_ID, MOCKSERVER_URL } from "./constants";
 import { createResponseAuthHeader } from "./responseAuth";
+import { TransactionType, redis } from "./redis";
 
 interface TagDescriptor {
 	code: string;
@@ -43,6 +44,8 @@ export const responseBuilder = async (
 	uri: string,
 	action: string
 ) => {
+	var totalTransaction: TransactionType = res.locals.logs;
+	res.locals = {};
 	var ts = new Date((reqContext as any).timestamp);
 	ts.setSeconds(ts.getSeconds() + 1);
 	const sandboxMode = res.getHeader("mode") === "sandbox";
@@ -77,7 +80,19 @@ export const responseBuilder = async (
 	}
 	const header = await createResponseAuthHeader(async);
 	res.setHeader("authorization", header);
+
 	if (sandboxMode) {
+		totalTransaction.logs = {
+			...totalTransaction.logs,
+			[action]: async,
+		};
+		if (!totalTransaction.actions.includes(action)) {
+			totalTransaction.actions.push(action);
+		}
+		await redis.set(
+			(async.context! as any).transaction_id,
+			JSON.stringify(totalTransaction)
+		);
 		try {
 			const response = await axios.post(uri, async, {
 				headers: {
