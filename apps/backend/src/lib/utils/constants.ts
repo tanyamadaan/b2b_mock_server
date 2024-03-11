@@ -198,4 +198,4 @@ export const B2B_SCENARIOS = {
 };
 
 export const MOCKSERVER_ID = "https://mock.ondc.org/api";
-export const MOCKSERVER_URL = "https://mock.ondc.org/api";
+export const MOCKSERVER_URL = "http://localhost:3000/api/b2b";

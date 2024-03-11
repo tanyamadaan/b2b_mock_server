@@ -93,10 +93,12 @@ export const searchController = (req: Request, res: Response) => {
 			onSearch = YAML.parse(file.toString());
 			break;
 	}
+	console.log("DOMAIN", domain)
+	console.log("message body", onSearch.message)
 	return responseBuilder(
 		res,
 		req.body.context,
-		onSearch.message,
+		onSearch.value.message,
 		`${req.body.context.bap_uri}/on_${ACTIONS.search}`,
 		`on_${ACTIONS.search}`
 	);

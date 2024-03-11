@@ -53,11 +53,12 @@ export const responseBuilder = async (
 	var async: { message: object; context?: object } = { context: {}, message };
 
 	if (action.startsWith("on_")) {
-		const { bap_uri, bap_id, ...remainingContext } = reqContext as any;
+		// const { bap_uri, bap_id, ...remainingContext } = reqContext as any;
 		async = {
 			...async,
 			context: {
-				...remainingContext,
+				// ...remainingContext,
+				...reqContext,
 				bpp_id: MOCKSERVER_ID,
 				bpp_uri: MOCKSERVER_URL,
 				timeStamp: ts.toISOString(),
@@ -65,11 +66,12 @@ export const responseBuilder = async (
 			},
 		};
 	} else {
-		const { bpp_uri, bpp_id, ...remainingContext } = reqContext as any;
+		// const { bpp_uri, bpp_id, ...remainingContext } = reqContext as any;
 		async = {
 			...async,
 			context: {
-				...remainingContext,
+				// ...remainingContext,
+				...reqContext,
 				bap_id: MOCKSERVER_ID,
 				bap_uri: MOCKSERVER_URL,
 				timeStamp: ts.toISOString(),
@@ -82,13 +84,13 @@ export const responseBuilder = async (
 	res.setHeader("authorization", header);
 
 	if (sandboxMode) {
-		if (totalTransaction.logs) {
+		if (totalTransaction?.logs) {
 			totalTransaction.logs = {
 				...totalTransaction.logs,
 				[action]: async,
 			};
 		} else {
-			totalTransaction.logs = { [action]: async };
+			totalTransaction = { actions: [action], logs: {[action]: async} };
 		}
 		if (!totalTransaction.actions.includes(action)) {
 			totalTransaction.actions.push(action);
@@ -99,12 +101,14 @@ export const responseBuilder = async (
 		);
 		console.log("HERE");
 		try {
+			console.log("ASYNC BEING SENT", async)
 			const response = await axios.post(uri, async, {
 				headers: {
 					authorization: header,
 				},
 			});
 		} catch (error) {
+			console.log("URI Pinged", uri)
 			console.log("ERROR OCCURRED WHILE PINGING SANDBOX RESPONSE", (error as any).response.data);
 
 			return res.json({
@@ -114,8 +118,10 @@ export const responseBuilder = async (
 					},
 				},
 				error: {
-					message: (error as any).message,
+					// message: (error as any).message,
+					message: (error as any).response.data
 				},
+				async
 			});
 		}
 
