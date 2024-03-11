@@ -82,10 +82,14 @@ export const responseBuilder = async (
 	res.setHeader("authorization", header);
 
 	if (sandboxMode) {
-		totalTransaction.logs = {
-			...totalTransaction.logs,
-			[action]: async,
-		};
+		if (totalTransaction.logs) {
+			totalTransaction.logs = {
+				...totalTransaction.logs,
+				[action]: async,
+			};
+		} else {
+			totalTransaction.logs = { [action]: async };
+		}
 		if (!totalTransaction.actions.includes(action)) {
 			totalTransaction.actions.push(action);
 		}
@@ -93,6 +97,7 @@ export const responseBuilder = async (
 			(async.context! as any).transaction_id,
 			JSON.stringify(totalTransaction)
 		);
+		console.log("HERE");
 		try {
 			const response = await axios.post(uri, async, {
 				headers: {
@@ -100,7 +105,8 @@ export const responseBuilder = async (
 				},
 			});
 		} catch (error) {
-			console.log("ERROR Occured", (error as any).message);
+			console.log("ERROR OCCURRED WHILE PINGING SANDBOX RESPONSE", (error as any).response.data);
+
 			return res.json({
 				message: {
 					ack: {

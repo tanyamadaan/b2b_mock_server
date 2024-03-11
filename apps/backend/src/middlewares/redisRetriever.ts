@@ -16,11 +16,12 @@ export const redisRetriever = async (
 			transaction_id,
 			JSON.stringify({ actions: [action], logs: { [action]: req.body } })
 		);
-		next();
-		return;
+		// next();
+		// return;
 	}
-	const logs: TransactionType = JSON.parse(transaction)
+	const logs: TransactionType = transaction
 		? JSON.parse(transaction)
 		: { actions: [action], logs: { [action]: req.body } };
 	res.locals.logs = logs;
+	next();
 };

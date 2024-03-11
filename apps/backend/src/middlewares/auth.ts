@@ -8,10 +8,10 @@ export const authValidatorMiddleware = async (
 	next: NextFunction
 ) => {
 	try {
-		if (req.originalUrl.includes("/auth")) {
-			next();
-			return;
-		}
+		// if (req.originalUrl.includes("/auth")) {
+		// 	next();
+		// 	return;
+		// }
 		const mode = req.query.mode as string;
 		// console.log("MODE", mode, ["sandbox", "mock"].includes(mode));
 		if (!mode || !["sandbox", "mock"].includes(mode))
@@ -36,11 +36,12 @@ export const authValidatorMiddleware = async (
 			// console.log(req.body?.context?.transaction_id, "headers", auth_header);
 
 			var verified = await verifyHeader(auth_header, req, res);
-			// console.log(
-			// 	req.body?.context?.transaction_id,
-			// 	"Verification status:",
-			// 	verified
-			// );
+			console.log(
+				req.body?.context?.transaction_id,
+				"Verification status:",
+				verified
+			);
+
 
 			if (!verified) {
 				return res.status(401).json({

@@ -6,26 +6,11 @@ const redisOptions: RedisOptions = {
 	password: process.env.REDIS_PASS,
 };
 
+
 export type TransactionType = {
 	actions: string[];
 	logs: {
-		[key in
-			| "search"
-			| "on_search"
-			| "select"
-			| "on_select"
-			| "init"
-			| "on_init"
-			| "confirm"
-			| "on_confirm"
-			| "status"
-			| "on_status"
-			| "update"
-			| "on_update"
-			| "track"
-			| "on_track"
-			| "cancel"
-			| "on_cancel"]: object;
+		[key: string]: object;
 	};
 };
 
