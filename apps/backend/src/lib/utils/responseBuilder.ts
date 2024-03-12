@@ -115,17 +115,19 @@ export const responseBuilder = async (
 
 		}catch (error) {
 			logger.error({
-				message: { ack: { status: "NACK" }, }, error: {
-					message: (error as any).message
-				}
-			})
-
-			logger.error({
 				response: {
 					message: "ERROR OCCURRED WHILE PINGING SANDBOX RESPONSE",
 					error: (error as any).response
 				}
 			})
+			logger.error({
+				response:{
+				message: { ack: { status: "NACK" }, }, error: {
+					message: (error as any).message
+				}}
+			})
+
+
 			
 			return res.json({
 				message: {
