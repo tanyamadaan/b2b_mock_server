@@ -123,7 +123,7 @@ export const responseBuilder = async (
 			logger.error({
 				response:{
 				message: { ack: { status: "NACK" }, }, error: {
-					message: (error as any).message
+					message: (error as any).response.data
 				}}
 			})
 

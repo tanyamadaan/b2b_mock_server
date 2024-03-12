@@ -64,10 +64,21 @@ export const selectDomesticController = (req: Request, res: Response) => {
 					location_ids: any;
 					remaining: any;
 				}) => ({
-					remaining,
+					...remaining,
 				})
 			),
-			fulfillments: message.order.fulfillments,
+			fulfillments: message.order.fulfillments.map(({id, ...each}: any) => ({
+				id,
+				tracking: false,
+				"@ondc/org/provider_name": "ONDC Mock Server",
+				"@ondc/org/category": "Express Delivery",
+				"@ondc/org/TAT": "P7D",
+				state: {
+					descriptor: {
+						code: "Serviceable"
+					}
+				}
+			})),
 			quote: quoteCreator(message.order.items),
 		},
 	};
