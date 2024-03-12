@@ -4,6 +4,33 @@ import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 
+export const initController = (req: Request, res: Response) => {
+	const { scenario } = req.query
+	switch (scenario) {
+		case 'rfq':
+			initDomesticController(req, res)
+			break;
+		case 'non-rfq':
+			initDomesticNonRfq(req, res)
+			break;
+		case 'payment-bpp-non-rfq':
+			initDomesticPaymentBppNonRfq(req, res)
+			break;
+		case 'self-pickup':
+			initDomesticSelfPickup(req, res)
+			break;
+		case 'exports':
+			initExports(req, res)
+			break;
+		case 'reject-rfq':
+			initRejectRfq(req, res)
+			break;
+		default:
+			initDomesticController(req, res)
+			break;
+	}
+}
+
 export const initDomesticController = (req: Request, res: Response) => {
 	const { context, message } = req.body;
 	const { items, fulfillments, tags, billing, ...remainingMessage } =
@@ -35,52 +62,6 @@ export const initDomesticController = (req: Request, res: Response) => {
 		`on_${ACTIONS.init}`
 	);
 };
-
-export const initController = (req: Request, res: Response) => {
-	const { scenario } = req.query
-	switch (scenario) {
-		case 'rfq':
-			initDomesticController(req, res)
-			break;
-		case 'non-rfq':
-			initDomesticNonRfq(req, res)
-			break;
-		case 'payment-bpp-non-rfq':
-			initDomesticPaymentBppNonRfq(req, res)
-			break;
-		case 'self-pickup':
-			initDomesticSelfPickup(req, res)
-			break;
-		case 'exports':
-			initExports(req, res)
-			break;
-		case 'reject-rfq':
-			initRejectRfq(req, res)
-			break;
-		default:
-			res.status(404).json({
-				message: {
-					ack: {
-						status: "NACK",
-					},
-				},
-				error: {
-					message: "Invalid scenario",
-				},
-			});
-			break;
-	}
-}
-
-// export const initDomestic = (req: Request, res: Response) => {
-// 	return responseBuilder(
-// 		res,
-// 		req.body.context,
-// 		onInitDomestic.message,
-// 		req.body.context.bap_uri,
-// 		`on_${ACTIONS.init}`
-// 	);
-// };
 
 export const initDomesticNonRfq = (req: Request, res: Response) => {
 	const file = fs.readFileSync(

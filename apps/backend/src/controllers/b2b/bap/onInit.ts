@@ -28,16 +28,7 @@ export const onInitController = (req: Request, res: Response) => {
 			onInitPrepaidBapRFQController(req, res);
 			break;
 		default:
-			res.status(404).json({
-				message: {
-					ack: {
-						status: "NACK",
-					},
-				},
-				error: {
-					message: "Invalid scenario",
-				},
-			});
+			onInitDomesticController(req, res);
 			break;
 	}
 };
