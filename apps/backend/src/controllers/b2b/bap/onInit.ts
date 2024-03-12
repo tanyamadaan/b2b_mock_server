@@ -64,10 +64,26 @@ export const onInitDomesticController = (req: Request, res: Response) => {
 			),
 			payments: [
 				{
-					params: {
-						...order.quote.price,
-					},
 					...order.payments[0],
+					params: {
+						currency: order.quote.price.currency,
+						amount: order.quote.price.value
+
+					},
+          status: "NOT-PAID",
+					"@ondc/org/settlement_details": [
+            {
+              "settlement_counterparty": "buyer-app",
+              "settlement_phase": "sale-amount",
+              "settlement_type": "upi",
+              "upi_address": "gft@oksbi",
+              "settlement_bank_account_no": "XXXXXXXXXX",
+              "settlement_ifsc_code": "XXXXXXXXX",
+              "beneficiary_name": "xxxxx",
+              "bank_name": "xxxx",
+              "branch_name": "xxxx"
+            }
+          ]
 				},
 			],
 			created_at: timestamp,
@@ -78,7 +94,7 @@ export const onInitDomesticController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		`${context.bap_uri}/${ACTIONS.confirm}`,
+		`${context.bpp_uri}/${ACTIONS.confirm}`,
 		ACTIONS.confirm
 	);
 };
