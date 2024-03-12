@@ -47,7 +47,7 @@ export const confirmDomesticController = (req: Request, res: Response) => {
 			...message.order,
 			state: "Accepted",
 			provider: {
-				...message.provider,
+				...message.order.provider,
 				rateable: true,
 			},
 			fulfillments: message.order.fulfillments.map((eachFulfillment: any) => ({
