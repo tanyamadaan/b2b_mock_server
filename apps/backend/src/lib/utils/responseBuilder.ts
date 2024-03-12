@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import { MOCKSERVER_ID, MOCKSERVER_URL } from "./constants";
 import { createResponseAuthHeader } from "./responseAuth";
 import { onSelectDomestic } from "../examples";
+import logger from "./logger";
 
 export const responseBuilder = async (
 	res: Response,
@@ -53,9 +54,14 @@ export const responseBuilder = async (
 					authorization: header,
 				},
 			});
-			
+
 		} catch (error) {
 			console.log("ERROR Occured", (error as any).message);
+			logger.error({
+				message: { ack: { status: "NACK" }, }, error: {
+					message: (error as any).message
+				}
+			})
 			return res.json({
 				message: {
 					ack: {
@@ -67,7 +73,7 @@ export const responseBuilder = async (
 				}
 			});
 		}
-
+		logger.info({ message: { ack: { status: "ACK" } } })
 		return res.json({
 			message: {
 				ack: {
@@ -76,6 +82,7 @@ export const responseBuilder = async (
 			},
 		});
 	} else {
+		logger.info({ sync: { message: { ack: { status: "ACK" } } }, async });
 		return res.json({
 			sync: {
 				message: {
