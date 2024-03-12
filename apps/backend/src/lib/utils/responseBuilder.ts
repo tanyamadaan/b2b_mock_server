@@ -3,8 +3,40 @@ import { Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import { MOCKSERVER_ID, MOCKSERVER_URL } from "./constants";
 import { createResponseAuthHeader } from "./responseAuth";
-import { onSelectDomestic } from "../examples";
 import logger from "./logger";
+import { TransactionType, redis } from "./redis";
+
+interface TagDescriptor {
+	code: string;
+}
+
+interface TagList {
+	descriptor: TagDescriptor;
+	value: string;
+}
+
+interface Quantity {
+	selected: {
+		count: number;
+	};
+}
+
+interface AddOn {
+	id: string;
+}
+
+interface Tag {
+	descriptor: TagDescriptor;
+	list: TagList[];
+}
+
+interface Item {
+	fulfillment_ids: string[];
+	id: string;
+	quantity: Quantity;
+	add_ons: AddOn[];
+	tags: Tag[];
+}
 
 export const responseBuilder = async (
 	res: Response,
@@ -13,6 +45,8 @@ export const responseBuilder = async (
 	uri: string,
 	action: string
 ) => {
+	var totalTransaction: TransactionType = res.locals.logs;
+	res.locals = {};
 	var ts = new Date((reqContext as any).timestamp);
 	ts.setSeconds(ts.getSeconds() + 1);
 	const sandboxMode = res.getHeader("mode") === "sandbox";
@@ -20,11 +54,12 @@ export const responseBuilder = async (
 	var async: { message: object; context?: object } = { context: {}, message };
 
 	if (action.startsWith("on_")) {
-		const { bap_uri, bap_id, ...remainingContext } = reqContext as any;
+		// const { bap_uri, bap_id, ...remainingContext } = reqContext as any;
 		async = {
 			...async,
 			context: {
-				...remainingContext,
+				// ...remainingContext,
+				...reqContext,
 				bpp_id: MOCKSERVER_ID,
 				bpp_uri: MOCKSERVER_URL,
 				timeStamp: ts.toISOString(),
@@ -32,45 +67,68 @@ export const responseBuilder = async (
 			},
 		};
 	} else {
-		const { bpp_uri, bpp_id, ...remainingContext } = reqContext as any;
+		// const { bpp_uri, bpp_id, ...remainingContext } = reqContext as any;
 		async = {
 			...async,
 			context: {
-				...remainingContext,
+				// ...remainingContext,
+				...reqContext,
 				bap_id: MOCKSERVER_ID,
 				bap_uri: MOCKSERVER_URL,
 				timeStamp: ts.toISOString(),
 				message_id: uuidv4(),
-				action
+				action,
 			},
 		};
 	}
 	const header = await createResponseAuthHeader(async);
 	res.setHeader("authorization", header);
+
 	if (sandboxMode) {
+		if (totalTransaction?.logs) {
+			totalTransaction.logs = {
+				...totalTransaction.logs,
+				[action]: async,
+			};
+		} else {
+			totalTransaction = { actions: [action], logs: {[action]: async} };
+		}
+		if (!totalTransaction.actions.includes(action)) {
+			totalTransaction.actions.push(action);
+		}
+		await redis.set(
+			(async.context! as any).transaction_id,
+			JSON.stringify(totalTransaction)
+		);
+		console.log("HERE");
 		try {
+			console.log("ASYNC BEING SENT", async)
 			const response = await axios.post(uri, async, {
 				headers: {
 					authorization: header,
 				},
 			});
 
-		} catch (error) {
-			console.log("ERROR Occured", (error as any).message);
+		}catch (error) {
 			logger.error({
 				message: { ack: { status: "NACK" }, }, error: {
 					message: (error as any).message
 				}
 			})
+			console.log("URI Pinged", uri)
+			console.log("ERROR OCCURRED WHILE PINGING SANDBOX RESPONSE", (error as any).response.data);
+
 			return res.json({
 				message: {
 					ack: {
-						status: "NACK"
+						status: "NACK",
 					},
 				},
 				error: {
-					message: (error as any).message
-				}
+					// message: (error as any).message,
+					message: (error as any).response.data
+				},
+				async
 			});
 		}
 		logger.info({ message: { ack: { status: "ACK" } } })
@@ -96,22 +154,61 @@ export const responseBuilder = async (
 	}
 };
 
-export const quoteCreator = (
-	items: typeof onSelectDomestic.message.order.items
-) => {
+export const quoteCreator = (items: Item[]) => {
 	var breakup: any[] = [];
-	const onFulfillment = onSelectDomestic.message.order.quote.breakup.filter(
-		(each) => each["@ondc/org/item_id"] === "F1"
-	);
-	const onItem = onSelectDomestic.message.order.quote.breakup.filter(
-		(each) =>
-			each["@ondc/org/item_id"] === "I1" &&
-			each["@ondc/org/title_type"] !== "item"
-	);
+	const chargesOnFulfillment = [
+		{
+			"@ondc/org/item_id": "F1",
+			title: "Delivery charges",
+			"@ondc/org/title_type": "delivery",
+			price: {
+				currency: "INR",
+				value: "4000",
+			},
+		},
+		{
+			"@ondc/org/item_id": "F1",
+			title: "Packing charges",
+			"@ondc/org/title_type": "packing",
+			price: {
+				currency: "INR",
+				value: "500",
+			},
+		},
+		{
+			"@ondc/org/item_id": "F1",
+			title: "Convenience Fee",
+			"@ondc/org/title_type": "misc",
+			price: {
+				currency: "INR",
+				value: "100",
+			},
+		},
+	];
+	const chargesOnItem = [
+		{
+			"@ondc/org/item_id": "I1",
+			title: "Tax",
+			"@ondc/org/title_type": "tax",
+			price: {
+				currency: "INR",
+				value: "0",
+			},
+		},
+		{
+			"@ondc/org/item_id": "I1",
+			title: "Discount",
+			"@ondc/org/title_type": "discount",
+			price: {
+				currency: "INR",
+				value: "-1000",
+			},
+		},
+	];
 	items.forEach((item: any) => {
 		breakup = [
 			...breakup,
-			...onItem,
+			...chargesOnItem,
 			{
 				"@ondc/org/item_id": item.id,
 				"@ondc/org/item_quantity": {
@@ -134,7 +231,7 @@ export const quoteCreator = (
 		item.fulfillment_ids.forEach((eachId: string) => {
 			breakup = [
 				...breakup,
-				...onFulfillment.map((each) => ({
+				...chargesOnFulfillment.map((each) => ({
 					...each,
 					"@ondc/org/item_id": eachId,
 				})),
