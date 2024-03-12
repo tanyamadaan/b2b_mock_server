@@ -1,7 +1,11 @@
 import axios from "axios";
 import { Response } from "express";
 import { v4 as uuidv4 } from "uuid";
-import { MOCKSERVER_ID, MOCKSERVER_URL } from "./constants";
+import {
+	BAP_MOCKSERVER_URL,
+	BPP_MOCKSERVER_URL,
+	MOCKSERVER_ID,
+} from "./constants";
 import { createResponseAuthHeader } from "./responseAuth";
 import { TransactionType, redis } from "./redis";
 
@@ -60,7 +64,7 @@ export const responseBuilder = async (
 				// ...remainingContext,
 				...reqContext,
 				bpp_id: MOCKSERVER_ID,
-				bpp_uri: MOCKSERVER_URL,
+				bpp_uri: BPP_MOCKSERVER_URL,
 				timeStamp: ts.toISOString(),
 				action,
 			},
@@ -73,7 +77,7 @@ export const responseBuilder = async (
 				// ...remainingContext,
 				...reqContext,
 				bap_id: MOCKSERVER_ID,
-				bap_uri: MOCKSERVER_URL,
+				bap_uri: BAP_MOCKSERVER_URL,
 				timeStamp: ts.toISOString(),
 				message_id: uuidv4(),
 				action,
@@ -90,7 +94,7 @@ export const responseBuilder = async (
 				[action]: async,
 			};
 		} else {
-			totalTransaction = { actions: [action], logs: {[action]: async} };
+			totalTransaction = { actions: [action], logs: { [action]: async } };
 		}
 		if (!totalTransaction.actions.includes(action)) {
 			totalTransaction.actions.push(action);
@@ -101,15 +105,19 @@ export const responseBuilder = async (
 		);
 		console.log("HERE");
 		try {
-			console.log("ASYNC BEING SENT", async)
+			console.log("ASYNC BEING SENT", async);
 			const response = await axios.post(uri, async, {
 				headers: {
 					authorization: header,
 				},
 			});
 		} catch (error) {
-			console.log("URI Pinged", uri)
-			console.log("ERROR OCCURRED WHILE PINGING SANDBOX RESPONSE", (error as any).response.data);
+			console.log("URI Pinged", uri);
+			console.log(
+				"ERROR OCCURRED WHILE PINGING SANDBOX RESPONSE",
+				(error as any).response.data,
+				(error as any).response.data.error.message,
+			);
 
 			return res.json({
 				message: {
@@ -119,9 +127,9 @@ export const responseBuilder = async (
 				},
 				error: {
 					// message: (error as any).message,
-					message: (error as any).response.data
+					message: (error as any).response.data,
 				},
-				async
+				async,
 			});
 		}
 

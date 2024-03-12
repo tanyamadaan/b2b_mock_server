@@ -54,7 +54,7 @@ export const onSearchDomesticController = (req: Request, res: Response) => {
 						id: message.catalog.providers[0].items[0].location_ids[0]
 					}
 				],
-				ttl: "P1D"
+				ttl: context.ttl
 			},
 			items: [
 				{
