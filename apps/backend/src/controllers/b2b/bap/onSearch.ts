@@ -23,16 +23,7 @@ export const onSearchController = (req: Request, res: Response) => {
 			onSearchBAPchatController(req, res)
 			break;
 		default:
-			res.status(404).json({
-				message: {
-					ack: {
-						status: "NACK",
-					},
-				},
-				error: {
-					message: "Invalid scenario",
-				},
-			});
+			onSearchDomesticController(req, res)
 			break;
 	}
 };
@@ -53,7 +44,7 @@ export const onSearchDomesticController = (req: Request, res: Response) => {
 						id: message.catalog.providers[0].items[0].location_ids[0]
 					}
 				],
-				ttl: "P1D"
+				ttl: context.ttl
 			},
 			items: [
 				{

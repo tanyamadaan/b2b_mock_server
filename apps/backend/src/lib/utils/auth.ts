@@ -27,7 +27,6 @@ export const split_auth_header = (auth_header: string) => {
 	return parts;
 };
 
-
 export async function verifyHeader(
 	header: string,
 	req: Request,

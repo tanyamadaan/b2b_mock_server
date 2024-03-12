@@ -23,8 +23,8 @@ app.get("/", (req: Request, res: Response) => {
 	res.send("Mock Server for NP");
 });
 
-app.use("/b2b", b2bRouter);
-app.use("/auth", authRouter);
+app.use("/api/b2b", b2bRouter);
+app.use("/api/auth", authRouter);
 app.use("/services", servicesRouter);
 app.use("/detect_app_installation", (req: Request, res: Response) => {
 	const headers = req.headers;

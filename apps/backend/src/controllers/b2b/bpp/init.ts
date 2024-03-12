@@ -1,8 +1,40 @@
 import { Request, Response } from "express";
-import { ACTIONS, quoteCreator, responseBuilder, B2B_EXAMPLES_PATH } from "../../../lib/utils";
+import {
+	ACTIONS,
+	quoteCreator,
+	responseBuilder,
+	B2B_EXAMPLES_PATH,
+} from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
+
+export const initController = (req: Request, res: Response) => {
+	const { scenario } = req.query;
+	switch (scenario) {
+		case "rfq":
+			initDomesticController(req, res);
+			break;
+		case "non-rfq":
+			initDomesticNonRfq(req, res);
+			break;
+		case "payment-bpp-non-rfq":
+			initDomesticPaymentBppNonRfq(req, res);
+			break;
+		case "self-pickup":
+			initDomesticSelfPickup(req, res);
+			break;
+		case "exports":
+			initExports(req, res);
+			break;
+		case "reject-rfq":
+			initRejectRfq(req, res);
+			break;
+		default:
+			initDomesticController(req, res);
+			break;
+	}
+};
 
 export const initDomesticController = (req: Request, res: Response) => {
 	const { context, message } = req.body;
@@ -14,17 +46,24 @@ export const initDomesticController = (req: Request, res: Response) => {
 	);
 
 	const response = YAML.parse(file.toString());
-	const { type, collected_by, ...staticPaymentInfo } = response.value.message.order.payments[0];
+	const { type, collected_by, ...staticPaymentInfo } =
+		response.value.message.order.payments[0];
 	const responseMessage = {
 		order: {
 			items,
-			fulfillments,
+			fulfillments: fulfillments.map((each: any) => ({
+				...each,
+				tracking: true,
+			})),
 			tags,
 			billing,
 			provider: { id: remainingMessage.provider.id },
 			provider_location: remainingMessage.provider.locations[0],
-			payments: remainingMessage.payments.map((each: any) => ({ ...each, ...staticPaymentInfo })),
-			quote: quoteCreator(items)
+			payments: remainingMessage.payments.map((each: any) => ({
+				...each,
+				...staticPaymentInfo,
+			})),
+			quote: quoteCreator(items),
 		},
 	};
 	return responseBuilder(
@@ -35,52 +74,6 @@ export const initDomesticController = (req: Request, res: Response) => {
 		`on_${ACTIONS.init}`
 	);
 };
-
-export const initController = (req: Request, res: Response) => {
-	const { scenario } = req.query
-	switch (scenario) {
-		case 'rfq':
-			initDomesticController(req, res)
-			break;
-		case 'non-rfq':
-			initDomesticNonRfq(req, res)
-			break;
-		case 'payment-bpp-non-rfq':
-			initDomesticPaymentBppNonRfq(req, res)
-			break;
-		case 'self-pickup':
-			initDomesticSelfPickup(req, res)
-			break;
-		case 'exports':
-			initExports(req, res)
-			break;
-		case 'reject-rfq':
-			initRejectRfq(req, res)
-			break;
-		default:
-			res.status(404).json({
-				message: {
-					ack: {
-						status: "NACK",
-					},
-				},
-				error: {
-					message: "Invalid scenario",
-				},
-			});
-			break;
-	}
-}
-
-// export const initDomestic = (req: Request, res: Response) => {
-// 	return responseBuilder(
-// 		res,
-// 		req.body.context,
-// 		onInitDomestic.message,
-// 		req.body.context.bap_uri,
-// 		`on_${ACTIONS.init}`
-// 	);
-// };
 
 export const initDomesticNonRfq = (req: Request, res: Response) => {
 	const file = fs.readFileSync(
@@ -99,7 +92,10 @@ export const initDomesticNonRfq = (req: Request, res: Response) => {
 
 export const initDomesticPaymentBppNonRfq = (req: Request, res: Response) => {
 	const file = fs.readFileSync(
-		path.join(B2B_EXAMPLES_PATH, "on_init/on_init_domestic_payment_BPP_Non_RFQ.yaml")
+		path.join(
+			B2B_EXAMPLES_PATH,
+			"on_init/on_init_domestic_payment_BPP_Non_RFQ.yaml"
+		)
 	);
 
 	const response = YAML.parse(file.toString());

@@ -1,40 +1,34 @@
 import { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
-import { confirmExports, confirmNonRFQ } from "../../../lib/examples";
-import { ACTIONS, responseBuilder, B2B_EXAMPLES_PATH } from "../../../lib/utils";
+import {
+	ACTIONS,
+	responseBuilder,
+	B2B_EXAMPLES_PATH,
+} from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 
 export const onInitController = (req: Request, res: Response) => {
-	const { scenario } = req.query
+	const { scenario } = req.query;
 	switch (scenario) {
-		case 'rfq':
-			onInitDomesticController(req, res)
+		case "rfq":
+			onInitDomesticController(req, res);
 			break;
-		case 'non-rfq':
-			onInitDomesticNonRfqController(req, res)
+		case "non-rfq":
+			onInitDomesticNonRfqController(req, res);
 			break;
-		case 'exports':
-			onInitExportsController(req, res)
+		case "exports":
+			onInitExportsController(req, res);
 			break;
-		case 'prepaid-bap-non-rfq':
-			onInitPrepaidBapNonRFQController(req, res)
+		case "prepaid-bap-non-rfq":
+			onInitPrepaidBapNonRFQController(req, res);
 			break;
-		case 'prepaid-bap-rfq':
-			onInitPrepaidBapRFQController(req, res)
+		case "prepaid-bap-rfq":
+			onInitPrepaidBapRFQController(req, res);
 			break;
 		default:
-			res.status(404).json({
-				message: {
-					ack: {
-						status: "NACK",
-					},
-				},
-				error: {
-					message: "Invalid scenario",
-				},
-			});
+			onInitDomesticController(req, res);
 			break;
 	}
 };
@@ -46,7 +40,7 @@ export const onInitDomesticController = (req: Request, res: Response) => {
 			order: { provider, provider_location, ...order },
 		},
 	} = req.body;
-	const timestamp = (new Date()).toISOString();
+	const timestamp = new Date().toISOString();
 	const responseMessage = {
 		order: {
 			...order,
@@ -77,7 +71,7 @@ export const onInitDomesticController = (req: Request, res: Response) => {
 				},
 			],
 			created_at: timestamp,
-			updated_at: timestamp
+			updated_at: timestamp,
 		},
 	};
 	return responseBuilder(
@@ -118,7 +112,10 @@ export const onInitExportsController = (req: Request, res: Response) => {
 	);
 };
 
-export const onInitPrepaidBapNonRFQController = (req: Request, res: Response) => {
+export const onInitPrepaidBapNonRFQController = (
+	req: Request,
+	res: Response
+) => {
 	const file = fs.readFileSync(
 		path.join(B2B_EXAMPLES_PATH, "confirm/confirm_prepaid_bap_non_rfq.yaml")
 	);

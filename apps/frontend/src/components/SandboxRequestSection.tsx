@@ -38,8 +38,8 @@ export const SandboxRequestSection = ({
 	useEffect(() => {
 		setSyncResponse(undefined);
 	}, []);
-	console.log(domain, scenarios, action)
-	
+	console.log(domain, scenarios, action);
+
 	const [curl, setCurl] = useState<string>();
 
 	const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -47,12 +47,12 @@ export const SandboxRequestSection = ({
 		detectAction(e.target.value);
 	};
 	const handleSubmit = async () => {
-		let url = `${[import.meta.env.VITE_SERVER_URL]}/${
-			domain.toLowerCase()
-		}/${Object.keys(URL_MAPPING).filter((key) =>
+		let url = `${[
+			import.meta.env.VITE_SERVER_URL,
+		]}/${domain.toLowerCase()}/${Object.keys(URL_MAPPING).filter((key) =>
 			URL_MAPPING[key as keyof typeof URL_MAPPING].includes(action as string)
-		)}/${action}?mode=sandbox`
-		
+		)}/${action}?mode=sandbox`;
+
 		if (activeScenario?.scenario)
 			url = url + `&scenario=${activeScenario?.scenario}`;
 
@@ -69,10 +69,11 @@ export const SandboxRequestSection = ({
 					authorization: authHeader,
 				},
 			});
+			console.log("RESPONSE RECEIVED", response);
 
 			if (response.data.error) {
 				setSyncResponse(response.data);
-			} else setSyncResponse(response.data.sync);
+			} else setSyncResponse(response.data.message);
 		} catch (error) {
 			console.log("ERROR Occured while pinging backend:", error);
 			if (error instanceof AxiosError) setSyncResponse(error.response!.data);

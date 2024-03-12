@@ -1,13 +1,6 @@
 import { Router } from "express";
 import { jsonSchemaValidator } from "../../../middlewares";
-import {
-  onConfirmSchema,
-  onInitSchema,
-  onSearchSchema,
-  onSelectSchema,
-  onStatusSchema,
-  onUpdateSchema,
-} from "../../../lib/schema/b2b";
+
 import { onSearchController } from "./onSearch";
 import { onInitController } from "./onInit";
 import { onSelectController } from "./onSelect";
@@ -18,32 +11,36 @@ import { onUpdateController } from "./onUpdate";
 export const bapRouter = Router();
 
 bapRouter.post(
-  "/on_search",
-  jsonSchemaValidator(onSearchSchema),
-  onSearchController
-);
-
-bapRouter.post("/on_init", jsonSchemaValidator(onInitSchema), onInitController);
-bapRouter.post(
-  "/on_select",
-  jsonSchemaValidator(onSelectSchema),
-  onSelectController
+	"/on_search",
+	jsonSchemaValidator({ domain: "b2b", action: "on_search" }),
+	onSearchController
 );
 
 bapRouter.post(
-  "/on_confirm",
-  jsonSchemaValidator(onConfirmSchema),
-  onConfirmController
+	"/on_init",
+	jsonSchemaValidator({ domain: "b2b", action: "on_init" }),
+	onInitController
+);
+bapRouter.post(
+	"/on_select",
+	jsonSchemaValidator({ domain: "b2b", action: "on_select" }),
+	onSelectController
 );
 
 bapRouter.post(
-  "/on_status",
-  jsonSchemaValidator(onStatusSchema),
-  onStatusController
+	"/on_confirm",
+	jsonSchemaValidator({ domain: "b2b", action: "on_confirm" }),
+	onConfirmController
 );
 
 bapRouter.post(
-  "/on_update",
-  jsonSchemaValidator(onUpdateSchema),
-  onUpdateController
+	"/on_status",
+	jsonSchemaValidator({ domain: "b2b", action: "on_status" }),
+	onStatusController
+);
+
+bapRouter.post(
+	"/on_update",
+	jsonSchemaValidator({ domain: "b2b", action: "on_update" }),
+	onUpdateController
 );
