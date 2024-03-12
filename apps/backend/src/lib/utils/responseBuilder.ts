@@ -3,6 +3,7 @@ import { Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import { MOCKSERVER_ID, MOCKSERVER_URL } from "./constants";
 import { createResponseAuthHeader } from "./responseAuth";
+import logger from "./logger";
 import { TransactionType, redis } from "./redis";
 
 interface TagDescriptor {
@@ -107,7 +108,13 @@ export const responseBuilder = async (
 					authorization: header,
 				},
 			});
-		} catch (error) {
+
+		}catch (error) {
+			logger.error({
+				message: { ack: { status: "NACK" }, }, error: {
+					message: (error as any).message
+				}
+			})
 			console.log("URI Pinged", uri)
 			console.log("ERROR OCCURRED WHILE PINGING SANDBOX RESPONSE", (error as any).response.data);
 
@@ -124,7 +131,7 @@ export const responseBuilder = async (
 				async
 			});
 		}
-
+		logger.info({ message: { ack: { status: "ACK" } } })
 		return res.json({
 			message: {
 				ack: {
@@ -133,6 +140,7 @@ export const responseBuilder = async (
 			},
 		});
 	} else {
+		logger.info({ sync: { message: { ack: { status: "ACK" } } }, async });
 		return res.json({
 			sync: {
 				message: {

@@ -3,6 +3,7 @@ import { ACTIONS, quoteCreator, B2B_EXAMPLES_PATH, responseBuilder } from "../..
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
+import logger from "../../../lib/utils/logger";
 
 export const selectController = (req: Request, res: Response) => {
 	const { scenario } = req.query
@@ -32,6 +33,9 @@ export const selectController = (req: Request, res: Response) => {
 			selectPrepaidBapController(req, res)
 			break;
 		default:
+			logger.info({
+				message: { ack: { status: "NACK" } }, error: { message: "Invalid scenario" },
+			})
 			res.status(404).json({
 				message: {
 					ack: {
@@ -47,6 +51,8 @@ export const selectController = (req: Request, res: Response) => {
 }
 
 export const selectDomesticController = (req: Request, res: Response) => {
+	logger.info(req.body.context, { mode: req.query.mode });
+
 	const { context, message } = req.body;
 	const { ttl, ...provider } = message.order.provider;
 
