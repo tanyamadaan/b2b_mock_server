@@ -9,3 +9,7 @@ dist
 .turbo
 
 openapi-temp.yaml
+
+logs
+
+.DS_Store

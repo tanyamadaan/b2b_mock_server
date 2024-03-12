@@ -8,6 +8,7 @@ import {
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
+import logger from "../../../lib/utils/logger";
 
 export const selectController = (req: Request, res: Response) => {
 	const { scenario } = req.query;
@@ -43,6 +44,8 @@ export const selectController = (req: Request, res: Response) => {
 };
 
 export const selectDomesticController = (req: Request, res: Response) => {
+	logger.info(req.body.context, { mode: req.query.mode });
+
 	const { context, message } = req.body;
 	const { ttl, ...provider } = message.order.provider;
 

@@ -7,6 +7,7 @@ import {
 	MOCKSERVER_ID,
 } from "./constants";
 import { createResponseAuthHeader } from "./responseAuth";
+import logger from "./logger";
 import { TransactionType, redis } from "./redis";
 
 interface TagDescriptor {
@@ -111,14 +112,21 @@ export const responseBuilder = async (
 					authorization: header,
 				},
 			});
-		} catch (error) {
-			console.log("URI Pinged", uri);
-			console.log(
-				"ERROR OCCURRED WHILE PINGING SANDBOX RESPONSE",
-				(error as any).response.data,
-				(error as any).response.data.error.message,
-			);
 
+		}catch (error) {
+			logger.error({
+				message: { ack: { status: "NACK" }, }, error: {
+					message: (error as any).message
+				}
+			})
+
+			logger.error({
+				response: {
+					message: "ERROR OCCURRED WHILE PINGING SANDBOX RESPONSE",
+					error: (error as any).response
+				}
+			})
+			
 			return res.json({
 				message: {
 					ack: {
@@ -132,7 +140,7 @@ export const responseBuilder = async (
 				async,
 			});
 		}
-
+		logger.info({ message: { ack: { status: "ACK" } } })
 		return res.json({
 			message: {
 				ack: {
@@ -141,6 +149,7 @@ export const responseBuilder = async (
 			},
 		});
 	} else {
+		logger.info({ sync: { message: { ack: { status: "ACK" } } }, async });
 		return res.json({
 			sync: {
 				message: {
