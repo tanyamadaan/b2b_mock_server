@@ -6,10 +6,13 @@ import YAML from "yaml";
 import {
 	ACTIONS,
 	B2B_EXAMPLES_PATH,
+	B2B_BAP_MOCKSERVER_URL,
 	responseBuilder,
+	createResponseAuthHeader,
 } from "../../../lib/utils";
+import axios from "axios";
 
-export const searchController = (req: Request, res: Response) => {
+export const searchController = async (req: Request, res: Response) => {
 	const domain = req.body.context.domain;
 
 	var onSearch;
@@ -93,8 +96,15 @@ export const searchController = (req: Request, res: Response) => {
 			onSearch = YAML.parse(file.toString());
 			break;
 	}
-	console.log("DOMAIN", domain)
-	console.log("message body", onSearch.message)
+	if (req.body.context.bap_uri === B2B_BAP_MOCKSERVER_URL) {
+		const header = await createResponseAuthHeader(req.body);
+		await axios.post(req.body.context.bpp_uri, req.body, {
+			headers: {
+				authorization: header,
+			},
+		});
+	}
+
 	return responseBuilder(
 		res,
 		req.body.context,

@@ -2,8 +2,8 @@ import axios from "axios";
 import { Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import {
-	BAP_MOCKSERVER_URL,
-	BPP_MOCKSERVER_URL,
+	B2B_BAP_MOCKSERVER_URL,
+	B2B_BPP_MOCKSERVER_URL,
 	MOCKSERVER_ID,
 } from "./constants";
 import { createResponseAuthHeader } from "./responseAuth";
@@ -65,7 +65,7 @@ export const responseBuilder = async (
 				// ...remainingContext,
 				...reqContext,
 				bpp_id: MOCKSERVER_ID,
-				bpp_uri: BPP_MOCKSERVER_URL,
+				bpp_uri: B2B_BPP_MOCKSERVER_URL,
 				timeStamp: ts.toISOString(),
 				action,
 			},
@@ -78,7 +78,7 @@ export const responseBuilder = async (
 				// ...remainingContext,
 				...reqContext,
 				bap_id: MOCKSERVER_ID,
-				bap_uri: BAP_MOCKSERVER_URL,
+				bap_uri: B2B_BAP_MOCKSERVER_URL,
 				timeStamp: ts.toISOString(),
 				message_id: uuidv4(),
 				action,
@@ -107,7 +107,7 @@ export const responseBuilder = async (
 		console.log("HERE");
 		try {
 			console.log("ASYNC BEING SENT", async);
-			const response = await axios.post(uri, async, {
+			await axios.post(uri, async, {
 				headers: {
 					authorization: header,
 				},
