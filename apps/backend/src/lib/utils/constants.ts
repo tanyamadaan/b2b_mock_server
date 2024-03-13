@@ -1,6 +1,6 @@
 export const HOUR24 = 24 * 60 * 60 * 1000;
 
-export const REGISTRY_URL = "https://staging.registry.ondc.org/lookup";
+export const REGISTRY_URL = "https://preprod.registry.ondc.org/lookup";
 
 export const SERVICES_EXAMPLES_PATH = "./domain-repos/@services/draft-services/api/components/Examples/Services_home_service_yaml"
 export const B2B_EXAMPLES_PATH = "./domain-repos/@retail-b2b/draft-2.x/api/components/Examples/B2B"

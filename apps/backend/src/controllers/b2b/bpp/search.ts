@@ -9,6 +9,7 @@ import {
 	B2B_BAP_MOCKSERVER_URL,
 	responseBuilder,
 	createResponseAuthHeader,
+	logger,
 } from "../../../lib/utils";
 import axios from "axios";
 
@@ -98,11 +99,26 @@ export const searchController = async (req: Request, res: Response) => {
 	}
 	if (req.body.context.bap_uri === B2B_BAP_MOCKSERVER_URL) {
 		const header = await createResponseAuthHeader(req.body);
-		await axios.post(req.body.context.bpp_uri, req.body, {
-			headers: {
-				authorization: header,
-			},
-		});
+		try {
+			await axios.post(`${req.body.context.bpp_uri}/search`, req.body, {
+				headers: {
+					authorization: header,
+				},
+			});
+		} catch (error) {
+			logger.error({ type: "response", message: error });
+			return res.json({
+				message: {
+					ack: {
+						status: "NACK",
+					},
+				},
+				error: {
+					// message: (error as any).message,
+					message: (error as any).response.data,
+				},
+			});
+		}
 	}
 
 	return responseBuilder(

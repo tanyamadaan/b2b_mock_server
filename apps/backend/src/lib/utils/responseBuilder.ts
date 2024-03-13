@@ -7,7 +7,7 @@ import {
 	MOCKSERVER_ID,
 } from "./constants";
 import { createResponseAuthHeader } from "./responseAuth";
-import logger from "./logger";
+import {logger} from "./logger";
 import { TransactionType, redis } from "./redis";
 
 interface TagDescriptor {
@@ -115,13 +115,15 @@ export const responseBuilder = async (
 
 		}catch (error) {
 			logger.error({
-				response: {
+				type: "response",
+				message: {
 					message: "ERROR OCCURRED WHILE PINGING SANDBOX RESPONSE",
 					error: (error as any).response
 				}
 			})
 			logger.error({
-				response:{
+				type: "response",
+				message:{
 				message: { ack: { status: "NACK" }, }, error: {
 					message: (error as any).response.data
 				}}

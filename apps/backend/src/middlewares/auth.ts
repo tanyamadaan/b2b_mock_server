@@ -29,15 +29,14 @@ export const authValidatorMiddleware = async (
 
 		res.setHeader("mode", mode ? mode : "sandbox");
 
-		if (mode === "mock")
+		if (
+			mode === "mock" ||
+			(req.body.context.bap_uri === B2B_BAP_MOCKSERVER_URL &&
+				req.body.context.action === "search")
+		) {
 			next(); //skipping auth header validation in "mock" mode
-		else {
-			if (
-				req.body.context.bap_uri === B2B_BAP_MOCKSERVER_URL &&
-				req.body.context.action === "search"
-			) {
-				next();
-			}
+			return;
+		} else {
 			// console.log("MODE:", mode);
 			const auth_header = req.headers["authorization"] || "";
 			// console.log(req.body?.context?.transaction_id, "headers", auth_header);

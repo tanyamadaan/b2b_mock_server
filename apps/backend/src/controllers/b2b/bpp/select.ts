@@ -4,11 +4,11 @@ import {
 	quoteCreator,
 	B2B_EXAMPLES_PATH,
 	responseBuilder,
+	logger
 } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
-import logger from "../../../lib/utils/logger";
 
 export const selectController = (req: Request, res: Response) => {
 	const { scenario } = req.query;
@@ -44,7 +44,7 @@ export const selectController = (req: Request, res: Response) => {
 };
 
 export const selectDomesticController = (req: Request, res: Response) => {
-	logger.info(req.body.context, { mode: req.query.mode });
+	logger.info({type: "response", message: {action: req.body.context, mode: req.query.mode }});
 
 	const { context, message } = req.body;
 	const { ttl, ...provider } = message.order.provider;
