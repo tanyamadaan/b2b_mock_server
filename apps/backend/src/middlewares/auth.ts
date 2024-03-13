@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { verifyHeader } from "../lib/utils/auth";
 import { Locals } from "../interfaces";
+import { B2B_BAP_MOCKSERVER_URL } from "../lib/utils";
 
 export const authValidatorMiddleware = async (
 	req: Request,
@@ -26,11 +27,17 @@ export const authValidatorMiddleware = async (
 		// 		},
 		// 	});
 
-		res.setHeader("mode", mode ? mode : 'sandbox');
+		res.setHeader("mode", mode ? mode : "sandbox");
 
 		if (mode === "mock")
 			next(); //skipping auth header validation in "mock" mode
 		else {
+			if (
+				req.body.context.bap_uri === B2B_BAP_MOCKSERVER_URL &&
+				req.body.context.action === "search"
+			) {
+				next();
+			}
 			// console.log("MODE:", mode);
 			const auth_header = req.headers["authorization"] || "";
 			// console.log(req.body?.context?.transaction_id, "headers", auth_header);
@@ -41,7 +48,6 @@ export const authValidatorMiddleware = async (
 				"Verification status:",
 				verified
 			);
-
 
 			if (!verified) {
 				return res.status(401).json({
