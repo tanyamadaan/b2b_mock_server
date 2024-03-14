@@ -6,17 +6,15 @@
 	"main": "index.ts",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"dev": "nodemon ./src/index.ts",
-		"db:up": "docker compose up -d db",
+		"start:dev": "nodemon ./src/index.ts",
+		"db:up": "docker compose up -d db redis",
 		"db:migrate:dev": "prisma migrate dev",
 		"build": "tsc",
 		"swagger:gen": "node ./script/generateSwagger.js"
-		
 	},
 	"author": "Abhik Banerjee",
 	"license": "ISC",
 	"dependencies": {
-		"common": "*",
 		"@apidevtools/json-schema-ref-parser": "^11.1.0",
 		"@prisma/client": "^5.7.1",
 		"@types/cors": "^2.8.17",
@@ -29,13 +27,17 @@
 		"ajv-formats": "^2.1.1",
 		"argon2": "^0.31.2",
 		"axios": "^1.6.5",
+		"common": "*",
 		"cors": "^2.8.5",
 		"express": "^4.18.2",
+		"ioredis": "^5.3.2",
 		"js-yaml": "^4.1.0",
 		"jsonwebtoken": "^9.0.2",
 		"libsodium-wrappers": "^0.7.13",
 		"swagger-ui-express": "^5.0.0",
 		"uuid": "^9.0.1",
+		"winston": "^3.12.0",
+		"winston-daily-rotate-file": "^5.0.0",
 		"yaml": "^2.3.4"
 	},
 	"devDependencies": {
