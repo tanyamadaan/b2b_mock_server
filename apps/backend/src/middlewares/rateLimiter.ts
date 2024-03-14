@@ -7,7 +7,7 @@ export const rateLimiter = async (
 	next: NextFunction
 ) => {
 	const mode = req.query.mode;
-	if (process.env.RATE_LIMIT_MODE && mode === "sandbox") {
+	if (process.env.RATE_LIMIT_MODE=== "true" && mode === "sandbox") {
 		const header = req.headers["authorization"] || "";
 		const parts = split_auth_header(header);
 		if (!parts || Object.keys(parts).length === 0) {
@@ -15,7 +15,7 @@ export const rateLimiter = async (
 		}
 
 		const subscriber_id = parts["keyId"].split("|")[0] as string;
-		const unique_key_id = parts["keyId"].split("|")[1] as string;
+		// const unique_key_id = parts["keyId"].split("|")[1] as string;
 		const subscriber = await prisma.user.findFirst({
 			where: {
 				subscriber_id,
