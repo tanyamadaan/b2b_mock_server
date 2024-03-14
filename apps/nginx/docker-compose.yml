@@ -17,3 +17,7 @@ services:
       - ${SSL_CERT_PATH:-.}:/etc/nginx/certs:ro
     # command: ["sh", "-c", "nginx -g 'daemon off;'"]
     restart: always
+    networks:
+      - ondc
+networks:
+  ondc:
