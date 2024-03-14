@@ -1,0 +1,21 @@
+{
+  "name": "openapi-specs",
+  "version": "1.0.0",
+  "module": "es2022",
+  "description": "Contains the generated OpenAPI Specs.",
+  "scripts": {
+    "swagger:gen": "ts-node generateSwagger.ts"
+  },
+  "author": "Abhik Banerjee",
+  "license": "ISC",
+  "exports": {
+    "./auth.yaml": "./openapi/auth/openapi.yaml",
+    "./retail-b2b.yaml": "./openapi/retail-b2b/build/swagger.yaml",
+    "./services.yaml": "./openapi/services/build/swagger.yaml",
+    "./constants": "./constants.ts"
+  },
+  "dependencies": {
+    "@apidevtools/json-schema-ref-parser": "^11.5.4",
+    "js-yaml": "^4.1.0"
+  }
+}
