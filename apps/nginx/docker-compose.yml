@@ -7,13 +7,13 @@ services:
       - "${NGINX_PORT}:80"
       - "${SSL_PORT}:443"
     environment:
-      - ENVIRONMENT=${ENV}
+      - ENVIRONMENT=${ENVIRONMENT}
       - NGINX_PORT=${NGINX_PORT}
       - USE_SSL=${USE_SSL}
       - SSL_PORT=${SSL_PORT}
-      - SSL_CERT_PATH=${SSL_CERT_PATH}
+      - SSL_CERT_PATH=${SSL_CERT_PATH:-.}
     volumes:
       - ./nginx-${ENVIRONMENT}.conf:/etc/nginx/nginx.conf:ro
-      - ${SSL_CERT_PATH}:/etc/nginx/certs:ro
-    command: ["sh", "-c", "nginx -g 'daemon off;'"]
+      - ${SSL_CERT_PATH:-.}:/etc/nginx/certs:ro
+    # command: ["sh", "-c", "nginx -g 'daemon off;'"]
     restart: always
