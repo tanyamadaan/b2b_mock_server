@@ -1,6 +1,8 @@
 # ONDC Mock & Sandbox
 This is the monorepo for the ONDC Mock & Sandbox. It features an ExpressJS Web Server, a Vite ReactJS App. This README specifies the instructions on how to use it.
 
+>NOTE: Currently, the mock server and sandbox support B2B and services domains.
+
 # Mock Server
 This service will imitate various API behaviors like search, on_search, select, etc. You may use this server to expedite the implementation of your APIs.
 - If you are a buyer app (BAP), you can provide /action APIs payload and you will receive the subsequent sync and async responses.
