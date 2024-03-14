@@ -1,4 +1,3 @@
-import React from 'react'
 import { SandboxRequestSection } from '../../../../components'
 
 export const ServicesSandbox = () => {

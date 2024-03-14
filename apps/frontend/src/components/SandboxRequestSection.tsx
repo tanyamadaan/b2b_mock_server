@@ -36,7 +36,10 @@ export const SandboxRequestSection = ({
 	const { action, detectAction, logError, scenarios } = useAction(domain);
 	const { setSyncResponse } = useSandbox();
 	useEffect(() => {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		setSyncResponse(undefined);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 	console.log(domain, scenarios, action);
 
@@ -154,11 +157,14 @@ export const SandboxRequestSection = ({
 												},
 											},
 										}}
+
+										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+										// @ts-ignore
 										onChange={(
 											_event: React.SyntheticEvent | null,
 											newValue: object
 										) => {
-											setActiveScenario(newValue);
+											setActiveScenario(newValue as { name: string; scenario: string; } );
 										}}
 									>
 										{scenarios?.map((scenario, index) => (
