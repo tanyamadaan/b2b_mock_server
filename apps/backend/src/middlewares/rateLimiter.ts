@@ -7,7 +7,8 @@ export const rateLimiter = async (
 	next: NextFunction
 ) => {
 	const mode = req.query.mode;
-	if (process.env.RATE_LIMIT_MODE && mode === "sandbox") {
+	if (process.env.RATE_LIMIT_MODE=== "true" && mode === "sandbox") {
+		console.log(process.env.RATE_LIMIT_MODE, process.env.RATE_LIMIT_MODE && mode === "sandbox")
 		const header = req.headers["authorization"] || "";
 		const parts = split_auth_header(header);
 		if (!parts || Object.keys(parts).length === 0) {

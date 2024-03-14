@@ -1,24 +1,33 @@
 {
-  "$schema": "https://turbo.build/schema.json",
-  "pipeline": {
+	"$schema": "https://turbo.build/schema.json",
+	"pipeline": {
     "dev": {
-      "dependsOn": ["db:migrate:dev", "swagger:gen"],
-      "cache": false,
-      "persistent": true
-    },
-    "swagger:gen": {
+      "dependsOn": ["start", "start:dev"],
+      "persistent": true,
       "cache": false
     },
-    "db:migrate:dev": {
-      "dependsOn": ["db:up"],
-      "cache": false
+    "start": {
+			"cache": false,
+			"persistent": false
     },
-    "db:up": {
-      "cache": false
-    },
-    "build": {
-      "outputs": ["dist/**"]
-    },
-    "type-check": {}
-  }
+		"start:dev": {
+			"dependsOn": ["db:migrate:dev", "swagger:gen"],
+			"cache": false,
+			"persistent": false
+		},
+		"swagger:gen": {
+			"cache": false
+		},
+		"db:migrate:dev": {
+			"dependsOn": ["db:up"],
+			"cache": false
+		},
+		"db:up": {
+			"cache": false
+		},
+		"build": {
+			"outputs": ["dist/**"]
+		},
+		"type-check": {}
+	}
 }

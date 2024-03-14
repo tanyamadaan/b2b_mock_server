@@ -1,8 +1,11 @@
 import { Request, Response } from "express";
-import logger from "../../../lib/utils/logger";
+import { logger } from "../../../lib/utils";
 
 export const onStatusController = (req: Request, res: Response) => {
-	logger.info({ sync: { message: { ack: { status: "ACK", } } } })
+	logger.info({
+		type: "response",
+		message: { sync: { message: { ack: { status: "ACK" } } } },
+	});
 	return res.json({
 		sync: {
 			message: {
