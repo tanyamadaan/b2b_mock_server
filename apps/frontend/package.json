@@ -17,9 +17,9 @@
     "@mui/material": "^5.15.7",
     "@types/swagger-ui-react": "^4.18.3",
     "axios": "^1.6.7",
-    "openapi-specs": "*",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
+    "openapi-specs": "*",
     "react": "^18.2.0",
     "react-codemirror2": "^7.3.0",
     "react-dom": "^18.2.0",
@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "@modyfi/vite-plugin-yaml": "^1.1.0",
+    "@types/lodash": "^4.17.0",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@typescript-eslint/eslint-plugin": "^6.14.0",

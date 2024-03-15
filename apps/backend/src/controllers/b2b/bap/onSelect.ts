@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import {
-	ACTIONS,
 	responseBuilder,
 	B2B_EXAMPLES_PATH,
 } from "../../../lib/utils";
@@ -57,8 +56,8 @@ export const onSelectDomesticController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		`${context.bpp_uri}/${ACTIONS.init}`,
-		ACTIONS.init
+		`${context.bpp_uri}/init`,
+		`init`
 	);
 };
 
@@ -75,8 +74,8 @@ export const onSelectDomesticNonRfqController = (
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bpp_uri,
-		`${ACTIONS.init}`
+		`${req.body.context.bpp_uri}/init`,
+		`init`
 	);
 };
 
@@ -90,8 +89,8 @@ export const onSelectExportsController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bpp_uri,
-		`${ACTIONS.init}`
+		`${req.body.context.bpp_uri}/init`,
+		`init`
 	);
 };
 
@@ -108,7 +107,7 @@ export const onSelectDomesticBPPPaymentController = (
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bpp_uri,
-		`${ACTIONS.init}`
+		`${req.body.context.bpp_uri}/init`,
+		`init`
 	);
 };

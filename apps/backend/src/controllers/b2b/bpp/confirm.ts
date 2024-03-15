@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import {
-	ACTIONS,
 	responseBuilder,
 	B2B_EXAMPLES_PATH,
 } from "../../../lib/utils";
@@ -76,8 +75,8 @@ export const confirmDomesticController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		`${context.bap_uri}/on_${ACTIONS.confirm}`,
-		`on_${ACTIONS.confirm}`
+		`${context.bap_uri}/on_confirm`,
+		`on_confirm`
 	);
 };
 
@@ -92,8 +91,8 @@ export const confirmDomesticNonRfq = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bap_uri,
-		`on_${ACTIONS.confirm}`
+		`${req.body.context.bap_uri}/on_confirm`,
+		`on_confirm`
 	);
 };
 
@@ -108,8 +107,8 @@ export const confirmExports = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bap_uri,
-		`on_${ACTIONS.confirm}`
+		`${req.body.context.bap_uri}/on_confirm`,
+		`on_confirm`
 	);
 };
 
@@ -124,7 +123,7 @@ export const confirmDomesticRejected = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bap_uri,
-		`on_${ACTIONS.confirm}`
+		`${req.body.context.bap_uri}/on_confirm`,
+		`on_confirm`
 	);
 };

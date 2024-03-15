@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import { useState } from "react";
-import { B2B_SCENARIOS, NEXT_ACTION, SERVICES_SCENARIOS } from "../constants";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+import { B2B_SCENARIOS, SERVICES_SCENARIOS } from "openapi-specs/constants";
+import { NEXT_ACTION } from "../constants";
 
 export const useAction = (domain: string) => {
 	const [action, setAction] = useState<string>();

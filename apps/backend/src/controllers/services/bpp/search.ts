@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import {
-	ACTIONS,
 	SERVICES_EXAMPLES_PATH,
 	responseBuilder,
 } from "../../../lib/utils";
@@ -18,7 +17,7 @@ export const searchController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_${ACTIONS.search}`,
-		`on_${ACTIONS.search}`
+		`${req.body.context.bap_uri}/on_search`,
+		`on_search`
 	);
 };

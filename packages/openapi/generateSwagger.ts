@@ -31,7 +31,6 @@ const generateSwagger = async (
 	scenarios: typeof B2B_SCENARIOS | typeof SERVICES_SCENARIOS,
 	servers: { url: string; description: string }[]
 ) => {
-	console.log("SERVERS", servers)
 	const schema:any = await swaggerParse(inputPath);
 	schema.externalDocs = {
 		description: "User guide",

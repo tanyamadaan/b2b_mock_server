@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 
 import {
-	ACTIONS,
 	SERVICES_EXAMPLES_PATH,
 	responseBuilder,
 } from "../../../lib/utils";
@@ -59,8 +58,8 @@ const selectConsultationConfirmController = (
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/on_${ACTIONS.select}`,
-		`on_${ACTIONS.select}`
+		`${context.bap_uri}/on_select`,
+		`on_select`
 	);
 };
 
@@ -81,8 +80,8 @@ const selectConsultationRejectController = (
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/on_${ACTIONS.select}`,
-		`on_${ACTIONS.select}`
+		`${context.bap_uri}/on_select`,
+		`on_select`
 	);
 };
 
@@ -100,8 +99,8 @@ const selectServiceConfirmController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/on_${ACTIONS.select}`,
-		`on_${ACTIONS.select}`
+		`${context.bap_uri}/on_select`,
+		`on_select`
 	);
 };
 
@@ -119,8 +118,8 @@ const selectServiceRejectController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/on_${ACTIONS.select}`,
-		`on_${ACTIONS.select}`
+		`${context.bap_uri}/on_select`,
+		`on_select`
 	);
 };
 
@@ -138,7 +137,7 @@ const selectNackController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/on_${ACTIONS.select}`,
-		`on_${ACTIONS.select}`
+		`${context.bap_uri}/on_select`,
+		`on_select`
 	);
 };

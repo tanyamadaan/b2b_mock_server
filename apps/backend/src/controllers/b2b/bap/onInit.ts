@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import {
-	ACTIONS,
 	responseBuilder,
 	B2B_EXAMPLES_PATH,
 } from "../../../lib/utils";
@@ -94,8 +93,8 @@ export const onInitDomesticController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		`${context.bpp_uri}/${ACTIONS.confirm}`,
-		ACTIONS.confirm
+		`${context.bpp_uri}/confirm`,
+		`confirm`
 	);
 };
 
@@ -110,7 +109,7 @@ export const onInitDomesticNonRfqController = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		req.body.context.bpp_uri,
-		`${ACTIONS.confirm}`
+		`confirm`
 	);
 };
 
@@ -124,7 +123,7 @@ export const onInitExportsController = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		req.body.context.bpp_uri,
-		`${ACTIONS.confirm}`
+		`confirm`
 	);
 };
 
@@ -141,7 +140,7 @@ export const onInitPrepaidBapNonRFQController = (
 		req.body.context,
 		response.value.message,
 		req.body.context.bpp_uri,
-		`${ACTIONS.confirm}`
+		`confirm`
 	);
 };
 
@@ -155,6 +154,6 @@ export const onInitPrepaidBapRFQController = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		req.body.context.bpp_uri,
-		`${ACTIONS.confirm}`
+		`confirm`
 	);
 };
