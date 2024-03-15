@@ -4,7 +4,6 @@ import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 import {
-	ACTIONS,
 	B2B_EXAMPLES_PATH,
 	B2B_BAP_MOCKSERVER_URL,
 	responseBuilder,
@@ -97,35 +96,35 @@ export const searchController = async (req: Request, res: Response) => {
 			onSearch = YAML.parse(file.toString());
 			break;
 	}
-	if (req.body.context.bap_uri === B2B_BAP_MOCKSERVER_URL) {
-		const header = await createResponseAuthHeader(req.body);
-		try {
-			await axios.post(`${req.body.context.bpp_uri}/search`, req.body, {
-				headers: {
-					authorization: header,
-				},
-			});
-		} catch (error) {
-			logger.error({ type: "response", message: error });
-			return res.json({
-				message: {
-					ack: {
-						status: "NACK",
-					},
-				},
-				error: {
-					// message: (error as any).message,
-					message: (error as any).response.data,
-				},
-			});
-		}
-	}
+	// if (req.body.context.bap_uri === B2B_BAP_MOCKSERVER_URL) {
+	// 	const header = await createResponseAuthHeader(req.body);
+	// 	try {
+	// 		await axios.post(`${req.body.context.bpp_uri}/search`, req.body, {
+	// 			headers: {
+	// 				authorization: header,
+	// 			},
+	// 		});
+	// 	} catch (error) {
+	// 		logger.error({ type: "response", message: error });
+	// 		return res.json({
+	// 			message: {
+	// 				ack: {
+	// 					status: "NACK",
+	// 				},
+	// 			},
+	// 			error: {
+	// 				// message: (error as any).message,
+	// 				message: (error as any).response.data,
+	// 			},
+	// 		});
+	// 	}
+	// }
 
 	return responseBuilder(
 		res,
 		req.body.context,
 		onSearch.value.message,
-		`${req.body.context.bap_uri}/on_${ACTIONS.search}`,
-		`on_${ACTIONS.search}`
+		`${req.body.context.bap_uri}/on_search`,
+		`on_search`
 	);
 };

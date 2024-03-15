@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import {
-	ACTIONS,
 	quoteCreator,
 	responseBuilder,
 	B2B_EXAMPLES_PATH,
@@ -70,8 +69,8 @@ export const initDomesticController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		`${context.bap_uri}/on_${ACTIONS.init}`,
-		`on_${ACTIONS.init}`
+		`${context.bap_uri}/on_init`,
+		`on_init`
 	);
 };
 
@@ -85,8 +84,8 @@ export const initDomesticNonRfq = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bap_uri,
-		`on_${ACTIONS.init}`
+		`${req.body.context.bap_uri}/on_init`,
+		`on_init`
 	);
 };
 
@@ -104,8 +103,8 @@ export const initDomesticPaymentBppNonRfq = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bap_uri,
-		`on_${ACTIONS.init}`
+		`${req.body.context.bap_uri}/on_init`,
+		`on_init`
 	);
 };
 
@@ -120,8 +119,8 @@ export const initDomesticSelfPickup = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bap_uri,
-		`on_${ACTIONS.init}`
+		`${req.body.context.bap_uri}/on_init`,
+		`on_init`
 	);
 };
 
@@ -136,8 +135,8 @@ export const initExports = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bap_uri,
-		`on_${ACTIONS.init}`
+		`${req.body.context.bap_uri}/on_init`,
+		`on_init`
 	);
 };
 
@@ -152,7 +151,7 @@ export const initRejectRfq = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bap_uri,
-		`on_${ACTIONS.init}`
+		`${req.body.context.bap_uri}/on_init`,
+		`on_init`
 	);
 };

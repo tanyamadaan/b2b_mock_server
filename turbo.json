@@ -2,22 +2,12 @@
 	"$schema": "https://turbo.build/schema.json",
 	"pipeline": {
 		"dev": {
-			"dependsOn": ["start:nginx"],
-			"persistent": true,
-			"cache": false
+			"dependsOn": ["db:migrate:dev", "swagger:gen", "start:nginx"],
+			"cache": false,
+			"persistent": true
 		},
 		"start:nginx": {
-			"dependsOn": ["start:dev", "start"],
-			"cache": false,
-			"persistent": false
-		},
-		"start": {
-			"cache": false,
-			"persistent": false
-		},
-		"start:dev": {
-			"dependsOn": ["db:migrate:dev", "swagger:gen"],
-			"cache": false,
+			"cache": true,
 			"persistent": false
 		},
 		"swagger:gen": {

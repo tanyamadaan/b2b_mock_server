@@ -33,8 +33,13 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 	const { setAsyncResponse, setSyncResponse } = useMock();
 
 	useEffect(() => {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		setSyncResponse(undefined);
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		setAsyncResponse(undefined);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 	
 	const [curl, setCurl] = useState<string>();
@@ -134,11 +139,14 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 												},
 											},
 										}}
+
+										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+										// @ts-ignore
 										onChange={(
 											_event: React.SyntheticEvent | null,
 											newValue: object
 										) => {
-											setActiveScenario(newValue);
+											setActiveScenario(newValue as { name: string; scenario: string; });
 										}}
 										defaultValue={scenarios![0]}
 										disabled={scenarios?.length === 0}

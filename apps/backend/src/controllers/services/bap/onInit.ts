@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ACTIONS, SERVICES_EXAMPLES_PATH, responseBuilder } from "../../../lib/utils";
+import { SERVICES_EXAMPLES_PATH, responseBuilder } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
@@ -38,8 +38,8 @@ const onInitConsultationController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/${ACTIONS.confirm}`,
-		`${ACTIONS.confirm}`
+		`${context.bap_uri}/confirm`,
+		`confirm`
 	);
 };
 
@@ -53,8 +53,8 @@ const onInitServiceController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/${ACTIONS.confirm}`,
-		`${ACTIONS.confirm}`
+		`${context.bap_uri}/confirm`,
+		`confirm`
 	);
 };
 

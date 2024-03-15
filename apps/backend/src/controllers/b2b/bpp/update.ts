@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ACTIONS, responseBuilder, B2B_EXAMPLES_PATH } from "../../../lib/utils";
+import { responseBuilder, B2B_EXAMPLES_PATH } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
@@ -44,7 +44,7 @@ export const updateFulfillmentController = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		req.body.context.bap_uri,
-		`on_${ACTIONS.update}`
+		`on_update`
 	);
 };
 
@@ -58,8 +58,8 @@ export const updatePrepaidController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_${ACTIONS.update}`,
-		`on_${ACTIONS.update}`
+		`${req.body.context.bap_uri}/on_update`,
+		`on_update`
 	);
 };
 
@@ -73,7 +73,7 @@ export const updatePrepaidBAPController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_${ACTIONS.update}`,
-		`on_${ACTIONS.update}`
+		`${req.body.context.bap_uri}/on_update`,
+		`on_update`
 	);
 };

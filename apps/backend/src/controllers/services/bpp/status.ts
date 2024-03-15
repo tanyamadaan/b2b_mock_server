@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { ACTIONS, SERVICES_EXAMPLES_PATH, responseBuilder } from "../../../lib/utils";
+import { SERVICES_EXAMPLES_PATH, responseBuilder } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
@@ -48,8 +48,8 @@ const statusCompletedController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/on_${ACTIONS.status}`,
-		`on_${ACTIONS.status}`
+		`${context.bap_uri}/on_status`,
+		`on_status`
 	);
 };
 
@@ -63,8 +63,8 @@ const statusInTransitController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/on_${ACTIONS.status}`,
-		`on_${ACTIONS.status}`
+		`${context.bap_uri}/on_status`,
+		`on_status`
 	);
 };
 
@@ -78,8 +78,8 @@ const statusReachedReOtpController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/on_${ACTIONS.status}`,
-		`on_${ACTIONS.status}`
+		`${context.bap_uri}/on_status`,
+		`on_status`
 	);
 };
 const statusReachedController = (
@@ -95,8 +95,8 @@ const statusReachedController = (
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/on_${ACTIONS.status}`,
-		`on_${ACTIONS.status}`
+		`${context.bap_uri}/on_status`,
+		`on_status`
 	);
 };
 
@@ -113,8 +113,8 @@ const statusServiceStartedController = (
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/on_${ACTIONS.status}`,
-		`on_${ACTIONS.status}`
+		`${context.bap_uri}/on_status`,
+		`on_status`
 	);
 };
 

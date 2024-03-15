@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import {
-	ACTIONS,
 	quoteCreator,
 	B2B_EXAMPLES_PATH,
 	responseBuilder,
@@ -86,8 +85,8 @@ export const selectDomesticController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		`${context.bap_uri}/on_${ACTIONS.select}`,
-		`on_${ACTIONS.select}`
+		`${context.bap_uri}/on_select`,
+		`on_select`
 	);
 };
 
@@ -102,8 +101,8 @@ const selectDomesticNonRfqController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bap_uri,
-		`on_${ACTIONS.select}`
+		`${req.body.context.bap_uri}/on_select`,
+		`on_select`
 	);
 };
 
@@ -123,8 +122,8 @@ export const selectDomesticSelfPickupController = (
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bap_uri,
-		`on_${ACTIONS.select}`
+		`${req.body.context.bap_uri}/on_select`,
+		`on_select`
 	);
 };
 
@@ -138,8 +137,8 @@ export const selectExportsController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bap_uri,
-		`on_${ACTIONS.select}`
+		`${req.body.context.bap_uri}/on_select`,
+		`on_select`
 	);
 };
 
@@ -153,8 +152,8 @@ export const selectNonServiceableController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bap_uri,
-		`on_${ACTIONS.select}`
+		`${req.body.context.bap_uri}/on_select`,
+		`on_select`
 	);
 };
 
@@ -174,8 +173,8 @@ export const selectQuantityUnavailableController = (
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bap_uri,
-		`on_${ACTIONS.select}`
+		`${req.body.context.bap_uri}/on_select`,
+		`on_select`
 	);
 };
 
@@ -192,8 +191,8 @@ export const selectPrepaidBapNonRFQController = (
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bap_uri,
-		`on_${ACTIONS.select}`
+		`${req.body.context.bap_uri}/on_select`,
+		`on_select`
 	);
 };
 
@@ -207,7 +206,7 @@ export const selectPrepaidBapController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bap_uri,
-		`on_${ACTIONS.select}`
+		`${req.body.context.bap_uri}/on_select`,
+		`on_select`
 	);
 };

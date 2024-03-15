@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ACTIONS, responseBuilder, B2B_EXAMPLES_PATH } from "../../../lib/utils";
+import { responseBuilder, B2B_EXAMPLES_PATH } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
@@ -74,8 +74,8 @@ export const onSearchDomesticController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		`${context.bpp_uri}/${ACTIONS.select}`,
-		ACTIONS.select
+		`${context.bpp_uri}/select`,
+		`select`
 	);
 };
 
@@ -89,8 +89,8 @@ export const onSearchDomesticNonRfqController = (req: Request, res: Response) =>
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bpp_uri,
-		`${ACTIONS.select}`
+		`${req.body.context.bpp_uri}/select`,
+		`select`
 	);
 };
 
@@ -104,8 +104,8 @@ export const onSearchDomesticSelfPickupController = (req: Request, res: Response
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bpp_uri,
-		`${ACTIONS.select}`
+		`${req.body.context.bpp_uri}/select`,
+		`select`
 	);
 };
 
@@ -119,8 +119,8 @@ export const onSearchExportsController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bpp_uri,
-		`${ACTIONS.select}`
+		`${req.body.context.bpp_uri}/select`,
+		`select`
 	);
 };
 
@@ -134,7 +134,7 @@ export const onSearchBAPchatController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bpp_uri,
-		`${ACTIONS.select}`
+		`${req.body.context.bpp_uri}/select`,
+		`select`
 	);
 };

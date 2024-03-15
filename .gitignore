@@ -6,3 +6,5 @@ dev.db*
 
 dist
 .turbo
+
+out

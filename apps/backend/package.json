@@ -6,15 +6,15 @@
 	"main": "index.ts",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"start:dev": "nodemon ./src/index.ts",
+		"dev": "nodemon ./src/index.ts",
 		"db:up": "docker compose up -d db redis",
 		"db:migrate:dev": "prisma migrate dev",
-		"build": "tsc",
-		"swagger:gen": "node ./script/generateSwagger.js"
+		"build": "tsc"
 	},
 	"author": "Abhik Banerjee",
 	"license": "ISC",
 	"dependencies": {
+		"openapi-specs": "*",
 		"@apidevtools/json-schema-ref-parser": "^11.1.0",
 		"@prisma/client": "^5.7.1",
 		"@types/cors": "^2.8.17",
@@ -49,11 +49,5 @@
 		"prisma": "^5.7.1",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.3.3"
-	},
-	"exports": {
-		"./auth.yaml": "./src/openapi/auth/openapi.yaml",
-		"./retail-b2b.yaml": "./src/openapi/retail-b2b/build/swagger.yaml",
-		"./services.yaml": "./src/openapi/services/build/swagger.yaml",
-		"./constants.js": "./script/constants.js"
 	}
 }

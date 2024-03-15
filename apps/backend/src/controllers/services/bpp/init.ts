@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import {
-	ACTIONS,
 	SERVICES_EXAMPLES_PATH,
 	responseBuilder,
 } from "../../../lib/utils";
@@ -41,8 +40,8 @@ const initConsultationController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/on_${ACTIONS.init}`,
-		`on_${ACTIONS.init}`
+		`${context.bap_uri}/on_init`,
+		`on_init`
 	);
 };
 
@@ -56,7 +55,7 @@ const initServiceController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/on_${ACTIONS.init}`,
-		`on_${ACTIONS.init}`
+		`${context.bap_uri}/on_init`,
+		`on_init`
 	);
 };

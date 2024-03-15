@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 
-import { ACTIONS, responseBuilder, B2B_EXAMPLES_PATH } from "../../../lib/utils";
+import { responseBuilder, B2B_EXAMPLES_PATH } from "../../../lib/utils";
 
 export const statusController = (req: Request, res: Response) => {
 	const { scenario } = req.query
@@ -55,8 +55,8 @@ export const statusDeliveredController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bap_uri,
-		`on_${ACTIONS.status}`
+		`${req.body.context.bap_uri}/on_status`,
+		`on_status`
 	);
 };
 
@@ -70,8 +70,8 @@ export const statusOutForDeliveryController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bap_uri,
-		`on_${ACTIONS.status}`
+		`${req.body.context.bap_uri}/on_status`,
+		`on_status`
 	);
 };
 
@@ -85,8 +85,8 @@ export const statusPickedUpController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bap_uri,
-		`on_${ACTIONS.status}`
+		`${req.body.context.bap_uri}/on_status`,
+		`on_status`
 	);
 };
 
@@ -104,8 +104,8 @@ export const statusProformaInvoiceController = (
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_${ACTIONS.status}`,
-		`on_${ACTIONS.status}`
+		`${req.body.context.bap_uri}/on_status`,
+		`on_status`
 	);
 };
 
@@ -123,8 +123,8 @@ export const statusBPPpaymentErrorController = (
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_${ACTIONS.status}`,
-		`on_${ACTIONS.status}`
+		`${req.body.context.bap_uri}/on_status`,
+		`on_status`
 	);
 };
 
@@ -142,8 +142,8 @@ export const statusBPPpaymentController = (
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_${ACTIONS.status}`,
-		`on_${ACTIONS.status}`
+		`${req.body.context.bap_uri}/on_status`,
+		`on_status`
 	);
 };
 
@@ -161,7 +161,7 @@ export const statusSelfPickedUpController = (
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_${ACTIONS.status}`,
-		`on_${ACTIONS.status}`
+		`${req.body.context.bap_uri}/on_status`,
+		`on_status`
 	);
 };
