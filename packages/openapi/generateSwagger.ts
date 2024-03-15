@@ -3,6 +3,8 @@ import fs from "fs"
 import $RefParser, { RefParserSchema } from "@apidevtools/json-schema-ref-parser";
 import { execSync } from "child_process";
 import path from "path";
+import * as dotenv from 'dotenv';
+dotenv.config();
 import {
 	ACTIONS,
 	B2B_SCENARIOS,
@@ -29,6 +31,7 @@ const generateSwagger = async (
 	scenarios: typeof B2B_SCENARIOS | typeof SERVICES_SCENARIOS,
 	servers: { url: string; description: string }[]
 ) => {
+	console.log("SERVERS", servers)
 	const schema:any = await swaggerParse(inputPath);
 	schema.externalDocs = {
 		description: "User guide",
@@ -113,7 +116,7 @@ const generateSwagger = async (
 	const command = `npx swagger-cli bundle ${path.join(
 		outputPath,
 		"openapi-temp.yaml"
-	)} --outfile ${path.join(outputPath, "build", "swagger.yaml")} -t yaml`;
+	)} --outfile ${path.join(outputPath, "build", "swagger.json")} -t json`;
 	execSync(command, { stdio: "inherit" });
 	fs.unlinkSync(path.join(outputPath, "openapi-temp.yaml"));
 };
@@ -123,8 +126,8 @@ generateSwagger(
 	"./openapi/retail-b2b",
 	B2B_SCENARIOS,
 	[
-		{ url: "/api/b2b/bpp", description: "Sandbox as seller " },
-		{ url: "/api/b2b/bap", description: "Sandbox as buyer" },
+		{ url: `${process.env.SERVER_LINK}/b2b/bpp`, description: "Sandbox as seller " },
+		{ url: `${process.env.SERVER_LINK}/b2b/bap`, description: "Sandbox as buyer" },
 	]
 );
 
@@ -133,7 +136,7 @@ generateSwagger(
 	"./openapi/services",
 	SERVICES_SCENARIOS,
 	[
-		{ url: "/api/services/bpp", description: "Sandbox as seller" },
-		{ url: "/api/services/bap", description: "Sandbox as buyer" },
+		{ url: `${process.env.SERVER_LINK}/services/bpp`, description: "Sandbox as seller" },
+		{ url: `${process.env.SERVER_LINK}/services/bap`, description: "Sandbox as buyer" },
 	]
 );

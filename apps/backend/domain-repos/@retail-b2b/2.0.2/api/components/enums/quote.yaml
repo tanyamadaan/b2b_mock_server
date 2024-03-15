@@ -1,0 +1,23 @@
+title_type:
+      - code: item
+        description: price of the item
+        reference: <PR/Issue/Discussion Links md format text>
+      - code: discount
+        description: discount charges
+        reference: <PR/Issue/Discussion Links md format text>
+      - code: packing
+        description: packing charges
+        reference: <PR/Issue/Discussion Links md format text>
+      - code: tax
+        description: tax applied
+        reference: <PR/Issue/Discussion Links md format text>
+      - code: delivery
+        description: delivery charges on fulfillment
+        reference: <PR/Issue/Discussion Links md format text>
+      - code: misc
+        description: convenience charges
+        reference: <PR/Issue/Discussion Links md format text>
+      - code: refund
+        description: convenience charges
+        reference: <PR/Issue/Discussion Links md format text>
+ 
