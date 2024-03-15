@@ -56,7 +56,8 @@ export const statusDeliveredController = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bap_uri}/on_status`,
-		`on_status`
+		`on_status`,
+		"b2b"
 	);
 };
 
@@ -71,7 +72,8 @@ export const statusOutForDeliveryController = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bap_uri}/on_status`,
-		`on_status`
+		`on_status`,
+		"b2b"
 	);
 };
 
@@ -86,7 +88,8 @@ export const statusPickedUpController = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bap_uri}/on_status`,
-		`on_status`
+		`on_status`,
+		"b2b"
 	);
 };
 
@@ -105,7 +108,8 @@ export const statusProformaInvoiceController = (
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bap_uri}/on_status`,
-		`on_status`
+		`on_status`,
+		"b2b"
 	);
 };
 
@@ -124,7 +128,8 @@ export const statusBPPpaymentErrorController = (
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bap_uri}/on_status`,
-		`on_status`
+		`on_status`,
+		"b2b"
 	);
 };
 
@@ -143,7 +148,8 @@ export const statusBPPpaymentController = (
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bap_uri}/on_status`,
-		`on_status`
+		`on_status`,
+		"b2b"
 	);
 };
 
@@ -162,6 +168,7 @@ export const statusSelfPickedUpController = (
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bap_uri}/on_status`,
-		`on_status`
+		`on_status`,
+		"b2b"
 	);
 };

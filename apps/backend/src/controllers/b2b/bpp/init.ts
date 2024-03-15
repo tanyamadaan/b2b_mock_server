@@ -70,7 +70,8 @@ export const initDomesticController = (req: Request, res: Response) => {
 		context,
 		responseMessage,
 		`${context.bap_uri}/on_init`,
-		`on_init`
+		`on_init`,
+		"b2b"
 	);
 };
 
@@ -85,7 +86,8 @@ export const initDomesticNonRfq = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bap_uri}/on_init`,
-		`on_init`
+		`on_init`,
+		"b2b"
 	);
 };
 
@@ -104,7 +106,8 @@ export const initDomesticPaymentBppNonRfq = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bap_uri}/on_init`,
-		`on_init`
+		`on_init`,
+		"b2b"
 	);
 };
 
@@ -120,7 +123,8 @@ export const initDomesticSelfPickup = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bap_uri}/on_init`,
-		`on_init`
+		`on_init`,
+		"b2b"
 	);
 };
 
@@ -136,7 +140,8 @@ export const initExports = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bap_uri}/on_init`,
-		`on_init`
+		`on_init`,
+		"b2b"
 	);
 };
 
@@ -152,6 +157,7 @@ export const initRejectRfq = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bap_uri}/on_init`,
-		`on_init`
+		`on_init`,
+		"b2b"
 	);
 };

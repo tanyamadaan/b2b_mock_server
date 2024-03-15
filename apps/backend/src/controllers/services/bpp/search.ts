@@ -18,6 +18,7 @@ export const searchController = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bap_uri}/on_search`,
-		`on_search`
+		`on_search`,
+		"services"
 	);
 };

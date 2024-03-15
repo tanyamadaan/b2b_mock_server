@@ -76,7 +76,8 @@ export const confirmDomesticController = (req: Request, res: Response) => {
 		context,
 		responseMessage,
 		`${context.bap_uri}/on_confirm`,
-		`on_confirm`
+		`on_confirm`,
+		"b2b"
 	);
 };
 
@@ -92,7 +93,8 @@ export const confirmDomesticNonRfq = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bap_uri}/on_confirm`,
-		`on_confirm`
+		`on_confirm`,
+		"b2b"
 	);
 };
 
@@ -108,7 +110,8 @@ export const confirmExports = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bap_uri}/on_confirm`,
-		`on_confirm`
+		`on_confirm`,
+		"b2b"
 	);
 };
 
@@ -124,6 +127,7 @@ export const confirmDomesticRejected = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bap_uri}/on_confirm`,
-		`on_confirm`
+		`on_confirm`,
+		"b2b"
 	);
 };

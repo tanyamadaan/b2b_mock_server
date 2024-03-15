@@ -1,9 +1,6 @@
 import { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
-import {
-	responseBuilder,
-	B2B_EXAMPLES_PATH,
-} from "../../../lib/utils";
+import { responseBuilder, B2B_EXAMPLES_PATH } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
@@ -66,23 +63,22 @@ export const onInitDomesticController = (req: Request, res: Response) => {
 					...order.payments[0],
 					params: {
 						currency: order.quote.price.currency,
-						amount: order.quote.price.value
-
+						amount: order.quote.price.value,
 					},
-          status: "NOT-PAID",
+					status: "NOT-PAID",
 					"@ondc/org/settlement_details": [
-            {
-              "settlement_counterparty": "buyer-app",
-              "settlement_phase": "sale-amount",
-              "settlement_type": "upi",
-              "upi_address": "gft@oksbi",
-              "settlement_bank_account_no": "XXXXXXXXXX",
-              "settlement_ifsc_code": "XXXXXXXXX",
-              "beneficiary_name": "xxxxx",
-              "bank_name": "xxxx",
-              "branch_name": "xxxx"
-            }
-          ]
+						{
+							settlement_counterparty: "buyer-app",
+							settlement_phase: "sale-amount",
+							settlement_type: "upi",
+							upi_address: "gft@oksbi",
+							settlement_bank_account_no: "XXXXXXXXXX",
+							settlement_ifsc_code: "XXXXXXXXX",
+							beneficiary_name: "xxxxx",
+							bank_name: "xxxx",
+							branch_name: "xxxx",
+						},
+					],
 				},
 			],
 			created_at: timestamp,
@@ -94,7 +90,8 @@ export const onInitDomesticController = (req: Request, res: Response) => {
 		context,
 		responseMessage,
 		`${context.bpp_uri}/confirm`,
-		`confirm`
+		`confirm`,
+		"b2b"
 	);
 };
 
@@ -109,7 +106,8 @@ export const onInitDomesticNonRfqController = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		req.body.context.bpp_uri,
-		`confirm`
+		`confirm`,
+		"b2b"
 	);
 };
 
@@ -123,7 +121,8 @@ export const onInitExportsController = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		req.body.context.bpp_uri,
-		`confirm`
+		`confirm`,
+		"b2b"
 	);
 };
 
@@ -140,7 +139,8 @@ export const onInitPrepaidBapNonRFQController = (
 		req.body.context,
 		response.value.message,
 		req.body.context.bpp_uri,
-		`confirm`
+		`confirm`,
+		"b2b"
 	);
 };
 
@@ -154,6 +154,7 @@ export const onInitPrepaidBapRFQController = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		req.body.context.bpp_uri,
-		`confirm`
+		`confirm`,
+		"b2b"
 	);
 };

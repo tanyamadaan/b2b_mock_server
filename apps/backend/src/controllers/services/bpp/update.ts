@@ -39,7 +39,8 @@ export const updateRequoteController = (req: Request, res: Response) => {
 		context,
 		response.value.message,
 		`${context.bap_uri}/on_update`,
-		`on_update`
+		`on_update`,
+		"services"
 	);
 };
 
@@ -54,6 +55,7 @@ export const updateRescheduleController = (req: Request, res: Response) => {
 		context,
 		response.value.message,
 		`${context.bap_uri}/on_update`,
-		`on_update`
+		`on_update`,
+		"services"
 	);
 };

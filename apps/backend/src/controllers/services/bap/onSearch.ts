@@ -45,7 +45,8 @@ const onSearchConsultationRescheduleController = (req: Request, res: Response) =
 		context,
 		response.value.message,
 		`${context.bap_uri}/select`,
-		`select`
+		`select`,
+		"services"
 	);
 };
 
@@ -63,7 +64,8 @@ const onSearchConsultationController = (
 		context,
 		response.value.message,
 		`${context.bap_uri}/select`,
-		`select`
+		`select`,
+		"services"
 	);
 };
 
@@ -81,7 +83,8 @@ const onSearchServiceController = (
 		context,
 		response.value.message,
 		`${context.bap_uri}/select`,
-		`select`
+		`select`,
+		"services"
 	);
 };
 
@@ -96,7 +99,8 @@ const onSearchWithoutScheduleController = (req: Request, res: Response) => {
 		context,
 		response.value.message,
 		`${context.bap_uri}/select`,
-		`select`
+		`select`,
+		"services"
 	);
 };
 

@@ -39,7 +39,8 @@ const onInitConsultationController = (req: Request, res: Response) => {
 		context,
 		response.value.message,
 		`${context.bap_uri}/confirm`,
-		`confirm`
+		`confirm`,
+		"services"
 	);
 };
 
@@ -54,7 +55,8 @@ const onInitServiceController = (req: Request, res: Response) => {
 		context,
 		response.value.message,
 		`${context.bap_uri}/confirm`,
-		`confirm`
+		`confirm`,
+		"services"
 	);
 };
 

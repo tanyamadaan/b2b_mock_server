@@ -5,6 +5,8 @@ import {
 	B2B_BAP_MOCKSERVER_URL,
 	B2B_BPP_MOCKSERVER_URL,
 	MOCKSERVER_ID,
+	SERVICES_BAP_MOCKSERVER_URL,
+	SERVICES_BPP_MOCKSERVER_URL,
 } from "./constants";
 import { createResponseAuthHeader } from "./responseAuth";
 import {logger} from "./logger";
@@ -47,11 +49,13 @@ export const responseBuilder = async (
 	reqContext: object,
 	message: object,
 	uri: string,
-	action: string
+	action: string,
+	domain: "b2b" | "services"
 ) => {
 	var totalTransaction: TransactionType = res.locals.logs;
 	res.locals = {};
-	var ts = new Date((reqContext as any).timestamp);
+	// var ts = new Date((reqContext as any).timestamp);
+	var ts = new Date();
 	ts.setSeconds(ts.getSeconds() + 1);
 	const sandboxMode = res.getHeader("mode") === "sandbox";
 	// console.log("SANDBOX>", sandboxMode);
@@ -65,7 +69,7 @@ export const responseBuilder = async (
 				// ...remainingContext,
 				...reqContext,
 				bpp_id: MOCKSERVER_ID,
-				bpp_uri: B2B_BPP_MOCKSERVER_URL,
+				bpp_uri: domain === "b2b" ? B2B_BPP_MOCKSERVER_URL : SERVICES_BPP_MOCKSERVER_URL,
 				timeStamp: ts.toISOString(),
 				action,
 			},
@@ -78,7 +82,7 @@ export const responseBuilder = async (
 				// ...remainingContext,
 				...reqContext,
 				bap_id: MOCKSERVER_ID,
-				bap_uri: B2B_BAP_MOCKSERVER_URL,
+				bap_uri: domain === "b2b" ? B2B_BAP_MOCKSERVER_URL: SERVICES_BAP_MOCKSERVER_URL,
 				timeStamp: ts.toISOString(),
 				message_id: uuidv4(),
 				action,

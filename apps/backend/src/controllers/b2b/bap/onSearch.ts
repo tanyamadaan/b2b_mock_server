@@ -75,7 +75,8 @@ export const onSearchDomesticController = (req: Request, res: Response) => {
 		context,
 		responseMessage,
 		`${context.bpp_uri}/select`,
-		`select`
+		`select`,
+		"b2b"
 	);
 };
 
@@ -90,7 +91,8 @@ export const onSearchDomesticNonRfqController = (req: Request, res: Response) =>
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bpp_uri}/select`,
-		`select`
+		`select`,
+		"b2b"
 	);
 };
 
@@ -105,7 +107,8 @@ export const onSearchDomesticSelfPickupController = (req: Request, res: Response
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bpp_uri}/select`,
-		`select`
+		`select`,
+		"b2b"
 	);
 };
 
@@ -120,7 +123,8 @@ export const onSearchExportsController = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bpp_uri}/select`,
-		`select`
+		`select`,
+		"b2b"
 	);
 };
 
@@ -135,6 +139,7 @@ export const onSearchBAPchatController = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bpp_uri}/select`,
-		`select`
+		`select`,
+		"b2b"
 	);
 };

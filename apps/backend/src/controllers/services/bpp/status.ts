@@ -49,7 +49,8 @@ const statusCompletedController = (req: Request, res: Response) => {
 		context,
 		response.value.message,
 		`${context.bap_uri}/on_status`,
-		`on_status`
+		`on_status`,
+		"services"
 	);
 };
 
@@ -64,7 +65,8 @@ const statusInTransitController = (req: Request, res: Response) => {
 		context,
 		response.value.message,
 		`${context.bap_uri}/on_status`,
-		`on_status`
+		`on_status`,
+		"services"
 	);
 };
 
@@ -79,7 +81,8 @@ const statusReachedReOtpController = (req: Request, res: Response) => {
 		context,
 		response.value.message,
 		`${context.bap_uri}/on_status`,
-		`on_status`
+		`on_status`,
+		"services"
 	);
 };
 const statusReachedController = (
@@ -96,7 +99,8 @@ const statusReachedController = (
 		context,
 		response.value.message,
 		`${context.bap_uri}/on_status`,
-		`on_status`
+		`on_status`,
+		"services"
 	);
 };
 
@@ -114,7 +118,8 @@ const statusServiceStartedController = (
 		context,
 		response.value.message,
 		`${context.bap_uri}/on_status`,
-		`on_status`
+		`on_status`,
+		"services"
 	);
 };
 

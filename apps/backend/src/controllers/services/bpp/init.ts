@@ -41,7 +41,8 @@ const initConsultationController = (req: Request, res: Response) => {
 		context,
 		response.value.message,
 		`${context.bap_uri}/on_init`,
-		`on_init`
+		`on_init`,
+		"services"
 	);
 };
 
@@ -56,6 +57,7 @@ const initServiceController = (req: Request, res: Response) => {
 		context,
 		response.value.message,
 		`${context.bap_uri}/on_init`,
-		`on_init`
+		`on_init`,
+		"services"
 	);
 };

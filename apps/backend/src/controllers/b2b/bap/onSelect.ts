@@ -57,7 +57,8 @@ export const onSelectDomesticController = (req: Request, res: Response) => {
 		context,
 		responseMessage,
 		`${context.bpp_uri}/init`,
-		`init`
+		`init`,
+		"b2b"
 	);
 };
 
@@ -75,7 +76,8 @@ export const onSelectDomesticNonRfqController = (
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bpp_uri}/init`,
-		`init`
+		`init`,
+		"b2b"
 	);
 };
 
@@ -90,7 +92,8 @@ export const onSelectExportsController = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bpp_uri}/init`,
-		`init`
+		`init`,
+		"b2b"
 	);
 };
 
@@ -108,6 +111,7 @@ export const onSelectDomesticBPPPaymentController = (
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bpp_uri}/init`,
-		`init`
+		`init`,
+		"b2b"
 	);
 };

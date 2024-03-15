@@ -31,6 +31,9 @@ export const authValidatorMiddleware = async (
 
 		if (
 			mode === "mock" 
+			||
+			(req.body.context.bap_uri === B2B_BAP_MOCKSERVER_URL &&
+				req.body.context.action === "search")
 		) {
 			next(); //skipping auth header validation in "mock" mode
 			return;

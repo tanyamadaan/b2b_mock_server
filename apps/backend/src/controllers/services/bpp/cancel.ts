@@ -41,7 +41,8 @@ export const cancelAckController = (req: Request, res: Response) => {
 		context,
 		response.value.message,
 		`${context.bap_uri}/on_confirm`,
-		`on_confirm`
+		`on_confirm`,
+		"services"
 	);
 };
 
@@ -57,7 +58,8 @@ export const cancelMerchantController = (req: Request, res: Response) => {
 		context,
 		response.value.message,
 		`${context.bap_uri}/on_confirm`,
-		`on_confirm`
+		`on_confirm`,
+		"services"
 	);
 };
 

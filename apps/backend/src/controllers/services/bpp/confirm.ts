@@ -41,7 +41,8 @@ export const confirmConsultationController = (req: Request, res: Response) => {
 		context,
 		response.value.message,
 		`${context.bap_uri}/on_confirm`,
-		`on_confirm`
+		`on_confirm`,
+		"services"
 	);
 };
 
@@ -57,7 +58,8 @@ export const confirmServiceController = (req: Request, res: Response) => {
 		context,
 		response.value.message,
 		`${context.bap_uri}/on_confirm`,
-		`on_confirm`
+		`on_confirm`,
+		"services"
 	);
 };
 

@@ -39,7 +39,8 @@ const onSelectConsultationController = (req: Request, res: Response) => {
 		context,
 		response.value.message,
 		`${context.bap_uri}/init`,
-		`init`
+		`init`,
+		"services"
 	);
 };
 
@@ -57,6 +58,7 @@ const onSelectServiceController = (
 		context,
 		response.value.message,
 		`${context.bap_uri}/init`,
-		`init`
+		`init`,
+		"services"
 	);
 };

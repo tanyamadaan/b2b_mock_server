@@ -44,7 +44,8 @@ export const updateFulfillmentController = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		req.body.context.bap_uri,
-		`on_update`
+		`on_update`,
+		"b2b"
 	);
 };
 
@@ -59,7 +60,8 @@ export const updatePrepaidController = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bap_uri}/on_update`,
-		`on_update`
+		`on_update`,
+		"b2b"
 	);
 };
 
@@ -74,6 +76,7 @@ export const updatePrepaidBAPController = (req: Request, res: Response) => {
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bap_uri}/on_update`,
-		`on_update`
+		`on_update`,
+		"b2b"
 	);
 };
