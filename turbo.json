@@ -1,19 +1,10 @@
 {
 	"$schema": "https://turbo.build/schema.json",
 	"pipeline": {
-		"ec2": {
-			"dependsOn": ["start:dev", "start"],
-			"cache": false,
-			"persistent": true
-		},
-		"preview": {
-			"cache": true,
-			"persistent": false
-		},
 		"dev": {
 			"dependsOn": ["db:migrate:dev", "swagger:gen"],
 			"cache": true,
-			"persistent": false
+			"persistent": true
 		},
 		"swagger:gen": {
 			"cache": false
