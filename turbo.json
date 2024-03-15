@@ -10,7 +10,7 @@
 			"cache": true,
 			"persistent": false
 		},
-		"dev": {
+		"start:dev": {
 			"dependsOn": ["db:migrate:dev", "swagger:gen"],
 			"cache": true,
 			"persistent": false
