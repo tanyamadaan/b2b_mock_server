@@ -1,7 +1,7 @@
 import SwaggerUI from "swagger-ui-react";
 import "swagger-ui-react/swagger-ui.css";
 import { Toolbar } from "@mui/material";
-import swaggerSpec from "backend/auth.yaml";
+import swaggerSpec from "openapi-specs/auth.yaml";
 import { SwaggerDownloadButton } from "../../../../components";
 
 export const AuthSwagger = () => {
@@ -9,8 +9,8 @@ export const AuthSwagger = () => {
 		url.startsWith(import.meta.env.VITE_SERVER_URL)
 			? { url }
 			: {
-					url: import.meta.env.VITE_SERVER_URL + url.replace("/api", "")
-			  // eslint-disable-next-line no-mixed-spaces-and-tabs
+					url: import.meta.env.VITE_SERVER_URL + url.replace("/api", ""),
+					// eslint-disable-next-line no-mixed-spaces-and-tabs
 			  }
 	);
 
@@ -22,7 +22,7 @@ export const AuthSwagger = () => {
 					justifyContent: "flex-end",
 				}}
 			>
-			<SwaggerDownloadButton swaggerYaml={swaggerSpec} fileName="Auth.yaml" />
+				<SwaggerDownloadButton swaggerYaml={swaggerSpec} fileName="Auth.yaml" />
 			</Toolbar>
 			<SwaggerUI spec={swaggerSpec} />
 		</>

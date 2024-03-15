@@ -17,5 +17,9 @@
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^11.5.4",
     "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.2"
   }
 }

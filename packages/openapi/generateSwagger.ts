@@ -120,7 +120,7 @@ const generateSwagger = async (
 
 generateSwagger(
 	"./domain-repos/@retail-b2b/draft-2.x/api/build/build.yaml",
-	"./src/openapi/retail-b2b",
+	"./openapi/retail-b2b",
 	B2B_SCENARIOS,
 	[
 		{ url: "/api/b2b/bpp", description: "Sandbox as seller " },
@@ -130,7 +130,7 @@ generateSwagger(
 
 generateSwagger(
 	"./domain-repos/@services/draft-services/api/build/build.yaml",
-	"./src/openapi/services",
+	"./openapi/services",
 	SERVICES_SCENARIOS,
 	[
 		{ url: "/api/services/bpp", description: "Sandbox as seller" },

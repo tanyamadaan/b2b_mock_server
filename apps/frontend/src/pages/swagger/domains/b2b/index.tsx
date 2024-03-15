@@ -1,7 +1,7 @@
 import SwaggerUI from "swagger-ui-react";
 import "swagger-ui-react/swagger-ui.css";
 import { Toolbar } from "@mui/material";
-import swaggerSpec from "backend/retail-b2b.yaml";
+import swaggerSpec from "openapi-specs/retail-b2b.yaml";
 import { SwaggerDownloadButton } from "../../../../components";
 
 export const B2BSwagger = () => {
