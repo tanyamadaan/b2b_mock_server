@@ -6,13 +6,17 @@
 			"cache": false,
 			"persistent": true
 		},
+		"preview": {
+			"cache": true,
+			"persistent": false
+		},
 		"dev": {
 			"dependsOn": ["start:nginx"],
 			"persistent": true,
 			"cache": false
 		},
 		"start:nginx": {
-			"dependsOn": ["start:dev", "start"],
+			"dependsOn": ["start:dev"],
 			"cache": false,
 			"persistent": false
 		},
