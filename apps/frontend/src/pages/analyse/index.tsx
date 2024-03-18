@@ -11,13 +11,14 @@ import IconButton from "@mui/material/IconButton";
 
 export const Analyse = () => {
 	const theme = useTheme();
+  console.log("TOOL BAR", theme.mixins.toolbar.minHeight)
 	return (
 		<Container
 			sx={{
-				py: 2,
+				// py: 2,
 				background: `url("./ondc_logo.png") no-repeat center center fixed`,
 				backgroundSize: "fit",
-				minHeight: "100%",
+				height: `calc(100% - ${theme.mixins.toolbar.minHeight as number + 10}px)`,
 				display: "flex",
 				flexDirection: "column",
 				alignItems: "center",
@@ -36,7 +37,7 @@ export const Analyse = () => {
 						p: 0.5,
 						borderRadius: theme.shape.borderRadius * 2,
 					}}
-          elevation={5}
+					elevation={5}
 				>
 					<Box
 						sx={{
