@@ -101,6 +101,7 @@ export const searchController = async (req: Request, res: Response) => {
 		try {
 			await axios.post(`${req.body.context.bpp_uri}/search`, req.body, {
 				headers: {
+					"X-Gateway-Authorization": header,
 					authorization: header,
 				},
 			});
@@ -114,7 +115,7 @@ export const searchController = async (req: Request, res: Response) => {
 				},
 				error: {
 					// message: (error as any).message,
-					message: (error as any).response.data,
+					message: "Error Occurred while pinging NP at BPP URI",
 				},
 			});
 		}
