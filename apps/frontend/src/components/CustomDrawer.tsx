@@ -59,6 +59,11 @@ const DOMAIN_NAVS = [
 		nested: false,
 		path: "/swagger/auth",
 	},
+	{
+		name: "Analyse Transaction",
+		nested: false,
+		path: "/analyse",
+	},
 ];
 type CustomDrawerProps = {
 	children: React.ReactNode;
@@ -69,72 +74,75 @@ type NestedMenuProps = {
 	name: string;
 	childPath: { name: string; path: string }[] | undefined;
 	parentPath: string;
+	growIn: boolean
 };
 
-const NestedMenu = ({ id, name, childPath, parentPath }: NestedMenuProps) => {
+const NestedMenu = ({ id, name, childPath, parentPath, growIn }: NestedMenuProps) => {
 	const theme = useTheme();
 	const navigate = useNavigate();
 	const [accordionOpened, setAccordionOpened] = React.useState(false);
 	return (
-		<Accordion
-			sx={{
-				my: 0,
-				bgcolor: theme.palette.primary.dark,
-				color: theme.palette.primary.contrastText,
-				"&.Mui-selected": {
-					backgroundColor: theme.palette.primary.main,
-				},
-			}}
-			square={true}
-			disableGutters={true}
-			elevation={0}
-			onChange={(_event, expanded) => setAccordionOpened(expanded)}
-		>
-			<AccordionSummary
-				expandIcon={
-					<ArrowDropDownIcon
-						sx={{ color: theme.palette.primary.contrastText }}
-					/>
-				}
-				aria-controls="panel2-content"
-				id={id}
-			>
-				<Typography>{name}</Typography>
-			</AccordionSummary>
-			<AccordionDetails
+		<Grow in={growIn} timeout={1000} key={"nested-nav-" + id}>
+			<Accordion
 				sx={{
-					bgcolor: theme.palette.grey[100],
-					color: theme.palette.getContrastText(theme.palette.grey[100]),
-					p: 0,
+					my: 0,
+					bgcolor: theme.palette.primary.dark,
+					color: theme.palette.primary.contrastText,
+					"&.Mui-selected": {
+						backgroundColor: theme.palette.primary.main,
+					},
 				}}
+				square={true}
+				disableGutters={true}
+				elevation={0}
+				onChange={(_event, expanded) => setAccordionOpened(expanded)}
 			>
-				<List sx={{ py: 0 }}>
-					{childPath?.map((link, index) => (
-						<Grow in={accordionOpened} timeout={800} key={id + index}>
-							<ListItem key={index} disablePadding>
-								<ListItemButton
-									onClick={() => navigate(link.path + parentPath)}
-									selected={location.pathname === link.path + parentPath}
-									sx={{
-										"&.Mui-selected": {
-											backgroundColor: theme.palette.primary.light,
-											color: theme.palette.getContrastText(
-												theme.palette.primary.light
-											),
-										},
-									}}
-								>
-									<ListItemText
-										primary={link.name}
-										sx={{ textAlign: "center" }}
-									/>
-								</ListItemButton>
-							</ListItem>
-						</Grow>
-					))}
-				</List>
-			</AccordionDetails>
-		</Accordion>
+				<AccordionSummary
+					expandIcon={
+						<ArrowDropDownIcon
+							sx={{ color: theme.palette.primary.contrastText }}
+						/>
+					}
+					aria-controls="panel2-content"
+					id={id}
+				>
+					<Typography>{name}</Typography>
+				</AccordionSummary>
+				<AccordionDetails
+					sx={{
+						bgcolor: theme.palette.grey[100],
+						color: theme.palette.getContrastText(theme.palette.grey[100]),
+						p: 0,
+					}}
+				>
+					<List sx={{ py: 0 }}>
+						{childPath?.map((link, index) => (
+							<Grow in={accordionOpened} timeout={800} key={id + index}>
+								<ListItem key={index} disablePadding>
+									<ListItemButton
+										onClick={() => navigate(link.path + parentPath)}
+										selected={location.pathname === link.path + parentPath}
+										sx={{
+											"&.Mui-selected": {
+												backgroundColor: theme.palette.primary.light,
+												color: theme.palette.getContrastText(
+													theme.palette.primary.light
+												),
+											},
+										}}
+									>
+										<ListItemText
+											primary={link.name}
+											sx={{ textAlign: "center" }}
+										/>
+									</ListItemButton>
+								</ListItem>
+							</Grow>
+						))}
+					</List>
+				</AccordionDetails>
+			</Accordion>
+		</Grow>
 	);
 };
 
@@ -161,9 +169,14 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 								childPath={link.children}
 								parentPath={link.path}
 								id={"nav-nested-menu-" + index}
+								growIn={mobileOpen}
 							/>
 						) : (
-							<Grow in={true} timeout={1000} key={"nonnested-nav-" + index}>
+							<Grow
+								in={mobileOpen}
+								timeout={1000}
+								key={"nonnested-nav-" + index}
+							>
 								<ListItem disablePadding key={index}>
 									<ListItemButton
 										onClick={() => navigate(link.path)}
