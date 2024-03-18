@@ -9,7 +9,7 @@ import {
 	SERVICES_BPP_MOCKSERVER_URL,
 } from "./constants";
 import { createResponseAuthHeader } from "./responseAuth";
-import {logger} from "./logger";
+import { logger } from "./logger";
 import { TransactionType, redis } from "./redis";
 
 interface TagDescriptor {
@@ -69,7 +69,10 @@ export const responseBuilder = async (
 				// ...remainingContext,
 				...reqContext,
 				bpp_id: MOCKSERVER_ID,
-				bpp_uri: domain === "b2b" ? B2B_BPP_MOCKSERVER_URL : SERVICES_BPP_MOCKSERVER_URL,
+				bpp_uri:
+					domain === "b2b"
+						? B2B_BPP_MOCKSERVER_URL
+						: SERVICES_BPP_MOCKSERVER_URL,
 				timeStamp: ts.toISOString(),
 				action,
 			},
@@ -82,7 +85,10 @@ export const responseBuilder = async (
 				// ...remainingContext,
 				...reqContext,
 				bap_id: MOCKSERVER_ID,
-				bap_uri: domain === "b2b" ? B2B_BAP_MOCKSERVER_URL: SERVICES_BAP_MOCKSERVER_URL,
+				bap_uri:
+					domain === "b2b"
+						? B2B_BAP_MOCKSERVER_URL
+						: SERVICES_BAP_MOCKSERVER_URL,
 				timeStamp: ts.toISOString(),
 				message_id: uuidv4(),
 				action,
@@ -104,38 +110,49 @@ export const responseBuilder = async (
 		if (!totalTransaction.actions.includes(action)) {
 			totalTransaction.actions.push(action);
 		}
-		await redis.set(
-			(async.context! as any).transaction_id,
-			JSON.stringify(totalTransaction)
-		);
-		console.log("HERE");
+
 		try {
-			console.log("ASYNC BEING SENT", async);
-			await axios.post(uri, async, {
+			const response = await axios.post(uri, async, {
 				headers: {
 					authorization: header,
 				},
 			});
-
-		}catch (error) {
+			totalTransaction.actionStats = {
+				...totalTransaction.actionStats,
+				[action]: {
+					npRequest: {
+						timestamp: ts.toISOString(),
+						request: async,
+					},
+					npResponse: {
+						timestamp: new Date().toISOString(),
+						response,
+						ack : true
+					},
+				},
+			};
+			await redis.set(
+				(async.context! as any).transaction_id,
+				JSON.stringify(totalTransaction)
+			);
+		} catch (error) {
 			logger.error({
 				type: "response",
 				message: {
 					message: "ERROR OCCURRED WHILE PINGING SANDBOX RESPONSE",
-					error: (error as any).response
-				}
-			})
+					error: (error as any).response,
+				},
+			});
 			logger.error({
 				type: "response",
-				message:{
-				message: { ack: { status: "NACK" }, }, error: {
-					message: (error as any).response.data
-				}}
-			})
-
-
-			
-			return res.json({
+				message: {
+					message: { ack: { status: "NACK" } },
+					error: {
+						message: (error as any).response.data,
+					},
+				},
+			});
+			const response = {
 				message: {
 					ack: {
 						status: "NACK",
@@ -145,10 +162,34 @@ export const responseBuilder = async (
 					// message: (error as any).message,
 					message: (error as any).response.data,
 				},
+			};
+			totalTransaction.actionStats = {
+				...totalTransaction.actionStats,
+				[action]: {
+					npRequest: {
+						timestamp: ts.toISOString(),
+						request: async,
+					},
+					npResponse: {
+						timestamp: new Date().toISOString(),
+						response,
+						ack: false
+					},
+				},
+			};
+
+			await redis.set(
+				(async.context! as any).transaction_id,
+				JSON.stringify(totalTransaction)
+			);
+
+			return res.json({
+				...response,
 				async,
 			});
 		}
-		logger.info({ message: { ack: { status: "ACK" } } })
+
+		logger.info({ message: { ack: { status: "ACK" } } });
 		return res.json({
 			message: {
 				ack: {

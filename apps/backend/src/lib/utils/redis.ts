@@ -9,6 +9,19 @@ const redisOptions: RedisOptions = {
 
 export type TransactionType = {
 	actions: string[];
+	actionStats?: {
+		[key: string]: {
+			npRequest?: {
+				timestamp: string, 
+				request: object
+			}
+			npResponse?: {
+				timestamp: string,
+				response: object,
+				ack: boolean
+			}
+		}
+	},
 	logs: {
 		[key: string]: object;
 	};
