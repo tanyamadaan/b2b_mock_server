@@ -126,7 +126,7 @@ export const responseBuilder = async (
 					},
 					npResponse: {
 						timestamp: new Date().toISOString(),
-						response,
+						response: response.data,
 						ack : true
 					},
 				},
@@ -136,11 +136,12 @@ export const responseBuilder = async (
 				JSON.stringify(totalTransaction)
 			);
 		} catch (error) {
+			console.log("ERROR", error)
 			logger.error({
 				type: "response",
 				message: {
 					message: "ERROR OCCURRED WHILE PINGING SANDBOX RESPONSE",
-					error: (error as any).response,
+					error: error,
 				},
 			});
 			logger.error({
