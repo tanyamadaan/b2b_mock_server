@@ -105,6 +105,14 @@ export const searchController = async (req: Request, res: Response) => {
 					authorization: header,
 				},
 			});
+
+			return res.json({
+				message: {
+					ack: {
+						status: "ACK",
+					},
+				},
+			});
 		} catch (error) {
 			logger.error({ type: "response", message: error });
 			return res.json({
@@ -119,14 +127,14 @@ export const searchController = async (req: Request, res: Response) => {
 				},
 			});
 		}
+	} else {
+		return responseBuilder(
+			res,
+			req.body.context,
+			onSearch.value.message,
+			`${req.body.context.bap_uri}/on_search`,
+			`on_search`,
+			"b2b"
+		);
 	}
-
-	return responseBuilder(
-		res,
-		req.body.context,
-		onSearch.value.message,
-		`${req.body.context.bap_uri}/on_search`,
-		`on_search`,
-		"b2b"
-	);
 };
