@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { TransactionType, redis } from "../../lib/utils";
-import { STATUS_CODES } from "http";
 
 export const analyseController = async (req: Request, res: Response) => {
   const transactionId = req.params["transactionId"];

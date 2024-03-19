@@ -5,10 +5,7 @@ import path from "path";
 import YAML from "yaml";
 import {
 	B2B_EXAMPLES_PATH,
-	B2B_BAP_MOCKSERVER_URL,
 	responseBuilder,
-	createResponseAuthHeader,
-	logger,
 } from "../../../lib/utils";
 import axios from "axios";
 
@@ -96,45 +93,13 @@ export const searchController = async (req: Request, res: Response) => {
 			onSearch = YAML.parse(file.toString());
 			break;
 	}
-	if (req.body.context.bap_uri === B2B_BAP_MOCKSERVER_URL) {
-		const header = await createResponseAuthHeader(req.body);
-		try {
-			await axios.post(`${req.body.context.bpp_uri}/search`, req.body, {
-				headers: {
-					"X-Gateway-Authorization": header,
-					authorization: header,
-				},
-			});
 
-			return res.json({
-				message: {
-					ack: {
-						status: "ACK",
-					},
-				},
-			});
-		} catch (error) {
-			logger.error({ type: "response", message: error });
-			return res.json({
-				message: {
-					ack: {
-						status: "NACK",
-					},
-				},
-				error: {
-					// message: (error as any).message,
-					message: "Error Occurred while pinging NP at BPP URI",
-				},
-			});
-		}
-	} else {
-		return responseBuilder(
-			res,
-			req.body.context,
-			onSearch.value.message,
-			`${req.body.context.bap_uri}/on_search`,
-			`on_search`,
-			"b2b"
-		);
-	}
+	return responseBuilder(
+		res,
+		req.body.context,
+		onSearch.value.message,
+		`${req.body.context.bap_uri}/on_search`,
+		`on_search`,
+		"b2b"
+	);
 };

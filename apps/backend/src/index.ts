@@ -9,13 +9,19 @@ import {
 } from "./controllers";
 
 import cors from "cors";
-import { authSwagger, b2bSwagger, servicesSwagger } from "./middlewares";
+import {
+	authSwagger,
+	b2bSwagger,
+	miscSwagger,
+	servicesSwagger,
+} from "./middlewares";
 const app: Express = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
 
 app.use("/api-docs/auth", swaggerUi.serve, authSwagger("/api-docs/auth"));
+app.use("/api-docs/misc", swaggerUi.serve, miscSwagger("/api-docs/misc"));
 app.use("/api-docs/b2b", swaggerUi.serve, b2bSwagger("/api-docs/b2b"));
 app.use(
 	"/api-docs/services",

@@ -1,7 +1,7 @@
 import { createSigningString, signMessage } from "./crypto";
 
 
-export const createResponseAuthHeader = async (message: object) => {
+export const createAuthHeader = async (message: object) => {
   const { signing_string, expires, created } = await createSigningString(
     JSON.stringify(message)
   );

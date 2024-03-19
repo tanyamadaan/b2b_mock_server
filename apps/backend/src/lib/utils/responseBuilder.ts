@@ -8,7 +8,7 @@ import {
 	SERVICES_BAP_MOCKSERVER_URL,
 	SERVICES_BPP_MOCKSERVER_URL,
 } from "./constants";
-import { createResponseAuthHeader } from "./responseAuth";
+import { createAuthHeader } from "./responseAuth";
 import { logger } from "./logger";
 import { TransactionType, redis } from "./redis";
 
@@ -95,7 +95,7 @@ export const responseBuilder = async (
 			},
 		};
 	}
-	const header = await createResponseAuthHeader(async);
+	const header = await createAuthHeader(async);
 	res.setHeader("authorization", header);
 
 	if (sandboxMode) {

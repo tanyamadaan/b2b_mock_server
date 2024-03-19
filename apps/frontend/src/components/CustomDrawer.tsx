@@ -64,6 +64,11 @@ const DOMAIN_NAVS = [
 		nested: false,
 		path: "/analyse",
 	},
+	{
+		name: "Misc. Swagger",
+		nested: false,
+		path: "/swagger/misc"
+	}
 ];
 type CustomDrawerProps = {
 	children: React.ReactNode;

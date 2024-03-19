@@ -1,4 +1,4 @@
 import { Request, Response } from "express";
 export const pingController = (req: Request, res: Response) => {
-	res.send("Mock Server for NP");
+	res.json({message: "Mock Server for NP"});
 }
