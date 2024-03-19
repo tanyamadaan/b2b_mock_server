@@ -1,5 +1,5 @@
 export const initiateTransactionSchema = {
-	id: "initiateTransaction",
+	$id: "initiateTransaction",
 	type: "object",
 	properties: {
 		transaction_id: {
