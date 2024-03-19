@@ -99,10 +99,6 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "transaction_id": {
-                    "type": "string",
-                    "example": "d83816b4-5b9a-4da9-9c18-242cc144da07"
-                  },
                   "bpp_uri": {
                     "type": "string",
                     "example": "https://mock.ondc.org/api/b2b/bpp"

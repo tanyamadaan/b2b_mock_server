@@ -10,9 +10,10 @@ import axios from "axios";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
+import { v4 as uuidv4 } from "uuid";
 
 export const initiateController = async (req: Request, res: Response) => {
-	const { transaction_id, bpp_uri, city, domain } = req.body;
+	const { bpp_uri, city, domain } = req.body;
 
 	var file = fs.readFileSync(
 		path.join(B2B_EXAMPLES_PATH, "search/search_by_category.yaml")
@@ -28,7 +29,7 @@ export const initiateController = async (req: Request, res: Response) => {
 				...search.context.location,
 				city,
 			},
-			transaction_id,
+			transaction_id: uuidv4(),
 			// bpp_id: MOCKSERVER_ID,
 			// bpp_uri,
 			domain,

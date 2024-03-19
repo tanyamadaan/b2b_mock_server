@@ -6,9 +6,9 @@ export const redisRetriever = async (
 	res: Response,
 	next: NextFunction
 ) => {
-	if(req.headers["mode"] === "mock") {
+	if (req.headers["mode"] === "mock") {
 		next();
-		return
+		return;
 	}
 	const {
 		context: { transaction_id, action },
@@ -17,22 +17,29 @@ export const redisRetriever = async (
 	let logs: TransactionType;
 
 	if (!transaction) {
-		await redis.set(
-			transaction_id,
-			JSON.stringify({ actions: [action], logs: { [action]: req.body } })
-		);
+		logs = {
+			actions: [action],
+			actionStats: {
+				[action]: { requestToServer: true, requestFromServer: false },
+			},
+			logs: { [action]: req.body },
+		};
+		await redis.set(transaction_id, JSON.stringify(logs));
 		// next();
 		// return;
-		logs = { actions: [action], logs: { [action]: req.body } }
 	} else {
-		logs = JSON.parse(transaction)
+		logs = JSON.parse(transaction);
 		if (!logs.actions.includes(action)) {
 			logs.actions.push(action);
 		}
 		logs.logs = {
 			...logs.logs,
-			[action]: req.body
-		}
+			[action]: req.body,
+		};
+		logs.actionStats = {
+			...logs.actionStats,
+			[action]: { requestToServer: true, requestFromServer: false },
+		};
 	}
 
 	res.locals.logs = logs;
