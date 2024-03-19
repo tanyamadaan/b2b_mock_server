@@ -1,10 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import Ajv, { ValidateFunction } from "ajv";
 import addFormats from "ajv-formats";
-import { initiateTransactionSchema } from "./initiate";
+import {
+	initiateB2BTransactionSchema,
+	initiateServicesTransactionSchema,
+} from "./initiate";
 
 export const miscSchemaValidator =
-	(schema: "initiate") => (req: Request, res: Response, next: NextFunction) => {
+	(schema: "initiate/b2b" | "initiate/services") =>
+	(req: Request, res: Response, next: NextFunction) => {
 		const ajv = new Ajv({
 			allErrors: true,
 			strict: false,
@@ -21,10 +25,12 @@ export const miscSchemaValidator =
 			isValid: boolean;
 
 		switch (schema) {
-			case "initiate":
-				validate = ajv.compile(initiateTransactionSchema);
+			case "initiate/b2b":
+				validate = ajv.compile(initiateB2BTransactionSchema);
 				break;
-
+			case "initiate/services":
+				validate = ajv.compile(initiateServicesTransactionSchema);
+				break;
 			default:
 				res.status(400).json({
 					message: {

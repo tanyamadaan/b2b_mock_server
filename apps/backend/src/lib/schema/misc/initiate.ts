@@ -1,10 +1,9 @@
-export const initiateTransactionSchema = {
+export const initiateB2BTransactionSchema = {
 	$id: "initiateTransaction",
 	type: "object",
 	properties: {
 		bpp_uri: {
 			type: "string",
-			example: "https://mock.ondc.org/api/b2b/bpp",
 		},
 		city: {
 			type: "object",
@@ -26,6 +25,30 @@ export const initiateTransactionSchema = {
 				"ONDC:RET12",
 				"ONDC:RET13",
 				"ONDC:RET14",
+			],
+		},
+	},
+};
+export const initiateServicesTransactionSchema = {
+	$id: "initiateTransaction",
+	type: "object",
+	properties: {
+		bpp_uri: {
+			type: "string",
+		},
+		city: {
+			type: "object",
+			properties: {
+				code: {
+					type: "string",
+					enum: ["std:080", "std:011"],
+				},
+			},
+		},
+		domain: {
+			type: "string",
+			enum: [
+				"ONDC:SRV11",
 			],
 		},
 	},

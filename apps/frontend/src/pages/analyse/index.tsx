@@ -8,17 +8,46 @@ import Typography from "@mui/material/Typography";
 import Fade from "@mui/material/Fade";
 import Grow from "@mui/material/Grow";
 import IconButton from "@mui/material/IconButton";
+import * as _ from "lodash";
+import axios from "axios";
+import { useEffect } from "react";
 
 export const Analyse = () => {
 	const theme = useTheme();
-  console.log("TOOL BAR", theme.mixins.toolbar.minHeight)
+	useEffect(() => {
+		async function fetchTransactionIds() {
+			const response = await axios.get(
+				`${import.meta.env.VITE_SERVER_URL}/scan`
+			);
+			console.log("RESPONSE", response)
+		}
+		fetchTransactionIds()
+
+		// return () => {
+		// 	second;
+		// };
+	}, []);
+
+	const requestTransaction = _.debounce(
+		async (
+			event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+		) => {
+			const response = await axios.get(
+				`${import.meta.env.VITE_SERVER_URL}/analyse/${event.target.value}`
+			);
+			console.log("RESPONSE", response);
+		},
+		500
+	);
 	return (
 		<Container
 			sx={{
 				// py: 2,
 				background: `url("./ondc_logo.png") no-repeat center center fixed`,
 				backgroundSize: "fit",
-				height: `calc(100% - ${theme.mixins.toolbar.minHeight as number + 10}px)`,
+				height: `calc(100% - ${
+					(theme.mixins.toolbar.minHeight as number) + 10
+				}px)`,
 				display: "flex",
 				flexDirection: "column",
 				alignItems: "center",
@@ -57,6 +86,7 @@ export const Analyse = () => {
 							sx={{ ml: 1, flex: 1, p: 0 }}
 							placeholder="Enter your Transaction ID"
 							inputProps={{ "aria-label": "Enter your Transaction ID" }}
+							onChange={requestTransaction}
 						/>
 
 						<IconButton type="button" sx={{ p: 1 }} aria-label="search">
