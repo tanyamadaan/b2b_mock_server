@@ -3,42 +3,98 @@ import { SERVICES_EXAMPLES_PATH, responseBuilder } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
+import { v4 as uuidv4 } from "uuid";
 
 export const onSelectController = (req: Request, res: Response) => {
-	const { scenario } = req.query;
-	switch (scenario) {
-		case "consultation":
-			onSelectConsultationController(req, res);
-			break;
-		case "service":
-			onSelectServiceController(req, res);
-			break;
-		default:
-			res.status(404).json({
-				message: {
-					ack: {
-						status: "NACK",
-					},
-				},
-				error: {
-					message: "Invalid scenario",
-				},
-			});
-			break;
-	}
+	onSelectConsultationController(req, res);
+
+	// const { scenario } = req.query;
+	// switch (scenario) {
+	// 	case "consultation":
+	// 		break;
+	// 	case "service":
+	// 		onSelectServiceController(req, res);
+	// 		break;
+	// 	default:
+	// 		res.status(404).json({
+	// 			message: {
+	// 				ack: {
+	// 					status: "NACK",
+	// 				},
+	// 			},
+	// 			error: {
+	// 				message: "Invalid scenario",
+	// 			},
+	// 		});
+	// 		break;
+	// }
 };
 
 const onSelectConsultationController = (req: Request, res: Response) => {
-	const { context } = req.body;
-	const file = fs.readFileSync(
-		path.join(SERVICES_EXAMPLES_PATH, "init/init_consultation.yaml")
-	);
-	const response = YAML.parse(file.toString());
+	const { context, message:
+		{ order: { provider, items, payments, fulfillments
+		} } } = req.body;
+
+	const { id, type, stops } = fulfillments[0]
+	// const file = fs.readFileSync(
+	// 	path.join(SERVICES_EXAMPLES_PATH, "init/init_consultation.yaml")
+	// );
+	// const response = YAML.parse(file.toString());
+	const responseMessage = {
+		order: {
+			provider: {
+				...provider,
+				locations: [{ id: uuidv4() }]
+			},
+			items: items.map(({ location_ids, ...items }: { location_ids: any }) => items),
+			billing: {
+				"name": "ONDC buyer",
+				"address": "22, Mahatma Gandhi Rd, Craig Park Layout, Ashok Nagar, Bengaluru, Karnataka 560001",
+				"state": {
+					"name": "Karnataka"
+				},
+				"city": {
+					"name": "Bengaluru"
+				},
+				"tax_id": "XXXXXXXXXXXXXXX",
+				"email": "nobody@nomail.com",
+				"phone": "9886098860"
+			},
+			fulfillments: [{
+				id,
+				type,
+				stops: [
+					{
+						id: stops[0].id,
+						"location": {
+							"gps": "12.974002,77.613458",
+							"address": "My House #, My buildin",
+							"city": {
+								"name": "Bengaluru"
+							},
+							"country": {
+								"code": "IND"
+							},
+							"area_code": "560001",
+							"state": {
+								"name": "Karnataka"
+							}
+						},
+						"contact": {
+							"phone": "9886098860"
+						},
+						time: stops[0].time
+					}
+				]
+			}],
+			payments
+		}
+	}
 	return responseBuilder(
 		res,
 		context,
-		response.value.message,
-		`${context.bap_uri}/init`,
+		responseMessage,
+		`${context.bpp_uri}/init`,
 		`init`,
 		"services"
 	);

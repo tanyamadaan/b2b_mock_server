@@ -173,80 +173,88 @@ export const B2B_SCENARIOS = {
 
 export const SERVICES_SCENARIOS = {
 	select: [
+		// {
+		// 	name: "Consultation",
+		// 	scenario: "consultation",
+		// },
 		{
-			name: "Consultation",
-			scenario: "consultation",
+			name: "Selections",
+			scenario: "selection",
 		},
-		{
-			name: "Consultation Reschedule",
-			scenario: "consultation-reschedule",
-		},
-		{
-			name: "Service",
-			scenario: "service",
-		},
-		{
-			name: "Without Schedule",
-			scenario: "without-schedule",
-		},
+		// {
+		// 	name: "Service",
+		// 	scenario: "service",
+		// },
+		// {
+		// 	name: "Without Schedule",
+		// 	scenario: "without-schedule",
+		// },
 	],
 	on_select: [
+		// {
+		// 	name: "Consultation Confirmed",
+		// 	scenario: "consultation-confirmed",
+		// },
+		// {
+		// 	name: "Consultation Rejected",
+		// 	scenario: "consultation-rejected",
+		// },
+		// {
+		// 	name: "Service Confirmed",
+		// 	scenario: "service-confirmed",
+		// },
+		// {
+		// 	name: "Service Rejected",
+		// 	scenario: "service-rejected",
+		// },
+		// {
+		// 	name: "NACK",
+		// 	scenario: "nack",
+		// },
 		{
-			name: "Consultation Confirmed",
-			scenario: "consultation-confirmed",
+			name:"Schedule Confirmed",
+			scenario:"schedule_confirmed"
 		},
 		{
-			name: "Consultation Rejected",
-			scenario: "consultation-rejected",
-		},
-		{
-			name: "Service Confirmed",
-			scenario: "service-confirmed",
-		},
-		{
-			name: "Service Rejected",
-			scenario: "service-rejected",
-		},
-		{
-			name: "NACK",
-			scenario: "nack",
-		},
+			name:"Schedule Rejected",
+			scenario:"schedule_rejected"
+		}
 	],
 	init: [
-		{
-			name: "Consultation",
-			scenario: "consultation",
-		},
+		// {
+		// 	name: "Consultation",
+		// 	scenario: "consultation",
+		// },
 		{
 			name: "Service",
 			scenario: "service",
 		},
 	],
 	on_init: [
-		{
-			name: "Consultation",
-			scenario: "consultation",
-		},
+		// {
+		// 	name: "Consultation",
+		// 	scenario: "consultation",
+		// },
 		{
 			name: "Service",
 			scenario: "service",
 		},
 	],
 	confirm: [
-		{
-			name: "Consultation",
-			scenario: "consultation",
-		},
+		// {
+		// 	name: "Consultation",
+		// 	scenario: "consultation",
+		// },
 		{
 			name: "Service",
 			scenario: "service",
 		},
 	],
 	on_confirm: [
-		{
-			name: "Consultation",
-			scenario: "consultation",
-		},
+		// {
+		// 	name: "Consultation",
+		// 	scenario: "consultation",
+		// },
 		{
 			name: "Service",
 			scenario: "service",

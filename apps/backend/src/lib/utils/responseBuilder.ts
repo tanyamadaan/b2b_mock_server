@@ -309,3 +309,72 @@ export const quoteCreator = (items: Item[]) => {
 		ttl: "P1D",
 	};
 };
+
+export const quoteCreatorService = (items: Item[]) => {
+	var breakup: any[] = [
+		{
+			title: "Service/Consultation",
+			price: {
+				currency: "INR",
+				value: "99",
+			},
+			tags: [
+				{
+					"descriptor": {
+						"code": "title"
+					},
+					"list": [
+						{
+							"descriptor": {
+								"code": "type"
+							},
+							"value": "item"
+						}
+					]
+				}
+			]
+		}, {
+			title: "tax",
+			price: {
+				currency: "INR",
+				value: "0",
+			},
+			tags: [
+				{
+					"descriptor": {
+						"code": "title"
+					},
+					"list": [
+						{
+							"descriptor": {
+								"code": "type"
+							},
+							"value": "tax"
+						}
+					]
+				}
+			]
+		}
+	];
+
+	items.forEach(item => {
+		breakup.forEach((each) => {
+			each.item = {
+				id: item.id,
+				price: {
+					currency: "INR",
+					value: "99",
+				}
+			}
+		})
+	})
+
+	return {
+		breakup,
+		price: {
+			currency: "INR",
+			value: (99 * items.length).toString(),
+		},
+		ttl: "P1D",
+	};
+};
