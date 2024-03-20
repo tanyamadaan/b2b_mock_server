@@ -99,6 +99,10 @@ export const responseBuilder = async (
 	res.setHeader("authorization", header);
 
 	if (sandboxMode) {
+		console.log("=======================")
+		console.log("TIME", Date.now())
+		console.log("ACTION", action)
+		console.log("TRANSACTION BEFORE:", totalTransaction)
 		if (totalTransaction?.logs) {
 			totalTransaction.logs = {
 				...totalTransaction.logs,
@@ -110,7 +114,7 @@ export const responseBuilder = async (
 		if (!totalTransaction.actions.includes(action)) {
 			totalTransaction.actions.push(action);
 		}
-		if (action.startsWith("on_")) {
+		// if (action.startsWith("on_")) {
 			try {
 				const response = await axios.post(uri, async, {
 					headers: {
@@ -193,24 +197,26 @@ export const responseBuilder = async (
 					async,
 				});
 			}
-		} else {
-			totalTransaction.actionStats = {
-				...totalTransaction.actionStats,
-				[action]: {
-					requestFromServer: true,
-					requestToServer: false,
-					cached: true,
-					npRequest: {
-						timestamp: ts.toISOString(),
-						request: async,
-					},
-				},
-			};
-			await redis.set(
-				(async.context! as any).transaction_id,
-				JSON.stringify(totalTransaction)
-			);
-		}
+		// } else {
+		// 	totalTransaction.actionStats = {
+		// 		...totalTransaction.actionStats,
+		// 		[action]: {
+		// 			requestFromServer: true,
+		// 			requestToServer: false,
+		// 			cached: true,
+		// 			npRequest: {
+		// 				timestamp: ts.toISOString(),
+		// 				request: async,
+		// 			},
+		// 		},
+		// 	};
+		// 	await redis.set(
+		// 		(async.context! as any).transaction_id,
+		// 		JSON.stringify(totalTransaction)
+		// 	);
+		// }
+		console.log("TRANSACTION AFTER:", totalTransaction)
+		console.log("**********************")
 
 		logger.info({ message: { ack: { status: "ACK" } } });
 		return res.json({
