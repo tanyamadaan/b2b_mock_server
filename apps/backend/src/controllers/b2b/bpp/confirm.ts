@@ -1,8 +1,5 @@
 import { Request, Response } from "express";
-import {
-	responseBuilder,
-	B2B_EXAMPLES_PATH,
-} from "../../../lib/utils";
+import { responseBuilder, B2B_EXAMPLES_PATH } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
@@ -75,7 +72,9 @@ export const confirmDomesticController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		`${context.bap_uri}/on_confirm`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
+		}`,
 		`on_confirm`,
 		"b2b"
 	);
@@ -92,7 +91,9 @@ export const confirmDomesticNonRfq = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_confirm`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
+		}`,
 		`on_confirm`,
 		"b2b"
 	);
@@ -109,7 +110,9 @@ export const confirmExports = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_confirm`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
+		}`,
 		`on_confirm`,
 		"b2b"
 	);
@@ -126,7 +129,9 @@ export const confirmDomesticRejected = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_confirm`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
+		}`,
 		`on_confirm`,
 		"b2b"
 	);

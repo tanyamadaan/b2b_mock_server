@@ -5,16 +5,16 @@ import path from "path";
 import YAML from "yaml";
 
 export const updateController = (req: Request, res: Response) => {
-	const { scenario } = req.query
+	const { scenario } = req.query;
 	switch (scenario) {
-		case 'fulfillment':
-			updateFulfillmentController(req, res)
+		case "fulfillment":
+			updateFulfillmentController(req, res);
 			break;
-		case 'prepaid':
-			updatePrepaidController(req, res)
+		case "prepaid":
+			updatePrepaidController(req, res);
 			break;
-		case 'prepaid-bap':
-			updatePrepaidBAPController(req, res)
+		case "prepaid-bap":
+			updatePrepaidBAPController(req, res);
 			break;
 		default:
 			res.status(404).json({
@@ -29,9 +29,7 @@ export const updateController = (req: Request, res: Response) => {
 			});
 			break;
 	}
-}
-
-
+};
 
 export const updateFulfillmentController = (req: Request, res: Response) => {
 	const file = fs.readFileSync(
@@ -43,7 +41,9 @@ export const updateFulfillmentController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bap_uri,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_update" : "/on_update"
+		}`,
 		`on_update`,
 		"b2b"
 	);
@@ -59,7 +59,9 @@ export const updatePrepaidController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_update`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_update" : "/on_update"
+		}`,
 		`on_update`,
 		"b2b"
 	);
@@ -75,7 +77,9 @@ export const updatePrepaidBAPController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_update`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_update" : "/on_update"
+		}`,
 		`on_update`,
 		"b2b"
 	);

@@ -3,7 +3,7 @@ import {
 	quoteCreator,
 	B2B_EXAMPLES_PATH,
 	responseBuilder,
-	logger
+	logger,
 } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
@@ -43,7 +43,10 @@ export const selectController = (req: Request, res: Response) => {
 };
 
 export const selectDomesticController = (req: Request, res: Response) => {
-	logger.info({type: "response", message: {action: req.body.context, mode: req.query.mode }});
+	logger.info({
+		type: "response",
+		message: { action: req.body.context, mode: req.query.mode },
+	});
 
 	const { context, message } = req.body;
 	const { ttl, ...provider } = message.order.provider;
@@ -66,7 +69,7 @@ export const selectDomesticController = (req: Request, res: Response) => {
 					...remaining,
 				})
 			),
-			fulfillments: message.order.fulfillments.map(({id, ...each}: any) => ({
+			fulfillments: message.order.fulfillments.map(({ id, ...each }: any) => ({
 				id,
 				tracking: false,
 				"@ondc/org/provider_name": "ONDC Mock Server",
@@ -74,9 +77,9 @@ export const selectDomesticController = (req: Request, res: Response) => {
 				"@ondc/org/TAT": "P7D",
 				state: {
 					descriptor: {
-						code: "Serviceable"
-					}
-				}
+						code: "Serviceable",
+					},
+				},
 			})),
 			quote: quoteCreator(message.order.items),
 		},
@@ -85,7 +88,9 @@ export const selectDomesticController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		`${context.bap_uri}/on_select`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		}`,
 		`on_select`,
 		"b2b"
 	);
@@ -102,7 +107,9 @@ const selectDomesticNonRfqController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_select`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		}`,
 		`on_select`,
 		"b2b"
 	);
@@ -124,7 +131,9 @@ export const selectDomesticSelfPickupController = (
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_select`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		}`,
 		`on_select`,
 		"b2b"
 	);
@@ -140,7 +149,9 @@ export const selectExportsController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_select`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		}`,
 		`on_select`,
 		"b2b"
 	);
@@ -156,7 +167,9 @@ export const selectNonServiceableController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_select`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		}`,
 		`on_select`,
 		"b2b"
 	);
@@ -178,7 +191,9 @@ export const selectQuantityUnavailableController = (
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_select`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		}`,
 		`on_select`,
 		"b2b"
 	);
@@ -197,7 +212,9 @@ export const selectPrepaidBapNonRFQController = (
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_select`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		}`,
 		`on_select`,
 		"b2b"
 	);
@@ -213,7 +230,9 @@ export const selectPrepaidBapController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_select`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		}`,
 		`on_select`,
 		"b2b"
 	);

@@ -69,7 +69,9 @@ export const initDomesticController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		`${context.bap_uri}/on_init`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_init" : "/on_init"
+		}`,
 		`on_init`,
 		"b2b"
 	);
@@ -85,7 +87,9 @@ export const initDomesticNonRfq = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_init`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_init" : "/on_init"
+		}`,
 		`on_init`,
 		"b2b"
 	);
@@ -105,7 +109,9 @@ export const initDomesticPaymentBppNonRfq = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_init`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_init" : "/on_init"
+		}`,
 		`on_init`,
 		"b2b"
 	);
@@ -122,7 +128,9 @@ export const initDomesticSelfPickup = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_init`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_init" : "/on_init"
+		}`,
 		`on_init`,
 		"b2b"
 	);
@@ -139,7 +147,9 @@ export const initExports = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_init`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_init" : "/on_init"
+		}`,
 		`on_init`,
 		"b2b"
 	);
@@ -156,7 +166,9 @@ export const initRejectRfq = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_init`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_init" : "/on_init"
+		}`,
 		`on_init`,
 		"b2b"
 	);

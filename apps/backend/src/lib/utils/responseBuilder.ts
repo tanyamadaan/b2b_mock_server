@@ -116,11 +116,6 @@ export const responseBuilder = async (
 		}
 		// if (action.startsWith("on_")) {
 			try {
-				const response = await axios.post(uri, async, {
-					headers: {
-						authorization: header,
-					},
-				});
 				totalTransaction.actionStats = {
 					...totalTransaction.actionStats,
 					[action]: {
@@ -130,17 +125,42 @@ export const responseBuilder = async (
 							timestamp: ts.toISOString(),
 							request: async,
 						},
-						npResponse: {
-							timestamp: new Date().toISOString(),
-							response: response.data,
-							ack: true,
-						},
+						// npResponse: {
+						// 	timestamp: new Date().toISOString(),
+						// 	response: response.data,
+						// 	ack: true,
+						// },
 					},
 				};
 				await redis.set(
 					(async.context! as any).transaction_id,
 					JSON.stringify(totalTransaction)
 				);
+				const response = await axios.post(uri, async, {
+					headers: {
+						authorization: header,
+					},
+				});
+				// totalTransaction.actionStats = {
+				// 	...totalTransaction.actionStats,
+				// 	[action]: {
+				// 		requestFromServer: true,
+				// 		requestToServer: false,
+				// 		npRequest: {
+				// 			timestamp: ts.toISOString(),
+				// 			request: async,
+				// 		},
+				// 		npResponse: {
+				// 			timestamp: new Date().toISOString(),
+				// 			response: response.data,
+				// 			ack: true,
+				// 		},
+				// 	},
+				// };
+				// await redis.set(
+				// 	(async.context! as any).transaction_id,
+				// 	JSON.stringify(totalTransaction)
+				// );
 			} catch (error) {
 				console.log("ERROR", error);
 				logger.error({
