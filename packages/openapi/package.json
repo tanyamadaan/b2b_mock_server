@@ -11,6 +11,7 @@
   "exports": {
     "./constants": "./constants.ts",
     "./auth.json": "./openapi/auth/openapi.json",
+    "./misc.json": "./openapi/misc/openapi.json",
     "./retail-b2b.json": "./openapi/retail-b2b/build/swagger.json",
     "./services.json": "./openapi/services/build/swagger.json"
   },

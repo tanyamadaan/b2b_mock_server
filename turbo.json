@@ -7,7 +7,7 @@
 			"persistent": true
 		},
 		"start:nginx": {
-			"cache": true,
+			"cache": false,
 			"persistent": false
 		},
 		"swagger:gen": {

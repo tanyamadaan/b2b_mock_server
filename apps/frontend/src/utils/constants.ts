@@ -31,3 +31,22 @@ export const NEXT_ACTION = {
 };
 
 
+export const B2B_DOMAINS = [
+	"ONDC:RET1A",
+	"ONDC:RET1B",
+	"ONDC:RET1C",
+	"ONDC:RET1D",
+	"ONDC:RET10",
+	"ONDC:RET12",
+	"ONDC:RET13",
+	"ONDC:RET14"
+]
+
+export const SERVICES_DOMAINS = [
+	"ONDC:SRV11",
+]
+
+export const CITY_CODE = [
+	"std:080",
+	"std:011"
+]

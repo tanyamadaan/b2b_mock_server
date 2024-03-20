@@ -1,15 +1,15 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Layout } from "./layout/Layout";
-import { Mock, Sandbox, Swagger } from "./pages";
+import { Analyse, Landing, Mock, Sandbox, Swagger } from "./pages";
 import {
 	AuthSwagger,
 	B2BSwagger,
+	MiscSwagger,
 	ServicesSwagger,
 } from "./pages/swagger/domains";
 import { MockProvider, SandboxProvider } from "./utils/context";
 import { B2BMock, ServicesMock } from "./pages/mock/domains";
 import { B2BSandbox, ServicesSandbox } from "./pages/sandbox/domains";
-import { Landing } from "./pages/landing";
 
 const router = createBrowserRouter([
 	{
@@ -63,7 +63,12 @@ const router = createBrowserRouter([
 					{ path: "b2b", Component: B2BSwagger },
 					{ path: "services", Component: ServicesSwagger },
 					{ path: "auth", Component: AuthSwagger },
+					{ path: "misc", Component: MiscSwagger },
 				],
+			},
+			{
+				path: "/analyse",
+				Component: Analyse,
 			},
 		],
 	},

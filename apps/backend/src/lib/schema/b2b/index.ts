@@ -126,7 +126,7 @@ export const b2bSchemaValidator =
 	};
 
 export const masterSchemaValidator = (
-	req: Request,
+	_req: Request,
 	res: Response,
 	next: NextFunction
 ) => {
