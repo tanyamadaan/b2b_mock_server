@@ -99,10 +99,10 @@ export const responseBuilder = async (
 	res.setHeader("authorization", header);
 
 	if (sandboxMode) {
-		console.log("=======================")
-		console.log("TIME", Date.now())
-		console.log("ACTION", action)
-		console.log("TRANSACTION BEFORE:", totalTransaction)
+		logger.info("=======================")
+		logger.info("TIME", Date.now())
+		logger.info("ACTION", action)
+		logger.info("TRANSACTION BEFORE:", totalTransaction)
 		if (totalTransaction?.logs) {
 			totalTransaction.logs = {
 				...totalTransaction.logs,
@@ -235,8 +235,8 @@ export const responseBuilder = async (
 		// 		JSON.stringify(totalTransaction)
 		// 	);
 		// }
-		console.log("TRANSACTION AFTER:", totalTransaction)
-		console.log("**********************")
+		logger.info("TRANSACTION AFTER:", totalTransaction)
+		logger.info("**********************")
 
 		logger.info({ message: { ack: { status: "ACK" } } });
 		return res.json({

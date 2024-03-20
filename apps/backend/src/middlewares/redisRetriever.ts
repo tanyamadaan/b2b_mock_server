@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { TransactionType, redis } from "../lib/utils";
+import { TransactionType, logger, redis } from "../lib/utils";
 
 export const redisRetriever = async (
 	req: Request,
@@ -15,11 +15,11 @@ export const redisRetriever = async (
 	} = req.body;
 	const transaction = await redis.get(transaction_id);
 	let logs: TransactionType;
-	console.log("---------------------------------")
-	console.log("TIME:", Date.now())
-	console.log("FOR ACTION:", action)
-	console.log("PICKED FROM REDIS", transaction)
-	console.log("---------------------------------")
+	logger.info("---------------------------------")
+	logger.info("TIME:", Date.now())
+	logger.info("FOR ACTION:", action)
+	logger.info("PICKED FROM REDIS", transaction)
+	logger.info("---------------------------------")
 
 	if (!transaction) {
 		logs = {
