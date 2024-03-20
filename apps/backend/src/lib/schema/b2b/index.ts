@@ -125,38 +125,38 @@ export const b2bSchemaValidator =
 		next();
 	};
 
-export const masterSchemaValidator = (
-	_req: Request,
-	res: Response,
-	next: NextFunction
-) => {
-	const ajv = new Ajv({
-		allErrors: true,
-		strict: false,
-		strictRequired: false,
-		strictTypes: false,
-		$data: true,
-	});
-	addFormats(ajv);
+// export const masterSchemaValidator = (
+// 	_req: Request,
+// 	res: Response,
+// 	next: NextFunction
+// ) => {
+// 	const ajv = new Ajv({
+// 		allErrors: true,
+// 		strict: false,
+// 		strictRequired: false,
+// 		strictTypes: false,
+// 		$data: true,
+// 	});
+// 	addFormats(ajv);
 
-	require("ajv-errors")(ajv);
-	var validate = ajv
-		.addSchema(searchSchema)
-		.addSchema(onSearchSchema)
-		.addSchema(selectSchema)
-		.addSchema(onSelectSchema)
-		.addSchema(initSchema)
-		.addSchema(onInitSchema)
-		.addSchema(confirmSchema)
-		.addSchema(onConfirmSchema)
-		.addSchema(updateSchema)
-		.addSchema(onUpdateSchema)
-		.addSchema(statusSchema)
-		.addSchema(onStatusSchema)
-		.compile(masterSchema);
+// 	require("ajv-errors")(ajv);
+// 	var validate = ajv
+// 		.addSchema(searchSchema)
+// 		.addSchema(onSearchSchema)
+// 		.addSchema(selectSchema)
+// 		.addSchema(onSelectSchema)
+// 		.addSchema(initSchema)
+// 		.addSchema(onInitSchema)
+// 		.addSchema(confirmSchema)
+// 		.addSchema(onConfirmSchema)
+// 		.addSchema(updateSchema)
+// 		.addSchema(onUpdateSchema)
+// 		.addSchema(statusSchema)
+// 		.addSchema(onStatusSchema)
+// 		.compile(masterSchema);
 
-	const transaction: TransactionType = res.locals.logs;
-	const isValid = validate(transaction.logs);
-	if (!isValid) console.log("[TRANSACTION ERROR]::", validate.errors);
-	next();
-};
+// 	const transaction: TransactionType = res.locals.logs;
+// 	const isValid = validate(transaction.logs);
+// 	if (!isValid) console.log("[TRANSACTION ERROR]::", validate.errors);
+// 	next();
+// };

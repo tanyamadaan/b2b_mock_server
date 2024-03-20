@@ -74,7 +74,7 @@ export const onSearchDomesticController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		`${context.bpp_uri}/select`,
+		`${context.bpp_uri}${context.bpp_uri.endsWith("/") ? "select" : "/select"}`,
 		`select`,
 		"b2b"
 	);
@@ -90,7 +90,7 @@ export const onSearchDomesticNonRfqController = (req: Request, res: Response) =>
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bpp_uri}/select`,
+		`${req.body.context.bpp_uri}${ req.body.context.bpp_uri.endsWith("/") ? "select" : "/select"}`,
 		`select`,
 		"b2b"
 	);
@@ -106,7 +106,7 @@ export const onSearchDomesticSelfPickupController = (req: Request, res: Response
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bpp_uri}/select`,
+		`${req.body.context.bpp_uri}${ req.body.context.bpp_uri.endsWith("/") ? "select" : "/select"}`,
 		`select`,
 		"b2b"
 	);
@@ -122,7 +122,7 @@ export const onSearchExportsController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bpp_uri}/select`,
+		`${req.body.context.bpp_uri}${ req.body.context.bpp_uri.endsWith("/") ? "select" : "/select"}`,
 		`select`,
 		"b2b"
 	);
@@ -138,7 +138,7 @@ export const onSearchBAPchatController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bpp_uri}/select`,
+		`${req.body.context.bpp_uri}${ req.body.context.bpp_uri.endsWith("/") ? "select" : "/select"}`,
 		`select`,
 		"b2b"
 	);

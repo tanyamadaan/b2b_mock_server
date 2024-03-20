@@ -56,7 +56,7 @@ export const onSelectDomesticController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		`${context.bpp_uri}/init`,
+		`${context.bpp_uri}${context.bpp_uri.endsWith("/") ? "init" : "/init"}`,
 		`init`,
 		"b2b"
 	);
@@ -75,7 +75,7 @@ export const onSelectDomesticNonRfqController = (
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bpp_uri}/init`,
+		`${req.body.context.bpp_uri}${ req.body.context.bpp_uri.endsWith("/") ? "init" : "/init"}`,
 		`init`,
 		"b2b"
 	);
@@ -91,7 +91,7 @@ export const onSelectExportsController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bpp_uri}/init`,
+		`${req.body.context.bpp_uri}${ req.body.context.bpp_uri.endsWith("/") ? "init" : "/init"}`,
 		`init`,
 		"b2b"
 	);
@@ -110,7 +110,7 @@ export const onSelectDomesticBPPPaymentController = (
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bpp_uri}/init`,
+		`${req.body.context.bpp_uri}${ req.body.context.bpp_uri.endsWith("/") ? "init" : "/init"}`,
 		`init`,
 		"b2b"
 	);

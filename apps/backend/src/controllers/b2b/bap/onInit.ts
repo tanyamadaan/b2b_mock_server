@@ -89,7 +89,9 @@ export const onInitDomesticController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		`${context.bpp_uri}/confirm`,
+		`${context.bpp_uri}${
+			context.bpp_uri.endsWith("/") ? "confirm" : "/confirm"
+		}`,
 		`confirm`,
 		"b2b"
 	);
@@ -105,7 +107,9 @@ export const onInitDomesticNonRfqController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bpp_uri,
+		`${req.body.context.bpp_uri}${
+			req.body.context.bpp_uri.endsWith("/") ? "confirm" : "/confirm"
+		}`,
 		`confirm`,
 		"b2b"
 	);
@@ -120,7 +124,9 @@ export const onInitExportsController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bpp_uri,
+		`${req.body.context.bpp_uri}${
+			req.body.context.bpp_uri.endsWith("/") ? "confirm" : "/confirm"
+		}`,
 		`confirm`,
 		"b2b"
 	);
@@ -138,7 +144,9 @@ export const onInitPrepaidBapNonRFQController = (
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bpp_uri,
+		`${req.body.context.bpp_uri}${
+			req.body.context.bpp_uri.endsWith("/") ? "confirm" : "/confirm"
+		}`,
 		`confirm`,
 		"b2b"
 	);
@@ -153,7 +161,9 @@ export const onInitPrepaidBapRFQController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		req.body.context.bpp_uri,
+		`${req.body.context.bpp_uri}${
+			req.body.context.bpp_uri.endsWith("/") ? "confirm" : "/confirm"
+		}`,
 		`confirm`,
 		"b2b"
 	);

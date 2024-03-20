@@ -6,28 +6,28 @@ import YAML from "yaml";
 import { responseBuilder, B2B_EXAMPLES_PATH } from "../../../lib/utils";
 
 export const statusController = (req: Request, res: Response) => {
-	const { scenario } = req.query
+	const { scenario } = req.query;
 	switch (scenario) {
-		case 'delivered':
-			statusDeliveredController(req, res)
+		case "delivered":
+			statusDeliveredController(req, res);
 			break;
-		case 'out-for-delivery':
-			statusOutForDeliveryController(req, res)
+		case "out-for-delivery":
+			statusOutForDeliveryController(req, res);
 			break;
-		case 'picked-up':
-			statusPickedUpController(req, res)
+		case "picked-up":
+			statusPickedUpController(req, res);
 			break;
-		case 'proforma-invoice':
-			statusProformaInvoiceController(req, res)
+		case "proforma-invoice":
+			statusProformaInvoiceController(req, res);
 			break;
-		case 'bpp-payment-error':
-			statusBPPpaymentErrorController(req, res)
+		case "bpp-payment-error":
+			statusBPPpaymentErrorController(req, res);
 			break;
-		case 'bpp-payment':
-			statusBPPpaymentController(req, res)
+		case "bpp-payment":
+			statusBPPpaymentController(req, res);
 			break;
-		case 'self-picked-up':
-			statusSelfPickedUpController(req, res)
+		case "self-picked-up":
+			statusSelfPickedUpController(req, res);
 			break;
 		default:
 			res.status(404).json({
@@ -42,7 +42,7 @@ export const statusController = (req: Request, res: Response) => {
 			});
 			break;
 	}
-}
+};
 
 export const statusDeliveredController = (req: Request, res: Response) => {
 	const file = fs.readFileSync(
@@ -55,7 +55,9 @@ export const statusDeliveredController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_status`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+		}`,
 		`on_status`,
 		"b2b"
 	);
@@ -71,7 +73,9 @@ export const statusOutForDeliveryController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_status`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+		}`,
 		`on_status`,
 		"b2b"
 	);
@@ -87,7 +91,9 @@ export const statusPickedUpController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_status`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+		}`,
 		`on_status`,
 		"b2b"
 	);
@@ -107,7 +113,9 @@ export const statusProformaInvoiceController = (
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_status`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+		}`,
 		`on_status`,
 		"b2b"
 	);
@@ -127,16 +135,15 @@ export const statusBPPpaymentErrorController = (
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_status`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+		}`,
 		`on_status`,
 		"b2b"
 	);
 };
 
-export const statusBPPpaymentController = (
-	req: Request,
-	res: Response
-) => {
+export const statusBPPpaymentController = (req: Request, res: Response) => {
 	const file = fs.readFileSync(
 		path.join(B2B_EXAMPLES_PATH, "on_status/on_status_BPP_payment.yaml")
 	);
@@ -147,16 +154,15 @@ export const statusBPPpaymentController = (
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_status`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+		}`,
 		`on_status`,
 		"b2b"
 	);
 };
 
-export const statusSelfPickedUpController = (
-	req: Request,
-	res: Response
-) => {
+export const statusSelfPickedUpController = (req: Request, res: Response) => {
 	const file = fs.readFileSync(
 		path.join(B2B_EXAMPLES_PATH, "on_status/on_status_self_picked_up.yaml")
 	);
@@ -167,7 +173,9 @@ export const statusSelfPickedUpController = (
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_status`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+		}`,
 		`on_status`,
 		"b2b"
 	);

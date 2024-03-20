@@ -3,10 +3,7 @@ import { Request, Response } from "express";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
-import {
-	B2B_EXAMPLES_PATH,
-	responseBuilder,
-} from "../../../lib/utils";
+import { B2B_EXAMPLES_PATH, responseBuilder } from "../../../lib/utils";
 import axios from "axios";
 
 export const searchController = async (req: Request, res: Response) => {
@@ -98,7 +95,9 @@ export const searchController = async (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		onSearch.value.message,
-		`${req.body.context.bap_uri}/on_search`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_search" : "/on_search"
+		}`,
 		`on_search`,
 		"b2b"
 	);

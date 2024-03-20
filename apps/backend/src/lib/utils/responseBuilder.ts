@@ -52,7 +52,7 @@ export const responseBuilder = async (
 	action: string,
 	domain: "b2b" | "services"
 ) => {
-	var totalTransaction: TransactionType = res.locals.logs;
+	var transaction: TransactionType = res.locals.logs;
 	res.locals = {};
 	// var ts = new Date((reqContext as any).timestamp);
 	var ts = new Date();
@@ -99,118 +99,99 @@ export const responseBuilder = async (
 	res.setHeader("authorization", header);
 
 	if (sandboxMode) {
-		if (totalTransaction?.logs) {
-			totalTransaction.logs = {
-				...totalTransaction.logs,
-				[action]: async,
+		logger.info("=======================");
+		logger.info("TIME", Date.now());
+		logger.info("ACTION", action);
+		// logger.info("TRANSACTION BEFORE:", transaction)
+
+		// if (action.startsWith("on_")) {
+		var log: TransactionType = {
+			request: async,
+		};
+		await redis.set(
+			`${(async.context! as any).transaction_id}-${action}-from-server`,
+			JSON.stringify(log)
+		);
+		try {
+			const response = await axios.post(uri, async, {
+				headers: {
+					authorization: header,
+				},
+			});
+
+			log.response = {
+				timestamp: new Date().toISOString(),
+				response: response.data,
 			};
-		} else {
-			totalTransaction = { actions: [action], logs: { [action]: async } };
-		}
-		if (!totalTransaction.actions.includes(action)) {
-			totalTransaction.actions.push(action);
-		}
-		if (action.startsWith("on_")) {
-			try {
-				const response = await axios.post(uri, async, {
-					headers: {
-						authorization: header,
-					},
-				});
-				totalTransaction.actionStats = {
-					...totalTransaction.actionStats,
-					[action]: {
-						requestFromServer: true,
-						requestToServer: false,
-						npRequest: {
-							timestamp: ts.toISOString(),
-							request: async,
-						},
-						npResponse: {
-							timestamp: new Date().toISOString(),
-							response: response.data,
-							ack: true,
-						},
-					},
-				};
-				await redis.set(
-					(async.context! as any).transaction_id,
-					JSON.stringify(totalTransaction)
-				);
-			} catch (error) {
-				console.log("ERROR", error);
-				logger.error({
-					type: "response",
-					message: {
-						message: "ERROR OCCURRED WHILE PINGING SANDBOX RESPONSE",
-						error: error,
-					},
-				});
-				logger.error({
-					type: "response",
-					message: {
-						message: { ack: { status: "NACK" } },
-						error: {
-							message: (error as any).response.data,
-						},
-					},
-				});
-				const response = {
-					message: {
-						ack: {
-							status: "NACK",
-						},
-					},
+
+			await redis.set(
+				`${(async.context! as any).transaction_id}-${action}-from-server`,
+				JSON.stringify(log)
+			);
+		} catch (error) {
+			console.log("ERROR", error);
+			logger.error({
+				type: "response",
+				message: {
+					message: "ERROR OCCURRED WHILE PINGING SANDBOX RESPONSE",
+					error: error,
+				},
+			});
+			logger.error({
+				type: "response",
+				message: {
+					message: { ack: { status: "NACK" } },
 					error: {
-						// message: (error as any).message,
 						message: (error as any).response.data,
 					},
-				};
-				totalTransaction.actionStats = {
-					...totalTransaction.actionStats,
-					[action]: {
-						requestFromServer: true,
-						requestToServer: false,
-						npRequest: {
-							timestamp: ts.toISOString(),
-							request: async,
-						},
-						npResponse: {
-							timestamp: new Date().toISOString(),
-							response,
-							ack: false,
-						},
-					},
-				};
-
-				await redis.set(
-					(async.context! as any).transaction_id,
-					JSON.stringify(totalTransaction)
-				);
-
-				return res.json({
-					...response,
-					async,
-				});
-			}
-		} else {
-			totalTransaction.actionStats = {
-				...totalTransaction.actionStats,
-				[action]: {
-					requestFromServer: true,
-					requestToServer: false,
-					cached: true,
-					npRequest: {
-						timestamp: ts.toISOString(),
-						request: async,
+				},
+			});
+			const response = {
+				message: {
+					ack: {
+						status: "NACK",
 					},
 				},
+				error: {
+					// message: (error as any).message,
+					message: (error as any).response.data,
+				},
 			};
+			log.response = {
+				timestamp: new Date().toISOString(),
+				response: response.message,
+			};
+
 			await redis.set(
-				(async.context! as any).transaction_id,
-				JSON.stringify(totalTransaction)
+				`${(async.context! as any).transaction_id}-${action}-from-server`,
+				JSON.stringify(log)
 			);
+
+			return res.json({
+				...response,
+				async,
+			});
 		}
+		// } else {
+		// 	transaction.actionStats = {
+		// 		...transaction.actionStats,
+		// 		[action]: {
+		// 			requestFromServer: true,
+		// 			requestToServer: false,
+		// 			cached: true,
+		// 			npRequest: {
+		// 				timestamp: ts.toISOString(),
+		// 				request: async,
+		// 			},
+		// 		},
+		// 	};
+		// 	await redis.set(
+		// 		(async.context! as any).transaction_id,
+		// 		JSON.stringify(transaction)
+		// 	);
+		// }
+		logger.info("TRANSACTION AFTER:", log);
+		logger.info("**********************");
 
 		logger.info({ message: { ack: { status: "ACK" } } });
 		return res.json({
