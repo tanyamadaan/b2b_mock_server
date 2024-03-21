@@ -11,6 +11,7 @@ import IconButton from "@mui/material/IconButton";
 import * as _ from "lodash";
 import axios from "axios";
 import { useEffect } from "react";
+import { hexToRgb } from "@mui/material/styles";
 
 export const Analyse = () => {
 	const theme = useTheme();
@@ -19,9 +20,9 @@ export const Analyse = () => {
 			const response = await axios.get(
 				`${import.meta.env.VITE_SERVER_URL}/scan`
 			);
-			console.log("RESPONSE", response)
+			console.log("RESPONSE", response);
 		}
-		fetchTransactionIds()
+		fetchTransactionIds();
 
 		// return () => {
 		// 	second;
@@ -95,6 +96,33 @@ export const Analyse = () => {
 					</Box>
 				</Paper>
 			</Grow>
+			<Paper
+				sx={{
+					mt: 10,
+					minWidth: "100%",
+					p: 1,
+					borderRadius: theme.shape.borderRadius * 2,
+					background: hexToRgb(theme.palette.background.paper).replace(
+						")",
+						",0.18)"
+					),
+					backdropFilter: `blur(8.5px)`,
+					_webkitBackDropFilter: `blur(8.5px)`,
+				}}
+				elevation={5}
+			>
+				<Box
+					sx={{
+						borderStyle: "solid",
+						borderColor: theme.palette.divider,
+						borderRadius: theme.shape.borderRadius * 2,
+						borderWidth: 1,
+						p: 1,
+					}}
+				>
+					<Typography> Hello World</Typography>
+				</Box>
+			</Paper>
 		</Container>
 	);
 };
