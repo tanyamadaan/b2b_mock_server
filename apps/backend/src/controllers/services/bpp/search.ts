@@ -16,7 +16,9 @@ export const searchController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}/on_search`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_search" : "/on_search"
+		}`,
 		`on_search`,
 		"services"
 	);

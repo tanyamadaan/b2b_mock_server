@@ -94,7 +94,7 @@ const onSelectConsultationController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		`${context.bpp_uri}/init`,
+		`${req.body.context.bpp_uri}${ req.body.context.bpp_uri.endsWith("/") ? "init" : "/init"}`,
 		`init`,
 		"services"
 	);
@@ -113,7 +113,7 @@ const onSelectServiceController = (
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/init`,
+		`${req.body.context.bpp_uri}${ req.body.context.bpp_uri.endsWith("/") ? "init" : "/init"}`,
 		`init`,
 		"services"
 	);
