@@ -23,6 +23,7 @@ export const InitiateRequestSection = ({
 
 	const handleSubmit = async () => {
 		// console.log("Values", bppUri, domain, cityCode);
+		setTransactionId(undefined);
 		try {
 			const response = await axios.post(
 				`${import.meta.env.VITE_SERVER_URL}/initiate/${domain}`,

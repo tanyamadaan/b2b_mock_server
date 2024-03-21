@@ -7,6 +7,7 @@ import {
 	SERVICES_EXAMPLES_PATH,
 	createAuthHeader,
 	logger,
+	redis,
 } from "../../lib/utils";
 import axios from "axios";
 import fs from "fs";
@@ -39,24 +40,27 @@ export const initiateB2bController = async (req: Request, res: Response) => {
 			bap_uri: B2B_BAP_MOCKSERVER_URL,
 		},
 	};
-	// console.log("SEARCH", search);
 
 	const header = await createAuthHeader(req.body);
 	try {
+		await redis.set(
+			`${transaction_id}-${search}-from-server`,
+			JSON.stringify(search)
+		);
+
 		await axios.post(`${bpp_uri}/search`, search, {
 			headers: {
 				"X-Gateway-Authorization": header,
 				authorization: header,
 			},
 		});
-
 		return res.json({
 			message: {
 				ack: {
 					status: "ACK",
 				},
 			},
-			transaction_id
+			transaction_id,
 		});
 	} catch (error) {
 		logger.error({ type: "response", message: error });
@@ -74,8 +78,10 @@ export const initiateB2bController = async (req: Request, res: Response) => {
 	}
 };
 
-
-export const initiateServicesController = async (req: Request, res: Response) => {
+export const initiateServicesController = async (
+	req: Request,
+	res: Response
+) => {
 	const { bpp_uri, city, domain } = req.body;
 
 	var file = fs.readFileSync(
@@ -100,10 +106,13 @@ export const initiateServicesController = async (req: Request, res: Response) =>
 			bap_uri: SERVICES_BAP_MOCKSERVER_URL,
 		},
 	};
-	console.log("SEARCH", search);
 
 	const header = await createAuthHeader(req.body);
 	try {
+		await redis.set(
+			`${transaction_id}-${search}-from-server`,
+			JSON.stringify(search)
+		);
 		await axios.post(`${bpp_uri}/search`, search, {
 			headers: {
 				"X-Gateway-Authorization": header,
@@ -117,7 +126,7 @@ export const initiateServicesController = async (req: Request, res: Response) =>
 					status: "ACK",
 				},
 			},
-			transaction_id
+			transaction_id,
 		});
 	} catch (error) {
 		logger.error({ type: "response", message: error });
