@@ -77,7 +77,9 @@ export const confirmConsultationController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		`${context.bap_uri}/on_confirm`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
+		}`,
 		`on_confirm`,
 		"services"
 	);
@@ -94,7 +96,9 @@ export const confirmServiceController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/on_confirm`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
+		}`,
 		`on_confirm`,
 		"services"
 	);

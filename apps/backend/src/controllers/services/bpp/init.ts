@@ -84,7 +84,9 @@ const initConsultationController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		`${context.bap_uri}/on_init`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_init" : "/on_init"
+		}`,
 		`on_init`,
 		"services"
 	);
@@ -100,7 +102,9 @@ const initServiceController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/on_init`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_init" : "/on_init"
+		}`,
 		`on_init`,
 		"services"
 	);

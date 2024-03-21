@@ -84,7 +84,7 @@ const onSearchSelectionController = (req: Request, res: Response) => {
 		res,
 		context,
 		resposneMessage,
-		`${context.bpp_uri}/select`,
+		`${context.bpp_uri}${context.bpp_uri.endsWith("/") ? "select" : "/select"}`,
 		`select`,
 		"services"
 	);
@@ -103,7 +103,7 @@ const onSearchConsultationController = (
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/select`,
+		`${context.bpp_uri}${context.bpp_uri.endsWith("/") ? "select" : "/select"}`,
 		`select`,
 		"services"
 	);
@@ -122,7 +122,7 @@ const onSearchServiceController = (
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/select`,
+		`${context.bpp_uri}${context.bpp_uri.endsWith("/") ? "select" : "/select"}`,
 		`select`,
 		"services"
 	);
@@ -138,7 +138,7 @@ const onSearchWithoutScheduleController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/select`,
+		`${context.bpp_uri}${context.bpp_uri.endsWith("/") ? "select" : "/select"}`,
 		`select`,
 		"services"
 	);

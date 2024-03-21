@@ -88,7 +88,9 @@ const selectConsultationConfirmController = (
 		res,
 		context,
 		responseMessage,
-		`${context.bap_uri}/on_select`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		}`,
 		`on_select`,
 		"services"
 	);
@@ -131,7 +133,9 @@ const selectServiceConfirmController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/on_select`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		}`,
 		`on_select`,
 		"services"
 	);
@@ -151,7 +155,9 @@ const selectServiceRejectController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/on_select`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		}`,
 		`on_select`,
 		"services"
 	);
@@ -171,7 +177,9 @@ const selectNackController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/on_select`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		}`,
 		`on_select`,
 		"services"
 	);
