@@ -38,7 +38,9 @@ export const updateRequoteController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/on_update`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_update" : "/on_update"
+		}`,
 		`on_update`,
 		"services"
 	);
@@ -64,7 +66,9 @@ export const updateRescheduleController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		`${context.bap_uri}/on_update`,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_update" : "/on_update"
+		}`,
 		`on_update`,
 		"services"
 	);

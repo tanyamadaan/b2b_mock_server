@@ -76,7 +76,9 @@ const onInitConsultationController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		`${context.bpp_uri}/confirm`,
+		`${context.bpp_uri}${
+			context.bpp_uri.endsWith("/") ? "confirm" : "/confirm"
+		}`,
 		`confirm`,
 		"services"
 	);
@@ -92,7 +94,9 @@ const onInitServiceController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${context.bap_uri}/confirm`,
+		`${context.bpp_uri}${
+			context.bpp_uri.endsWith("/") ? "confirm" : "/confirm"
+		}`,
 		`confirm`,
 		"services"
 	);
