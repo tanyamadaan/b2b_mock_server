@@ -45,7 +45,7 @@ export const initiateB2bController = async (req: Request, res: Response) => {
 	try {
 		await redis.set(
 			`${transaction_id}-${search}-from-server`,
-			JSON.stringify(search)
+			JSON.stringify({request: {...search}})
 		);
 
 		await axios.post(`${bpp_uri}/search`, search, {
@@ -111,7 +111,7 @@ export const initiateServicesController = async (
 	try {
 		await redis.set(
 			`${transaction_id}-${search}-from-server`,
-			JSON.stringify(search)
+			JSON.stringify({request: {...search}})
 		);
 		await axios.post(`${bpp_uri}/search`, search, {
 			headers: {
