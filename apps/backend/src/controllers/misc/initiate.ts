@@ -41,7 +41,7 @@ export const initiateB2bController = async (req: Request, res: Response) => {
 		},
 	};
 
-	const header = await createAuthHeader(req.body);
+	const header = await createAuthHeader(search);
 	try {
 		await redis.set(
 			`${transaction_id}-${search}-from-server`,
@@ -107,7 +107,7 @@ export const initiateServicesController = async (
 		},
 	};
 
-	const header = await createAuthHeader(req.body);
+	const header = await createAuthHeader(search);
 	try {
 		await redis.set(
 			`${transaction_id}-${search}-from-server`,

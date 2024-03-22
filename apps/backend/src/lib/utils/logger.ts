@@ -20,10 +20,16 @@ export const logger = winston.createLogger({
 	],
 });
 
+let date = new Date().toISOString();
+
+const logFormat = winston.format.printf(function(info) {
+  return `${date}-${info.level}: ${JSON.stringify(info.message, null, 4)}\n`;
+});
+
 if (process.env.NODE_ENV !== "production") {
 	logger.add(
 		new winston.transports.Console({
-			format: winston.format.json(),
+			format: winston.format.combine(winston.format.colorize(), logFormat),
 		})
 	);
 }
