@@ -17,7 +17,6 @@ import { v4 as uuidv4 } from "uuid";
 
 export const initiateB2bController = async (req: Request, res: Response) => {
 	const { bpp_uri, city, domain } = req.body;
-	var ts = ;
 	var file = fs.readFileSync(
 		path.join(B2B_EXAMPLES_PATH, "search/search_by_category.yaml")
 	);

@@ -13,7 +13,6 @@ import axios from "axios";
 import { useState } from "react";
 import { hexToRgb } from "@mui/material/styles";
 
-import logsJSON from "../../assets/logs.json";
 import Grid from "@mui/material/Grid";
 import SwipeRightAltTwoToneIcon from "@mui/icons-material/SwipeRightAltTwoTone";
 import Divider from "@mui/material/Divider";
@@ -120,11 +119,13 @@ export const Analyse = () => {
 				setResponseLogs(
 					response.data.sort(
 						(
-							a: { timestamp: string | number | Date },
-							b: { timestamp: string | number | Date }
+							a: {
+								request: { context: { timestamp: string | number | Date } };
+							},
+							b: { request: { context: { timestamp: string | number | Date } } }
 						) =>
-							new Date(a.timestamp!).getTime() -
-							new Date(b.timestamp!).getTime()
+							new Date(a.request.context.timestamp!).getTime() -
+							new Date(b.request.context.timestamp!).getTime()
 					)
 				);
 			} catch (error) {
