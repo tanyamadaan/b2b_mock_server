@@ -1,9 +1,7 @@
 import useTheme from "@mui/material/styles/useTheme";
 import {
 	BaseEdge,
-	EdgeLabelRenderer,
 	getBezierPath,
-	useReactFlow,
 } from "reactflow";
 
 type ResponseEdgeProps = {
@@ -25,8 +23,7 @@ export const ResponseEdge = ({
   
 }: ResponseEdgeProps) => {
 	const theme = useTheme();
-	const { setEdges } = useReactFlow();
-	const [edgePath, labelX, labelY] = getBezierPath({
+	const [edgePath] = getBezierPath({
 		sourceX,
 		sourceY,
 		targetX,
@@ -45,21 +42,6 @@ export const ResponseEdge = ({
 					stroke: theme.palette.secondary.light,
 				}}
 			/>
-			<EdgeLabelRenderer>
-				<button
-					style={{
-						position: "absolute",
-						transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-						pointerEvents: "all",
-					}}
-					className="nodrag nopan"
-					onClick={() => {
-						setEdges((es) => es.filter((e) => e.id !== id));
-					}}
-				>
-					delete
-				</button>
-			</EdgeLabelRenderer>
 		</>
 	);
 };

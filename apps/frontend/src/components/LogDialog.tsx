@@ -8,11 +8,13 @@ import SendTwoToneIcon from "@mui/icons-material/SendTwoTone";
 import CancelTwoToneIcon from "@mui/icons-material/CancelTwoTone";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import { useState } from "react";
 
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/material.css";
 import "codemirror/mode/javascript/javascript.js";
 import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
 
 type LogDialogPropType = {
 	open: boolean;
@@ -21,8 +23,37 @@ type LogDialogPropType = {
 	log: any;
 };
 
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+
 export const LogDialog = ({ open, onClose, log }: LogDialogPropType) => {
 	console.log("DIALOG", log);
+
+	const [copiedRequest, setCopiedRequest] = useState(false);
+	const [copiedResponse, setCopiedResponse] = useState(false);
+
+	const copyLogPart = (part: "request" | "response") => {
+		navigator.clipboard
+			.writeText(
+				JSON.stringify(part === "request" ? log.request : log.response)
+			)
+			.then(() => {
+				if (part === "request") {
+					setCopiedRequest(true);
+					setTimeout(function () {
+						setCopiedRequest(false);
+					}, 1000);
+				} else {
+					setCopiedResponse(true);
+					setTimeout(function () {
+						setCopiedResponse(false);
+					}, 1000);
+				}
+			})
+			.catch((err) => {
+				console.log(err.message);
+			});
+	};
 	return (
 		<Dialog open={open} onClose={onClose}>
 			<DialogTitle variant="h5">Request Analyser</DialogTitle>
@@ -39,7 +70,23 @@ export const LogDialog = ({ open, onClose, log }: LogDialogPropType) => {
 				<Divider sx={{ my: 2 }} />
 				{log.request && (
 					<>
-						<Typography variant="h6">Request:</Typography>
+						<Stack direction="row" justifyContent="space-between">
+							<Typography variant="h6">Request:</Typography>
+							<IconButton
+								size="small"
+								// sx={{
+								// 	display: display ? "block" : "none",
+								// }}
+								onClick={() => copyLogPart(log.request)}
+							>
+								{copiedRequest ? (
+									<DoneAllIcon color="success" />
+								) : (
+									<ContentCopyIcon />
+								)}
+							</IconButton>
+						</Stack>
+
 						<Stack direction="row" spacing={2} alignItems="center">
 							<Typography>Request Timestamp:</Typography>
 							<Typography variant="body2" color="text.secondary">
@@ -70,7 +117,22 @@ export const LogDialog = ({ open, onClose, log }: LogDialogPropType) => {
 				<Divider sx={{ my: 2 }} />
 				{log.response && (
 					<>
-						<Typography variant="h6">Response:</Typography>
+						<Stack direction="row" justifyContent="space-between">
+							<Typography variant="h6">Response:</Typography>
+							<IconButton
+								size="small"
+								// sx={{
+								// 	display: display ? "block" : "none",
+								// }}
+								onClick={() => copyLogPart(log.response)}
+							>
+								{copiedResponse ? (
+									<DoneAllIcon color="success" />
+								) : (
+									<ContentCopyIcon />
+								)}
+							</IconButton>
+						</Stack>
 						<Stack direction="row" spacing={2} alignItems="center">
 							<Typography>Response Timestamp:</Typography>
 							<Typography variant="body2" color="text.secondary">

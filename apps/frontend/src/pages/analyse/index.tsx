@@ -13,70 +13,232 @@ import axios from "axios";
 import { useState } from "react";
 import { hexToRgb } from "@mui/material/styles";
 
-import Grid from "@mui/material/Grid";
-import SwipeRightAltTwoToneIcon from "@mui/icons-material/SwipeRightAltTwoTone";
-import Divider from "@mui/material/Divider";
-import ButtonBase from "@mui/material/ButtonBase";
-import Stack from "@mui/material/Stack";
+// import Grid from "@mui/material/Grid";
+// import SwipeRightAltTwoToneIcon from "@mui/icons-material/SwipeRightAltTwoTone";
+// import Divider from "@mui/material/Divider";
+// import ButtonBase from "@mui/material/ButtonBase";
+// import Stack from "@mui/material/Stack";
 import {
 	LogDialog,
-	// MockServerNode,
-	// NpNode,
-	// RequestEdge,
-	// ResponseEdge,
+	RequestNodeData,
+	NpNode,
+	RequestNode,
+	RequestEdge,
+	ResponseEdge,
 } from "../../components";
 
-// import ReactFlow, {
-// 	Background,
-// 	Controls,
-// 	MarkerType,
-// 	MiniMap,
-// 	useEdgesState,
-// 	useNodesState,
-// } from "reactflow";
+import ReactFlow, {
+	Background,
+	Controls,
+	MarkerType,
+	MiniMap,
+	useEdgesState,
+	useNodesState,
+	Node,
+	Edge,
+} from "reactflow";
 
-// import "reactflow/dist/style.css";
+import "reactflow/dist/style.css";
 
-// const initialNodes = [
-// 	{ id: "1", position: { x: 0, y: 0 }, data: { label: "1" }, type: "msNode" },
-// 	{ id: "2", position: { x: 0, y: 100 }, data: { label: "2" }, type: "npNode" },
-// ];
+const initialNodes: Node<RequestNodeData>[] = [
+	{
+		id: "0",
+		position: { x: 150, y: 0 },
+		style: { width: "1000px" },
+		data: { title: "Buyer App", subline: "mock.ondc.org" },
+		type: "npNode",
+	},
+	{
+		id: "1",
+		position: { x: 200, y: 200 },
+		data: { title: "search" },
+		type: "requestNode",
+	},
+	{
+		id: "2",
+		position: { x: 200, y: 400 },
+		data: {
+			title: "on_search",
+		},
+		type: "requestNode",
+	},
+	{
+		id: "3",
+		position: { x: 400, y: 200 },
+		data: { title: "select" },
+		type: "requestNode",
+	},
+	{
+		id: "4",
+		position: { x: 400, y: 400 },
+		data: {
+			title: "on_select",
+		},
+		type: "requestNode",
+	},
+	{
+		id: "5",
+		position: { x: 600, y: 200 },
+		data: { title: "init" },
+		type: "requestNode",
+	},
+	{
+		id: "6",
+		position: { x: 600, y: 400 },
+		data: { title: "on_init" },
+		type: "requestNode",
+	},
+	{
+		id: "7",
+		position: { x: 800, y: 200 },
+		data: { title: "confirm" },
+		type: "requestNode",
+	},
+	{
+		id: "8",
+		position: { x: 800, y: 400 },
+		data: { title: "on_confirm" },
+		type: "requestNode",
+	},
+	{
+		id: "9",
+		position: { x: 1000, y: 200 },
+		data: { title: "status" },
+		type: "requestNode",
+	},
+	{
+		id: "10",
+		position: { x: 1000, y: 400 },
+		data: { title: "on_status" },
+		type: "requestNode",
+	},
+	{
+		id: "22",
+		position: { x: 150, y: 600 },
+		style: { width: "1000px" },
+		data: { title: "Seller App", subline: "Rapidor NP" },
+		type: "npNode",
+	},
+];
 
-// const nodeTypes = { npNode: NpNode, msNode: MockServerNode };
-// const edgeTypes = { request: RequestEdge, response: ResponseEdge };
+const nodeTypes = { requestNode: RequestNode, npNode: NpNode };
+const edgeTypes = { request: RequestEdge, response: ResponseEdge };
 
 export const Analyse = () => {
 	const theme = useTheme();
-	// const initialEdges = [
-	// 	{
-	// 		id: "e1-2",
-	// 		source: "1",
-	// 		target: "2",
-	// 		targetHandle: "request",
-	// 		type: "request",
-	// 		markerEnd: {
-	// 			type: MarkerType.ArrowClosed,
-	// 			width: 20,
-	// 			height: 20,
-	// 			color: theme.palette.primary.dark,
-	// 		},
-	// 	},
-	// 	{
-	// 		id: "e2-1",
-	// 		source: "2",
-	// 		target: "1",
-	// 		sourceHandle: "response",
-	// 		type: "response",
-	// 		markerEnd: {
-	// 			type: MarkerType.ArrowClosed,
-	// 			width: 20,
-	// 			height: 20,
-	// 			color: theme.palette.secondary.dark,
-	// 		},
-	// 	},
-	// ];
-	// const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-	// const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+	const initialEdges: Edge[] = [
+		{
+			id: "e1-2",
+			source: "1",
+			target: "2",
+			type: "request",
+			markerEnd: {
+				type: MarkerType.ArrowClosed,
+				width: 20,
+				height: 20,
+				color: theme.palette.primary.dark,
+			},
+		},
+		{
+			id: "e2-3",
+			source: "2",
+			target: "3",
+			type: "response",
+			markerEnd: {
+				type: MarkerType.ArrowClosed,
+				width: 20,
+				height: 20,
+				color: theme.palette.secondary.dark,
+			},
+		},
+		{
+			id: "e3-4",
+			source: "3",
+			target: "4",
+			type: "request",
+			markerEnd: {
+				type: MarkerType.ArrowClosed,
+				width: 20,
+				height: 20,
+				color: theme.palette.primary.dark,
+			},
+		},
+		{
+			id: "e4-5",
+			source: "4",
+			target: "5",
+			type: "response",
+			markerEnd: {
+				type: MarkerType.ArrowClosed,
+				width: 20,
+				height: 20,
+				color: theme.palette.secondary.dark,
+			},
+		},
+		{
+			id: "e5-6",
+			source: "5",
+			target: "6",
+			type: "request",
+			markerEnd: {
+				type: MarkerType.ArrowClosed,
+				width: 20,
+				height: 20,
+				color: theme.palette.primary.dark,
+			},
+		},
+		{
+			id: "e6-7",
+			source: "6",
+			target: "7",
+			type: "response",
+			markerEnd: {
+				type: MarkerType.ArrowClosed,
+				width: 20,
+				height: 20,
+				color: theme.palette.secondary.dark,
+			},
+		},
+		{
+			id: "e7-8",
+			source: "7",
+			target: "8",
+			type: "request",
+			markerEnd: {
+				type: MarkerType.ArrowClosed,
+				width: 20,
+				height: 20,
+				color: theme.palette.primary.dark,
+			},
+		},
+		{
+			id: "e8-9",
+			source: "8",
+			target: "9",
+			type: "response",
+			markerEnd: {
+				type: MarkerType.ArrowClosed,
+				width: 20,
+				height: 20,
+				color: theme.palette.secondary.dark,
+			},
+		},
+		{
+			id: "e9-10",
+			source: "9",
+			target: "10",
+			type: "request",
+			markerEnd: {
+				type: MarkerType.ArrowClosed,
+				width: 20,
+				height: 20,
+				color: theme.palette.primary.dark,
+			},
+		},
+	];
+	const [nodes, , onNodesChange] = useNodesState(initialNodes);
+	const [edges, , onEdgesChange] = useEdgesState(initialEdges);
 
 	// useEffect(() => {
 	// 	async function fetchTransactionIds() {
@@ -120,22 +282,27 @@ export const Analyse = () => {
 				setResponseLogs(
 					response.data
 						// eslint-disable-next-line @typescript-eslint/no-explicit-any
-						.reduce((uniqueArr: any[], item: { request: { context: { action: any; timestamp: any; }; }; }) => {
-							const { action, timestamp } = item.request.context;
-							if (!seen[action] || timestamp > seen[action]) {
-								seen[action] = timestamp; // Update latest timestamp for the action
-								const existingIndex = uniqueArr.findIndex(
-									(obj) => obj.action === action
-								);
-								if (existingIndex !== -1) {
-									
-									uniqueArr[existingIndex] = item;
-								} else {
-									uniqueArr.push(item);
+						.reduce(
+							(
+								uniqueArr: any[],
+								item: { request: { context: { action: any; timestamp: any } } }
+							) => {
+								const { action, timestamp } = item.request.context;
+								if (!seen[action] || timestamp > seen[action]) {
+									seen[action] = timestamp; // Update latest timestamp for the action
+									const existingIndex = uniqueArr.findIndex(
+										(obj) => obj.action === action
+									);
+									if (existingIndex !== -1) {
+										uniqueArr[existingIndex] = item;
+									} else {
+										uniqueArr.push(item);
+									}
 								}
-							}
-							return uniqueArr;
-						}, [])
+								return uniqueArr;
+							},
+							[]
+						)
 						.sort(
 							(
 								a: {
@@ -211,7 +378,7 @@ export const Analyse = () => {
 					</Box>
 				</Paper>
 			</Grow>
-			{responseLogs && (
+			{/* {responseLogs && (
 				<Paper
 					sx={{
 						my: 10,
@@ -342,9 +509,9 @@ export const Analyse = () => {
 						</Grid>
 					</Box>
 				</Paper>
-			)}
+			)} */}
 
-			{/* <Paper
+			<Paper
 				sx={{
 					my: 10,
 					minWidth: "100%",
@@ -382,7 +549,7 @@ export const Analyse = () => {
 						<Background />
 					</ReactFlow>
 				</Box>
-			</Paper> */}
+			</Paper>
 			<LogDialog
 				open={openLogDialog}
 				onClose={() => setOpenLogDialog(false)}

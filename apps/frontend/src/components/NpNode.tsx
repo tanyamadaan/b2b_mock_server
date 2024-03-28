@@ -1,25 +1,17 @@
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import { Handle, Position } from "reactflow";
+import { NodeProps } from "reactflow";
 
-export const NpNode = () => {
+export type NpNodeData = {
+	title: string;
+	subline?: string;
+};
+
+export const NpNode = ({ data: { title, subline } }: NodeProps<NpNodeData>) => {
 	return (
 		<Paper sx={{ p: 1 }}>
-			<Handle
-				type="target"
-				position={Position.Top}
-				id="request"
-				isConnectable={true}
-				style={{ left: "30%" }}
-			/>
-			<Handle
-				type="source"
-				position={Position.Top}
-				id="response"
-				isConnectable={true}
-				style={{ left: "70%" }}
-			/>
-			<Typography>NP</Typography>
+			<Typography>{title}</Typography>
+			<Typography>{subline}</Typography>
 		</Paper>
 	);
 };
