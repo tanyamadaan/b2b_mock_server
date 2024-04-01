@@ -90,6 +90,73 @@ const onSearchSelectionController = (req: Request, res: Response) => {
 	);
 };
 
+const onSearchServiceCustomizationController = (
+	req: Request,
+	res: Response
+) => {
+	const { context, message: { order: { providers, fulfillments, payments } } } = req.body;
+	const { id, locations, items, categories, ...remainingProviders } = providers[0]
+	const { id: parent_item_id, location_ids, ...item } = items[0]
+
+	// const file = fs.readFileSync(
+	// 	path.join(SERVICES_EXAMPLES_PATH, "select/select_service_customization.yaml")
+	// );
+	// const response = YAML.parse(file.toString());
+	const responseMessage = {
+		provider: {
+			id,
+			locations: [{
+				id: locations[0]?.id
+			}],
+		},
+		fulfillments: [
+			{
+				type: fulfillments[0].type,
+				stops: [
+					{
+						"type": "end",
+						"location":
+						{
+							"gps": "12.974002,77.613458",
+							"area_code": "560001"
+						},
+						"time": {
+							"label": "selected",
+							"range": { // should be dynamic on the basis of scehdule
+								"start": providers[0].time.schedule.times[0],
+								"end": providers[0].time.schedule.times.pop()
+							}
+						},
+						"days": "4"
+					}
+				]
+			}
+		],
+		payments: [{ type: payments[0].type }],
+		items: [
+			{ parent_item_id, location_ids },
+			...items.map((item: any, i: number) => {
+				return {
+					id: item.id,
+					parent_item_id,
+					quantity: item.quantity,
+					category_ids: item.category_ids,
+					tags: item.tags
+				}
+			})
+		]
+
+	}
+	return responseBuilder(
+		res,
+		context,
+		responseMessage,
+		`${context.bpp_uri}${context.bpp_uri.endsWith("/") ? "select" : "/select"}`,
+		`select`,
+		"services"
+	);
+};
+
 const onSearchConsultationController = (
 	req: Request,
 	res: Response
