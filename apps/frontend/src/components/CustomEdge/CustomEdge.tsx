@@ -1,32 +1,25 @@
 import useTheme from "@mui/material/styles/useTheme";
-import {
-	BaseEdge,
-	getBezierPath,
-} from "reactflow";
+import { BaseEdge, getBezierPath, EdgeProps } from "reactflow";
+import "./index.css";
 
-type RequestEdgeProps = {
-	id: string;
-	sourceX: number;
-	sourceY: number;
-	targetX: number;
-	targetY: number;
-	markerEnd: string;
-};
-
-export const RequestEdge = ({
+export const CustomEdge = ({
 	id,
 	sourceX,
 	sourceY,
 	targetX,
 	targetY,
+	sourcePosition,
+	targetPosition,
 	markerEnd,
-}: RequestEdgeProps) => {
+}: EdgeProps) => {
 	const theme = useTheme();
 	const [edgePath] = getBezierPath({
 		sourceX,
 		sourceY,
 		targetX,
 		targetY,
+		sourcePosition,
+		targetPosition,
 	});
 
 	return (

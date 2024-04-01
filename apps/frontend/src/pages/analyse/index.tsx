@@ -13,18 +13,11 @@ import axios from "axios";
 import { useState } from "react";
 import { hexToRgb } from "@mui/material/styles";
 
-// import Grid from "@mui/material/Grid";
-// import SwipeRightAltTwoToneIcon from "@mui/icons-material/SwipeRightAltTwoTone";
-// import Divider from "@mui/material/Divider";
-// import ButtonBase from "@mui/material/ButtonBase";
-// import Stack from "@mui/material/Stack";
 import {
 	LogDialog,
-	RequestNodeData,
-	NpNode,
-	RequestNode,
-	RequestEdge,
-	ResponseEdge,
+	CustomNode,
+	CustomNodeData,
+	CustomEdge,
 } from "../../components";
 
 import ReactFlow, {
@@ -40,89 +33,89 @@ import ReactFlow, {
 
 import "reactflow/dist/style.css";
 
-const initialNodes: Node<RequestNodeData>[] = [
+const initialNodes: Node<CustomNodeData>[] = [
 	{
 		id: "0",
-		position: { x: 150, y: 0 },
-		style: { width: "1000px" },
+		position: { x: 50, y: 0 },
+		style: { width: "1000px", height: "50px" },
 		data: { title: "Buyer App", subline: "mock.ondc.org" },
-		type: "npNode",
+		type: "custom",
 	},
 	{
 		id: "1",
-		position: { x: 200, y: 200 },
+		position: { x: 100, y: 100 },
 		data: { title: "search" },
-		type: "requestNode",
+		type: "custom",
 	},
 	{
 		id: "2",
-		position: { x: 200, y: 400 },
+		position: { x: 100, y: 300 },
 		data: {
 			title: "on_search",
 		},
-		type: "requestNode",
+		type: "custom",
 	},
 	{
 		id: "3",
-		position: { x: 400, y: 200 },
+		position: { x: 300, y: 100 },
 		data: { title: "select" },
-		type: "requestNode",
+		type: "custom",
 	},
 	{
 		id: "4",
-		position: { x: 400, y: 400 },
+		position: { x: 300, y: 300 },
 		data: {
 			title: "on_select",
 		},
-		type: "requestNode",
+		type: "custom",
 	},
 	{
 		id: "5",
-		position: { x: 600, y: 200 },
+		position: { x: 500, y: 100 },
 		data: { title: "init" },
-		type: "requestNode",
+		type: "custom",
 	},
 	{
 		id: "6",
-		position: { x: 600, y: 400 },
+		position: { x: 500, y: 300 },
 		data: { title: "on_init" },
-		type: "requestNode",
+		type: "custom",
 	},
 	{
 		id: "7",
-		position: { x: 800, y: 200 },
+		position: { x: 700, y: 100 },
 		data: { title: "confirm" },
-		type: "requestNode",
+		type: "custom",
 	},
 	{
 		id: "8",
-		position: { x: 800, y: 400 },
+		position: { x: 700, y: 300 },
 		data: { title: "on_confirm" },
-		type: "requestNode",
+		type: "custom",
 	},
 	{
 		id: "9",
-		position: { x: 1000, y: 200 },
+		position: { x: 900, y: 100 },
 		data: { title: "status" },
-		type: "requestNode",
+		type: "custom",
 	},
 	{
 		id: "10",
-		position: { x: 1000, y: 400 },
+		position: { x: 900, y: 300 },
 		data: { title: "on_status" },
-		type: "requestNode",
+		type: "custom",
 	},
 	{
 		id: "22",
-		position: { x: 150, y: 600 },
-		style: { width: "1000px" },
+		position: { x: 50, y: 420 },
+		style: { width: "1000px", height: "50px" },
 		data: { title: "Seller App", subline: "Rapidor NP" },
-		type: "npNode",
+		type: "custom",
 	},
 ];
 
-const nodeTypes = { requestNode: RequestNode, npNode: NpNode };
-const edgeTypes = { request: RequestEdge, response: ResponseEdge };
+const nodeTypes = { custom: CustomNode };
+const edgeTypes = { custom: CustomEdge };
 
 export const Analyse = () => {
 	const theme = useTheme();
@@ -132,127 +125,126 @@ export const Analyse = () => {
 			id: "e1-2",
 			source: "1",
 			target: "2",
-			type: "request",
+			type: "custom",
 			markerEnd: {
-				type: MarkerType.ArrowClosed,
-				width: 20,
-				height: 20,
+				type: MarkerType.Arrow,
 				color: theme.palette.primary.dark,
 			},
+			animated: true,
 		},
 		{
 			id: "e2-3",
 			source: "2",
 			target: "3",
-			type: "response",
+			type: "custom",
 			markerEnd: {
-				type: MarkerType.ArrowClosed,
-				width: 20,
-				height: 20,
+				type: MarkerType.Arrow,
+				// width: 20,
+				// height: 20,
 				color: theme.palette.secondary.dark,
 			},
+			sourceHandle: "right",
+			targetHandle: "left",
 		},
 		{
 			id: "e3-4",
 			source: "3",
 			target: "4",
-			type: "request",
+			type: "custom",
 			markerEnd: {
-				type: MarkerType.ArrowClosed,
-				width: 20,
-				height: 20,
+				type: MarkerType.Arrow,
+				// width: 20,
+				// height: 20,
 				color: theme.palette.primary.dark,
 			},
+			animated: true,
 		},
 		{
 			id: "e4-5",
 			source: "4",
 			target: "5",
-			type: "response",
+			type: "custom",
 			markerEnd: {
-				type: MarkerType.ArrowClosed,
-				width: 20,
-				height: 20,
+				type: MarkerType.Arrow,
+				// width: 20,
+				// height: 20,
 				color: theme.palette.secondary.dark,
 			},
+			sourceHandle: "right",
+			targetHandle: "left",
 		},
 		{
 			id: "e5-6",
 			source: "5",
 			target: "6",
-			type: "request",
+			type: "custom",
 			markerEnd: {
-				type: MarkerType.ArrowClosed,
-				width: 20,
-				height: 20,
+				type: MarkerType.Arrow,
+				// width: 20,
+				// height: 20,
 				color: theme.palette.primary.dark,
 			},
+			animated: true,
 		},
 		{
 			id: "e6-7",
 			source: "6",
 			target: "7",
-			type: "response",
+			type: "custom",
 			markerEnd: {
-				type: MarkerType.ArrowClosed,
-				width: 20,
-				height: 20,
+				type: MarkerType.Arrow,
+				// width: 20,
+				// height: 20,
 				color: theme.palette.secondary.dark,
 			},
+			sourceHandle: "right",
+			targetHandle: "left",
 		},
 		{
 			id: "e7-8",
 			source: "7",
 			target: "8",
-			type: "request",
+			type: "custom",
 			markerEnd: {
-				type: MarkerType.ArrowClosed,
-				width: 20,
-				height: 20,
+				type: MarkerType.Arrow,
+				// width: 20,
+				// height: 20,
 				color: theme.palette.primary.dark,
 			},
+			animated: true,
 		},
 		{
 			id: "e8-9",
 			source: "8",
 			target: "9",
-			type: "response",
+			type: "custom",
 			markerEnd: {
-				type: MarkerType.ArrowClosed,
-				width: 20,
-				height: 20,
+				type: MarkerType.Arrow,
+				// width: 20,
+				// height: 20,
 				color: theme.palette.secondary.dark,
 			},
+			sourceHandle: "right",
+			targetHandle: "left",
 		},
 		{
 			id: "e9-10",
 			source: "9",
 			target: "10",
-			type: "request",
+			type: "custom",
 			markerEnd: {
-				type: MarkerType.ArrowClosed,
-				width: 20,
-				height: 20,
+				type: MarkerType.Arrow,
+				// width: 20,
+				// height: 20,
 				color: theme.palette.primary.dark,
 			},
+			animated: true,
 		},
 	];
 	const [nodes, , onNodesChange] = useNodesState(initialNodes);
 	const [edges, , onEdgesChange] = useEdgesState(initialEdges);
 
-	// useEffect(() => {
-	// 	async function fetchTransactionIds() {
-	// 		const response = await axios.get(
-	// 			`${import.meta.env.VITE_SERVER_URL}/scan`
-	// 		);
-	// 		console.log("RESPONSE", response);
-	// 	}
-	// 	fetchTransactionIds();
 
-	// 	// return () => {
-	// 	// 	second;
-	// 	// };
-	// }, []);
 	const [openLogDialog, setOpenLogDialog] = useState(false);
 	const [logToShow, setLogToShow] = useState<object>({});
 	const [responseLogs, setResponseLogs] = useState<object[]>();
@@ -378,139 +370,6 @@ export const Analyse = () => {
 					</Box>
 				</Paper>
 			</Grow>
-			{/* {responseLogs && (
-				<Paper
-					sx={{
-						my: 10,
-						minWidth: "100%",
-						p: 2,
-						borderRadius: theme.shape.borderRadius * 2,
-						background: hexToRgb(theme.palette.background.paper).replace(
-							")",
-							",0.05)"
-						),
-						backdropFilter: `blur(6px)`,
-						_webkitBackDropFilter: `blur(6px)`,
-					}}
-					elevation={5}
-				>
-					<Box
-						sx={{
-							borderStyle: "solid",
-							borderColor: theme.palette.divider,
-							borderRadius: theme.shape.borderRadius,
-							borderWidth: 1,
-							p: 1,
-						}}
-					>
-						<Grid container spacing={2}>
-							{responseLogs?.map(
-								(
-									// eslint-disable-next-line @typescript-eslint/no-explicit-any
-									log: any,
-									index
-								) => (
-									<Grid
-										item
-										xs={12}
-										sm={6}
-										// md={4}
-										key={log.request.context.message_id + index}
-									>
-										<Paper sx={{ p: 1 }} elevation={3}>
-											<Typography my={1}>/{log.action}</Typography>
-											<Divider />
-											<Box
-												sx={{
-													mt: 1,
-													display: "flex",
-													justifyContent: "space-evenly",
-													alignItems: "center",
-												}}
-											>
-												{log.type === "to_server" && (
-													<SwipeRightAltTwoToneIcon />
-												)}
-
-												<Paper
-													sx={{
-														flex: 1,
-														borderRight: `${
-															log.type === "from_server" ? 4 : 0
-														}px solid ${theme.palette.success.light}`,
-														borderLeft: `${
-															log.type === "to_server" ? 4 : 0
-														}px solid ${theme.palette.success.light}`,
-													}}
-													elevation={1}
-												>
-													<ButtonBase
-														sx={{
-															minHeight: "100%",
-															width: "100%",
-															p: 1,
-															flexDirection: "column",
-															alignItems: "flex-start",
-														}}
-														onClick={() => handleLogDialog(log)}
-													>
-														<Stack spacing={1} direction="row">
-															<Typography variant="body2">Type:</Typography>
-															<Typography
-																variant="body2"
-																color="text.secondary"
-															>
-																{log.type}
-															</Typography>
-														</Stack>
-														<Stack spacing={1} direction="row">
-															<Typography variant="body2">
-																Timestamp:
-															</Typography>
-															<Typography
-																variant="body2"
-																color="text.secondary"
-															>
-																{log.request.context.timestamp}
-															</Typography>
-														</Stack>
-														{log.request.context.bap_id && (
-															<Stack spacing={1} direction="row">
-																<Typography variant="body2">BAP:</Typography>
-																<Typography
-																	variant="body2"
-																	color="text.secondary"
-																>
-																	{log.request.context.bap_id}
-																</Typography>
-															</Stack>
-														)}
-														{log.request.context.bpp_id && (
-															<Stack spacing={1} direction="row">
-																<Typography variant="body2">BPP:</Typography>
-																<Typography
-																	variant="body2"
-																	color="text.secondary"
-																>
-																	{log.request.context.bpp_id}
-																</Typography>
-															</Stack>
-														)}
-													</ButtonBase>
-												</Paper>
-												{log.type === "from_server" && (
-													<SwipeRightAltTwoToneIcon />
-												)}
-											</Box>
-										</Paper>
-									</Grid>
-								)
-							)}
-						</Grid>
-					</Box>
-				</Paper>
-			)} */}
-
 			<Paper
 				sx={{
 					my: 10,
