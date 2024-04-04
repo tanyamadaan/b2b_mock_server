@@ -10,15 +10,15 @@ import YAML from "yaml";
 export const onSelectController = (req: Request, res: Response) => {
 	const { scenario } = req.query;
 	switch (scenario) {
-		case "rfq":
-			onSelectDomesticController(req, res);
-			break;
-		case "non-rfq":
-			onSelectDomesticNonRfqController(req, res);
-			break;
-		case "exports":
-			onSelectExportsController(req, res);
-			break;
+		// case "rfq":
+		// 	onSelectDomesticController(req, res);
+		// 	break;
+		// case "non-rfq":
+		// 	onSelectDomesticNonRfqController(req, res);
+		// 	break;
+		// case "exports":
+		// 	onSelectExportsController(req, res);
+		// 	break;
 		case "bpp-payment":
 			onSelectDomesticBPPPaymentController(req, res);
 			break;

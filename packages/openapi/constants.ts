@@ -6,10 +6,10 @@ export const B2B_SCENARIOS = {
 			name: "RFQ",
 			scenario: "rfq",
 		},
-		{
-			name: "Self-Pickup",
-			scenario: "self-pickup",
-		},
+		// {
+		// 	name: "Self-Pickup",
+		// 	scenario: "self-pickup",
+		// },
 		{
 			name: "Non-RFQ",
 			scenario: "non-rfq",
@@ -18,24 +18,24 @@ export const B2B_SCENARIOS = {
 			name: "BAP Chat",
 			scenario: "bap-chat",
 		},
-		{
-			name: "Exports",
-			scenario: "exports",
-		},
+		// {
+		// 	name: "Exports",
+		// 	scenario: "exports",
+		// },
 	],
 	on_select: [
-		{
-			name: "RFQ",
-			scenario: "rfq",
-		},
+		// 	{
+		// 		name: "RFQ",
+		// 		scenario: "rfq",
+		// 	},
 		{
 			name: "Self-Pickup",
 			scenario: "self-pickup",
 		},
-		{
-			name: "Non-RFQ",
-			scenario: "non-rfq",
-		},
+		// {
+		// 	name: "Non-RFQ",
+		// 	scenario: "non-rfq",
+		// },
 		{
 			name: "Exports",
 			scenario: "exports",
@@ -50,22 +50,22 @@ export const B2B_SCENARIOS = {
 		},
 	],
 	init: [
-		{
-			name: "RFQ",
-			scenario: "rfq",
-		},
-		{
-			name: "Non-RFQ",
-			scenario: "non-rfq",
-		},
+		// {
+		// 	name: "RFQ",
+		// 	scenario: "rfq",
+		// },
+		// {
+		// 	name: "Non-RFQ",
+		// 	scenario: "non-rfq",
+		// },
 		{
 			name: "BPP Payment",
-			scenario: "bpp-payment",
+			scenario: "prepaid-bpp-payment",
 		},
-		{
-			name: "Exports",
-			scenario: "exports",
-		},
+		// {
+		// 	name: "Exports",
+		// 	scenario: "exports",
+		// },
 	],
 	on_init: [
 		{
@@ -212,13 +212,13 @@ export const SERVICES_SCENARIOS = {
 		// 	scenario: "nack",
 		// },
 		{
-			name:"Schedule Confirmed",
-			scenario:"schedule_confirmed"
+			name: "Schedule Confirmed",
+			scenario: "schedule_confirmed",
 		},
 		{
-			name:"Schedule Rejected",
-			scenario:"schedule_rejected"
-		}
+			name: "Schedule Rejected",
+			scenario: "schedule_rejected",
+		},
 	],
 	init: [
 		// {
@@ -307,17 +307,26 @@ export const DOMAINS = {
 	b2b: "B2B",
 	services: "Services - Home Services",
 };
-export const ACTIONS = {
-	next: {
-		search: "on_search",
-		on_search: "select",
-		select: "on_select",
-		on_select: "init",
-		init: "on_init",
-		on_init: "confirm",
-		confirm: "on_confirm",
-		update: "on_update",
-		status: "on_status",
-		cancel: "on_cancel",
-	},
+export const NEXT_ACTION = {
+	search: "on_search",
+	on_search: "select",
+	select: "on_select",
+	on_select: "init",
+	init: "on_init",
+	on_init: "confirm",
+	confirm: "on_confirm",
+	update: "on_update",
+	status: "on_status",
+	cancel: "on_cancel",
 };
+
+
+export const PREV_ACTION = {
+	on_search: "search",
+	select: "on_search",
+	on_select: "select",
+	init: "on_select",
+	on_init: "init",
+	confirm: "on_init",
+	on_confirm: "confirm"
+}

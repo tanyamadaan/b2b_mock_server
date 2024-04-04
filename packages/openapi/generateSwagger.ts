@@ -61,7 +61,7 @@ const generateSwagger = async (
 
 		if (
 			scenarios[
-				ACTIONS.next[key as keyof typeof ACTIONS.next] as keyof typeof scenarios
+				NEXT_ACTION[key as keyof typeof NEXT_ACTION] as keyof typeof scenarios
 			]
 		) {
 			schema.paths[i].post.parameters.push({
@@ -71,8 +71,8 @@ const generateSwagger = async (
 				schema: {
 					type: "string",
 					enum: scenarios[
-						ACTIONS.next[
-							key as keyof typeof ACTIONS.next
+						NEXT_ACTION[
+							key as keyof typeof NEXT_ACTION
 						] as keyof typeof scenarios
 					].map((each: { scenario: any }) => each.scenario),
 				},

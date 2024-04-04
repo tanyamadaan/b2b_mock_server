@@ -7,11 +7,9 @@ export const onStatusController = (req: Request, res: Response) => {
 		message: { sync: { message: { ack: { status: "ACK" } } } },
 	});
 	return res.json({
-		sync: {
-			message: {
-				ack: {
-					status: "ACK",
-				},
+		message: {
+			ack: {
+				status: "ACK",
 			},
 		},
 	});

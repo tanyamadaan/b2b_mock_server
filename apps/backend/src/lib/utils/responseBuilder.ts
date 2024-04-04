@@ -99,78 +99,80 @@ export const responseBuilder = async (
 	res.setHeader("authorization", header);
 
 	if (sandboxMode) {
-		logger.info("=======================");
-		logger.info("TIME", Date.now());
-		logger.info("ACTION", action);
+		// logger.info("=======================");
+		// logger.info("TIME", Date.now());
+		console.log("ACTION in Sandbox", action);
 		// logger.info("TRANSACTION BEFORE:", transaction)
 
-		// if (action.startsWith("on_")) {
-		var log: TransactionType = {
-			request: async,
-		};
-		await redis.set(
-			`${(async.context! as any).transaction_id}-${action}-from-server`,
-			JSON.stringify(log)
-		);
-		try {
-			const response = await axios.post(uri, async, {
-				headers: {
-					authorization: header,
-				},
-			});
-
-			log.response = {
-				timestamp: new Date().toISOString(),
-				response: response.data,
+		if (action.startsWith("on_")) {
+			console.log("SENDING ASYNC TO NP")
+			var log: TransactionType = {
+				request: async,
 			};
-
 			await redis.set(
 				`${(async.context! as any).transaction_id}-${action}-from-server`,
 				JSON.stringify(log)
 			);
-		} catch (error) {
-			console.log("ERROR", error);
-			logger.error({
-				type: "response",
-				message: {
-					message: "ERROR OCCURRED WHILE PINGING SANDBOX RESPONSE",
-					error: error,
-				},
-			});
-			logger.error({
-				type: "response",
-				message: {
-					message: { ack: { status: "NACK" } },
+			try {
+				const response = await axios.post(uri, async, {
+					headers: {
+						authorization: header,
+					},
+				});
+
+				log.response = {
+					timestamp: new Date().toISOString(),
+					response: response.data,
+				};
+
+				await redis.set(
+					`${(async.context! as any).transaction_id}-${action}-from-server`,
+					JSON.stringify(log)
+				);
+			} catch (error) {
+				console.log("ERROR", error);
+				logger.error({
+					type: "response",
+					message: {
+						message: "ERROR OCCURRED WHILE PINGING SANDBOX RESPONSE",
+						error: error,
+					},
+				});
+				logger.error({
+					type: "response",
+					message: {
+						message: { ack: { status: "NACK" } },
+						error: {
+							message: (error as any).response.data,
+						},
+					},
+				});
+				const response = {
+					message: {
+						ack: {
+							status: "NACK",
+						},
+					},
 					error: {
+						// message: (error as any).message,
 						message: (error as any).response.data,
 					},
-				},
-			});
-			const response = {
-				message: {
-					ack: {
-						status: "NACK",
-					},
-				},
-				error: {
-					// message: (error as any).message,
-					message: (error as any).response.data,
-				},
-			};
-			log.response = {
-				timestamp: new Date().toISOString(),
-				response: response.message,
-			};
+				};
+				log.response = {
+					timestamp: new Date().toISOString(),
+					response: response.message,
+				};
 
-			await redis.set(
-				`${(async.context! as any).transaction_id}-${action}-from-server`,
-				JSON.stringify(log)
-			);
+				await redis.set(
+					`${(async.context! as any).transaction_id}-${action}-from-server`,
+					JSON.stringify(log)
+				);
 
-			return res.json({
-				...response,
-				async,
-			});
+				return res.json({
+					...response,
+					async,
+				});
+			}
 		}
 		// } else {
 		// 	transaction.actionStats = {
@@ -190,8 +192,8 @@ export const responseBuilder = async (
 		// 		JSON.stringify(transaction)
 		// 	);
 		// }
-		logger.info("TRANSACTION AFTER:", log);
-		logger.info("**********************");
+		// logger.info("TRANSACTION AFTER:", log);
+		// logger.info("**********************");
 
 		logger.info({ message: { ack: { status: "ACK" } } });
 		return res.json({
@@ -320,20 +322,21 @@ export const quoteCreatorService = (items: Item[]) => {
 			},
 			tags: [
 				{
-					"descriptor": {
-						"code": "title"
+					descriptor: {
+						code: "title",
 					},
-					"list": [
+					list: [
 						{
-							"descriptor": {
-								"code": "type"
+							descriptor: {
+								code: "type",
 							},
-							"value": "item"
-						}
-					]
-				}
-			]
-		}, {
+							value: "item",
+						},
+					],
+				},
+			],
+		},
+		{
 			title: "tax",
 			price: {
 				currency: "INR",
@@ -341,33 +344,33 @@ export const quoteCreatorService = (items: Item[]) => {
 			},
 			tags: [
 				{
-					"descriptor": {
-						"code": "title"
+					descriptor: {
+						code: "title",
 					},
-					"list": [
+					list: [
 						{
-							"descriptor": {
-								"code": "type"
+							descriptor: {
+								code: "type",
 							},
-							"value": "tax"
-						}
-					]
-				}
-			]
-		}
+							value: "tax",
+						},
+					],
+				},
+			],
+		},
 	];
 
-	items.forEach(item => {
+	items.forEach((item) => {
 		breakup.forEach((each) => {
 			each.item = {
 				id: item.id,
 				price: {
 					currency: "INR",
 					value: "99",
-				}
-			}
-		})
-	})
+				},
+			};
+		});
+	});
 
 	return {
 		breakup,
