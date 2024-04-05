@@ -3,12 +3,10 @@ import {
 	B2B_BAP_MOCKSERVER_URL,
 	B2B_EXAMPLES_PATH,
 	MOCKSERVER_ID,
-	SERVICES_BAP_MOCKSERVER_URL,
-	SERVICES_EXAMPLES_PATH,
 	createAuthHeader,
 	logger,
 	redis,
-} from "../../lib/utils";
+} from "../../../lib/utils";
 import axios from "axios";
 import fs from "fs";
 import path from "path";
@@ -16,14 +14,10 @@ import YAML from "yaml";
 import { v4 as uuidv4 } from "uuid";
 
 
-export const initiateServicesController = async (
-	req: Request,
-	res: Response
-) => {
+export const initiateSearchController = async (req: Request, res: Response) => {
 	const { bpp_uri, city, domain } = req.body;
-
 	var file = fs.readFileSync(
-		path.join(SERVICES_EXAMPLES_PATH, "search/search_by_category.yaml")
+		path.join(B2B_EXAMPLES_PATH, "search/search_by_category.yaml")
 	);
 	var search = YAML.parse(file.toString());
 	search = search.value;
@@ -42,7 +36,7 @@ export const initiateServicesController = async (
 			// bpp_uri,
 			domain,
 			bap_id: MOCKSERVER_ID,
-			bap_uri: SERVICES_BAP_MOCKSERVER_URL,
+			bap_uri: B2B_BAP_MOCKSERVER_URL,
 		},
 	};
 
@@ -58,6 +52,7 @@ export const initiateServicesController = async (
 				authorization: header,
 			},
 		});
+
 		return res.json({
 			message: {
 				ack: {
