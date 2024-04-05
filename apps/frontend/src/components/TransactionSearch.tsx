@@ -59,9 +59,9 @@ export const TransactionSearch = () => {
 							new Date(b.request.context.timestamp!).getTime()
 					);
 				console.log("RESPONSE", formattedResponse);
-				const { edgeSet, nodeSet } = getNodesAndEdges(formattedResponse, theme);
-				setNodes(nodeSet);
-				setEdges(edgeSet);
+				const { edges, nodes } = getNodesAndEdges(formattedResponse, theme);
+				setNodes(nodes);
+				setEdges(edges);
 			} catch (error) {
 				console.log("Following error occurred while querying", error);
 			}

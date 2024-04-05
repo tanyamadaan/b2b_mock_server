@@ -1,9 +1,11 @@
 import jsYaml from "js-yaml";
-import fs from "fs"
-import $RefParser, { RefParserSchema } from "@apidevtools/json-schema-ref-parser";
+import fs from "fs";
+import $RefParser, {
+	RefParserSchema,
+} from "@apidevtools/json-schema-ref-parser";
 import { execSync } from "child_process";
 import path from "path";
-import * as dotenv from 'dotenv';
+import * as dotenv from "dotenv";
 dotenv.config();
 import {
 	NEXT_ACTION,
@@ -17,7 +19,9 @@ const swaggerParse = async (swaggerPath: string) => {
 	const swaggerDocument = jsYaml.load(file);
 	try {
 		// console.log("Swagger Doc", swaggerDocument);
-		let schema = await $RefParser.dereference(swaggerDocument as RefParserSchema);
+		let schema = await $RefParser.dereference(
+			swaggerDocument as RefParserSchema
+		);
 		// console.log("SCHEMA", schema);
 		return schema;
 	} catch (err) {
@@ -61,7 +65,7 @@ const generateSwagger = async (
 
 		if (
 			scenarios[
-			NEXT_ACTION[key as keyof typeof NEXT_ACTION] as keyof typeof scenarios
+				NEXT_ACTION[key as keyof typeof NEXT_ACTION] as keyof typeof scenarios
 			]
 		) {
 			schema.paths[i].post.parameters.push({
@@ -72,9 +76,11 @@ const generateSwagger = async (
 					type: "string",
 					enum: scenarios[
 						NEXT_ACTION[
-						key as keyof typeof NEXT_ACTION
+							key as keyof typeof NEXT_ACTION
 						] as keyof typeof scenarios
-					].map((each: { scenario: any }) => each.scenario),
+					].map(({ name, scenario }: { name: string; scenario: string }) => {
+						return scenario;
+					}),
 				},
 			});
 		}
@@ -125,8 +131,14 @@ generateSwagger(
 	"./openapi/retail-b2b",
 	B2B_SCENARIOS,
 	[
-		{ url: `${process.env.SERVER_LINK}/b2b/bpp`, description: "Sandbox as seller " },
-		{ url: `${process.env.SERVER_LINK}/b2b/bap`, description: "Sandbox as buyer" },
+		{
+			url: `${process.env.SERVER_LINK}/b2b/bpp`,
+			description: "Sandbox as seller ",
+		},
+		{
+			url: `${process.env.SERVER_LINK}/b2b/bap`,
+			description: "Sandbox as buyer",
+		},
 	]
 );
 
@@ -135,7 +147,13 @@ generateSwagger(
 	"./openapi/services",
 	SERVICES_SCENARIOS,
 	[
-		{ url: `${process.env.SERVER_LINK}/services/bpp`, description: "Sandbox as seller" },
-		{ url: `${process.env.SERVER_LINK}/services/bap`, description: "Sandbox as buyer" },
+		{
+			url: `${process.env.SERVER_LINK}/services/bpp`,
+			description: "Sandbox as seller",
+		},
+		{
+			url: `${process.env.SERVER_LINK}/services/bap`,
+			description: "Sandbox as buyer",
+		},
 	]
 );
