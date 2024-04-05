@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { SERVICES_EXAMPLES_PATH, responseBuilder } from "../../../lib/utils";
+import { SERVICES_EXAMPLES_PATH, checkIfCustomized, responseBuilder } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
@@ -8,6 +8,9 @@ export const onSearchController = (req: Request, res: Response) => {
 	const { scenario } = req.query;
 	switch (scenario) {
 		case "selection":
+			if (checkIfCustomized(req.body.message.catalog.providers[0].items)) { // check "code": "attribute" only
+				return onSearchServiceCustomizationController(req, res);
+			}
 			onSearchSelectionController(req, res);
 			break;
 		// case "consultation":
@@ -30,6 +33,9 @@ export const onSearchController = (req: Request, res: Response) => {
 			// 		message: "Invalid scenario",
 			// 	},
 			// });
+			if (checkIfCustomized(req.body.message.catalog.providers[0].items)) {
+				return onSearchServiceCustomizationController(req, res);
+			}
 			onSearchSelectionController(req, res);
 			break;
 	}
@@ -69,7 +75,7 @@ const onSearchSelectionController = (req: Request, res: Response) => {
 								"label": "selected",
 								"range": { // should be dynamic on the basis of scehdule
 									"start": providers[0].time.schedule.times[0],
-									"end": providers[0].time.schedule.times.pop()
+									"end": providers[0].time.schedule.times[1]
 								}
 							}
 						}
@@ -94,7 +100,7 @@ const onSearchServiceCustomizationController = (
 	req: Request,
 	res: Response
 ) => {
-	const { context, message: { order: { providers, fulfillments, payments } } } = req.body;
+	const { context, message: { catalog: { providers, fulfillments, payments } } } = req.body;
 	const { id, locations, items, categories, ...remainingProviders } = providers[0]
 	const { id: parent_item_id, location_ids, ...item } = items[0]
 
@@ -103,49 +109,54 @@ const onSearchServiceCustomizationController = (
 	// );
 	// const response = YAML.parse(file.toString());
 	const responseMessage = {
-		provider: {
-			id,
-			locations: [{
-				id: locations[0]?.id
-			}],
-		},
-		fulfillments: [
-			{
-				type: fulfillments[0].type,
-				stops: [
-					{
-						"type": "end",
-						"location":
+		order: {
+			provider: {
+				id,
+				locations: [{
+					id: locations[0]?.id
+				}],
+			},
+			fulfillments: [
+				{
+					type: fulfillments[0].type,
+					stops: [
 						{
-							"gps": "12.974002,77.613458",
-							"area_code": "560001"
-						},
-						"time": {
-							"label": "selected",
-							"range": { // should be dynamic on the basis of scehdule
-								"start": providers[0].time.schedule.times[0],
-								"end": providers[0].time.schedule.times.pop()
+							"type": "end",
+							"location":
+							{
+								"gps": "12.974002,77.613458",
+								"area_code": "560001"
+							},
+							"time": {
+								"label": "selected",
+								"range": { // should be dynamic on the basis of scehdule
+									"start": providers[0].time.schedule.times[0],
+									"end": providers[0].time.schedule.times[1]
+								}
+							},
+							"days": fulfillments[0].days.split(',')[0] // will be from onsearch
+						}
+					]
+				}
+			],
+			payments: [{ type: payments[0].type }],
+			items: [
+				{ parent_item_id, location_ids },
+				...items.slice(1).map((item: any) => {
+					return {
+						id: item.id,
+						parent_item_id,
+						quantity: {
+							"selected": {
+								"count": 3
 							}
 						},
-						"days": "4"
+						category_ids: item.category_ids,
+						tags: item.tags
 					}
-				]
-			}
-		],
-		payments: [{ type: payments[0].type }],
-		items: [
-			{ parent_item_id, location_ids },
-			...items.map((item: any, i: number) => {
-				return {
-					id: item.id,
-					parent_item_id,
-					quantity: item.quantity,
-					category_ids: item.category_ids,
-					tags: item.tags
-				}
-			})
-		]
-
+				})
+			]
+		}
 	}
 	return responseBuilder(
 		res,

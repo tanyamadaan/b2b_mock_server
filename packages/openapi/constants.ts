@@ -2,26 +2,26 @@ export const USER_GUIDE_LINK = "";
 
 export const B2B_SCENARIOS = {
 	select: [
-		{
-			name: "RFQ",
-			scenario: "rfq",
-		},
+		// {
+		// 	name: "RFQ",
+		// 	scenario: "rfq",
+		// },
 		{
 			name: "Self-Pickup",
 			scenario: "self-pickup",
 		},
-		{
-			name: "Non-RFQ",
-			scenario: "non-rfq",
-		},
+		// {
+		// 	name: "Non-RFQ",
+		// 	scenario: "non-rfq",
+		// },
 		{
 			name: "BAP Chat",
 			scenario: "bap-chat",
 		},
-		{
-			name: "Exports",
-			scenario: "exports",
-		},
+		// {
+		// 	name: "Exports",
+		// 	scenario: "exports",
+		// },
 	],
 	on_select: [
 		{
@@ -181,6 +181,10 @@ export const SERVICES_SCENARIOS = {
 			name: "Selections",
 			scenario: "selection",
 		},
+		{
+			name: "Customization",
+			scenario: "customization",
+		}
 		// {
 		// 	name: "Service",
 		// 	scenario: "service",
@@ -218,7 +222,7 @@ export const SERVICES_SCENARIOS = {
 		{
 			name:"Schedule Rejected",
 			scenario:"schedule_rejected"
-		}
+		},
 	],
 	init: [
 		// {

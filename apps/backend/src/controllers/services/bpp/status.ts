@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { SERVICES_EXAMPLES_PATH, responseBuilder } from "../../../lib/utils";
+import { SERVICES_EXAMPLES_PATH, checkIfCustomized, responseBuilder } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
@@ -21,6 +21,9 @@ export const statusController = (req: Request, res: Response) => {
 			statusReachedController(req, res)
 			break;
 		case 'service-started':
+			if (checkIfCustomized(req.body.message.providers[0].items)) {
+				// return onSelectServiceCustomizedController(req, res);
+			}
 			statusServiceStartedController(req, res)
 			break;
 		default:

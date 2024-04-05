@@ -15,11 +15,23 @@ authRouter.post(
 );
 
 authRouter.post("/signature", async (req: Request, res: Response) => {
-	const { private_key, subscriber_id, unique_key_id, request } = req.body;
-	const { signing_string, expires, created } = await createSigningString(
-		JSON.stringify(request)
-	);
-	const signature = await signMessage(signing_string, private_key || "");
-	const auth_header = `Signature keyId="${subscriber_id}|${unique_key_id}|ed25519",algorithm="ed25519",created="${created}",expires="${expires}",headers="(created) (expires) digest",signature="${signature}"`;
-	return res.json({ auth_header });
+	try {
+		const { private_key, subscriber_id, unique_key_id, request } = req.body;
+		// if(!private_key || !subscriber_id || !unique_key_id || !request){
+		// 	return res.status(400).json({
+		// 		message:"Invalid input"
+		// 	})
+		// }
+		const { signing_string, expires, created } = await createSigningString(
+			JSON.stringify(request)
+		);
+		const signature = await signMessage(signing_string, private_key || "");
+		const auth_header = `Signature keyId="${subscriber_id}|${unique_key_id}|ed25519",algorithm="ed25519",created="${created}",expires="${expires}",headers="(created) (expires) digest",signature="${signature}"`;
+		return res.json({ auth_header });
+	} catch (error) {
+		console.log('Error:::: ', error)
+		return res.status(400).json({
+			message:"Invalid input"
+		})
+	}
 });
