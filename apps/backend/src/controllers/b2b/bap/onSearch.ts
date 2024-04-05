@@ -13,12 +13,12 @@ export const onSearchController = (req: Request, res: Response) => {
 		case 'non-rfq':
 			onSearchDomesticNonRfqController(req, res)
 			break;
-		case 'self-pickup':
-			onSearchDomesticSelfPickupController(req, res)
-			break;
-		case 'exports':
-			onSearchExportsController(req, res)
-			break;
+		// case 'self-pickup':
+		// 	onSearchDomesticSelfPickupController(req, res)
+		// 	break;
+		// case 'exports':
+		// 	onSearchExportsController(req, res)
+		// 	break;
 		case 'bap-chat':
 			onSearchBAPchatController(req, res)
 			break;

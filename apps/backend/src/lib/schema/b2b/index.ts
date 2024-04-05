@@ -106,7 +106,6 @@ export const b2bSchemaValidator =
 		}
 
 		isValid = validate(req.body);
-
 		if (!isValid) {
 			res.status(400).json({
 				message: {
@@ -117,7 +116,18 @@ export const b2bSchemaValidator =
 				error: {
 					type: "JSON-SCHEMA-ERROR",
 					code: "50009",
-					message: validate.errors?.map(({ message }) => ({ message })),
+					message: validate.errors?.map(
+						({ message, params, instancePath }) => ({
+							message: `${message}${
+								params.allowedValues ? ` (${params.allowedValues})` : ""
+							}${params.allowedValue ? ` (${params.allowedValue})` : ""}${
+								params.additionalProperty
+									? ` (${params.additionalProperty})`
+									: ""
+							}`,
+							details: instancePath
+						})
+					),
 				},
 			});
 			return;

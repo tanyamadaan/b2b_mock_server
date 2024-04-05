@@ -4,6 +4,8 @@ import { pingController } from "./ping";
 import { initiateB2bController, initiateServicesController } from "./initiate";
 import { miscSchemaValidator } from "../../lib/schema/misc";
 import { getAllTransactionIdController } from "./getAllTransactionId";
+import { getAllScenarios } from "./getAllScenarios";
+import { proxy } from "./proxy";
 
 export const miscRouter = Router();
 
@@ -20,3 +22,5 @@ miscRouter.post(
 );
 miscRouter.get("/scan", getAllTransactionIdController);
 miscRouter.get("/analyse/:transactionId", analyseController);
+miscRouter.get("/scenario/:domain/:action", getAllScenarios);
+miscRouter.post("/proxy", proxy)
