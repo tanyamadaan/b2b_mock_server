@@ -188,6 +188,10 @@ export const SERVICES_SCENARIOS = {
 			name: "Selections",
 			scenario: "selection",
 		},
+		{
+			name: "Customization",
+			scenario: "customization",
+		}
 		// {
 		// 	name: "Service",
 		// 	scenario: "service",

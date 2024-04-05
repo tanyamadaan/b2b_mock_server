@@ -6,6 +6,6 @@ export const onUpdateController = (req: Request, res: Response) => {
 			ack: {
 				status: "ACK",
 			},
-		},
-	});
+		}
+	})
 };

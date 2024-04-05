@@ -6,7 +6,7 @@ import path from "path";
 import * as dotenv from 'dotenv';
 dotenv.config();
 import {
-	ACTIONS,
+	NEXT_ACTION,
 	B2B_SCENARIOS,
 	SERVICES_SCENARIOS,
 	DOMAINS,
@@ -31,7 +31,7 @@ const generateSwagger = async (
 	scenarios: typeof B2B_SCENARIOS | typeof SERVICES_SCENARIOS,
 	servers: { url: string; description: string }[]
 ) => {
-	const schema:any = await swaggerParse(inputPath);
+	const schema: any = await swaggerParse(inputPath);
 	schema.externalDocs = {
 		description: "User guide",
 		url: "https://github.com/tanyamadaan/b2b_mock_server/blob/feat-monorepo/README.md",
@@ -61,7 +61,7 @@ const generateSwagger = async (
 
 		if (
 			scenarios[
-				NEXT_ACTION[key as keyof typeof NEXT_ACTION] as keyof typeof scenarios
+			NEXT_ACTION[key as keyof typeof NEXT_ACTION] as keyof typeof scenarios
 			]
 		) {
 			schema.paths[i].post.parameters.push({
@@ -72,7 +72,7 @@ const generateSwagger = async (
 					type: "string",
 					enum: scenarios[
 						NEXT_ACTION[
-							key as keyof typeof NEXT_ACTION
+						key as keyof typeof NEXT_ACTION
 						] as keyof typeof scenarios
 					].map((each: { scenario: any }) => each.scenario),
 				},
