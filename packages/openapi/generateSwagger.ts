@@ -78,7 +78,7 @@ const generateSwagger = async (
 						NEXT_ACTION[
 							key as keyof typeof NEXT_ACTION
 						] as keyof typeof scenarios
-					].map(({ name, scenario }: { name: string; scenario: string }) => {
+					].map((scenario)=> {
 						return scenario;
 					}),
 				},
