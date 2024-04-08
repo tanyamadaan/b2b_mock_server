@@ -18,7 +18,7 @@ export const initiateSelectController = async (req: Request, res: Response) => {
   const transactionKeys = await redis.keys(`${transactionId}-*`);
   const ifTransactionExist = transactionKeys.filter((e) => e.includes('on_search-to-server'))
 
-  if (ifTransactionExist.length > 0) {
+  if (ifTransactionExist.length === 0) {
     return res.status(400).json({
       message: {
         ack: {
@@ -35,8 +35,7 @@ export const initiateSelectController = async (req: Request, res: Response) => {
     return JSON.parse(ele as string)
   }))
 
-  console.log('parsedTransaction:::: ', parsedTransaction[0])
-  return intializeRequest(req, res, parsedTransaction[0], scenario)
+  return intializeRequest(req, res, parsedTransaction[0].request, scenario)
 };
 
 const intializeRequest = async (req: Request, res: Response, transaction: any, scenario: string) => {
@@ -60,38 +59,41 @@ const intializeRequest = async (req: Request, res: Response, transaction: any, s
       bap_id: MOCKSERVER_ID,
       bap_uri: B2B_BAP_MOCKSERVER_URL,
     },
-    order: {
-      provider: {
-        id: message.catalog.providers[0].id,
-        locations: [
+    message: {
+      order: {
+        provider: {
+          id: message.catalog.providers[0].id,
+          locations: [
+            {
+              id: message.catalog.providers[0].items[0].location_ids[0]
+            }
+          ],
+          ttl: (scenario === 'rfq') ? 'P1D' : 'PT30S',
+        },
+        items: [
           {
-            id: message.catalog.providers[0].items[0].location_ids[0]
+            ...response.value.message.order.items[0],
+            id: message.catalog.providers[0].items[0].id,
+            location_ids: [
+              message.catalog.providers[0].items[0].location_ids[0]
+            ],
+            fulfillment_ids: [
+              message.catalog.providers[0].items[0].fulfillment_ids[0]
+            ]
           }
         ],
-        ttl: (scenario === 'rfq') ? 'P1D' : 'PT30S',
-      },
-      items: [
-        {
-          ...message.order.items[0],
-          id: message.catalog.providers[0].items[0].id,
-          location_ids: [
-            message.catalog.providers[0].items[0].location_ids[0]
-          ],
-          fulfillment_ids: [
-            message.catalog.providers[0].items[0].fulfillment_ids[0]
-          ]
-        }
-      ],
-      fulfillments: [
-        {
-          ...message.order.fulfillments[0],
-          type: message.catalog.providers[0].items[0].fulfillment_ids[0]
-        }
-      ],
-      payments: [
-        message.catalog.payments[0]
-      ],
-      tags: response.value.message.order.tags
+        fulfillments: [
+          {
+            ...message.catalog.fulfillments[0],
+            type: message.catalog.providers[0].items[0].fulfillment_ids[0]
+          }
+        ],
+        payments: [
+          message.catalog.payments[0]
+        ],
+        tags: response.value.message.order.tags
+      }
+
     }
   };
 
@@ -118,6 +120,7 @@ const intializeRequest = async (req: Request, res: Response, transaction: any, s
     });
   } catch (error) {
     logger.error({ type: "response", message: error });
+    // console.log("ERROR::::::::::::::::", (error as any).response.data.error)
     return res.json({
       message: {
         ack: {

@@ -29,7 +29,9 @@ export const initiateSearchController = async (req: Request, res: Response) => {
 			timestamp: new Date().toISOString(),
 			location: {
 				...search.context.location,
-				city,
+				city: {
+					code: city
+				},
 			},
 			transaction_id,
 			// bpp_id: MOCKSERVER_ID,

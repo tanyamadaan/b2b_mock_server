@@ -21,7 +21,7 @@ type InitiateRequestSectionProp = {
 const FIELDS = {
 	search: [
 		{
-			name: "bppUri",
+			name: "bpp_uri",
 			placeholder: "Enter Your BPP URI",
 			type: "text",
 		},
@@ -36,7 +36,7 @@ const FIELDS = {
 			},
 		},
 		{
-			name: "cityCode",
+			name: "city",
 			placeholder: "Select A City",
 			type: "select",
 			domainDepended: false,
@@ -135,6 +135,7 @@ export const InitiateRequestSection = ({
 
 			if (checker(keys, formKeys)) setAllowSubmission(true);
 			else if (
+				checker(keys, formKeys.filter(e => e !== "scenario")) &&
 				scenarios?.domainDepended &&
 				!scenarios.options[domain as keyof SELECT_OPTIONS]
 			)
@@ -146,33 +147,27 @@ export const InitiateRequestSection = ({
 	const handleSubmit = async () => {
 		console.log("Values", formState);
 		setTransactionId(undefined);
-		// try {
-		// 	const response = await axios.post(
-		// 		`${import.meta.env.VITE_SERVER_URL}/initiate/${domain}`,
-		// 		{
-		// 			bpp_uri: bppUri,
-		// 			city: {
-		// 				code: cityCode,
-		// 			},
-		// 			domain: trnDomain,
-		// 		},
-		// 		{
-		// 			headers: {
-		// 				"Content-Type": "application/json",
-		// 			},
-		// 		}
-		// 	);
-		// 	// console.log("Response", response);
-		// 	if (response.data.message.ack.status === "ACK") {
-		// 		setSuccessfulResponse(true);
-		// 		setTransactionId(response.data.transaction_id);
-		// 		setTimeout(() => {
-		// 			setSuccessfulResponse(false);
-		// 		}, 2000);
-		// 	}
-		// } catch (error) {
-		// 	console.log("Error occurred", error);
-		// }
+		try {
+			const response = await axios.post(
+				`${import.meta.env.VITE_SERVER_URL}/${domain.toLocaleLowerCase()}/initiate/${action}?mode=mock`,
+				formState,
+				{
+					headers: {
+						"Content-Type": "application/json"
+					},
+				}
+			);
+			console.log("Response from initiate", response);
+			if (response.data.message.ack.status === "ACK" && action=== "search") {
+				setSuccessfulResponse(true);
+				setTransactionId(response.data.transaction_id);
+				setTimeout(() => {
+					setSuccessfulResponse(false);
+				}, 2000);
+			}
+		} catch (error) {
+			console.log("Error occurred", error);
+		}
 	};
 	return (
 		<Fade in={true} timeout={2500}>

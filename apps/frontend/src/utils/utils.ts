@@ -27,7 +27,7 @@ export const getNodesAndEdges = (formattedResponse: any, theme: Theme) => {
 		},
 	];
 	const edges: Edge[] = [];
-	let initialX = 0;
+	let initialX = 50;
 
 	formattedResponse.forEach((log: { action: string }) => {
 		if (log.action.startsWith("on_")) {
@@ -37,8 +37,8 @@ export const getNodesAndEdges = (formattedResponse: any, theme: Theme) => {
 				data: { title: log.action, log: log },
 				type: "custom",
 			});
+			initialX += 200;
 		} else {
-			initialX += 100;
 			nodes.push({
 				id: `${transaction_id}-${log.action}`,
 				position: { x: initialX, y: 100 },
