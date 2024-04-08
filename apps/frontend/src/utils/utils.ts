@@ -85,3 +85,5 @@ export const copyToClipboard = (body: object, callback?: CopyCallbackFn) => {
 			console.log(err.message);
 		});
 };
+
+export const checker = (arr: string[], target: string[]) => target.every(v => arr.includes(v));
