@@ -9,10 +9,10 @@ import Box from "@mui/material/Box";
 import { Input, Option, Select, Button } from "@mui/joy";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { B2B_SCENARIOS, SERVICES_SCENARIOS } from "openapi-specs/constants";
 import Divider from "@mui/material/Divider";
 import { Grow } from "@mui/material";
+import { useMessage } from "../../utils/hooks";
 
 type InitiateRequestSectionProp = {
 	domain: "b2b" | "services";
@@ -104,10 +104,9 @@ type SELECT_OPTIONS =
 export const InitiateRequestSection = ({
 	domain,
 }: InitiateRequestSectionProp) => {
+	const {handleMessageToggle} = useMessage();
 	const [action, setAction] = useState<string>();
 	const [renderActionFields, setRenderActionFields] = useState(false);
-	const [successfulResponse, setSuccessfulResponse] = useState<boolean>(false);
-	const [transactionId, setTransactionId] = useState<string>();
 	const [formState, setFormState] = useState<object>();
 	const [allowSubmission, setAllowSubmission] = useState<boolean>();
 
@@ -146,7 +145,6 @@ export const InitiateRequestSection = ({
 
 	const handleSubmit = async () => {
 		console.log("Values", formState);
-		setTransactionId(undefined);
 		try {
 			const response = await axios.post(
 				`${import.meta.env.VITE_SERVER_URL}/${domain.toLocaleLowerCase()}/initiate/${action}?mode=mock`,
@@ -159,13 +157,10 @@ export const InitiateRequestSection = ({
 			);
 			console.log("Response from initiate", response);
 			if (response.data.message.ack.status === "ACK" && action=== "search") {
-				setSuccessfulResponse(true);
-				setTransactionId(response.data.transaction_id);
-				setTimeout(() => {
-					setSuccessfulResponse(false);
-				}, 2000);
+				handleMessageToggle(`Your Transaction ID is: ${response.data.transaction_id}`)
 			}
 		} catch (error) {
+			handleMessageToggle("Error Occurred while initiating request!")
 			console.log("Error occurred", error);
 		}
 	};
@@ -188,21 +183,9 @@ export const InitiateRequestSection = ({
 					}}
 				>
 					<Typography variant="h6" my={1} mr={2}>
-						Initiate Search Request:
+						Initiate Request:
 					</Typography>
-					<Fade in={successfulResponse} timeout={800}>
-						<CheckCircleIcon color="success" />
-					</Fade>
 				</Box>
-
-				{transactionId && (
-					<>
-						<Typography variant="subtitle2" color="text.secondary">
-							Your Transaction ID:
-						</Typography>
-						<Typography variant="subtitle2">{transactionId}</Typography>
-					</>
-				)}
 				<Stack spacing={2} sx={{ my: 2 }}>
 					<Select placeholder="Select Action" onChange={handleActionSelection}>
 						{Object.keys(FIELDS).map((action, idx) => (

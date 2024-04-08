@@ -9,6 +9,7 @@ import {
 } from "./pages/swagger/domains";
 import {
 	AnalyseProvider,
+	MessageProvider,
 	MockProvider,
 	SandboxProvider,
 } from "./utils/context";
@@ -83,5 +84,9 @@ const router = createBrowserRouter([
 ]);
 
 export default function App() {
-	return <RouterProvider router={router} />;
+	return (
+		<MessageProvider>
+			<RouterProvider router={router} />
+		</MessageProvider>
+	);
 }

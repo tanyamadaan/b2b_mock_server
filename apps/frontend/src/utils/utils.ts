@@ -14,15 +14,15 @@ export const getNodesAndEdges = (formattedResponse: any, theme: Theme) => {
 		{
 			id: `${transaction_id}-buyer`,
 			position: { x: 50, y: 0 },
-			style: { width: "1000px", height: "50px" },
-			data: { title: "Buyer App", subline: bap_id, uri: bap_uri },
+			style: { width: "1000px", height: "80px" },
+			data: { title: "Buyer App Node", subline: bap_id, uri: bap_uri },
 			type: "custom",
 		},
 		{
 			id: `${transaction_id}-seller`,
 			position: { x: 50, y: 420 },
-			style: { width: "1000px", height: "50px" },
-			data: { title: "Seller App", subline: bpp_id, uri: bpp_uri },
+			style: { width: "1000px", height: "80px" },
+			data: { title: "Seller App Node", subline: bpp_id, uri: bpp_uri },
 			type: "custom",
 		},
 	];
