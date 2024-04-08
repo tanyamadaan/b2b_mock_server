@@ -5,7 +5,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import SendTwoToneIcon from "@mui/icons-material/SendTwoTone";
+// import SendTwoToneIcon from "@mui/icons-material/SendTwoTone";
 import CancelTwoToneIcon from "@mui/icons-material/CancelTwoTone";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -20,12 +20,8 @@ import IconButton from "@mui/material/IconButton";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import { useAnalyse } from "../utils/hooks";
-import axios from "axios";
-import {
-	B2B_DOMAINS,
-	copyToClipboard,
-	URL_MAPPING,
-} from "../utils";
+// import axios from "axios";
+import { B2B_DOMAINS, copyToClipboard, URL_MAPPING } from "../utils";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -66,46 +62,46 @@ export const LogDialog = () => {
 	const action = log.action;
 
 	const toBeSent = log.toBeSent ? log.toBeSent : false;
-	const fetchScenarios = useCallback(async () => {
-		if (toBeSent) {
-			const { data } = await axios.get(
-				`${import.meta.env.VITE_SERVER_URL}/scenario/${domain}/${
-					NEXT_ACTION[action as keyof typeof NEXT_ACTION]
-				}`
-			);
-			console.log("RESPONSE for scenarios", data.scenarios);
-			setScenarios(data.scenarios);
-		}
-	}, [toBeSent]);
+	// const fetchScenarios = useCallback(async () => {
+	// 	if (toBeSent) {
+	// 		const { data } = await axios.get(
+	// 			`${import.meta.env.VITE_SERVER_URL}/scenario/${domain}/${
+	// 				NEXT_ACTION[action as keyof typeof NEXT_ACTION]
+	// 			}`
+	// 		);
+	// 		console.log("RESPONSE for scenarios", data.scenarios);
+	// 		setScenarios(data.scenarios);
+	// 	}
+	// }, [toBeSent]);
 
-	useEffect(() => {
-		fetchScenarios();
-	}, [fetchScenarios]);
+	// useEffect(() => {
+	// 	fetchScenarios();
+	// }, [fetchScenarios]);
 
-	const handleChange = async (event: SelectChangeEvent) => {
-		setActiveScenario(event.target.value as string);
-		let url = `${[
-			import.meta.env.VITE_SERVER_URL,
-		]}/${domain.toLowerCase()}/${Object.keys(URL_MAPPING).filter((key) =>
-			URL_MAPPING[key as keyof typeof URL_MAPPING].includes(action as string)
-		)}/${action}?mode=mock`;
-		if (activeScenario.length > 0) url = url + `&scenario=${activeScenario}`;
-		try {
-			const { data } = await axios.post(url, log.request, {
-				headers: {
-					"Content-Type": "application/json",
-				},
-			});
-			console.log("RESPONSE from MOCK", data.async);
-			setRequestToBeSent(JSON.stringify(data.async));
-		} catch (error) {
-			console.log("ERROR Occured while pinging backend:", error);
-		}
-	};
+	// const handleChange = async (event: SelectChangeEvent) => {
+	// 	setActiveScenario(event.target.value as string);
+	// 	let url = `${[
+	// 		import.meta.env.VITE_SERVER_URL,
+	// 	]}/${domain.toLowerCase()}/${Object.keys(URL_MAPPING).filter((key) =>
+	// 		URL_MAPPING[key as keyof typeof URL_MAPPING].includes(action as string)
+	// 	)}/${action}?mode=mock`;
+	// 	if (activeScenario.length > 0) url = url + `&scenario=${activeScenario}`;
+	// 	try {
+	// 		const { data } = await axios.post(url, log.request, {
+	// 			headers: {
+	// 				"Content-Type": "application/json",
+	// 			},
+	// 		});
+	// 		console.log("RESPONSE from MOCK", data.async);
+	// 		setRequestToBeSent(JSON.stringify(data.async));
+	// 	} catch (error) {
+	// 		console.log("ERROR Occured while pinging backend:", error);
+	// 	}
+	// };
 
-	const handleRequest = async () => {
+	// const handleRequest = async () => {
 
-	}
+	// }
 
 	return (
 		<Dialog open={open} onClose={() => setOpenLogDialog(false)}>
@@ -311,14 +307,14 @@ export const LogDialog = () => {
 				>
 					Close
 				</Button>
-				<Button
+				{/* <Button
 					color="success"
 					endDecorator={<SendTwoToneIcon />}
 					disabled={!toBeSent || requestToBeSent?.length === 0 || jsonParseError}
 					onClick={handleRequest}
 				>
 					Send Request
-				</Button>
+				</Button> */}
 			</DialogActions>
 		</Dialog>
 	);
