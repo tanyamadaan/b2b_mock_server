@@ -8,7 +8,7 @@ import Box from "@mui/material/Box";
 
 import { Input, Option, Select, Button } from "@mui/joy";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { B2B_SCENARIOS, SERVICES_SCENARIOS } from "openapi-specs/constants";
 import Divider from "@mui/material/Divider";
 import { Grow } from "@mui/material";
@@ -104,7 +104,7 @@ type SELECT_OPTIONS =
 export const InitiateRequestSection = ({
 	domain,
 }: InitiateRequestSectionProp) => {
-	const {handleMessageToggle} = useMessage();
+	const { handleMessageToggle } = useMessage();
 	const [action, setAction] = useState<string>();
 	const [renderActionFields, setRenderActionFields] = useState(false);
 	const [formState, setFormState] = useState<object>();
@@ -134,7 +134,10 @@ export const InitiateRequestSection = ({
 
 			if (checker(keys, formKeys)) setAllowSubmission(true);
 			else if (
-				checker(keys, formKeys.filter(e => e !== "scenario")) &&
+				checker(
+					keys,
+					formKeys.filter((e) => e !== "scenario")
+				) &&
 				scenarios?.domainDepended &&
 				!scenarios.options[domain as keyof SELECT_OPTIONS]
 			)
@@ -147,20 +150,36 @@ export const InitiateRequestSection = ({
 		console.log("Values", formState);
 		try {
 			const response = await axios.post(
-				`${import.meta.env.VITE_SERVER_URL}/${domain.toLocaleLowerCase()}/initiate/${action}?mode=mock`,
+				`${
+					import.meta.env.VITE_SERVER_URL
+				}/${domain.toLocaleLowerCase()}/initiate/${action}?mode=mock`,
 				formState,
 				{
 					headers: {
-						"Content-Type": "application/json"
+						"Content-Type": "application/json",
 					},
 				}
 			);
 			console.log("Response from initiate", response);
-			if (response.data.message.ack.status === "ACK" && action=== "search") {
-				handleMessageToggle(`Your Transaction ID is: ${response.data.transaction_id}`)
+			if (response.data.message.ack.status === "ACK" ) {
+				if( action === "search")
+				handleMessageToggle(
+					`Your Transaction ID is: ${response.data.transaction_id}`
+				);
+				else handleMessageToggle("Request Initiated Successfully!")
+			} else if (response.data.error) {
+				handleMessageToggle(
+					`Error Occurred: ${
+						response.data.error.message || response.data.error
+					}`
+				);
 			}
 		} catch (error) {
-			handleMessageToggle("Error Occurred while initiating request!")
+			if (error instanceof AxiosError && error.response?.data?.error?.message)
+				handleMessageToggle(
+					`Error Occurred: ${error.response?.data?.error?.message}`
+				);
+			else handleMessageToggle("Error Occurred while initiating request!");
 			console.log("Error occurred", error);
 		}
 	};

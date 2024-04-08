@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import {
-	B2B_BAP_MOCKSERVER_URL,
 	MOCKSERVER_ID,
+	SERVICES_BAP_MOCKSERVER_URL,
 	SERVICES_EXAMPLES_PATH,
 	createAuthHeader,
 	logger,
@@ -12,7 +12,6 @@ import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 import { v4 as uuidv4 } from "uuid";
-
 
 export const initiateSearchController = async (req: Request, res: Response) => {
 	const { bpp_uri, city, domain } = req.body;
@@ -37,7 +36,7 @@ export const initiateSearchController = async (req: Request, res: Response) => {
 			// bpp_uri,
 			domain,
 			bap_id: MOCKSERVER_ID,
-			bap_uri: B2B_BAP_MOCKSERVER_URL,
+			bap_uri: SERVICES_BAP_MOCKSERVER_URL,
 		},
 	};
 

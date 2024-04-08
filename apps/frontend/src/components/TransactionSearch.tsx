@@ -8,66 +8,82 @@ import useTheme from "@mui/material/styles/useTheme";
 import { getNodesAndEdges } from "../utils";
 import axios from "axios";
 import * as _ from "lodash";
-import { useAnalyse } from "../utils/hooks";
+import { useAnalyse, useMessage } from "../utils/hooks";
+import { useState } from "react";
+import RefreshIcon from "@mui/icons-material/Refresh";
 
 export const TransactionSearch = () => {
 	const theme = useTheme();
 	const { setEdges, setNodes } = useAnalyse();
+	const [requested, setRequested] = useState(false);
+	const { handleMessageToggle } = useMessage();
+	const [transactionId, setTransactionId] = useState("");
+
+	const fetchTransaction = async (transaction: string) => {
+		try {
+			const response = await axios.get(
+				`${import.meta.env.VITE_SERVER_URL}/analyse/${transaction}`
+			);
+			const seen: Record<string, boolean> = {};
+			const formattedResponse = response.data
+				.reduce(
+					(
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any
+						uniqueArr: any[],
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any
+						item: { request: { context: { action: any; timestamp: any } } }
+					) => {
+						const { action, timestamp } = item.request.context;
+						if (!seen[action] || timestamp > seen[action]) {
+							seen[action] = timestamp; // Update latest timestamp for the action
+							const existingIndex = uniqueArr.findIndex(
+								(obj) => obj.action === action
+							);
+							if (existingIndex !== -1) {
+								uniqueArr[existingIndex] = item;
+							} else {
+								uniqueArr.push(item);
+							}
+						}
+						return uniqueArr;
+					},
+					[]
+				)
+				.sort(
+					(
+						a: {
+							request: { context: { timestamp: string | number | Date } };
+						},
+						b: {
+							request: { context: { timestamp: string | number | Date } };
+						}
+					) =>
+						new Date(a.request.context.timestamp!).getTime() -
+						new Date(b.request.context.timestamp!).getTime()
+				);
+			console.log("RESPONSE", formattedResponse);
+			const { edges, nodes } = getNodesAndEdges(formattedResponse, theme);
+			setNodes(nodes);
+			setEdges(edges);
+			setRequested(true);
+		} catch (error) {
+			handleMessageToggle("Error Occurred while fetching transaction!");
+			console.log("Following error occurred while querying", error);
+		}
+	};
 	const requestTransaction = _.debounce(
 		async (
 			event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
 		) => {
-			try {
-				const response = await axios.get(
-					`${import.meta.env.VITE_SERVER_URL}/analyse/${event.target.value}`
-				);
-				const seen: Record<string, boolean> = {};
-				const formattedResponse = response.data
-					.reduce(
-						(
-							// eslint-disable-next-line @typescript-eslint/no-explicit-any
-							uniqueArr: any[],
-							// eslint-disable-next-line @typescript-eslint/no-explicit-any
-							item: { request: { context: { action: any; timestamp: any } } }
-						) => {
-							const { action, timestamp } = item.request.context;
-							if (!seen[action] || timestamp > seen[action]) {
-								seen[action] = timestamp; // Update latest timestamp for the action
-								const existingIndex = uniqueArr.findIndex(
-									(obj) => obj.action === action
-								);
-								if (existingIndex !== -1) {
-									uniqueArr[existingIndex] = item;
-								} else {
-									uniqueArr.push(item);
-								}
-							}
-							return uniqueArr;
-						},
-						[]
-					)
-					.sort(
-						(
-							a: {
-								request: { context: { timestamp: string | number | Date } };
-							},
-							b: {
-								request: { context: { timestamp: string | number | Date } };
-							}
-						) =>
-							new Date(a.request.context.timestamp!).getTime() -
-							new Date(b.request.context.timestamp!).getTime()
-					);
-				console.log("RESPONSE", formattedResponse);
-				const { edges, nodes } = getNodesAndEdges(formattedResponse, theme);
-				setNodes(nodes);
-				setEdges(edges);
-			} catch (error) {
-				console.log("Following error occurred while querying", error);
-			}
+			setTransactionId(event.target.value);
+			await fetchTransaction(event.target.value);
 		},
 		500
 	);
+	const handleFetch = async () => {
+		await fetchTransaction(transactionId);
+	};
+
 	return (
 		<Grow in={true} timeout={1000}>
 			<Paper
@@ -100,8 +116,13 @@ export const TransactionSearch = () => {
 						onChange={requestTransaction}
 					/>
 
-					<IconButton type="button" sx={{ p: 1 }} aria-label="search">
-						<SearchIcon />
+					<IconButton
+						type="button"
+						sx={{ p: 1 }}
+						aria-label="search"
+						onClick={handleFetch}
+					>
+						{requested ? <RefreshIcon /> : <SearchIcon />}
 					</IconButton>
 				</Box>
 			</Paper>
