@@ -7,7 +7,12 @@ import {
 	MiscSwagger,
 	ServicesSwagger,
 } from "./pages/swagger/domains";
-import { MockProvider, SandboxProvider } from "./utils/context";
+import {
+	AnalyseProvider,
+	MessageProvider,
+	MockProvider,
+	SandboxProvider,
+} from "./utils/context";
 import { B2BMock, ServicesMock } from "./pages/mock/domains";
 import { B2BSandbox, ServicesSandbox } from "./pages/sandbox/domains";
 
@@ -68,12 +73,20 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/analyse",
-				Component: Analyse,
+				Component: () => (
+					<AnalyseProvider>
+						<Analyse />
+					</AnalyseProvider>
+				),
 			},
 		],
 	},
 ]);
 
 export default function App() {
-	return <RouterProvider router={router} />;
+	return (
+		<MessageProvider>
+			<RouterProvider router={router} />
+		</MessageProvider>
+	);
 }

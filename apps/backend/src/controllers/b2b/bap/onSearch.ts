@@ -5,7 +5,7 @@ import path from "path";
 import YAML from "yaml";
 
 export const onSearchController = (req: Request, res: Response) => {
-	const { scenario } = req.query
+	let { scenario } = req.query
 	switch (scenario) {
 		case 'rfq':
 			onSearchDomesticController(req, res)
@@ -13,12 +13,12 @@ export const onSearchController = (req: Request, res: Response) => {
 		case 'non-rfq':
 			onSearchDomesticNonRfqController(req, res)
 			break;
-		case 'self-pickup':
-			onSearchDomesticSelfPickupController(req, res)
-			break;
-		case 'exports':
-			onSearchExportsController(req, res)
-			break;
+		// case 'self-pickup':
+		// 	onSearchDomesticSelfPickupController(req, res)
+		// 	break;
+		// case 'exports':
+		// 	onSearchExportsController(req, res)
+		// 	break;
 		case 'bap-chat':
 			onSearchBAPchatController(req, res)
 			break;
@@ -90,7 +90,7 @@ export const onSearchDomesticNonRfqController = (req: Request, res: Response) =>
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bpp_uri}${ req.body.context.bpp_uri.endsWith("/") ? "select" : "/select"}`,
+		`${req.body.context.bpp_uri}${req.body.context.bpp_uri.endsWith("/") ? "select" : "/select"}`,
 		`select`,
 		"b2b"
 	);
@@ -106,7 +106,7 @@ export const onSearchDomesticSelfPickupController = (req: Request, res: Response
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bpp_uri}${ req.body.context.bpp_uri.endsWith("/") ? "select" : "/select"}`,
+		`${req.body.context.bpp_uri}${req.body.context.bpp_uri.endsWith("/") ? "select" : "/select"}`,
 		`select`,
 		"b2b"
 	);
@@ -122,7 +122,7 @@ export const onSearchExportsController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bpp_uri}${ req.body.context.bpp_uri.endsWith("/") ? "select" : "/select"}`,
+		`${req.body.context.bpp_uri}${req.body.context.bpp_uri.endsWith("/") ? "select" : "/select"}`,
 		`select`,
 		"b2b"
 	);
@@ -138,7 +138,7 @@ export const onSearchBAPchatController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bpp_uri}${ req.body.context.bpp_uri.endsWith("/") ? "select" : "/select"}`,
+		`${req.body.context.bpp_uri}${req.body.context.bpp_uri.endsWith("/") ? "select" : "/select"}`,
 		`select`,
 		"b2b"
 	);

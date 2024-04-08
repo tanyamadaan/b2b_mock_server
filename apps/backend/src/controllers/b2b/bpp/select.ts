@@ -12,18 +12,18 @@ import YAML from "yaml";
 export const selectController = (req: Request, res: Response) => {
 	const { scenario } = req.query;
 	switch (scenario) {
-		case "rfq":
-			selectDomesticController(req, res);
-			break;
-		case "non-rfq":
-			selectDomesticNonRfqController(req, res);
-			break;
+		// case "rfq":
+		// 	selectDomesticController(req, res);
+		// 	break;
+		// case "non-rfq":
+		// 	selectDomesticNonRfqController(req, res);
+		// 	break;
 		case "self-pickup":
 			selectDomesticSelfPickupController(req, res);
 			break;
-		case "exports":
-			selectExportsController(req, res);
-			break;
+		// case "exports":
+		// 	selectExportsController(req, res);
+		// 	break;
 		case "non-serviceable":
 			selectNonServiceableController(req, res);
 			break;
@@ -166,7 +166,7 @@ export const selectNonServiceableController = (req: Request, res: Response) => {
 	return responseBuilder(
 		res,
 		req.body.context,
-		response.value.message,
+		{message: response.value.message, error: response.value.error},
 		`${req.body.context.bap_uri}${
 			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
 		}`,
@@ -190,7 +190,7 @@ export const selectQuantityUnavailableController = (
 	return responseBuilder(
 		res,
 		req.body.context,
-		response.value.message,
+		{message: response.value.message, error: response.value.error},
 		`${req.body.context.bap_uri}${
 			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
 		}`,

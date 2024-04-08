@@ -4,42 +4,14 @@ export const B2B_SCENARIOS = {
 	select: [
 		{
 			name: "RFQ",
-			scenario: "rfq",
-		},
-		{
-			name: "Self-Pickup",
-			scenario: "self-pickup",
+			scenario: "rfq", // Select Domestic
 		},
 		{
 			name: "Non-RFQ",
 			scenario: "non-rfq",
-		},
-		{
-			name: "BAP Chat",
-			scenario: "bap-chat",
-		},
-		{
-			name: "Exports",
-			scenario: "exports",
 		},
 	],
 	on_select: [
-		{
-			name: "RFQ",
-			scenario: "rfq",
-		},
-		{
-			name: "Self-Pickup",
-			scenario: "self-pickup",
-		},
-		{
-			name: "Non-RFQ",
-			scenario: "non-rfq",
-		},
-		{
-			name: "Exports",
-			scenario: "exports",
-		},
 		{
 			name: "Non Serviceable",
 			scenario: "non-serviceable",
@@ -51,78 +23,16 @@ export const B2B_SCENARIOS = {
 	],
 	init: [
 		{
-			name: "RFQ",
-			scenario: "rfq",
-		},
-		{
-			name: "Non-RFQ",
-			scenario: "non-rfq",
+			name: "On Fulfillment",
+			scenario: "on-fulfillment" //default
 		},
 		{
 			name: "BPP Payment",
-			scenario: "bpp-payment",
+			scenario: "prepaid-bpp-payment", 
 		},
 		{
-			name: "Exports",
-			scenario: "exports",
-		},
-	],
-	on_init: [
-		{
-			name: "RFQ",
-			scenario: "rfq",
-		},
-		{
-			name: "Non-RFQ",
-			scenario: "non-rfq",
-		},
-		{
-			name: "Payment BPP Non-RFQ",
-			scenario: "payment-bpp-non-rfq",
-		},
-		{
-			name: "Self-Pickup",
-			scenario: "self-pickup",
-		},
-		{
-			name: "Exports",
-			scenario: "exports",
-		},
-		{
-			name: "Reject RFQ",
-			scenario: "reject-rfq",
-		},
-	],
-	confirm: [
-		{
-			name: "RFQ",
-			scenario: "rfq",
-		},
-		{
-			name: "Exports",
-			scenario: "exports",
-		},
-		{
-			name: "Non-RFQ",
-			scenario: "non-rfq",
-		},
-	],
-	on_confirm: [
-		{
-			name: "Non-RFQ",
-			scenario: "non-rfq",
-		},
-		{
-			name: "Rejected",
-			scenario: "rejected",
-		},
-		{
-			name: "RFQ",
-			scenario: "rfq",
-		},
-		{
-			name: "Exports",
-			scenario: "exports",
+			name: "BAP Payment",
+			scenario: "prepaid-bap-payment", 
 		},
 	],
 	on_status: [
@@ -173,88 +83,44 @@ export const B2B_SCENARIOS = {
 
 export const SERVICES_SCENARIOS = {
 	select: [
-		// {
-		// 	name: "Consultation",
-		// 	scenario: "consultation",
-		// },
 		{
 			name: "Selections",
 			scenario: "selection",
 		},
-		// {
-		// 	name: "Service",
-		// 	scenario: "service",
-		// },
-		// {
-		// 	name: "Without Schedule",
-		// 	scenario: "without-schedule",
-		// },
-	],
-	on_select: [
-		// {
-		// 	name: "Consultation Confirmed",
-		// 	scenario: "consultation-confirmed",
-		// },
-		// {
-		// 	name: "Consultation Rejected",
-		// 	scenario: "consultation-rejected",
-		// },
-		// {
-		// 	name: "Service Confirmed",
-		// 	scenario: "service-confirmed",
-		// },
-		// {
-		// 	name: "Service Rejected",
-		// 	scenario: "service-rejected",
-		// },
-		// {
-		// 	name: "NACK",
-		// 	scenario: "nack",
-		// },
 		{
-			name:"Schedule Confirmed",
-			scenario:"schedule_confirmed"
-		},
-		{
-			name:"Schedule Rejected",
-			scenario:"schedule_rejected"
+			name: "Customization",
+			scenario: "customization",
 		}
 	],
+	on_select: [
+		{
+			name: "Schedule Confirmed",
+			scenario: "schedule_confirmed",
+		},
+		{
+			name: "Schedule Rejected",
+			scenario: "schedule_rejected",
+		},
+	],
 	init: [
-		// {
-		// 	name: "Consultation",
-		// 	scenario: "consultation",
-		// },
 		{
 			name: "Service",
 			scenario: "service",
 		},
 	],
 	on_init: [
-		// {
-		// 	name: "Consultation",
-		// 	scenario: "consultation",
-		// },
 		{
 			name: "Service",
 			scenario: "service",
 		},
 	],
 	confirm: [
-		// {
-		// 	name: "Consultation",
-		// 	scenario: "consultation",
-		// },
 		{
 			name: "Service",
 			scenario: "service",
 		},
 	],
 	on_confirm: [
-		// {
-		// 	name: "Consultation",
-		// 	scenario: "consultation",
-		// },
 		{
 			name: "Service",
 			scenario: "service",
@@ -307,17 +173,26 @@ export const DOMAINS = {
 	b2b: "B2B",
 	services: "Services - Home Services",
 };
-export const ACTIONS = {
-	next: {
-		search: "on_search",
-		on_search: "select",
-		select: "on_select",
-		on_select: "init",
-		init: "on_init",
-		on_init: "confirm",
-		confirm: "on_confirm",
-		update: "on_update",
-		status: "on_status",
-		cancel: "on_cancel",
-	},
+export const NEXT_ACTION = {
+	search: "on_search",
+	on_search: "select",
+	select: "on_select",
+	on_select: "init",
+	init: "on_init",
+	on_init: "confirm",
+	confirm: "on_confirm",
+	update: "on_update",
+	status: "on_status",
+	cancel: "on_cancel",
 };
+
+
+export const PREV_ACTION = {
+	on_search: "search",
+	select: "on_search",
+	on_select: "select",
+	init: "on_select",
+	on_init: "init",
+	confirm: "on_init",
+	on_confirm: "confirm"
+}

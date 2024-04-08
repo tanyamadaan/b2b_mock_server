@@ -5,6 +5,8 @@ import {
 	SERVICES_EXAMPLES_PATH,
 	responseBuilder,
 	quoteCreatorService,
+	quoteCreatorServiceCustomized,
+	checkIfCustomized,
 } from "../../../lib/utils";
 import path from "path";
 import fs from "fs";
@@ -15,6 +17,9 @@ export const selectController = (req: Request, res: Response) => {
 	switch (scenario) {
 		// schedule_confirmed, schedule_rejected 
 		case "schedule_confirmed":
+			if (checkIfCustomized(req.body.message.order.items)) {
+				return selectServiceCustomizationConfirmedController(req, res);
+			}
 			selectConsultationConfirmController(req, res);
 			break;
 		case "schedule_rejected ":
@@ -40,6 +45,9 @@ export const selectController = (req: Request, res: Response) => {
 			// 		message: "Invalid scenario",
 			// 	},
 			// });
+			if (checkIfCustomized(req.body.message.order.items)) {
+				return selectServiceCustomizationConfirmedController(req, res);
+			}
 			selectConsultationConfirmController(req, res);
 			break;
 	}
@@ -49,32 +57,32 @@ const selectConsultationConfirmController = (
 	req: Request,
 	res: Response
 ) => {
-	const { context,message } = req.body;
+	const { context, message } = req.body;
 	const { locations, ...provider } = message.order.provider;
 
 	var responseMessage = {
-    order: {
-      provider,
-      payments: message.order.payments.map(({ type }: { type: string }) => ({
-        type,
-        collected_by: "BAP",
-      })),
-      items: message.order.items.map(({ location_ids, ...remaining }:
-        { location_ids: any; remaining: any; }) => ({ ...remaining, fulfilment_ids: [uuidv4()] })
-      ),
-      fulfillments: message.order.fulfillments.map(({ id, stops, ...each }: any) => ({
-        id,
-        tracking: false,
-        state: {
-          descriptor: {
-            code: "Serviceable"
-          }
-        },
-        stops
-      })),
-      quote: quoteCreatorService(message.order.items),
-    },
-  };
+		order: {
+			provider,
+			payments: message.order.payments.map(({ type }: { type: string }) => ({
+				type,
+				collected_by: "BAP",
+			})),
+			items: message.order.items.map(({ location_ids, ...remaining }:
+				{ location_ids: any; remaining: any; }) => ({ ...remaining, fulfilment_ids: [uuidv4()] })
+			),
+			fulfillments: message.order.fulfillments.map(({ id, stops, ...each }: any) => ({
+				id,
+				tracking: false,
+				state: {
+					descriptor: {
+						code: "Serviceable"
+					}
+				},
+				stops
+			})),
+			quote: quoteCreatorService(message.order.items),
+		},
+	};
 
 	// const file = fs.readFileSync(
 	// 	path.join(
@@ -88,8 +96,7 @@ const selectConsultationConfirmController = (
 		res,
 		context,
 		responseMessage,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
 		}`,
 		`on_select`,
 		"services"
@@ -119,6 +126,52 @@ const selectConsultationRejectController = (
 	);
 };
 
+const selectServiceCustomizationConfirmedController = (
+	req: Request,
+	res: Response
+) => {
+	const { context, message } = req.body;
+	const { locations, ...provider } = message.order.provider;
+	const { id: parent_item_id, location_ids, ...item } = message.order.items[0]
+
+	const responseMessage = {
+		order: {
+			provider,
+			payments: message.order.payments.map(({ type }: { type: string }) => ({
+				type,
+				collected_by: "BAP",
+			})),
+			items: [
+				{ parent_item_id, location_ids, fulfilment_ids: [uuidv4()] },
+				...message.order.items.slice(1).map(({ location_ids, ...remaining }:
+					{ location_ids: any; remaining: any; }) => ({ ...remaining, fulfilment_ids: [uuidv4()] })
+				)
+			],
+			fulfillments: message.order.fulfillments.map(({ stops, type, ...each }: any) => ({
+				id: uuidv4(),
+				type,
+				tracking: false,
+				state: {
+					descriptor: {
+						code: "Serviceable"
+					}
+				},
+				stops
+			})),
+			quote: quoteCreatorServiceCustomized(message.order.items),
+		},
+	};
+
+	return responseBuilder(
+		res,
+		context,
+		responseMessage,
+		`${context.bap_uri}/on_select`,
+		`on_select`,
+		"services"
+	);
+};
+
 const selectServiceConfirmController = (req: Request, res: Response) => {
 	const { context } = req.body;
 	const file = fs.readFileSync(
@@ -133,8 +186,7 @@ const selectServiceConfirmController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
 		}`,
 		`on_select`,
 		"services"
@@ -155,8 +207,7 @@ const selectServiceRejectController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
 		}`,
 		`on_select`,
 		"services"
@@ -177,8 +228,7 @@ const selectNackController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
 		}`,
 		`on_select`,
 		"services"

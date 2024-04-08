@@ -1,11 +1,14 @@
 import { Request, Response } from "express";
-import { SERVICES_EXAMPLES_PATH, quoteCreatorService, responseBuilder } from "../../../lib/utils";
+import { SERVICES_EXAMPLES_PATH, checkIfCustomized, quoteCreatorService, responseBuilder } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 import { v4 as uuidv4 } from "uuid";
 
 export const onInitController = (req: Request, res: Response) => {
+	if (checkIfCustomized(req.body.message.order.items)) {
+		return onInitServiceCustomizedController(req, res);
+	}
 	onInitConsultationController(req, res)
 	// const { scenario } = req.query
 	// switch (scenario) {
@@ -76,8 +79,60 @@ const onInitConsultationController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		`${context.bpp_uri}${
-			context.bpp_uri.endsWith("/") ? "confirm" : "/confirm"
+		`${context.bpp_uri}${context.bpp_uri.endsWith("/") ? "confirm" : "/confirm"
+		}`,
+		`confirm`,
+		"services"
+	);
+};
+
+const onInitServiceCustomizedController = (req: Request, res: Response) => {
+	const { context, message: { order: { provider, locations, items, billing, fulfillments, payments, xinput } } } = req.body;
+	const { stops, ...remainingfulfillments } = fulfillments[0]
+
+	const file = fs.readFileSync(
+		path.join(SERVICES_EXAMPLES_PATH, "confirm/confirm_consultation.yaml")
+	);
+	const response = YAML.parse(file.toString());
+
+	const responseMessage = {
+		order: {
+			id: uuidv4(),
+			status: response.value.message.order.status,
+			provider: {
+				...provider,
+				locations: [locations[0]]
+			},
+			items,
+			billing,
+			fulfillments: [{
+				...remainingfulfillments,
+				stops: stops.map(({ tags, ...stop }: { tags: any }) => {
+					return {
+						...stop,
+						customer: {
+							"person": {
+								"name": "Ramu"
+							}
+						}
+					}
+				})
+			}],
+			quote: quoteCreatorService(items),
+			payments: [{
+				...payments[0],
+				status: "PAID"
+			}],
+			"created_at": "2023-02-03T09:30:00.000Z",
+			"updated_at": "2023-02-03T09:30:00.000Z",
+			xinput
+		}
+	}
+	return responseBuilder(
+		res,
+		context,
+		responseMessage,
+		`${context.bpp_uri}${context.bpp_uri.endsWith("/") ? "confirm" : "/confirm"
 		}`,
 		`confirm`,
 		"services"
@@ -94,8 +149,7 @@ const onInitServiceController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${context.bpp_uri}${
-			context.bpp_uri.endsWith("/") ? "confirm" : "/confirm"
+		`${context.bpp_uri}${context.bpp_uri.endsWith("/") ? "confirm" : "/confirm"
 		}`,
 		`confirm`,
 		"services"
