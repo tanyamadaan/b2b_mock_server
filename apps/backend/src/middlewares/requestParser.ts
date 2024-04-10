@@ -6,10 +6,26 @@ export const requestParser = (
 	next: NextFunction
 ) => {
 	if (!req.body) next();
-
-	if (req.headers["content-type"] === "application/json") {
-    (req as any).rawBody = req.body;
-    req.body = JSON.parse(req.body.toString())
+	try {
+		if (req.headers["content-type"] === "application/json") {
+			(req as any).rawBody = req.body;
+			req.body = JSON.parse(req.body.toString());
+			console.log("REQ BODY PARSED");
+		}
+	} catch (error) {
+		if (error instanceof SyntaxError)
+			res.status(400).json({
+				message: {
+					ack: {
+						status: "NACK",
+					},
+				},
+				error: {
+					type: "JSON-SCHEMA-ERROR",
+					code: "50009",
+					message: error.message,
+				},
+			});
 	}
-  next();
+	next();
 };
