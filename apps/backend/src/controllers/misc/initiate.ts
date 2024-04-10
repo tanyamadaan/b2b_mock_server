@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
 import {
-	B2B_BAP_MOCKSERVER_URL,
-	B2B_EXAMPLES_PATH,
 	MOCKSERVER_ID,
 	SERVICES_BAP_MOCKSERVER_URL,
 	SERVICES_EXAMPLES_PATH,

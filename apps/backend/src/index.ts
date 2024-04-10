@@ -13,6 +13,7 @@ import {
 	authSwagger,
 	b2bSwagger,
 	miscSwagger,
+	requestParser,
 	servicesSwagger,
 } from "./middlewares";
 const app: Express = express();
@@ -29,7 +30,8 @@ app.use(
 	servicesSwagger("/api-docs/services")
 );
 
-app.use(express.json({ limit: "50mb" }));
+app.use(express.raw({ type: "*/*", limit: "1mb" }));
+app.use(requestParser)
 app.use("/", miscRouter);
 
 app.use("/b2b", b2bRouter);
