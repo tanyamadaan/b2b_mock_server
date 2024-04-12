@@ -54,16 +54,15 @@ export const selectDomesticController = (req: Request, res: Response) => {
 	var responseMessage = {
 		order: {
 			provider,
-			payments: message.order.payments.map(({ type }: { type: string }) => ({
-				type,
-				collected_by: "BPP",
-			})),
+			payments: message.order.payments[0],
 			items: message.order.items.map(
 				({
 					location_ids,
+					add_ons,
 					...remaining
 				}: {
 					location_ids: any;
+					add_ons: any;
 					remaining: any;
 				}) => ({
 					...remaining,

@@ -3,10 +3,31 @@ import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 
-import { responseBuilder, B2B_EXAMPLES_PATH } from "../../../lib/utils";
+import { responseBuilder, B2B_EXAMPLES_PATH, redis } from "../../../lib/utils";
 
-export const statusController = (req: Request, res: Response) => {
+export const statusController = async (req: Request, res: Response) => {
 	const { scenario } = req.query;
+
+	const transactionKeys = await redis.keys(`${req.body.transaction_id}-*`);
+	const ifTransactionExist = transactionKeys.filter((e) => e.includes('on_confirm-to-server'))
+
+	if (ifTransactionExist.length === 0) {
+		return res.status(400).json({
+			message: {
+				ack: {
+					status: "NACK",
+				},
+			},
+			error: {
+				message: "On confirm doesn't exist",
+			},
+		});
+	}
+	const transaction = await redis.mget(ifTransactionExist)
+	const parsedTransaction = transaction.map(((ele) => {
+		return JSON.parse(ele as string)
+	}))
+
 	switch (scenario) {
 		case "delivered":
 			statusDeliveredController(req, res);
@@ -51,12 +72,49 @@ export const statusDeliveredController = (req: Request, res: Response) => {
 
 	const response = YAML.parse(file.toString());
 
+	const { context, message } = req.body;
+	const { ttl, ...provider } = message.order.provider;
+
+	const responseMessage = {
+		order: {
+			id: message.order.order_id,
+			state: "Completed",
+			payments: message.order.payments.map(({ status, ...payment }: { status: string }) => ({
+				...payment, 
+				status: "PAID",
+				"@ondc/org/settlement_details":""
+			})),
+			items: message.order.items.map(
+				({
+					location_ids,
+					...remaining
+				}: {
+					location_ids: any;
+					remaining: any;
+				}) => ({
+					...remaining,
+				})
+			),
+			fulfillments: message.order.fulfillments.map(({ id, ...each }: any) => ({
+				id,
+				tracking: false,
+				"@ondc/org/provider_name": "ONDC Mock Server",
+				"@ondc/org/category": "Express Delivery",
+				"@ondc/org/TAT": "P7D",
+				state: {
+					descriptor: {
+						code: "Serviceable",
+					},
+				},
+			})),
+		},
+	}
+
 	return responseBuilder(
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
 		}`,
 		`on_status`,
 		"b2b"
@@ -73,8 +131,7 @@ export const statusOutForDeliveryController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
 		}`,
 		`on_status`,
 		"b2b"
@@ -91,8 +148,7 @@ export const statusPickedUpController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
 		}`,
 		`on_status`,
 		"b2b"
@@ -113,8 +169,7 @@ export const statusProformaInvoiceController = (
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
 		}`,
 		`on_status`,
 		"b2b"
@@ -135,8 +190,7 @@ export const statusBPPpaymentErrorController = (
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
 		}`,
 		`on_status`,
 		"b2b"
@@ -154,8 +208,7 @@ export const statusBPPpaymentController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
 		}`,
 		`on_status`,
 		"b2b"
@@ -173,8 +226,7 @@ export const statusSelfPickedUpController = (req: Request, res: Response) => {
 		res,
 		req.body.context,
 		response.value.message,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
 		}`,
 		`on_status`,
 		"b2b"
