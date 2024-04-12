@@ -106,6 +106,7 @@ export const b2bSchemaValidator =
 		}
 
 		isValid = validate(req.body);
+		console.log('isValid::::: ', isValid)
 		if (!isValid) {
 			res.status(400).json({
 				message: {
