@@ -115,7 +115,7 @@ const intializeRequest = async (
 			`${transaction_id}-init-from-server`,
 			JSON.stringify({ request: { ...init } })
 		);
-		await axios.post(`${context.bpp_uri}/init`, init, {
+		await axios.post(`${context.bpp_uri}/init?scenario=${scenario}`, init, {
 			headers: {
 				"X-Gateway-Authorization": header,
 				authorization: header,

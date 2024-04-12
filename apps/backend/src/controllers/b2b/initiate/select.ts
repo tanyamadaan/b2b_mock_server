@@ -103,7 +103,7 @@ const intializeRequest = async (req: Request, res: Response, transaction: any, s
       `${transaction_id}-select-from-server`,
       JSON.stringify({ request: { ...select } })
     );
-    await axios.post(`${context.bpp_uri}/select`, select, {
+    await axios.post(`${context.bpp_uri}/select?scenario=${scenario}`, select, {
       headers: {
         "X-Gateway-Authorization": header,
         authorization: header,

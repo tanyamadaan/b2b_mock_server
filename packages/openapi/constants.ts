@@ -13,6 +13,10 @@ export const B2B_SCENARIOS = {
 	],
 	on_select: [
 		{
+			name: "Default",
+			scenario: "default",
+		},
+		{
 			name: "Non Serviceable",
 			scenario: "non-serviceable",
 		},
