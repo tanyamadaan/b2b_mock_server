@@ -1,4 +1,4 @@
-import { SRV_FULFILLMENT_TYPE, GPS_PATTERN, SRV_PAYMENT_TYPE, PAYMENT_COLLECTEDBY } from "./constants";
+import { SRV_FULFILLMENT_TYPE, GPS_PATTERN, SRV_PAYMENT_TYPE, PAYMENT_COLLECTEDBY, DOMAIN, VERSION } from "./constants";
 
 export const searchSchema = {
   $id: "searchSchema",
@@ -9,6 +9,7 @@ export const searchSchema = {
       properties: {
         domain: {
           type: "string",
+          enum: DOMAIN
         },
         location: {
           type: "object",
@@ -40,7 +41,7 @@ export const searchSchema = {
         },
         version: {
           type: "string",
-          const: "2.0.0"
+          const: VERSION
         },
         bap_id: {
           type: "string",

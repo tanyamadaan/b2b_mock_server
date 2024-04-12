@@ -1,3 +1,5 @@
+import { DOMAIN, VERSION } from "./constants";
+
 export const cancelSchema = {
   $id: "cancelSchema",
   type: "object",
@@ -7,6 +9,7 @@ export const cancelSchema = {
       properties: {
         domain: {
           type: "string",
+          enum: DOMAIN
         },
         location: {
           type: "object",
@@ -37,6 +40,7 @@ export const cancelSchema = {
         },
         version: {
           type: "string",
+          const: VERSION
         },
         bap_id: {
           type: "string",

@@ -1,4 +1,4 @@
-import { SRV_FULFILLMENT_STATE, SRV_ORDER_STATE } from "./constants";
+import { DOMAIN, SRV_FULFILLMENT_STATE, SRV_ORDER_STATE, VERSION } from "./constants";
 
 export const onStatusSchema = {
   $id: "onStatusSchema",
@@ -9,6 +9,7 @@ export const onStatusSchema = {
       properties: {
         domain: {
           type: "string",
+          enum: DOMAIN
         },
         location: {
           type: "object",
@@ -40,7 +41,7 @@ export const onStatusSchema = {
         },
         version: {
           type: "string",
-          const: "2.0.0",
+          const: VERSION
         },
         bap_id: {
           type: "string",
