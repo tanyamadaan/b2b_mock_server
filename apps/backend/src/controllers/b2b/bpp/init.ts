@@ -9,18 +9,18 @@ import path from "path";
 import YAML from "yaml";
 
 export const initController = (req: Request, res: Response) => {
-	const { scenario } = req.query;
-	switch (scenario) {
-		case "default":
-			initDomesticController(req, res);
-			break;
-		// case "reject-rfq":
-		// 	initRejectRfq(req, res);
+	// const { scenario } = req.query;
+	// switch (scenario) {
+		// case "default":
+		// 	initDomesticController(req, res);
 		// 	break;
-		default:
+		// // case "reject-rfq":
+		// // 	initRejectRfq(req, res);
+		// // 	break;
+		// default:
 			initDomesticController(req, res);
-			break;
-	}
+	// 		break;
+	// }
 };
 
 const initDomesticController = (req: Request, res: Response) => {
