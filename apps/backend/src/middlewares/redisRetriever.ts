@@ -15,11 +15,11 @@ export const redisRetriever = async (
 	} = req.body;
 	const transaction = await redis.get(`${transaction_id}-${action}-to-server`);
 	// let logs: TransactionType;
-	logger.info("---------------------------------")
-	logger.info("TIME:", Date.now())
-	logger.info("FOR ACTION:", action)
-	logger.info("PICKED FROM REDIS", transaction)
-	logger.info("---------------------------------")
+	// logger.info("---------------------------------")
+	// logger.info("TIME:", Date.now())
+	// logger.info("FOR ACTION:", action)
+	// logger.info("PICKED FROM REDIS", transaction)
+	// logger.info("---------------------------------")
 
 	let logs: TransactionType;
 	if (!transaction) {

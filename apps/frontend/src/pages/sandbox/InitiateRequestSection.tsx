@@ -11,8 +11,11 @@ import { useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
 import { B2B_SCENARIOS, SERVICES_SCENARIOS } from "openapi-specs/constants";
 import Divider from "@mui/material/Divider";
-import { Grow } from "@mui/material";
+import Grow from "@mui/material/Grow";
 import { useMessage } from "../../utils/hooks";
+import HelpOutlineTwoToneIcon from "@mui/icons-material/HelpOutlineTwoTone";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
 
 type InitiateRequestSectionProp = {
 	domain: "b2b" | "services";
@@ -161,12 +164,12 @@ export const InitiateRequestSection = ({
 				}
 			);
 			console.log("Response from initiate", response);
-			if (response.data.message.ack.status === "ACK" ) {
-				if( action === "search")
-				handleMessageToggle(
-					`Your Transaction ID is: ${response.data.transaction_id}`
-				);
-				else handleMessageToggle("Request Initiated Successfully!")
+			if (response.data.message.ack.status === "ACK") {
+				if (action === "search")
+					handleMessageToggle(
+						`Your Transaction ID is: ${response.data.transaction_id}`
+					);
+				else handleMessageToggle("Request Initiated Successfully!`");
 			} else if (response.data.error) {
 				handleMessageToggle(
 					`Error Occurred: ${
@@ -197,13 +200,18 @@ export const InitiateRequestSection = ({
 				<Box
 					sx={{
 						display: "flex",
-						justifyContent: "flex-start",
+						justifyContent: "space-between",
 						alignItems: "center",
 					}}
 				>
 					<Typography variant="h6" my={1} mr={2}>
 						Initiate Request:
 					</Typography>
+					<Tooltip title="Are you a seller app, Initiate Requests here 👇">
+						<IconButton>
+							<HelpOutlineTwoToneIcon />
+						</IconButton>
+					</Tooltip>
 				</Box>
 				<Stack spacing={2} sx={{ my: 2 }}>
 					<Select placeholder="Select Action" onChange={handleActionSelection}>

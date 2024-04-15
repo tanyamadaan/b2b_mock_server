@@ -29,7 +29,7 @@ export const selectDomesticController = (req: Request, res: Response) => {
 	var responseMessage = {
 		order: {
 			provider,
-			payments: message.order.payments[0],
+			payments: [message.order.payments[0]],
 			items: message.order.items.map(
 				({
 					location_ids,

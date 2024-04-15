@@ -10,7 +10,7 @@ export const requestParser = (
 		if (req.headers["content-type"] === "application/json") {
 			(req as any).rawBody = req.body;
 			req.body = JSON.parse(req.body.toString());
-			console.log("REQ BODY PARSED");
+			// console.log("REQ BODY PARSED");
 		}
 	} catch (error) {
 		if (error instanceof SyntaxError)

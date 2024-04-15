@@ -16,7 +16,7 @@ import { updateSchema } from "./update";
 
 export const srvSchemaValidator =
 	(
-		action:
+		schema:
 			| "search"
 			| "on_search"
 			| "select"
@@ -50,7 +50,7 @@ export const srvSchemaValidator =
 			}>,
 			isValid: boolean;
 
-		switch (action) {
+		switch (schema) {
 			case "search":
 				validate = ajv.compile(searchSchema);
 				break;
@@ -104,7 +104,7 @@ export const srvSchemaValidator =
 		}
 
 		isValid = validate(req.body);
-		console.log('isValid::::: ', isValid)
+		// console.log('isValid::::: ', isValid)
 		if (!isValid) {
 			res.status(400).json({
 				message: {

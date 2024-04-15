@@ -18,7 +18,7 @@ import { TransactionType } from "../../utils";
 
 export const b2bSchemaValidator =
 	(
-		action:
+		schema:
 			| "search"
 			| "on_search"
 			| "select"
@@ -52,7 +52,7 @@ export const b2bSchemaValidator =
 			}>,
 			isValid: boolean;
 
-		switch (action) {
+		switch (schema) {
 			case "search":
 				validate = ajv.compile(searchSchema);
 				break;
@@ -106,7 +106,7 @@ export const b2bSchemaValidator =
 		}
 
 		isValid = validate(req.body);
-		console.log('isValid::::: ', isValid)
+		// console.log('isValid::::: ', isValid)
 		if (!isValid) {
 			res.status(400).json({
 				message: {
