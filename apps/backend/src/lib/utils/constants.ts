@@ -4,7 +4,7 @@ export const REGISTRY_URL = "https://staging.registry.ondc.org/lookup";
 // export const REGISTRY_URL = "https://preprod.registry.ondc.org/ondc/lookup";
 
 export const SERVICES_EXAMPLES_PATH = "./domain-repos/@services/draft-services/api/components/Examples/Services_home_service_yaml"
-export const B2B_EXAMPLES_PATH = "./domain-repos/@retail-b2b/draft-2.x/api/components/Examples/B2B"
+export const B2B_EXAMPLES_PATH = "./domain-repos/@retail-b2b/release-2.0.2/api/components/Examples/B2B"
 
 
 export const MOCKSERVER_ID = "mock.ondc.org/api";
