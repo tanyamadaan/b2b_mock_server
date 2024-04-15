@@ -96,13 +96,38 @@ const FIELDS = {
 			},
 		},
 	],
+	status: [
+		{
+			name: "transactionId",
+			placeholder: "Enter Your Transaction ID",
+			type: "text",
+		},
+		{
+			name: "scenario",
+			placeholder: "Select Scenario",
+			type: "select",
+			domainDepended: true,
+			options: {
+				// services: SERVICES_SCENARIOS["confirm"].map((each) => each.scenario),
+			},
+		},
+	],
 };
 
 type SELECT_OPTIONS =
 	| string[]
 	| { b2b: string[]; services: string[] }
 	| { b2b: string[]; services: string[] }
-	| { services: string[] };
+	| { services: string[] }
+	| object;
+
+type SELECT_FIELD = {
+	name: string;
+	placeholder: string;
+	type: string;
+	domainDepended: boolean;
+	options: SELECT_OPTIONS;
+};
 
 export const InitiateRequestSection = ({
 	domain,
@@ -163,7 +188,7 @@ export const InitiateRequestSection = ({
 					},
 				}
 			);
-			console.log("Response from initiate", response);
+			// console.log("Response from initiate", response);
 			if (response.data.message.ack.status === "ACK") {
 				if (action === "search")
 					handleMessageToggle(
@@ -237,8 +262,10 @@ export const InitiateRequestSection = ({
 												}
 											/>
 										) : field.type === "select" &&
-										  field.domainDepended &&
-										  field.options[domain as keyof SELECT_OPTIONS] ? (
+										  (field as SELECT_FIELD).domainDepended &&
+										  (field as SELECT_FIELD).options[
+												domain as keyof SELECT_OPTIONS
+										  ] ? (
 											<Select
 												placeholder={field.placeholder}
 												key={"select-" + action + "-" + index}
@@ -248,7 +275,7 @@ export const InitiateRequestSection = ({
 												) => handleFieldChange(field.name, newValue as string)}
 											>
 												{(
-													field.options[
+													(field as SELECT_FIELD).options[
 														domain as keyof SELECT_OPTIONS
 													] as string[]
 												).map((option, index: number) => (
