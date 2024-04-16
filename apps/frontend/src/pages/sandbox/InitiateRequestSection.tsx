@@ -112,6 +112,38 @@ const FIELDS = {
 			},
 		},
 	],
+	update: [
+		{
+			name: "transactionId",
+			placeholder: "Enter Your Transaction ID",
+			type: "text",
+		},
+		{
+			name: "scenario",
+			placeholder: "Select Scenario",
+			type: "select",
+			domainDepended: true,
+			options: {
+				// services: SERVICES_SCENARIOS["confirm"].map((each) => each.scenario),
+			},
+		},
+	],
+	cancel: [
+		{
+			name: "transactionId",
+			placeholder: "Enter Your Transaction ID",
+			type: "text",
+		},
+		{
+			name: "scenario",
+			placeholder: "Select Scenario",
+			type: "select",
+			domainDepended: true,
+			options: {
+				// services: SERVICES_SCENARIOS["confirm"].map((each) => each.scenario),
+			},
+		},
+	],
 };
 
 type SELECT_OPTIONS =

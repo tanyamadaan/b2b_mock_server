@@ -82,7 +82,7 @@ export const B2B_SCENARIOS = {
 	on_update: [
 		{
 			name: "Fulfillments",
-			scenario: "fulfillment",
+			scenario: "fulfillment", // default
 		},
 		{
 			name: "Prepaid BAP",

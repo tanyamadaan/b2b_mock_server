@@ -14,16 +14,7 @@ export const updateController = (req: Request, res: Response) => {
 			updateRescheduleController(req, res);
 			break;
 		default:
-			res.status(404).json({
-				message: {
-					ack: {
-						status: "NACK",
-					},
-				},
-				error: {
-					message: "Invalid scenario",
-				},
-			});
+			updateRequoteController(req, res);
 			break;
 	}
 };
@@ -47,21 +38,29 @@ export const updateRequoteController = (req: Request, res: Response) => {
 };
 
 export const updateRescheduleController = (req: Request, res: Response) => {
-	const { context, message: { order } } = req.body;
+	const {
+		context,
+		message: { order },
+	} = req.body;
 	// const file = fs.readFileSync(
 	// 	path.join(SERVICES_EXAMPLES_PATH, "on_update/on_update_reschedule.yaml")
 	// );
 	// const response = YAML.parse(file.toString());
 	const responseMessage = {
 		...order,
-		fulfillments: [{
-			...order.fulfillments[0],
-			stops: order.fulfillments[0].stops.map((stop: any) => ({
-				...stop,
-				time: stop.type === "end" ? { ...stop.time, label: "selected" } : stop.time
-			}))
-		}]
-	}
+		fulfillments: [
+			{
+				...order.fulfillments[0],
+				stops: order.fulfillments[0].stops.map((stop: any) => ({
+					...stop,
+					time:
+						stop.type === "end"
+							? { ...stop.time, label: "selected" }
+							: stop.time,
+				})),
+			},
+		],
+	};
 	return responseBuilder(
 		res,
 		context,

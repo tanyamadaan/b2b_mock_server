@@ -17,16 +17,7 @@ export const updateController = (req: Request, res: Response) => {
 			updatePrepaidBAPController(req, res);
 			break;
 		default:
-			res.status(404).json({
-				message: {
-					ack: {
-						status: "NACK",
-					},
-				},
-				error: {
-					message: "Invalid scenario",
-				},
-			});
+			updateFulfillmentController(req, res);
 			break;
 	}
 };
