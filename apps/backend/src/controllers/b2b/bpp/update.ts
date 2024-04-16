@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { responseBuilder, B2B_EXAMPLES_PATH, redis } from "../../../lib/utils";
+import { on } from "events";
 // import fs from "fs";
 // import path from "path";
 // import YAML from "yaml";
@@ -85,11 +86,11 @@ import { responseBuilder, B2B_EXAMPLES_PATH, redis } from "../../../lib/utils";
 //  );
 // };
 
-export const updateController = (req: Request, res: Response) => {
+export const updateController = async (req: Request, res: Response) => {
 	const { scenario } = req.query
 	const update = req.body
 
-	const on_update = {
+	let on_update = {
 		context: {
 			...update.context,
 			action: "on_update"
@@ -114,7 +115,7 @@ export const updateController = (req: Request, res: Response) => {
 
 	switch (scenario) {
 		case "fulfillment":
-			updateFulfillment(res, on_update)
+			on_update = await updateFulfillment(res, on_update)
 			break;
 		case "prepaid":
 			on_update.message.order.payments.forEach((itm: any) => {
@@ -150,7 +151,8 @@ export const updateController = (req: Request, res: Response) => {
 
 }
 const updateFulfillment = async (res: Response, on_update: any) => {
-	const { transaction_id } = on_update.body.context;
+	console.log("--", on_update)
+	const { transaction_id } = on_update.context;
 
 	const transactionKeys = await redis.keys(`${transaction_id}-*`);
 	const ifTransactionExist = transactionKeys.filter((e) =>
@@ -184,8 +186,12 @@ const updateFulfillment = async (res: Response, on_update: any) => {
 		return acc;
 	}, {});
 
+	console.log("Result of tags::", result)
 	on_update.message.order.payments.forEach((itm: any) => {
 		itm.collected_by = "BPP"
+		delete itm["@ondc/org/settlement_basis"]
+		delete itm["@ondc/org/settlement_window"]
+		delete itm["@ondc/org/withholding_amount"]
 		itm["@ondc/org/settlement_details"].forEach((itm: any) => {
 			itm.settlement_counterparty = "buyer-app"
 			itm.settlement_phase = "sale-amount"
@@ -216,6 +222,6 @@ const updateFulfillment = async (res: Response, on_update: any) => {
 			}
 		])
 	}))
-
+	return on_update
 }
 
