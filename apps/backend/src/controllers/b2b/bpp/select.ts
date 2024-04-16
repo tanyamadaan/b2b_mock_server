@@ -96,7 +96,6 @@ export const selectDomesticController = (req: Request, res: Response) => {
 	responseMessage.order.quote.breakup.forEach((element: any) => {
 		if (element['@ondc/org/title_type'] === 'item') {
 			const id = element["@ondc/org/item_id"]
-			console.log("Id", id)
 			const item = req.body.item_arr.find((item: any) => item.id == id);
 			element.title = item.name
 		}
