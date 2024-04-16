@@ -17,7 +17,7 @@ export const Sign = () => {
 	const theme = useTheme();
 	const [authHeader, setAuthHeader] = useState<string>();
 	const [requestBody, setRequestBody] = useState<string>();
-	const { handleMessageToggle } = useMessage();
+	const { handleMessageToggle, setMessageType } = useMessage();
 
 	const handleSubmit = async () => {
 		try {
@@ -31,16 +31,20 @@ export const Sign = () => {
 					},
 				}
 			);
-      if(response.status === 200) handleMessageToggle("This is a Valid Header.")
+			if (response.status === 200) {
+				handleMessageToggle("This is a Valid Header.");
+				setMessageType("success");
+			}
 			console.log("RESPONSE", response);
 		} catch (error) {
-      if(error instanceof AxiosError) {
-        if(error.response?.status === 401) handleMessageToggle("Invalid Header !")
-        else handleMessageToggle(error.message)
-        console.log("ERROR:", error)
-        
-      }
-    }
+			setMessageType("error");
+			if (error instanceof AxiosError) {
+				if (error.response?.status === 401)
+					handleMessageToggle("Invalid Header !");
+				else handleMessageToggle(error.message);
+				console.log("ERROR:", error);
+			}
+		}
 	};
 
 	return (

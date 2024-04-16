@@ -132,7 +132,7 @@ type SELECT_FIELD = {
 export const InitiateRequestSection = ({
 	domain,
 }: InitiateRequestSectionProp) => {
-	const { handleMessageToggle } = useMessage();
+	const { handleMessageToggle, setMessageType, setCopy } = useMessage();
 	const [action, setAction] = useState<string>();
 	const [renderActionFields, setRenderActionFields] = useState(false);
 	const [formState, setFormState] = useState<object>();
@@ -190,19 +190,26 @@ export const InitiateRequestSection = ({
 			);
 			// console.log("Response from initiate", response);
 			if (response.data.message.ack.status === "ACK") {
-				if (action === "search")
+				if (action === "search") {
 					handleMessageToggle(
 						`Your Transaction ID is: ${response.data.transaction_id}`
 					);
-				else handleMessageToggle("Request Initiated Successfully!`");
+					setMessageType("success");
+					setCopy(response.data.transaction_id);
+				} else {
+					handleMessageToggle("Request Initiated Successfully!`");
+					setMessageType("success");
+				}
 			} else if (response.data.error) {
 				handleMessageToggle(
 					`Error Occurred: ${
 						response.data.error.message || response.data.error
 					}`
 				);
+				setMessageType("error");
 			}
 		} catch (error) {
+			setMessageType("error");
 			if (error instanceof AxiosError && error.response?.data?.error?.message)
 				handleMessageToggle(
 					`Error Occurred: ${error.response?.data?.error?.message}`

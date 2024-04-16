@@ -16,7 +16,7 @@ export const TransactionSearch = () => {
 	const theme = useTheme();
 	const { setEdges, setNodes } = useAnalyse();
 	const [requested, setRequested] = useState(false);
-	const { handleMessageToggle } = useMessage();
+	const { handleMessageToggle, setMessageType } = useMessage();
 	const [transactionId, setTransactionId] = useState("");
 
 	const fetchTransaction = async (transaction: string) => {
@@ -68,6 +68,7 @@ export const TransactionSearch = () => {
 			setRequested(true);
 		} catch (error) {
 			handleMessageToggle("Error Occurred while fetching transaction!");
+			setMessageType("error")
 			console.log("Following error occurred while querying", error);
 		}
 	};
