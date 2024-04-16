@@ -1,11 +1,46 @@
 import { Request, Response } from "express";
 import {
 	quoteCreator,
-	responseBuilder
+	responseBuilder, redis
 } from "../../../lib/utils";
 
-export const selectController = (req: Request, res: Response) => {
+export const selectController = async (req: Request, res: Response) => {
 	const { scenario } = req.query;
+	const { transaction_id } = req.body.context;
+
+	const transactionKeys = await redis.keys(`${transaction_id}-*`);
+	const ifTransactionExist = transactionKeys.filter((e) =>
+		e.includes("on_search-to-server")
+	);
+
+	if (ifTransactionExist.length === 0) {
+		return res.status(400).json({
+			message: {
+				ack: {
+					status: "NACK",
+				},
+			},
+			error: {
+				message: "on search doesn't exist",
+			},
+		});
+	}
+	const transaction = await redis.mget(ifTransactionExist);
+	const parsedTransaction = transaction.map((ele) => {
+		return JSON.parse(ele as string);
+	});
+
+	const providers = parsedTransaction[0].request.message.catalog.providers
+	const item_id_name = providers.map((pro: any) => {
+		const mappedItems = pro.items.map((item: any) => ({
+			id: item.id,
+			name: item.descriptor.name,
+		}));
+		return mappedItems
+	})
+
+	req.body.item_arr = item_id_name.flat()
+
 	switch (scenario) {
 		case "default":
 			selectDomesticController(req, res);
@@ -58,12 +93,19 @@ export const selectDomesticController = (req: Request, res: Response) => {
 			quote: quoteCreator(message.order.items),
 		},
 	};
+	responseMessage.order.quote.breakup.forEach((element: any) => {
+		if (element['@ondc/org/title_type'] === 'item') {
+			const id = element["@ondc/org/item_id"]
+			console.log("Id", id)
+			const item = req.body.item_arr.find((item: any) => item.id == id);
+			element.title = item.name
+		}
+	});
 	return responseBuilder(
 		res,
 		context,
 		responseMessage,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
 		}`,
 		`on_select`,
 		"b2b"
@@ -111,8 +153,7 @@ export const selectNonServiceableController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
 		}`,
 		`on_select`,
 		"b2b",
@@ -167,8 +208,7 @@ export const selectQuantityUnavailableController = (
 		res,
 		context,
 		responseMessage,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
 		}`,
 		`on_select`,
 		"b2b",
