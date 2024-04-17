@@ -3,7 +3,7 @@ import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import { hexToRgb } from "@mui/material/styles";
 import useTheme from "@mui/material/styles/useTheme";
-import ReactFlow, { Background, Controls, MiniMap } from "reactflow";
+import ReactFlow, { Background, Controls } from "reactflow";
 import { CustomEdge, CustomNode } from ".";
 
 const nodeTypes = { custom: CustomNode };
@@ -47,7 +47,6 @@ export const TransactionVisualizer = () => {
 							nodeTypes={nodeTypes}
 							edgeTypes={edgeTypes}
 						>
-							<MiniMap />
 							<Controls />
 							<Background />
 						</ReactFlow>

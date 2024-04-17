@@ -456,7 +456,7 @@ export const onSelectSchema = {
 										enum: ["BAP", "BPP"],
 									},
 								},
-								required: ["type", "collected_by"],
+								required: ["type"], // TODO
 							},
 						},
 					},

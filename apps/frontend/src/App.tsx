@@ -1,6 +1,6 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Layout } from "./layout/Layout";
-import { Analyse, Landing, Mock, Sandbox, Swagger } from "./pages";
+import { Analyse, Landing, Mock, Sandbox, Sign, Swagger } from "./pages";
 import {
 	AuthSwagger,
 	B2BSwagger,
@@ -24,6 +24,10 @@ const router = createBrowserRouter([
 			{
 				path: "/",
 				Component: Landing,
+			},
+			{
+				path: "/sign-check",
+				Component: Sign,
 			},
 			{
 				path: "/mock",

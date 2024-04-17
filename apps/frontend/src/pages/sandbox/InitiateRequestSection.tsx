@@ -11,8 +11,11 @@ import { useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
 import { B2B_SCENARIOS, SERVICES_SCENARIOS } from "openapi-specs/constants";
 import Divider from "@mui/material/Divider";
-import { Grow } from "@mui/material";
+import Grow from "@mui/material/Grow";
 import { useMessage } from "../../utils/hooks";
+import HelpOutlineTwoToneIcon from "@mui/icons-material/HelpOutlineTwoTone";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
 
 type InitiateRequestSectionProp = {
 	domain: "b2b" | "services";
@@ -93,18 +96,75 @@ const FIELDS = {
 			},
 		},
 	],
+	status: [
+		{
+			name: "transactionId",
+			placeholder: "Enter Your Transaction ID",
+			type: "text",
+		},
+		{
+			name: "scenario",
+			placeholder: "Select Scenario",
+			type: "select",
+			domainDepended: true,
+			options: {
+				// services: SERVICES_SCENARIOS["confirm"].map((each) => each.scenario),
+			},
+		},
+	],
+	update: [
+		{
+			name: "transactionId",
+			placeholder: "Enter Your Transaction ID",
+			type: "text",
+		},
+		{
+			name: "scenario",
+			placeholder: "Select Scenario",
+			type: "select",
+			domainDepended: true,
+			options: {
+				// services: SERVICES_SCENARIOS["confirm"].map((each) => each.scenario),
+			},
+		},
+	],
+	cancel: [
+		{
+			name: "transactionId",
+			placeholder: "Enter Your Transaction ID",
+			type: "text",
+		},
+		{
+			name: "scenario",
+			placeholder: "Select Scenario",
+			type: "select",
+			domainDepended: true,
+			options: {
+				// services: SERVICES_SCENARIOS["confirm"].map((each) => each.scenario),
+			},
+		},
+	],
 };
 
 type SELECT_OPTIONS =
 	| string[]
 	| { b2b: string[]; services: string[] }
 	| { b2b: string[]; services: string[] }
-	| { services: string[] };
+	| { services: string[] }
+	| object;
+
+type SELECT_FIELD = {
+	name: string;
+	placeholder: string;
+	type: string;
+	domainDepended: boolean;
+	options: SELECT_OPTIONS;
+};
 
 export const InitiateRequestSection = ({
 	domain,
 }: InitiateRequestSectionProp) => {
-	const { handleMessageToggle } = useMessage();
+	const { handleMessageToggle, setMessageType, setCopy } = useMessage();
 	const [action, setAction] = useState<string>();
 	const [renderActionFields, setRenderActionFields] = useState(false);
 	const [formState, setFormState] = useState<object>();
@@ -160,21 +220,28 @@ export const InitiateRequestSection = ({
 					},
 				}
 			);
-			console.log("Response from initiate", response);
-			if (response.data.message.ack.status === "ACK" ) {
-				if( action === "search")
-				handleMessageToggle(
-					`Your Transaction ID is: ${response.data.transaction_id}`
-				);
-				else handleMessageToggle("Request Initiated Successfully!")
+			// console.log("Response from initiate", response);
+			if (response.data.message.ack.status === "ACK") {
+				if (action === "search") {
+					handleMessageToggle(
+						`Your Transaction ID is: ${response.data.transaction_id}`
+					);
+					setMessageType("success");
+					setCopy(response.data.transaction_id);
+				} else {
+					handleMessageToggle("Request Initiated Successfully!`");
+					setMessageType("success");
+				}
 			} else if (response.data.error) {
 				handleMessageToggle(
 					`Error Occurred: ${
 						response.data.error.message || response.data.error
 					}`
 				);
+				setMessageType("error");
 			}
 		} catch (error) {
+			setMessageType("error");
 			if (error instanceof AxiosError && error.response?.data?.error?.message)
 				handleMessageToggle(
 					`Error Occurred: ${error.response?.data?.error?.message}`
@@ -197,13 +264,18 @@ export const InitiateRequestSection = ({
 				<Box
 					sx={{
 						display: "flex",
-						justifyContent: "flex-start",
+						justifyContent: "space-between",
 						alignItems: "center",
 					}}
 				>
 					<Typography variant="h6" my={1} mr={2}>
 						Initiate Request:
 					</Typography>
+					<Tooltip title="Are you a seller app, Initiate Requests here 👇">
+						<IconButton>
+							<HelpOutlineTwoToneIcon />
+						</IconButton>
+					</Tooltip>
 				</Box>
 				<Stack spacing={2} sx={{ my: 2 }}>
 					<Select placeholder="Select Action" onChange={handleActionSelection}>
@@ -229,8 +301,10 @@ export const InitiateRequestSection = ({
 												}
 											/>
 										) : field.type === "select" &&
-										  field.domainDepended &&
-										  field.options[domain as keyof SELECT_OPTIONS] ? (
+										  (field as SELECT_FIELD).domainDepended &&
+										  (field as SELECT_FIELD).options[
+												domain as keyof SELECT_OPTIONS
+										  ] ? (
 											<Select
 												placeholder={field.placeholder}
 												key={"select-" + action + "-" + index}
@@ -240,7 +314,7 @@ export const InitiateRequestSection = ({
 												) => handleFieldChange(field.name, newValue as string)}
 											>
 												{(
-													field.options[
+													(field as SELECT_FIELD).options[
 														domain as keyof SELECT_OPTIONS
 													] as string[]
 												).map((option, index: number) => (

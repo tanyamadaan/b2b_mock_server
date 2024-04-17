@@ -13,6 +13,10 @@ export const B2B_SCENARIOS = {
 	],
 	on_select: [
 		{
+			name: "Default",
+			scenario: "default",
+		},
+		{
 			name: "Non Serviceable",
 			scenario: "non-serviceable",
 		},
@@ -27,21 +31,31 @@ export const B2B_SCENARIOS = {
 			scenario: "on-fulfillment" //default
 		},
 		{
-			name: "BPP Payment",
+			name: "Prepaid Payment Collected By BPP",
 			scenario: "prepaid-bpp-payment", 
 		},
 		{
-			name: "BAP Payment",
+			name: "Prepaid Payment Collected By BAP",
 			scenario: "prepaid-bap-payment", 
 		},
 	],
+	on_confirm:[
+		{
+			name: "Default",
+			scenario: "default"
+		},
+		{
+			name: "Cancelled",
+			scenario: "cancelled"
+		}
+	],
 	on_status: [
 		{
-			name: "BPP Payment",
+			name: "BPP Payment-Success",
 			scenario: "bpp-payment",
 		},
 		{
-			name: "BPP Payment Error",
+			name: "BPP Payment-Error",
 			scenario: "bpp-payment-error",
 		},
 		{
@@ -68,11 +82,11 @@ export const B2B_SCENARIOS = {
 	on_update: [
 		{
 			name: "Fulfillments",
-			scenario: "fulfillment",
+			scenario: "fulfillment", // default
 		},
 		{
 			name: "Prepaid BAP",
-			scenario: "prepaid-bap",
+			scenario: "prepaid-bap", 
 		},
 		{
 			name: "Prepaid",

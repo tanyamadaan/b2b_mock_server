@@ -12,9 +12,9 @@ import {
 import { createAuthHeader } from "./responseAuth";
 import { logger } from "./logger";
 import { TransactionType, redis } from "./redis";
-import fs from 'fs'
-import path from 'path'
-import YAML from 'yaml'
+import fs from "fs";
+import path from "path";
+import YAML from "yaml";
 
 interface TagDescriptor {
 	code: string;
@@ -54,16 +54,19 @@ export const responseBuilder = async (
 	message: object,
 	uri: string,
 	action: string,
-	domain: "b2b" | "services"
+	domain: "b2b" | "services",
+	error?: object | undefined
 ) => {
-	var transaction: TransactionType = res.locals.logs;
 	res.locals = {};
 	// var ts = new Date((reqContext as any).timestamp);
 	var ts = new Date();
 	ts.setSeconds(ts.getSeconds() + 1);
 	const sandboxMode = res.getHeader("mode") === "sandbox";
 	// console.log("SANDBOX>", sandboxMode);
-	var async: { message: object; context?: object } = { context: {}, message };
+	var async: { message: object; context?: object; error?: object } = {
+		context: {},
+		message,
+	};
 
 	if (action.startsWith("on_")) {
 		// const { bap_uri, bap_id, ...remainingContext } = reqContext as any;
@@ -99,17 +102,13 @@ export const responseBuilder = async (
 			},
 		};
 	}
+	if (error) {
+		async = { ...async, error };
+	}
 	const header = await createAuthHeader(async);
-	res.setHeader("authorization", header);
-
+	
 	if (sandboxMode) {
-		// logger.info("=======================");
-		// logger.info("TIME", Date.now());
-		console.log("ACTION in Sandbox", action);
-		// logger.info("TRANSACTION BEFORE:", transaction)
-
 		if (action.startsWith("on_")) {
-			console.log("SENDING ASYNC TO NP")
 			var log: TransactionType = {
 				request: async,
 			};
@@ -441,7 +440,7 @@ export const quoteCreatorServiceCustomized = (items: Item[]) => {
 	);
 	const response = YAML.parse(file.toString());
 
-	const { price, ttl, breakup } = response.value.message.order.quote
+	const { price, ttl, breakup } = response.value.message.order.quote;
 
 	// const breakup = [
 	// 	{
@@ -788,9 +787,9 @@ export const quoteCreatorServiceCustomized = (items: Item[]) => {
 
 	items.forEach((item, i) => {
 		breakup.forEach((each: any, j: number) => {
-			if (i == j) each.item.id = item.id
-		})
-	})
+			if (i == j) each.item.id = item.id;
+		});
+	});
 
 	return {
 		breakup,
@@ -798,18 +797,22 @@ export const quoteCreatorServiceCustomized = (items: Item[]) => {
 			currency: "INR",
 			value: (99 * items.length).toString(),
 		},
-		ttl
+		ttl,
 	};
 };
 
 export const checkIfCustomized = (items: Item[]) => {
-	return items.some(item =>
-		item.tags && item.tags.some(tag =>
-			tag.list && tag.list.some(subTag => {
-				if (subTag.descriptor.code === 'type') {
-					return subTag.value === "customization"
-				}
-			})
-		)
+	return items.some(
+		(item) =>
+			item.tags &&
+			item.tags.some(
+				(tag) =>
+					tag.list &&
+					tag.list.some((subTag) => {
+						if (subTag.descriptor.code === "type") {
+							return subTag.value === "customization";
+						}
+					})
+			)
 	);
-}
+};

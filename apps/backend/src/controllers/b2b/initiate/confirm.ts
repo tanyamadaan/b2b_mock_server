@@ -120,12 +120,22 @@ const intializeRequest = async (
 			`${transaction_id}-confirm-from-server`,
 			JSON.stringify({ request: { ...confirm } })
 		);
-		await axios.post(`${context.bpp_uri}/confirm`, confirm, {
+		const response = await axios.post(`${context.bpp_uri}/confirm?scenario=${scenario}`, confirm, {
 			headers: {
 				"X-Gateway-Authorization": header,
 				authorization: header,
 			},
 		});
+		await redis.set(
+			`${transaction_id}-confirm-from-server`,
+			JSON.stringify({
+				request: { ...confirm },
+				response: {
+					response: response.data,
+					timestamp: new Date().toISOString(),
+				},
+			})
+		);
 
 		return res.json({
 			message: {

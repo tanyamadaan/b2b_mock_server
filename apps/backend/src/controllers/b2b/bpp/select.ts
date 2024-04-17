@@ -1,40 +1,55 @@
 import { Request, Response } from "express";
 import {
 	quoteCreator,
-	B2B_EXAMPLES_PATH,
-	responseBuilder,
-	logger,
+	responseBuilder, redis
 } from "../../../lib/utils";
-import fs from "fs";
-import path from "path";
-import YAML from "yaml";
 
-export const selectController = (req: Request, res: Response) => {
+export const selectController = async (req: Request, res: Response) => {
 	const { scenario } = req.query;
+	const { transaction_id } = req.body.context;
+
+	const transactionKeys = await redis.keys(`${transaction_id}-*`);
+	const ifTransactionExist = transactionKeys.filter((e) =>
+		e.includes("on_search-to-server")
+	);
+
+	if (ifTransactionExist.length === 0) {
+		return res.status(400).json({
+			message: {
+				ack: {
+					status: "NACK",
+				},
+			},
+			error: {
+				message: "on search doesn't exist",
+			},
+		});
+	}
+	const transaction = await redis.mget(ifTransactionExist);
+	const parsedTransaction = transaction.map((ele) => {
+		return JSON.parse(ele as string);
+	});
+
+	const providers = parsedTransaction[0].request.message.catalog.providers
+	const item_id_name = providers.map((pro: any) => {
+		const mappedItems = pro.items.map((item: any) => ({
+			id: item.id,
+			name: item.descriptor.name,
+		}));
+		return mappedItems
+	})
+
+	req.body.item_arr = item_id_name.flat()
+
 	switch (scenario) {
-		// case "rfq":
-		// 	selectDomesticController(req, res);
-		// 	break;
-		// case "non-rfq":
-		// 	selectDomesticNonRfqController(req, res);
-		// 	break;
-		case "self-pickup":
-			selectDomesticSelfPickupController(req, res);
+		case "default":
+			selectDomesticController(req, res);
 			break;
-		// case "exports":
-		// 	selectExportsController(req, res);
-		// 	break;
 		case "non-serviceable":
 			selectNonServiceableController(req, res);
 			break;
 		case "quantity-unavailable":
 			selectQuantityUnavailableController(req, res);
-			break;
-		case "prepaid-bap-non-rfq":
-			selectPrepaidBapNonRFQController(req, res);
-			break;
-		case "prepaid-bap":
-			selectPrepaidBapController(req, res);
 			break;
 		default:
 			selectDomesticController(req, res);
@@ -43,11 +58,116 @@ export const selectController = (req: Request, res: Response) => {
 };
 
 export const selectDomesticController = (req: Request, res: Response) => {
-	logger.info({
-		type: "response",
-		message: { action: req.body.context, mode: req.query.mode },
-	});
+	const { context, message } = req.body;
+	const { ttl, ...provider } = message.order.provider;
 
+	var responseMessage = {
+		order: {
+			provider,
+			payments: [message.order.payments[0]],
+			items: message.order.items.map(
+				({
+					location_ids,
+					add_ons,
+					...remaining
+				}: {
+					location_ids: any;
+					add_ons: any;
+					remaining: any;
+				}) => ({
+					...remaining,
+				})
+			),
+			fulfillments: message.order.fulfillments.map(({ id, ...each }: any) => ({
+				id,
+				tracking: false,
+				"@ondc/org/provider_name": "ONDC Mock Server",
+				"@ondc/org/category": "Express Delivery",
+				"@ondc/org/TAT": "P7D",
+				state: {
+					descriptor: {
+						code: "Serviceable",
+					},
+				},
+			})),
+			quote: quoteCreator(message.order.items),
+		},
+	};
+	responseMessage.order.quote.breakup.forEach((element: any) => {
+		if (element['@ondc/org/title_type'] === 'item') {
+			const id = element["@ondc/org/item_id"]
+			const item = req.body.item_arr.find((item: any) => item.id == id);
+			element.title = item.name
+		}
+	});
+	return responseBuilder(
+		res,
+		context,
+		responseMessage,
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		}`,
+		`on_select`,
+		"b2b"
+	);
+};
+
+
+export const selectNonServiceableController = (req: Request, res: Response) => {
+	const { context, message } = req.body;
+	const { ttl, ...provider } = message.order.provider;
+
+	var responseMessage = {
+		order: {
+			provider,
+			payments: message.order.payments[0],
+			items: message.order.items.map(
+				({
+					location_ids,
+					add_ons,
+					...remaining
+				}: {
+					location_ids: any;
+					add_ons: any;
+					remaining: any;
+				}) => ({
+					...remaining,
+				})
+			),
+			fulfillments: message.order.fulfillments.map(({ id, ...each }: any) => ({
+				id,
+				tracking: false,
+				"@ondc/org/provider_name": "ONDC Mock Server",
+				"@ondc/org/category": "Express Delivery",
+				"@ondc/org/TAT": "P7D",
+				state: {
+					descriptor: {
+						code: "Non-Serviceable",
+					},
+				},
+			})),
+			quote: quoteCreator(message.order.items),
+		},
+	};
+	return responseBuilder(
+		res,
+		context,
+		responseMessage,
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		}`,
+		`on_select`,
+		"b2b",
+		{
+			"type": "DOMAIN-ERROR",
+			"code": "30009",
+			"message": "Item not Serviceable"
+		}
+	);
+};
+
+export const selectQuantityUnavailableController = (
+	req: Request,
+	res: Response
+) => {
 	const { context, message } = req.body;
 	const { ttl, ...provider } = message.order.provider;
 
@@ -87,152 +207,15 @@ export const selectDomesticController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
 		}`,
 		`on_select`,
-		"b2b"
+		"b2b",
+		{
+			"type": "DOMAIN-ERROR",
+			"code": "40002",
+			"message": "Quantity Unavailable"
+		}
 	);
 };
 
-const selectDomesticNonRfqController = (req: Request, res: Response) => {
-	const file = fs.readFileSync(
-		path.join(B2B_EXAMPLES_PATH, "on_select/on_select_domestic_non_rfq.yaml")
-	);
-
-	const response = YAML.parse(file.toString());
-
-	return responseBuilder(
-		res,
-		req.body.context,
-		response.value.message,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
-		}`,
-		`on_select`,
-		"b2b"
-	);
-};
-
-export const selectDomesticSelfPickupController = (
-	req: Request,
-	res: Response
-) => {
-	const file = fs.readFileSync(
-		path.join(
-			B2B_EXAMPLES_PATH,
-			"on_select/on_select_domestic_self_pickup.yaml"
-		)
-	);
-
-	const response = YAML.parse(file.toString());
-	return responseBuilder(
-		res,
-		req.body.context,
-		response.value.message,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
-		}`,
-		`on_select`,
-		"b2b"
-	);
-};
-
-export const selectExportsController = (req: Request, res: Response) => {
-	const file = fs.readFileSync(
-		path.join(B2B_EXAMPLES_PATH, "on_select/on_select_exports.yaml")
-	);
-
-	const response = YAML.parse(file.toString());
-	return responseBuilder(
-		res,
-		req.body.context,
-		response.value.message,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
-		}`,
-		`on_select`,
-		"b2b"
-	);
-};
-
-export const selectNonServiceableController = (req: Request, res: Response) => {
-	const file = fs.readFileSync(
-		path.join(B2B_EXAMPLES_PATH, "on_select/on_select_non_serviceable.yaml")
-	);
-
-	const response = YAML.parse(file.toString());
-	return responseBuilder(
-		res,
-		req.body.context,
-		{message: response.value.message, error: response.value.error},
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
-		}`,
-		`on_select`,
-		"b2b"
-	);
-};
-
-export const selectQuantityUnavailableController = (
-	req: Request,
-	res: Response
-) => {
-	const file = fs.readFileSync(
-		path.join(
-			B2B_EXAMPLES_PATH,
-			"on_select/on_select_quantity_unavailable.yaml"
-		)
-	);
-
-	const response = YAML.parse(file.toString());
-	return responseBuilder(
-		res,
-		req.body.context,
-		{message: response.value.message, error: response.value.error},
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
-		}`,
-		`on_select`,
-		"b2b"
-	);
-};
-
-export const selectPrepaidBapNonRFQController = (
-	req: Request,
-	res: Response
-) => {
-	const file = fs.readFileSync(
-		path.join(B2B_EXAMPLES_PATH, "on_select/on_select_prepaid_bap_non_rfq.yaml")
-	);
-
-	const response = YAML.parse(file.toString());
-	return responseBuilder(
-		res,
-		req.body.context,
-		response.value.message,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
-		}`,
-		`on_select`,
-		"b2b"
-	);
-};
-
-export const selectPrepaidBapController = (req: Request, res: Response) => {
-	const file = fs.readFileSync(
-		path.join(B2B_EXAMPLES_PATH, "on_select/on_select_prepaid_bap.yaml")
-	);
-
-	const response = YAML.parse(file.toString());
-	return responseBuilder(
-		res,
-		req.body.context,
-		response.value.message,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
-		}`,
-		`on_select`,
-		"b2b"
-	);
-};

@@ -124,7 +124,7 @@ const intializeRequest = async (
 			`${transaction_id}-confirm-from-server`,
 			JSON.stringify({ request: confirm })
 		);
-		await axios.post(`${context.bpp_uri}/confirm`, confirm, {
+		await axios.post(`${context.bpp_uri}/confirm?scenario=${scenario}`, confirm, {
 			headers: {
 				"X-Gateway-Authorization": header,
 				authorization: header,
