@@ -13,6 +13,8 @@ import { onStatusSchema } from "./on_status";
 import { onUpdateSchema } from "./on_update";
 import { statusSchema } from "./status";
 import { updateSchema } from "./update";
+import { cancelSchema } from "./cancel";
+import { onCancelSchema } from "./on_cancel";
 
 export const srvSchemaValidator =
 	(
@@ -87,6 +89,10 @@ export const srvSchemaValidator =
 			case "on_update":
 				validate = ajv.compile(onUpdateSchema);
 				break;
+			case "cancel":
+				validate = ajv.compile(cancelSchema);
+			case "on_cancel":
+				validate = ajv.compile(onCancelSchema);
 
 			default:
 				res.status(400).json({
@@ -124,7 +130,7 @@ export const srvSchemaValidator =
 									? ` (${params.additionalProperty})`
 									: ""
 							}`,
-							details: instancePath
+							details: instancePath,
 						})
 					),
 				},
