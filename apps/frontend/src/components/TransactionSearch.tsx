@@ -24,31 +24,31 @@ export const TransactionSearch = () => {
 			const response = await axios.get(
 				`${import.meta.env.VITE_SERVER_URL}/analyse/${transaction}`
 			);
-			const seen: Record<string, boolean> = {};
+			// const seen: Record<string, boolean> = {};
 			const formattedResponse = response.data
-				.reduce(
-					(
-						// eslint-disable-next-line @typescript-eslint/no-explicit-any
-						uniqueArr: any[],
-						// eslint-disable-next-line @typescript-eslint/no-explicit-any
-						item: { request: { context: { action: any; timestamp: any } } }
-					) => {
-						const { action, timestamp } = item.request.context;
-						if (!seen[action] || timestamp > seen[action]) {
-							seen[action] = timestamp; // Update latest timestamp for the action
-							const existingIndex = uniqueArr.findIndex(
-								(obj) => obj.action === action
-							);
-							if (existingIndex !== -1) {
-								uniqueArr[existingIndex] = item;
-							} else {
-								uniqueArr.push(item);
-							}
-						}
-						return uniqueArr;
-					},
-					[]
-				)
+				// .reduce(
+				// 	(
+				// 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				// 		uniqueArr: any[],
+				// 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				// 		item: { request: { context: { action: any; timestamp: any } } }
+				// 	) => {
+				// 		const { action, timestamp } = item.request.context;
+				// 		if (!seen[action] || timestamp > seen[action]) {
+				// 			seen[action] = timestamp; // Update latest timestamp for the action
+				// 			const existingIndex = uniqueArr.findIndex(
+				// 				(obj) => obj.action === action
+				// 			);
+				// 			if (existingIndex !== -1) {
+				// 				uniqueArr[existingIndex] = item;
+				// 			} else {
+				// 				uniqueArr.push(item);
+				// 			}
+				// 		}
+				// 		return uniqueArr;
+				// 	},
+				// 	[]
+				// )
 				.sort(
 					(
 						a: {
