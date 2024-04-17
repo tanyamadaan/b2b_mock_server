@@ -5,7 +5,7 @@ export const cancelController = async (req: Request, res: Response) => {
 	const { scenario } = req.query;
 	const { transaction_id } = req.body.context;
 
-    const transactionKeys = await redis.keys(`${transaction_id}-*`);
+	const transactionKeys = await redis.keys(`${transaction_id}-*`);
 	const ifTransactionExist = transactionKeys.filter((e) =>
 		e.includes("on_confirm-to-server")
 	);
@@ -26,23 +26,23 @@ export const cancelController = async (req: Request, res: Response) => {
 	const parsedTransaction = transaction.map((ele) => {
 		return JSON.parse(ele as string);
 	});
-    cancelRequest(req, res,parsedTransaction, scenario);
+	cancelRequest(req, res, parsedTransaction, scenario);
 }
 
 const cancelRequest = async (req: Request, res: Response, transaction: any, scenario: any) => {
-    const {message}=transaction
+	const { message } = transaction
 
-    const on_cancel={
-        context:req.body.context,
-        message:{
-            ...transaction.message,  
-			order:{
+	const on_cancel = {
+		context: req.body.context,
+		message: {
+			...transaction.message,
+			order: {
 				...transaction.message.order,
-				state:"Cancelled",
-				cancellation:{
-					cancelled_by:req.body.context.bap_id,
+				state: "Cancelled",
+				cancellation: {
+					cancelled_by: req.body.context.bap_id,
 					reason: {
-						id:req.body.message.cancellation_reason_id
+						id: req.body.message.cancellation_reason_id
 					}
 				},
 				fulfillments: transaction.message.order.fulfillments.map((fulfillment: any) => ({
@@ -105,7 +105,15 @@ const cancelRequest = async (req: Request, res: Response, transaction: any, scen
 				})),
 
 			}
-        }
-    }
+		}
+	}
+	return res.status(200).json({
+		message: {
+			ack: {
+				status: "ACK",
+			},
+			on_cancel: on_cancel
+		}
+	});
 
 }
