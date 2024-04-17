@@ -103,12 +103,23 @@ const intializeRequest = async (req: Request, res: Response, transaction: any, s
       `${transaction_id}-select-from-server`,
       JSON.stringify({ request: { ...select } })
     );
-    await axios.post(`${context.bpp_uri}/select?scenario=${scenario}`, select, {
+    const response = await axios.post(`${context.bpp_uri}/select?scenario=${scenario}`, select, {
       headers: {
         "X-Gateway-Authorization": header,
         authorization: header,
       },
     });
+
+    await redis.set(
+			`${transaction_id}-select-from-server`,
+			JSON.stringify({
+				request: { ...select },
+				response: {
+					response: response.data,
+					timestamp: new Date().toISOString(),
+				},
+			})
+		);
 
     return res.json({
       message: {

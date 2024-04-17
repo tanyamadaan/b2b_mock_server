@@ -57,7 +57,6 @@ export const responseBuilder = async (
 	domain: "b2b" | "services",
 	error?: object | undefined
 ) => {
-	var transaction: TransactionType = res.locals.logs;
 	res.locals = {};
 	// var ts = new Date((reqContext as any).timestamp);
 	var ts = new Date();
@@ -107,10 +106,8 @@ export const responseBuilder = async (
 		async = { ...async, error };
 	}
 	const header = await createAuthHeader(async);
-	res.setHeader("authorization", header);
-
+	
 	if (sandboxMode) {
-
 		if (action.startsWith("on_")) {
 			var log: TransactionType = {
 				request: async,

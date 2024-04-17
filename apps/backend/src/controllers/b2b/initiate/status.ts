@@ -75,12 +75,23 @@ const intializeRequest = async (
 			`${transaction_id}-status-from-server`,
 			JSON.stringify({ request: { ...status } })
 		);
-		await axios.post(`${context.bpp_uri}/status`, status, {
+		const response = await axios.post(`${context.bpp_uri}/status`, status, {
 			headers: {
 				"X-Gateway-Authorization": header,
 				authorization: header,
 			},
 		});
+
+		await redis.set(
+			`${transaction_id}-status-from-server`,
+			JSON.stringify({
+				request: { ...status },
+				response: {
+					response: response.data,
+					timestamp: new Date().toISOString(),
+				},
+			})
+		);
 
 		return res.json({
 			message: {

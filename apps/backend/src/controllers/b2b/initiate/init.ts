@@ -115,12 +115,23 @@ const intializeRequest = async (
 			`${transaction_id}-init-from-server`,
 			JSON.stringify({ request: { ...init } })
 		);
-		await axios.post(`${context.bpp_uri}/init?scenario=${scenario}`, init, {
+		const response = await axios.post(`${context.bpp_uri}/init?scenario=${scenario}`, init, {
 			headers: {
 				"X-Gateway-Authorization": header,
 				authorization: header,
 			},
 		});
+
+		await redis.set(
+			`${transaction_id}-init-from-server`,
+			JSON.stringify({
+				request: { ...init },
+				response: {
+					response: response.data,
+					timestamp: new Date().toISOString(),
+				},
+			})
+		);
 
 		return res.json({
 			message: {

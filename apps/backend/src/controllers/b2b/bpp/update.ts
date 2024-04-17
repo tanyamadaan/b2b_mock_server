@@ -128,7 +128,7 @@ export const updateController = async (req: Request, res: Response) => {
 		case "prepaid-bap":
 			break;
 		default:
-			updateFulfillmentController(req, res);
+			on_update = await updateFulfillment(res, on_update)
 			break;
 	}
 	return res.status(200).json({

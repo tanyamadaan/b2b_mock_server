@@ -13,7 +13,6 @@ import path from "path";
 import YAML from "yaml";
 import { v4 as uuidv4 } from "uuid";
 
-
 export const initiateSearchController = async (req: Request, res: Response) => {
 	const { bpp_uri, city, domain } = req.body;
 	var file = fs.readFileSync(
@@ -30,7 +29,7 @@ export const initiateSearchController = async (req: Request, res: Response) => {
 			location: {
 				...search.context.location,
 				city: {
-					code: city
+					code: city,
 				},
 			},
 			transaction_id,
@@ -54,7 +53,16 @@ export const initiateSearchController = async (req: Request, res: Response) => {
 				authorization: header,
 			},
 		});
-
+		await redis.set(
+			`${transaction_id}-search-from-server`,
+			JSON.stringify({
+				request: { ...search },
+				response: {
+					response: response.data,
+					timestamp: new Date().toISOString(),
+				},
+			})
+		);
 		return res.json({
 			message: {
 				ack: {
