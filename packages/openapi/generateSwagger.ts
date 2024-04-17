@@ -127,7 +127,7 @@ const generateSwagger = async (
 };
 
 generateSwagger(
-	"./domain-repos/@retail-b2b/draft-2.x/api/build/build.yaml",
+	"./domain-repos/@retail-b2b/release-2.0.2/api/build/build.yaml",
 	"./openapi/retail-b2b",
 	B2B_SCENARIOS,
 	[
