@@ -2,13 +2,48 @@ import { Request, Response } from "express";
 import {
 	quoteCreator,
 	responseBuilder,
-	B2B_EXAMPLES_PATH,
+	B2B_EXAMPLES_PATH,redis
 } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 
-export const initController = (req: Request, res: Response) => {
+export const initController = async (req: Request, res: Response) => {
+	const { transaction_id } = req.body.context;
+	const transactionKeys = await redis.keys(`${transaction_id}-*`);
+	const ifTransactionExist = transactionKeys.filter((e) =>
+		e.includes("on_search-to-server")
+	);
+
+	if (ifTransactionExist.length === 0) {
+		return res.status(400).json({
+			message: {
+				ack: {
+					status: "NACK",
+				},
+			},
+			error: {
+				message: "on search doesn't exist",
+			},
+		});
+	}
+	const transaction = await redis.mget(ifTransactionExist);
+	const parsedTransaction = transaction.map((ele) => {
+		return JSON.parse(ele as string);
+	});
+
+	const providers = parsedTransaction[0].request.message.catalog.providers
+	const item_id_name = providers.map((pro: any) => {
+		const mappedItems = pro.items.map((item: any) => ({
+			id: item.id,
+			name: item.descriptor.name,
+		}));
+		return mappedItems
+	})
+
+	req.body.item_arr = item_id_name.flat()
+
+
 	// const { scenario } = req.query;
 	// switch (scenario) {
 		// case "default":
@@ -53,6 +88,14 @@ const initDomesticController = (req: Request, res: Response) => {
 			quote: quoteCreator(items),
 		},
 	};
+
+	responseMessage.order.quote.breakup.forEach((element: any) => {
+		if (element['@ondc/org/title_type'] === 'item') {
+			const id = element["@ondc/org/item_id"]		
+			const item = req.body.item_arr.find((item: any) => item.id == id);
+			element.title = item.name
+		}
+	});
 	return responseBuilder(
 		res,
 		context,

@@ -33,7 +33,7 @@ export const statusController = async (req: Request, res: Response) => {
 		return JSON.parse(ele as string);
 	});
 
-	statusRequest(req, res, req.body, scenario);
+	statusRequest(req, res, parsedTransaction, scenario);
 }
 
 const statusRequest = async (req: Request, res: Response, transaction: any, scenario: any) => {
