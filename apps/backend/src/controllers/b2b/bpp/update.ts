@@ -128,16 +128,7 @@ export const updateController = async (req: Request, res: Response) => {
 		case "prepaid-bap":
 			break;
 		default:
-			res.status(404).json({
-				message: {
-					ack: {
-						status: "NACK",
-					},
-				},
-				error: {
-					message: "Invalid scenario",
-				},
-			});
+			updateFulfillmentController(req, res);
 			break;
 	}
 	return res.status(200).json({
