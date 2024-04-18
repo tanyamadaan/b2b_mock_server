@@ -11,7 +11,6 @@ import axios from "axios";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
-import { v4 as uuidv4 } from "uuid";
 
 export const initiateInitController = async (req: Request, res: Response) => {
 	const { scenario, transactionId } = req.body;
@@ -55,7 +54,7 @@ const intializeRequest = async (
 		},
 	} = transaction;
 	let { payments } = transaction.message.order;
-	const { transaction_id } = context.transaction_id;
+	const { transaction_id } = context;
 
 	const file = fs.readFileSync(
 		path.join(B2B_EXAMPLES_PATH, "init/init_domestic.yaml")

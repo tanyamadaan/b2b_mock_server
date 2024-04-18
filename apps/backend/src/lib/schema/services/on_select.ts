@@ -57,18 +57,10 @@ export const onSelectSchema = {
         },
         transaction_id: {
           type: "string",
-          const: { $data: "/select/0/context/transaction_id" },
-          errorMessage:
-            "Transaction ID should be same across the transaction: ${/select/0/context/transaction_id}",
         },
         message_id: {
           type: "string",
           allOf: [
-            {
-              const: { $data: "/select/0/context/message_id" },
-              errorMessage:
-                "Message ID for on_action API should be same as action API: ${/select/0/context/message_id}",
-            },
             {
               not: {
                 const: { $data: "1/transaction_id" },
@@ -112,7 +104,6 @@ export const onSelectSchema = {
               properties: {
                 id: {
                   type: "string",
-                  const: { $data: "/select/0/message/order/provider/id" },
                 },
               },
               required: ["id"],
@@ -130,11 +121,9 @@ export const onSelectSchema = {
                   },
                   id: {
                     type: "string",
-                    const: { $data: "/select/0/message/order/items/0/id" },
                   },
                   parent_item_id: {
                     type: "string",
-                    const: { $data: "/select/0/message/order/items/0/parent_item_id" },
                   },
                   location_ids: {
                     type: "array",
@@ -432,7 +421,6 @@ export const onSelectSchema = {
                 properties: {
                   type: {
                     type: "string",
-                    const: { $data: "/select/0/message/order/payments/0/type" },
                   },
                   collected_by: {
                     type: "string",

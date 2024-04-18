@@ -6,9 +6,7 @@ import { PREV_ACTION } from "openapi-specs/constants";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getNodesAndEdges = (formattedResponse: any, theme: Theme) => {
 	const { transaction_id, bpp_id, bpp_uri, bap_id, bap_uri } =
-		formattedResponse.filter(
-			(e: { action: string }) => e.action === "on_search"
-		)[0].request.context;
+		formattedResponse[0].request.context;
 
 	const nodes: Node<CustomNodeData>[] = [
 		{

@@ -57,9 +57,6 @@ export const initSchema = {
         },
         transaction_id: {
           type: "string",
-          const: { $data: "/select/0/context/transaction_id" },
-          errorMessage:
-            "Transaction ID should be same across the transaction: ${/select/0/context/transaction_id}",
         },
         message_id: {
           type: "string",
@@ -230,11 +227,9 @@ export const initSchema = {
                 properties: {
                   id: {
                     type: "string",
-                    const: { $data: "/on_select/0/message/order/fulfillments/0/id" },
                   },
                   type: {
                     type: "string",
-                    const: { $data: "/on_select/0/message/order/fulfillments/0/type" },
                   },
                   stops: {
                     type: "array",
@@ -340,14 +335,9 @@ export const initSchema = {
                 properties: {
                   type: {
                     type: "string",
-                    const: { $data: "/select/0/message/order/payments/0/type" },
                   },
                   collected_by: {
                     type: "string",
-                    const: {
-                      $data:
-                        "/on_select/0/message/order/payments/0/collected_by",
-                    },
                   },
                 },
                 required: ["type","collected_by"],

@@ -57,9 +57,6 @@ export const statusSchema = {
         },
         transaction_id: {
           type: "string",
-          const: { $data: "/select/0/context/transaction_id" },
-          errorMessage:
-            "Transaction ID should be same across the transaction: ${/select/0/context/transaction_id}",
         },
         message_id: {
           type: "string",
@@ -102,7 +99,6 @@ export const statusSchema = {
       properties: {
         order_id: {
           type: "string",
-          const: { $data: "/confirm/0/message/order/id" },
         },
       },
       required: ["order_id"],

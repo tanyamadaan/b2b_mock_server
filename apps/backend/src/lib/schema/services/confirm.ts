@@ -56,7 +56,6 @@ export const confirmSchema = {
         },
         transaction_id: {
           type: "string",
-          const: { $data: "/select/0/context/transaction_id" },
           errorMessage:
             "Transaction ID should be same across the transaction: ${/select/0/context/transaction_id}",
         },
@@ -187,20 +186,15 @@ export const confirmSchema = {
               properties: {
                 name: {
                   type: "string",
-                  const: { $data: "/init/0/message/order/billing/name" },
                 },
                 address: {
                   type: "string",
-                  const: { $data: "/init/0/message/order/billing/address" },
                 },
                 state: {
                   type: "object",
                   properties: {
                     name: {
                       type: "string",
-                      const: {
-                        $data: "/init/0/message/order/billing/state/name",
-                      },
                     },
                   },
                   required: ["name"],
@@ -210,24 +204,18 @@ export const confirmSchema = {
                   properties: {
                     name: {
                       type: "string",
-                      const: {
-                        $data: "/init/0/message/order/billing/city/name",
-                      },
                     },
                   },
                   required: ["name"],
                 },
                 tax_id: {
                   type: "string",
-                  const: { $data: "/init/0/message/order/billing/tax_id" },
                 },
                 email: {
                   type: "string",
-                  const: { $data: "/init/0/message/order/billing/email" },
                 },
                 phone: {
                   type: "string",
-                  const: { $data: "/init/0/message/order/billing/phone" },
                 },
               },
 
@@ -491,7 +479,6 @@ export const confirmSchema = {
                   },
                   type: {
                     type: "string",
-                    const: { $data: "/select/0/message/order/payments/0/type" },
                   },
                   tags: {
                     type: "array",

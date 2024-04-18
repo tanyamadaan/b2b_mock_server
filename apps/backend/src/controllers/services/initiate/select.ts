@@ -50,9 +50,9 @@ const intializeRequest = async (
 			catalog: { fulfillments, payments, providers },
 		},
 	} = transaction;
-	const { transaction_id } = context.transaction_id;
-	const { id, locations, ...remainingProviders } = providers[0];
-	const { id: parent_item_id, location_ids, ...item } = providers[0].items[0];
+	const { transaction_id } = context;
+	const { id, locations } = providers[0];
+	const { id: parent_item_id, location_ids, } = providers[0].items[0];
 	let items = [];
 
 

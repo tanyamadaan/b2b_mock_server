@@ -1,19 +1,23 @@
 import { Request, Response } from "express";
-import {
-	quoteCreator,
-	responseBuilder, redis
-} from "../../../lib/utils";
+import { quoteCreator, responseBuilder, redis } from "../../../lib/utils";
 
 export const selectController = async (req: Request, res: Response) => {
 	const { scenario } = req.query;
 	const { transaction_id } = req.body.context;
 
 	const transactionKeys = await redis.keys(`${transaction_id}-*`);
-	const ifTransactionExist = transactionKeys.filter((e) =>
+	const ifToTransactionExist = transactionKeys.filter((e) =>
 		e.includes("on_search-to-server")
 	);
 
-	if (ifTransactionExist.length === 0) {
+	const ifFromTransactionExist = transactionKeys.filter((e) =>
+		e.includes("on_search-from-server")
+	);
+
+	if (
+		ifFromTransactionExist.length === 0 &&
+		ifToTransactionExist.length === 0
+	) {
 		return res.status(400).json({
 			message: {
 				ack: {
@@ -25,21 +29,25 @@ export const selectController = async (req: Request, res: Response) => {
 			},
 		});
 	}
-	const transaction = await redis.mget(ifTransactionExist);
+	const transaction = await redis.mget(
+		ifFromTransactionExist.length > 0
+			? ifFromTransactionExist
+			: ifToTransactionExist
+	);
 	const parsedTransaction = transaction.map((ele) => {
 		return JSON.parse(ele as string);
 	});
 
-	const providers = parsedTransaction[0].request.message.catalog.providers
+	const providers = parsedTransaction[0].request.message.catalog.providers;
 	const item_id_name = providers.map((pro: any) => {
 		const mappedItems = pro.items.map((item: any) => ({
 			id: item.id,
 			name: item.descriptor.name,
 		}));
-		return mappedItems
-	})
+		return mappedItems;
+	});
 
-	req.body.item_arr = item_id_name.flat()
+	req.body.item_arr = item_id_name.flat();
 
 	switch (scenario) {
 		case "default":
@@ -93,24 +101,39 @@ export const selectDomesticController = (req: Request, res: Response) => {
 			quote: quoteCreator(message.order.items),
 		},
 	};
-	responseMessage.order.quote.breakup.forEach((element: any) => {
-		if (element['@ondc/org/title_type'] === 'item') {
-			const id = element["@ondc/org/item_id"]
-			const item = req.body.item_arr.find((item: any) => item.id == id);
-			element.title = item.name
-		}
-	});
+	try {
+		responseMessage.order.quote.breakup.forEach((element: any) => {
+			if (element["@ondc/org/title_type"] === "item") {
+				const id = element["@ondc/org/item_id"];
+				const item = req.body.item_arr.find((item: any) => item.id == id);
+				element.title = item.name;
+			}
+		});
+	} catch (error) {
+		console.log("ERROR Occurred while matching item ID and name:::", error)
+		return res.status(400).json({
+			message: {
+				ack: {
+					status: "NACK",
+				},
+			},
+			error: {
+				message: "Item Name and ID not matching",
+			},
+		});
+	}
+	
 	return responseBuilder(
 		res,
 		context,
 		responseMessage,
-		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
 		}`,
 		`on_select`,
 		"b2b"
 	);
 };
-
 
 export const selectNonServiceableController = (req: Request, res: Response) => {
 	const { context, message } = req.body;
@@ -152,14 +175,15 @@ export const selectNonServiceableController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
 		}`,
 		`on_select`,
 		"b2b",
 		{
-			"type": "DOMAIN-ERROR",
-			"code": "30009",
-			"message": "Item not Serviceable"
+			type: "DOMAIN-ERROR",
+			code: "30009",
+			message: "Item not Serviceable",
 		}
 	);
 };
@@ -207,15 +231,15 @@ export const selectQuantityUnavailableController = (
 		res,
 		context,
 		responseMessage,
-		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
 		}`,
 		`on_select`,
 		"b2b",
 		{
-			"type": "DOMAIN-ERROR",
-			"code": "40002",
-			"message": "Quantity Unavailable"
+			type: "DOMAIN-ERROR",
+			code: "40002",
+			message: "Quantity Unavailable",
 		}
 	);
 };
-
