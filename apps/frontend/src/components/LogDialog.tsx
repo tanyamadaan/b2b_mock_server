@@ -64,7 +64,7 @@ export const LogDialog = () => {
 					<Stack direction="row" spacing={2} alignItems="center">
 						<Typography>Type:</Typography>
 						<Typography variant="body2" color="text.secondary">
-							/{log.type}
+							{log.type}
 						</Typography>
 					</Stack>
 				)}

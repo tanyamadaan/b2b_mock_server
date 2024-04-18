@@ -101,13 +101,28 @@ export const selectDomesticController = (req: Request, res: Response) => {
 			quote: quoteCreator(message.order.items),
 		},
 	};
-	responseMessage.order.quote.breakup.forEach((element: any) => {
-		if (element["@ondc/org/title_type"] === "item") {
-			const id = element["@ondc/org/item_id"];
-			const item = req.body.item_arr.find((item: any) => item.id == id);
-			element.title = item.name;
-		}
-	});
+	try {
+		responseMessage.order.quote.breakup.forEach((element: any) => {
+			if (element["@ondc/org/title_type"] === "item") {
+				const id = element["@ondc/org/item_id"];
+				const item = req.body.item_arr.find((item: any) => item.id == id);
+				element.title = item.name;
+			}
+		});
+	} catch (error) {
+		console.log("ERROR Occurred while matching item ID and name:::", error)
+		return res.status(400).json({
+			message: {
+				ack: {
+					status: "NACK",
+				},
+			},
+			error: {
+				message: "Item Name and ID not matching",
+			},
+		});
+	}
+	
 	return responseBuilder(
 		res,
 		context,
