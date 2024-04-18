@@ -40,7 +40,7 @@ export const initiateSelectController = async (req: Request, res: Response) => {
 
 const intializeRequest = async (req: Request, res: Response, transaction: any, scenario: string) => {
   const { context, message } = transaction
-  const { transaction_id } = context.transaction_id
+  const { transaction_id } = context
 
   const file = fs.readFileSync(
     path.join(B2B_EXAMPLES_PATH, "select/select_domestic.yaml")

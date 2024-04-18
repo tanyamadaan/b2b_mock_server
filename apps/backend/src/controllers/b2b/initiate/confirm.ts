@@ -53,7 +53,7 @@ const intializeRequest = async (
 			order: { provider, provider_location, ...order },
 		},
 	} = transaction;
-	const { transaction_id } = context.transaction_id;
+	const { transaction_id } = context;
 	const timestamp = new Date().toISOString();
 
 	const confirm = {

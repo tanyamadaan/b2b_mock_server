@@ -53,7 +53,7 @@ const intializeRequest = async (
 	let { payments, items } = transaction.message.order;
 	const { id, type, stops } = fulfillments[0];
 	const { id: parent_item_id, location_ids, ...item } = items[0];
-	const { transaction_id } = context.transaction_id;
+	const { transaction_id } = context;
 
 	const customized = checkIfCustomized(items);
 

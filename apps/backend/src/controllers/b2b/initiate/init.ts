@@ -54,7 +54,7 @@ const intializeRequest = async (
 		},
 	} = transaction;
 	let { payments } = transaction.message.order;
-	const { transaction_id } = context.transaction_id;
+	const { transaction_id } = context;
 
 	const file = fs.readFileSync(
 		path.join(B2B_EXAMPLES_PATH, "init/init_domestic.yaml")
