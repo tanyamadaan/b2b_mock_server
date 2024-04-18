@@ -48,8 +48,8 @@ export const selectController = (req: Request, res: Response) => {
 			if (checkIfCustomized(req.body.message.order.items)) {
 				return selectServiceCustomizationConfirmedController(req, res);
 			}
-			selectConsultationConfirmController(req, res);
-			break;
+			return selectConsultationConfirmController(req, res);
+
 	}
 };
 
@@ -59,7 +59,6 @@ const selectConsultationConfirmController = (
 ) => {
 	const { context, message } = req.body;
 	const { locations, ...provider } = message.order.provider;
-
 	var responseMessage = {
 		order: {
 			provider,
@@ -71,6 +70,7 @@ const selectConsultationConfirmController = (
 				{ location_ids: any; remaining: any; }) => ({ ...remaining, fulfillment_ids: [uuidv4()] })
 			),
 			fulfillments: message.order.fulfillments.map(({ id, stops, ...each }: any) => ({
+				...each,
 				id,
 				tracking: false,
 				state: {
@@ -78,11 +78,37 @@ const selectConsultationConfirmController = (
 						code: "Serviceable"
 					}
 				},
-				stops
+				stops: stops.map((stop: any) => {
+					// if (stop.time.label === "selected")
+					stop.time.label = "confirmed"
+					stop.tags = {
+						descriptor: {
+							code: "schedule"
+						},
+						list: [
+							{
+								"descriptor": {
+									"code": "ttl"
+								},
+								"value": "PT1H"
+							}]
+					}
+					// else
+					// stop.time.label = "rejected"
+					return stop
+				})
 			})),
 			quote: quoteCreatorService(message.order.items),
 		},
 	};
+	//Harcoded the values for quantity
+	responseMessage.order.quote.breakup.forEach((itm: any) => {
+		itm.item.quantity = {
+			allocated: {
+				count: 3
+			}
+		}
+	})
 	// const file = fs.readFileSync(
 	// 	path.join(
 	// 		SERVICES_EXAMPLES_PATH,

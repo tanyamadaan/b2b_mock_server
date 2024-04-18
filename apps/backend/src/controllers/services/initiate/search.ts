@@ -64,7 +64,8 @@ export const initiateSearchController = async (req: Request, res: Response) => {
 			transaction_id,
 		});
 	} catch (error) {
-		logger.error({ type: "response", message: error });
+		// logger.error({ type: "response", message: error });
+		console.log("ERROR:::::Search", (error as any).response?.data.error);
 		return res.json({
 			message: {
 				ack: {

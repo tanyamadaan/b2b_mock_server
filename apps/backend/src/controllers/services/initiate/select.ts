@@ -113,6 +113,7 @@ const intializeRequest = async (
 				})),
 				fulfillments: [
 					{
+						...fulfillments[0],
 						type: fulfillments[0].type,
 						stops: [
 							{
@@ -140,7 +141,7 @@ const intializeRequest = async (
 			},
 		},
 	};
-
+	
 	const header = await createAuthHeader(select);
 	try {
 		await redis.set(

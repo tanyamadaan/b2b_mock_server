@@ -47,7 +47,7 @@ const intializeRequest = async (
 	const {
 		context,
 		message: {
-			order: { provider, fulfillments },
+			order: { provider, fulfillments, quote },
 		},
 	} = transaction;
 	let { payments, items } = transaction.message.order;
@@ -57,6 +57,14 @@ const intializeRequest = async (
 
 	const customized = checkIfCustomized(items);
 
+	//get item_id with quantity
+	const id_quantity = quote.breakup.reduce((accumulator: any, itm: any) => {
+		if (itm.tags[0].list[0].value === "item") {
+			accumulator[itm.item.id] = itm.item.quantity
+		}
+		return accumulator
+	}, {});
+	console.log("Item Arr::", id_quantity)
 	if (customized) {
 		items = [
 			items[0],
@@ -79,7 +87,6 @@ const intializeRequest = async (
 			({ location_ids, ...items }: { location_ids: any }) => items
 		);
 	}
-
 	const init = {
 		context: {
 			...context,
@@ -94,7 +101,16 @@ const intializeRequest = async (
 					...provider,
 					locations: [{ id: uuidv4() }],
 				},
-				items,
+				items: items.map((itm: any) => ({
+					...itm,
+					quantity: {
+						...id_quantity[itm.id],
+						measure: {
+							unit: "seats",
+							value: "2"
+						}
+					}
+				})),
 				billing: {
 					name: "ONDC buyer",
 					address:
@@ -115,6 +131,7 @@ const intializeRequest = async (
 						type,
 						stops: [
 							{
+								...stops[0],
 								id: customized ? stops[0].id : undefined,
 								location: {
 									gps: "12.974002,77.613458",
@@ -142,9 +159,10 @@ const intializeRequest = async (
 			},
 		},
 	};
-
+	console.log("ITEMS::", init.message.order.items)
 	const header = await createAuthHeader(init);
 	try {
+		console.log("Before sending request ..")
 		await redis.set(
 			`${transaction_id}-init-from-server`,
 			JSON.stringify({ request: { ...init } })
@@ -165,8 +183,8 @@ const intializeRequest = async (
 			transaction_id,
 		});
 	} catch (error) {
-		logger.error({ type: "response", message: error });
-		// console.log("ERROR:::::", (error as any).response?.data);
+		// logger.error({ type: "response", message: error });
+		console.log("ERROR:::::", (error as any).response?.data.error);
 		return res.json({
 			message: {
 				ack: {
