@@ -15,6 +15,8 @@ import { statusSchema } from "./status";
 import { updateSchema } from "./update";
 import { masterSchema } from "./master";
 import { TransactionType } from "../../utils";
+import { cancelSchema } from "./cancel";
+import { onCancelSchema } from "./on_cancel";
 
 export const b2bSchemaValidator =
 	(
@@ -89,7 +91,10 @@ export const b2bSchemaValidator =
 			case "on_update":
 				validate = ajv.compile(onUpdateSchema);
 				break;
-
+			case "cancel":
+				validate = ajv.compile(cancelSchema)
+			case "on_cancel":
+				validate = ajv.compile(onCancelSchema)
 			default:
 				res.status(400).json({
 					message: {
