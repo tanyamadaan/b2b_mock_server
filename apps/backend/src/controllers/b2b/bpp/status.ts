@@ -41,6 +41,7 @@ const statusRequest = async (req: Request, res: Response, transaction: any, scen
 
 	const responseMessage: any = {
 		order: {
+			...transaction.message.order,
 			state: "Completed",
 			provider: {
 				...transaction.message.order.provider,
@@ -72,6 +73,13 @@ const statusRequest = async (req: Request, res: Response, transaction: any, scen
 						// Add the agent object to the stop
 						return {
 							...stop,
+							time: {
+								range: {
+									start: timestamp,
+									end: timestamp
+								},
+								timestamp: timestamp
+							},
 							instructions: {
 								...instructions,
 								name: "Proof of delivery",
@@ -94,6 +102,10 @@ const statusRequest = async (req: Request, res: Response, transaction: any, scen
 						// For stops of type "start", add the instructions and location modifications
 						return {
 							...stop,
+							time: {
+								...stop.time,
+								timestamp: timestamp
+							},
 							instructions,
 							location: {
 								...stop.location,
@@ -136,7 +148,6 @@ const statusRequest = async (req: Request, res: Response, transaction: any, scen
 			updated_at: timestamp
 		}
 	}
-
 	responseMessage.order.payments.forEach((itm: any) => itm.status = "PAID")
 
 	switch (scenario) {

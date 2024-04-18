@@ -55,9 +55,8 @@ const intializeRequest = async (
 	const { id: parent_item_id, location_ids, ...item } = providers[0].items[0];
 	let items = [];
 
-	const customized = checkIfCustomized(providers[0].items);
 
-	if (customized) {
+	if (scenario === "customization") {
 		items = [
 			{ parent_item_id, location_ids },
 			...providers[0].items.slice(1).map((item: any) => {
@@ -108,7 +107,10 @@ const intializeRequest = async (
 						},
 					],
 				},
-				items,
+				items: items.map((itm: any) => ({
+					...itm,
+					location_ids: itm.location_ids.map((id: any) => String(id))
+				})),
 				fulfillments: [
 					{
 						type: fulfillments[0].type,
@@ -127,7 +129,7 @@ const intializeRequest = async (
 										end: providers[0].time.schedule.times[1],
 									},
 								},
-								days: customized
+								days: scenario === "customization"
 									? fulfillments[0].days.split(",")[0]
 									: undefined,
 							},
@@ -145,13 +147,12 @@ const intializeRequest = async (
 			`${transaction_id}-select-from-server`,
 			JSON.stringify({ request: { ...select } })
 		);
-		await axios.post(`${context.bpp_uri}/select?scenario=${scenario}`, select, {
+		const response = await axios.post(`${context.bpp_uri}/select`, select, {
 			headers: {
 				"X-Gateway-Authorization": header,
 				authorization: header,
 			},
 		});
-
 		return res.json({
 			message: {
 				ack: {
@@ -161,7 +162,7 @@ const intializeRequest = async (
 			transaction_id,
 		});
 	} catch (error) {
-		logger.error({ type: "response", message: error });
+		logger.error({ type: "response", message: (error as any).response?.data });
 		// console.log("ERROR:::::", (error as any).response?.data);
 		return res.json({
 			message: {

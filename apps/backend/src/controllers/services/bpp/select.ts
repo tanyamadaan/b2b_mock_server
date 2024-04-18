@@ -67,8 +67,8 @@ const selectConsultationConfirmController = (
 				type,
 				collected_by: "BAP",
 			})),
-			items: message.order.items.map(({ location_ids, ...remaining }:
-				{ location_ids: any; remaining: any; }) => ({ ...remaining, fulfilment_ids: [uuidv4()] })
+			items: message.order.items.map(({ ...remaining }:
+				{ location_ids: any; remaining: any; }) => ({ ...remaining, fulfillment_ids: [uuidv4()] })
 			),
 			fulfillments: message.order.fulfillments.map(({ id, stops, ...each }: any) => ({
 				id,
@@ -83,7 +83,6 @@ const selectConsultationConfirmController = (
 			quote: quoteCreatorService(message.order.items),
 		},
 	};
-
 	// const file = fs.readFileSync(
 	// 	path.join(
 	// 		SERVICES_EXAMPLES_PATH,
