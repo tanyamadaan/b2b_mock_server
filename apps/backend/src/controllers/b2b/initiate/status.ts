@@ -32,20 +32,25 @@ export const initiateStatusController = async (
 			},
 		});
 	}
+	const statusIndex = transactionKeys.filter((e) =>
+		e.includes("status-to-server")
+	).length;
+
 	const transaction = await redis.mget(ifTransactionExist);
 	const parsedTransaction = transaction.map((ele) => {
 		return JSON.parse(ele as string);
 	});
 
 	// console.log("parsedTransaction:::: ", parsedTransaction[0]);
-	return intializeRequest(req, res, parsedTransaction[0].request, scenario);
+	return intializeRequest(req, res, parsedTransaction[0].request, scenario, statusIndex);
 };
 
 const intializeRequest = async (
 	req: Request,
 	res: Response,
 	transaction: any,
-	scenario: string
+	scenario: string,
+	statusIndex: number
 ) => {
 	const {
 		context,
@@ -54,7 +59,6 @@ const intializeRequest = async (
 		},
 	} = transaction;
 	const { transaction_id } = context.transaction_id;
-	const timestamp = new Date().toISOString();
 
 	const status = {
 		context: {
@@ -72,7 +76,7 @@ const intializeRequest = async (
 	const header = await createAuthHeader(status);
 	try {
 		await redis.set(
-			`${transaction_id}-status-from-server`,
+			`${transaction_id}-${statusIndex}-status-from-server`,
 			JSON.stringify({ request: { ...status } })
 		);
 		const response = await axios.post(`${context.bpp_uri}/status`, status, {
@@ -83,7 +87,7 @@ const intializeRequest = async (
 		});
 
 		await redis.set(
-			`${transaction_id}-status-from-server`,
+			`${transaction_id}-${statusIndex}-status-from-server`,
 			JSON.stringify({
 				request: { ...status },
 				response: {

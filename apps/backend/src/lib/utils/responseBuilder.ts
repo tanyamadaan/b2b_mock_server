@@ -106,7 +106,7 @@ export const responseBuilder = async (
 		async = { ...async, error };
 	}
 	const header = await createAuthHeader(async);
-	
+
 	if (sandboxMode) {
 		if (action.startsWith("on_")) {
 			var log: TransactionType = {
@@ -198,7 +198,12 @@ export const responseBuilder = async (
 		// logger.info("TRANSACTION AFTER:", log);
 		// logger.info("**********************");
 
-		logger.info({ message: { ack: { status: "ACK" } } });
+		logger.info({
+			type: "response",
+			action: action,
+			transaction_id: (reqContext as any).transaction_id,
+			message: { sync: { message: { ack: { status: "ACK" } } } },
+		});
 		return res.json({
 			message: {
 				ack: {
@@ -207,7 +212,13 @@ export const responseBuilder = async (
 			},
 		});
 	} else {
-		logger.info({ sync: { message: { ack: { status: "ACK" } } }, async });
+		logger.info({
+			type: "response",
+			action: action,
+			transaction_id: (reqContext as any).transaction_id,
+			message: { sync: { message: { ack: { status: "ACK" } } }, async },
+		});
+		
 		return res.json({
 			sync: {
 				message: {

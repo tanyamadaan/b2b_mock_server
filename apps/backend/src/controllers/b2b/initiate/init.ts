@@ -11,7 +11,6 @@ import axios from "axios";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
-import { v4 as uuidv4 } from "uuid";
 
 export const initiateInitController = async (req: Request, res: Response) => {
 	const { scenario, transactionId } = req.body;

@@ -11,11 +11,18 @@ import YAML from "yaml";
 export const initController = async (req: Request, res: Response) => {
 	const { transaction_id } = req.body.context;
 	const transactionKeys = await redis.keys(`${transaction_id}-*`);
-	const ifTransactionExist = transactionKeys.filter((e) =>
+	const ifToTransactionExist = transactionKeys.filter((e) =>
 		e.includes("on_search-to-server")
 	);
 
-	if (ifTransactionExist.length === 0) {
+	const ifFromTransactionExist = transactionKeys.filter((e) =>
+		e.includes("on_search-from-server")
+	);
+
+	if (
+		ifFromTransactionExist.length === 0 &&
+		ifToTransactionExist.length === 0
+	) {
 		return res.status(400).json({
 			message: {
 				ack: {
@@ -27,7 +34,11 @@ export const initController = async (req: Request, res: Response) => {
 			},
 		});
 	}
-	const transaction = await redis.mget(ifTransactionExist);
+	const transaction = await redis.mget(
+		ifFromTransactionExist.length > 0
+			? ifFromTransactionExist
+			: ifToTransactionExist
+	);
 	const parsedTransaction = transaction.map((ele) => {
 		return JSON.parse(ele as string);
 	});
