@@ -64,7 +64,7 @@ const intializeRequest = async (
 		}
 		return accumulator
 	}, {});
-	console.log("Item Arr::", id_quantity)
+	
 	if (customized) {
 		items = [
 			items[0],
@@ -159,7 +159,7 @@ const intializeRequest = async (
 			},
 		},
 	};
-	console.log("ITEMS::", init.message.order.items)
+	
 	const header = await createAuthHeader(init);
 	try {
 		console.log("Before sending request ..")
@@ -183,8 +183,8 @@ const intializeRequest = async (
 			transaction_id,
 		});
 	} catch (error) {
-		// logger.error({ type: "response", message: error });
-		console.log("ERROR:::::", (error as any).response?.data.error);
+		logger.error({ type: "response", message: error });
+		// console.log("ERROR:::::", (error as any).response?.data.error);
 		return res.json({
 			message: {
 				ack: {
