@@ -57,9 +57,6 @@ export const onStatusSchema = {
         },
         transaction_id: {
           type: "string",
-          const: { $data: "/select/0/context/transaction_id" },
-          errorMessage:
-            "Transaction ID should be same across the transaction: ${/select/0/context/transaction_id}",
         },
         message_id: {
           type: "string",
@@ -104,7 +101,6 @@ export const onStatusSchema = {
           properties: {
             id: {
               type: "string",
-              const: { $data: "/confirm/0/message/order/id" },
             },
             status: {
               type: "string",
@@ -189,20 +185,15 @@ export const onStatusSchema = {
               properties: {
                 name: {
                   type: "string",
-                  const: { $data: "/init/0/message/order/billing/name" },
                 },
                 address: {
                   type: "string",
-                  const: { $data: "/init/0/message/order/billing/address" },
                 },
                 state: {
                   type: "object",
                   properties: {
                     name: {
                       type: "string",
-                      const: {
-                        $data: "/init/0/message/order/billing/state/name",
-                      },
                     },
                   },
                   required: ["name"],
@@ -212,24 +203,18 @@ export const onStatusSchema = {
                   properties: {
                     name: {
                       type: "string",
-                      const: {
-                        $data: "/init/0/message/order/billing/city/name",
-                      },
                     },
                   },
                   required: ["name"],
                 },
                 tax_id: {
                   type: "string",
-                  const: { $data: "/init/0/message/order/billing/tax_id" },
                 },
                 email: {
                   type: "string",
-                  const: { $data: "/init/0/message/order/billing/email" },
                 },
                 phone: {
                   type: "string",
-                  const: { $data: "/init/0/message/order/billing/phone" },
                 },
               },
 
@@ -615,16 +600,11 @@ export const onStatusSchema = {
             created_at: {
               type: "string",
               format: "date-time",
-              const: { $data: "/confirm/0/message/order/created_at" },
-              errorMessage:
-                "should remain same as in /confirm - ${/confirm/0/message/order/created_at}",
             },
 
             updated_at: {
               type: "string",
               format: "date-time",
-              not: { const: { $data: "/confirm/0/message/order/created_at" } },
-              errorMessage: "should not be same as 'created_at'",
             },
           },
           required: [

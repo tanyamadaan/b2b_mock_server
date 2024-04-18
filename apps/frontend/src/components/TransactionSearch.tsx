@@ -34,7 +34,7 @@ export const TransactionSearch = () => {
 						item: { request: { context: { action: any; timestamp: any } } }
 					) => {
 						const { action, timestamp } = item.request.context;
-						if (!seen[action] || timestamp > seen[action]) {
+						if ((action === "status" || action === "on_status") || !seen[action] || timestamp > seen[action]) {
 							seen[action] = timestamp; // Update latest timestamp for the action
 							const existingIndex = uniqueArr.findIndex(
 								(obj) => obj.action === action
