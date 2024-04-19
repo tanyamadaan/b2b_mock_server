@@ -64,7 +64,7 @@ const intializeRequest = async (
 		}
 		return accumulator
 	}, {});
-	console.log("Item Arr::", id_quantity)
+	
 	if (customized) {
 		items = [
 			items[0],
@@ -161,7 +161,11 @@ const intializeRequest = async (
 			},
 		},
 	};
+<<<<<<< HEAD
 	console.log(":::::Items:::", init.message.order.items)
+=======
+	
+>>>>>>> 36e0fb964639b51ebc0096f8a9f0a71d34207cbc
 	const header = await createAuthHeader(init);
 	try {
 		await redis.set(
@@ -184,8 +188,8 @@ const intializeRequest = async (
 			transaction_id,
 		});
 	} catch (error) {
-		// logger.error({ type: "response", message: error });
-		console.log("ERROR:::::", (error as any).response?.data.error);
+		logger.error({ type: "response", message: error });
+		// console.log("ERROR:::::", (error as any).response?.data.error);
 		return res.json({
 			message: {
 				ack: {
