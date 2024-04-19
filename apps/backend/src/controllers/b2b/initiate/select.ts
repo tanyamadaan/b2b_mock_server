@@ -12,6 +12,8 @@ import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 
+import { v4 as uuidv4 } from "uuid";
+
 export const initiateSelectController = async (req: Request, res: Response) => {
   const { scenario, transactionId } = req.body;
 
@@ -55,6 +57,7 @@ const intializeRequest = async (req: Request, res: Response, transaction: any, s
       ...context,
       timestamp: new Date().toISOString(),
       action: 'select',
+      message_id: uuidv4(),
       ttl: (scenario === 'rfq') ? 'P1D' : 'PT30S',
       bap_id: MOCKSERVER_ID,
       bap_uri: B2B_BAP_MOCKSERVER_URL,

@@ -8,6 +8,7 @@ import {
 	redis,
 } from "../../../lib/utils";
 import axios, { AxiosError } from "axios";
+import { v4 as uuidv4 } from "uuid";
 
 export const initiateSelectController = async (req: Request, res: Response) => {
 	const { scenario, transactionId } = req.body;
@@ -97,6 +98,7 @@ const intializeRequest = async (
 			action: "select",
 			bap_id: MOCKSERVER_ID,
 			bap_uri: SERVICES_BAP_MOCKSERVER_URL,
+			message_id: uuidv4()
 		},
 		message: {
 			order: {

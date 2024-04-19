@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import {
 	quoteCreator,
 	responseBuilder,
-	B2B_EXAMPLES_PATH,redis
+	B2B_EXAMPLES_PATH,
+	redis,
 } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
@@ -43,28 +44,27 @@ export const initController = async (req: Request, res: Response) => {
 		return JSON.parse(ele as string);
 	});
 
-	const providers = parsedTransaction[0].request.message.catalog.providers
+	const providers = parsedTransaction[0].request.message.catalog.providers;
 	const item_id_name = providers.map((pro: any) => {
 		const mappedItems = pro.items.map((item: any) => ({
 			id: item.id,
 			name: item.descriptor.name,
 		}));
-		return mappedItems
-	})
+		return mappedItems;
+	});
 
-	req.body.item_arr = item_id_name.flat()
-
+	req.body.item_arr = item_id_name.flat();
 
 	// const { scenario } = req.query;
 	// switch (scenario) {
-		// case "default":
-		// 	initDomesticController(req, res);
-		// 	break;
-		// // case "reject-rfq":
-		// // 	initRejectRfq(req, res);
-		// // 	break;
-		// default:
-			initDomesticController(req, res);
+	// case "default":
+	// 	initDomesticController(req, res);
+	// 	break;
+	// // case "reject-rfq":
+	// // 	initRejectRfq(req, res);
+	// // 	break;
+	// default:
+	initDomesticController(req, res);
 	// 		break;
 	// }
 };
@@ -79,8 +79,26 @@ const initDomesticController = (req: Request, res: Response) => {
 	);
 
 	const response = YAML.parse(file.toString());
-	const { type, collected_by, ...staticPaymentInfo } =
+	let { type, collected_by, ...staticPaymentInfo } =
 		response.value.message.order.payments[0];
+	if (remainingMessage.payments[0].type === "PRE-FULFILLMENT" && remainingMessage.payments[0].collected_by === "BAP") {
+		staticPaymentInfo = {
+			...staticPaymentInfo,
+			"@ondc/org/settlement_details": [
+				{
+					settlement_counterparty: "buyer-app",
+					settlement_phase: "sale-amount",
+					settlement_type: "upi",
+					upi_address: "gft@oksbi",
+					settlement_bank_account_no: "XXXXXXXXXX",
+					settlement_ifsc_code: "XXXXXXXXX",
+					beneficiary_name: "xxxxx",
+					bank_name: "xxxx",
+					branch_name: "xxxx",
+				},
+			],
+		};
+	}
 	const responseMessage = {
 		order: {
 			items,
@@ -109,7 +127,7 @@ const initDomesticController = (req: Request, res: Response) => {
 			}
 		});
 	} catch (error) {
-		console.log("ERROR Occurred while matching item ID and name:::", error)
+		console.log("ERROR Occurred while matching item ID and name:::", error);
 		return res.status(400).json({
 			message: {
 				ack: {
