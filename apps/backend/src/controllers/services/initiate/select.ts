@@ -54,13 +54,13 @@ const intializeRequest = async (
 	const { id, locations } = providers[0];
 	const { id: parent_item_id, location_ids, } = providers[0].items[0];
 	let items = [];
-
-
 	if (scenario === "customization") {
+		//parent_item_id not in customization
 		items = [
-			{ parent_item_id, location_ids },
+			{ id: parent_item_id, parent_item_id, location_ids },
 			...providers[0].items.slice(1).map((item: any) => {
 				return {
+					...item,
 					id: item.id,
 					parent_item_id,
 					quantity: {
@@ -69,9 +69,22 @@ const intializeRequest = async (
 						},
 					},
 					category_ids: item.category_ids,
-					tags: item.tags,
-				};
-			}),
+					tags: item.tags.map((tag:any) => ({
+							...tag,
+							list:tag.list.map((itm2: any, index: any) => {
+							if (index === 0) {
+								return {
+									descriptor: {
+										code: "type"
+									},
+									value: "customization"
+								};
+							} else {
+								return item; // Return the item unchanged if it's not the first element
+							}
+						})
+					}))
+				}})	
 		];
 	} else {
 		items = providers[0].items = [
@@ -88,7 +101,7 @@ const intializeRequest = async (
 			)[0],
 		];
 	}
-
+	// console.log("Items::", JSON.stringify(items), "Senario::", scenario)
 	const select = {
 		context: {
 			...context,
@@ -109,7 +122,7 @@ const intializeRequest = async (
 				},
 				items: items.map((itm: any) => ({
 					...itm,
-					location_ids: itm.location_ids.map((id: any) => String(id))
+					location_ids: itm.location_ids ? itm.location_ids.map((id: any) => String(id)) : undefined
 				})),
 				fulfillments: [
 					{
@@ -130,9 +143,9 @@ const intializeRequest = async (
 										end: providers[0].time.schedule.times[1],
 									},
 								},
-								days: scenario === "customization"
-									? fulfillments[0].days.split(",")[0]
-									: undefined,
+								days: (scenario === "customization") ? "4" : undefined
+								// 	? fulfillments[0].stops[0].time.days.split(",")[0]
+								// 	: undefined,
 							},
 						],
 					},
@@ -141,7 +154,7 @@ const intializeRequest = async (
 			},
 		},
 	};
-	
+
 	const header = await createAuthHeader(select);
 	try {
 		await redis.set(

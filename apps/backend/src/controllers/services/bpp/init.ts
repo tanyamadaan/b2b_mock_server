@@ -88,7 +88,7 @@ const initConsultationController = (req: Request, res: Response) => {
 	//hardcoded value quantity
 	responseMessage.order.quote.breakup.forEach((itm: any) => {
 		itm.item.quantity = {
-			allocated: {
+			selected: {
 				count: 3
 			}
 		}

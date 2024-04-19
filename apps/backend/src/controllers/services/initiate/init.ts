@@ -56,7 +56,7 @@ const intializeRequest = async (
 	const { transaction_id } = context;
 
 	const customized = checkIfCustomized(items);
-
+	// console.log("Customized ", customized)
 	//get item_id with quantity
 	const id_quantity = quote.breakup.reduce((accumulator: any, itm: any) => {
 		if (itm.tags[0].list[0].value === "item") {
@@ -87,6 +87,7 @@ const intializeRequest = async (
 			({ location_ids, ...items }: { location_ids: any }) => items
 		);
 	}
+
 	const init = {
 		context: {
 			...context,
@@ -159,10 +160,9 @@ const intializeRequest = async (
 			},
 		},
 	};
-	console.log("ITEMS::", init.message.order.items)
+	console.log(":::::Items:::", init.message.order.items)
 	const header = await createAuthHeader(init);
 	try {
-		console.log("Before sending request ..")
 		await redis.set(
 			`${transaction_id}-init-from-server`,
 			JSON.stringify({ request: { ...init } })

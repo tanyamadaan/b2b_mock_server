@@ -46,6 +46,7 @@ export const selectController = (req: Request, res: Response) => {
 			// 	},
 			// });
 			if (checkIfCustomized(req.body.message.order.items)) {
+				// console.log("Customized..")
 				return selectServiceCustomizationConfirmedController(req, res);
 			}
 			return selectConsultationConfirmController(req, res);
@@ -104,7 +105,7 @@ const selectConsultationConfirmController = (
 	//Harcoded the values for quantity
 	responseMessage.order.quote.breakup.forEach((itm: any) => {
 		itm.item.quantity = {
-			allocated: {
+			selected: {
 				count: 3
 			}
 		}
@@ -155,6 +156,7 @@ const selectServiceCustomizationConfirmedController = (
 	req: Request,
 	res: Response
 ) => {
+	console.log("Customizing ....select")
 	const { context, message } = req.body;
 	const { locations, ...provider } = message.order.provider;
 	const { id: parent_item_id, location_ids, ...item } = message.order.items[0]
