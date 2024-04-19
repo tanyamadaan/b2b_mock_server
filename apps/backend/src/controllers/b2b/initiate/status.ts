@@ -63,6 +63,7 @@ const intializeRequest = async (
 	const status = {
 		context: {
 			...context,
+			message_id: uuidv4(),
 			timestamp: new Date().toISOString(),
 			action: "status",
 			bap_id: MOCKSERVER_ID,

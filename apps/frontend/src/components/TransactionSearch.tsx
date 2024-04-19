@@ -34,7 +34,11 @@ export const TransactionSearch = () => {
 						item: { request: { context: { action: any; timestamp: any } } }
 					) => {
 						const { action, timestamp } = item.request.context;
-						if ((action === "status" || action === "on_status") || !seen[action] || timestamp > seen[action]) {
+						if (action === "status" || action === "on_status") {
+							seen[action] = timestamp;
+							uniqueArr.push(item);
+						}
+						if (!seen[action] || timestamp > seen[action]) {
 							seen[action] = timestamp; // Update latest timestamp for the action
 							const existingIndex = uniqueArr.findIndex(
 								(obj) => obj.action === action
@@ -68,7 +72,7 @@ export const TransactionSearch = () => {
 			setRequested(true);
 		} catch (error) {
 			handleMessageToggle("Error Occurred while fetching transaction!");
-			setMessageType("error")
+			setMessageType("error");
 			console.log("Following error occurred while querying", error);
 		}
 	};

@@ -39,6 +39,7 @@ export const initiateSearchController = async (req: Request, res: Response) => {
 			domain,
 			bap_id: MOCKSERVER_ID,
 			bap_uri: SERVICES_BAP_MOCKSERVER_URL,
+			message_id: uuidv4()
 		},
 	};
 
