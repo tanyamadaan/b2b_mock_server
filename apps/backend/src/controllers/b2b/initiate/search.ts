@@ -33,6 +33,7 @@ export const initiateSearchController = async (req: Request, res: Response) => {
 				},
 			},
 			transaction_id,
+			message_id: uuidv4(),
 			// bpp_id: MOCKSERVER_ID,
 			// bpp_uri,
 			domain,

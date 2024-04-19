@@ -37,7 +37,7 @@ export const CustomNode = ({
 					</Box>
 				</Box>
 				<Handle type="target" position={Position.Top} id="top" />
-				<Handle type="source" position={Position.Bottom} id="bottom" />
+				<Handle type="source" position={Position.Bottom} id="bottom" className="1"/>
 				<Handle type="source" position={Position.Right} id="right" />
 				<Handle type="target" position={Position.Left} id="left" />
 			</Box>

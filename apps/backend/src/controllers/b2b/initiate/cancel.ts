@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { createAuthHeader, redis } from "../../../lib/utils";
 import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
 
 export const initiateCancelController = async (req: Request, res: Response) => {
   const { transactionId, orderId, cancellationReasonId} = req.body;
@@ -37,6 +38,7 @@ const intializeRequest = async (res: Response, transaction: any, order_id: strin
     context: {
       ...context,
       action: "cancel",
+			message_id: uuidv4()
     },
     message: {
       order_id,

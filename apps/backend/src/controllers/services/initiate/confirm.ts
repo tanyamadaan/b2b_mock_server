@@ -77,6 +77,7 @@ const intializeRequest = async (
 			action: "confirm",
 			bap_id: MOCKSERVER_ID,
 			bap_uri: SERVICES_BAP_MOCKSERVER_URL,
+			message_id: uuidv4()
 		},
 		message: {
 			order: {

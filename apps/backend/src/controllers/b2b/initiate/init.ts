@@ -11,6 +11,7 @@ import axios from "axios";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
+import { v4 as uuidv4 } from "uuid";
 
 export const initiateInitController = async (req: Request, res: Response) => {
 	const { scenario, transactionId } = req.body;
@@ -92,7 +93,8 @@ const intializeRequest = async (
 			bap_uri: B2B_BAP_MOCKSERVER_URL,
 			// bpp_id: MOCKSERVER_ID,
 			// bpp_uri,
-      ttl: "PT30S"
+      ttl: "PT30S",
+			message_id: uuidv4()
 		},
 		message: {
 			order: {
