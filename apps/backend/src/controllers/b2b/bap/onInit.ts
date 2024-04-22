@@ -25,6 +25,22 @@ const onInitDomesticController = (req: Request, res: Response) => {
 	const responseMessage = {
 		order: {
 			...order,
+			tags: [
+				...order.tags,
+				{
+					descriptor: {
+						code: "bap_terms",
+					},
+					list: [
+						{
+							descriptor: {
+								code: "accept_bpp_terms",
+							},
+							value: "Y",
+						},
+					],
+				},
+			],
 			id: uuidv4(),
 			state: "Created",
 			provider: {

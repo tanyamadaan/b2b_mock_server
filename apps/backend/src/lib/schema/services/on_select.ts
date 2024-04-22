@@ -176,7 +176,6 @@ export const onSelectSchema = {
                 required: [
                   "fulfillment_ids",
                   "id",
-                  "parent_item_id",
                   "location_ids",
                 ],
               },
@@ -287,7 +286,7 @@ export const onSelectSchema = {
                           required: ["descriptor", "list"],
                         },
                       },
-                      required: ["type", "location", "time", "tags"],
+                      required: ["type", "location", "time"],
                     },
                   },
                 },
@@ -362,7 +361,7 @@ export const onSelectSchema = {
                             required: ["currency", "value"],
                           },
                         },
-                        required: ["id", "quantity", "price"],
+                        required: ["id"],
                       },
                       tags: {
                         type: "array",
