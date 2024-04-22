@@ -59,7 +59,7 @@ const intializeRequest = async (
 				payments,
 				fulfillments,
 				xinput,
-				items
+				items,
 			},
 		},
 	} = transaction;
@@ -69,7 +69,7 @@ const intializeRequest = async (
 	const timestamp = new Date().toISOString();
 
 	const customized = checkIfCustomized(items);
-
+	console.log("Xinput ::", xinput)
 	const confirm = {
 		context: {
 			...context,
@@ -81,24 +81,30 @@ const intializeRequest = async (
 		},
 		message: {
 			order: {
+				...transaction.message.order,
 				id: uuidv4(),
-				state: "Created",
+				status: "Created",
 				provider: {
 					...provider,
-					...locations,
+					locations,
 				},
 				items,
 				fulfillments: [
 					{
 						...remainingfulfillments,
-						stops: stops.map(({ tags, ...stop }: { tags: any }) => {
+						stops: stops.map((stop: any) => {
 							return {
 								...stop,
+								contact: {
+									...stop.contact,
+									email: stop.contact.email ? stop.contact.email : "nobody@nomail.com"
+								},
 								customer: {
 									person: {
 										name: "Ramu",
 									},
 								},
+								tags: undefined
 							};
 						}),
 					},
@@ -108,17 +114,36 @@ const intializeRequest = async (
 					: quoteCreatorService(items),
 				payments: [
 					{
+						//hardcoded transaction_id
 						...payments[0],
+						params:{
+							...payments[0].params,
+							transaction_id: "xxxxxxxx",
+						},
 						status: "PAID",
 					},
 				],
 				created_at: timestamp,
 				updated_at: timestamp,
-				xinput,
+				xinput: {
+					...xinput,
+					form: {
+						...xinput.form,
+						submission_id: "xxxxxxxxxx",
+						status: "SUCCESS",
+
+					}
+				},
 			},
 		},
 	};
-
+	confirm.message.order.quote.breakup.forEach((itm: any) => {
+		itm.item.quantity = {
+			selected: {
+				count: 3
+			}
+		}
+	})
 	const header = await createAuthHeader(confirm);
 	try {
 		await redis.set(
@@ -141,7 +166,8 @@ const intializeRequest = async (
 			transaction_id,
 		});
 	} catch (error) {
-		logger.error({ type: "response", message: error });
+		// logger.error({ type: "response", message: error });
+		console.log("ERROR:::::", (error as any).response?.data.error);
 		return res.json({
 			message: {
 				ack: {

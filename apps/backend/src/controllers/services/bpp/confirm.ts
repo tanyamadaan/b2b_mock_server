@@ -7,7 +7,7 @@ import YAML from "yaml";
 
 export const confirmController = (req: Request, res: Response) => {
 	if (checkIfCustomized(req.body.message.order.items)) {
-		console.log('Im here');
+		// console.log('Im here');
 
 		return confirmServiceCustomizationController(req, res);
 	}
@@ -74,8 +74,21 @@ export const confirmConsultationController = (req: Request, res: Response) => {
 			status: 'Accepted',
 			fulfillments: [{
 				...fulfillments[0],
+				state: {
+					descriptor: {
+						code: "Pending"
+					}
+				},
+				stops: fulfillments[0].stops.map((itm: any) => ({
+					...itm,
+					person: itm.customer && itm.customer.person ? itm.customer.person : undefined,
+				})),
 				rateable: true,
 			}],
+			provider: {
+				...order.provider,
+				rateable: true
+			}
 		}
 	}
 	return responseBuilder(
@@ -151,7 +164,7 @@ export const confirmServiceCustomizationController = (req: Request, res: Respons
 		order: {
 			...order,
 			provider: {
-				provider:order.provider,
+				provider: order.provider,
 				rateable: true,
 			},
 			status: 'Accepted',

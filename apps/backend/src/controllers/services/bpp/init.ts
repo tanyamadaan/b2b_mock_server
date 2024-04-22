@@ -85,6 +85,14 @@ const initConsultationController = (req: Request, res: Response) => {
 			xinput: response.value.message.order.xinput
 		}
 	}
+	//hardcoded value quantity
+	responseMessage.order.quote.breakup.forEach((itm: any) => {
+		itm.item.quantity = {
+			selected: {
+				count: 3
+			}
+		}
+	})
 	return responseBuilder(
 		res,
 		context,
