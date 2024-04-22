@@ -135,6 +135,16 @@ const FIELDS = {
 			type: "text",
 		},
 		{
+			name: "orderId",
+			placeholder: "Enter Your Order ID",
+			type: "text",
+		},
+		{
+			name: "cancellationReasonId",
+			placeholder: "Enter Your Cancellation Reason ID",
+			type: "text",
+		},
+		{
 			name: "scenario",
 			placeholder: "Select Scenario",
 			type: "select",
