@@ -4,7 +4,6 @@ import { responseBuilder, B2B_EXAMPLES_PATH, redis } from "../../../lib/utils";
 export const cancelController = async (req: Request, res: Response) => {
 	const { scenario } = req.query;
 	const { transaction_id } = req.body.context;
-
 	const transactionKeys = await redis.keys(`${transaction_id}-*`);
 	const ifTransactionExist = transactionKeys.filter((e) =>
 		e.includes("on_confirm-from-server")
@@ -26,13 +25,33 @@ export const cancelController = async (req: Request, res: Response) => {
 	const parsedTransaction = transaction.map((ele) => {
 		return JSON.parse(ele as string);
 	});
-	cancelRequest(req, res, parsedTransaction, scenario);
+	// getting on_search data for payment_ids
+	const search = await redis.mget(`${transaction_id}-on_search-from-server`);
+	const parsedSearch = search.map((ele) => {
+		return JSON.parse(ele as string);
+	})
+	// console.log("Search ::", parsedSearch[0].request.message.catalog.providers)
+
+	const provider_id = parsedTransaction[0].request.message.order.provider.id
+
+	const item_payment_ids = parsedSearch[0].request.message.catalog.providers.map((itm: any) => {
+		if (itm.id === provider_id) {
+			const result = itm.items.reduce((accumulator: any, currentItem: any) => {
+				accumulator[currentItem.id] = currentItem.payment_ids;
+				return accumulator;
+			}, {});
+			return result
+		}
+	})
+
+
+	// console.log("Items with there ids :", item_payment_ids[0])
+	cancelRequest(req, res, parsedTransaction[0].request, item_payment_ids[0], scenario);
 }
 
-const cancelRequest = async (req: Request, res: Response, transaction: any, scenario: any) => {
+const cancelRequest = async (req: Request, res: Response, transaction: any, item_payment_ids: any, scenario: any) => {
 	// const { message } = transaction
 	const { context } = req.body;
-	console.log("Inside cancel")
 	const responseMessage = {
 		...transaction.message,
 		order: {
@@ -46,6 +65,13 @@ const cancelRequest = async (req: Request, res: Response, transaction: any, scen
 			},
 			fulfillments: transaction.message.order.fulfillments.map((fulfillment: any) => ({
 				...fulfillment,
+				state: {
+
+					...fulfillment.state,
+					descriptor: {
+						code: "Cancelled"
+					}
+				},
 				stops: fulfillment.stops.map((stop: any) => {
 					// Add the instructions to both start and end stops
 					const instructions = {
@@ -102,7 +128,10 @@ const cancelRequest = async (req: Request, res: Response, transaction: any, scen
 				}),
 				rateable: undefined
 			})),
-
+			items: transaction.message.order.items.map((itm: any) => ({
+				...itm,
+				payment_ids: item_payment_ids[itm.id] ? item_payment_ids[itm.id] : undefined
+			})),
 		}
 	}
 

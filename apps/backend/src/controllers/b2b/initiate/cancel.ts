@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createAuthHeader, redis } from "../../../lib/utils";
+import { createAuthHeader, redis,logger } from "../../../lib/utils";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
@@ -77,8 +77,8 @@ const intializeRequest = async (res: Response, transaction: any, order_id: strin
 			transaction_id: context.transaction_id,
 		});
 	} catch (error) {
-		// logger.error({ type: "response", message: error });
-		console.log("ERROR :::::::::::::", (error as any).response.data.error.message);
+		logger.error({ type: "response", message: error });
+		// console.log("ERROR :::::::::::::", (error as any).response.data.error.message);
 
 		return res.json({
 			message: {

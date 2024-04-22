@@ -55,7 +55,7 @@ bapRouter.post(
 
 bapRouter.post(
 	"/on_cancel",
-	jsonSchemaValidator({domain: "b2b", action: "cancel"}),
+	jsonSchemaValidator({ domain: "b2b", action: "on_cancel" }),
 	redisRetriever,
 	onCancelController
 )
