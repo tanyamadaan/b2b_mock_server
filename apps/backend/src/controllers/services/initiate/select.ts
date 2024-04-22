@@ -34,8 +34,6 @@ export const initiateSelectController = async (req: Request, res: Response) => {
 	const parsedTransaction = transaction.map((ele) => {
 		return JSON.parse(ele as string);
 	});
-
-	console.log("parsedTransaction:::: ", parsedTransaction[0]);
 	return intializeRequest(req, res, parsedTransaction[0].request, scenario);
 };
 
@@ -70,9 +68,9 @@ const intializeRequest = async (
 						},
 					},
 					category_ids: item.category_ids,
-					tags: item.tags.map((tag:any) => ({
-							...tag,
-							list:tag.list.map((itm2: any, index: any) => {
+					tags: item.tags.map((tag: any) => ({
+						...tag,
+						list: tag.list.map((itm2: any, index: any) => {
 							if (index === 0) {
 								return {
 									descriptor: {
@@ -85,7 +83,8 @@ const intializeRequest = async (
 							}
 						})
 					}))
-				}})	
+				}
+			})
 		];
 	} else {
 		items = providers[0].items = [

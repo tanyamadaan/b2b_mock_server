@@ -4,8 +4,8 @@ import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
 export const initiateCancelController = async (req: Request, res: Response) => {
-  const { transactionId, orderId, cancellationReasonId} = req.body;
-  const transactionKeys = await redis.keys(`${transactionId}-*`);
+	const { transactionId, orderId, cancellationReasonId } = req.body;
+	const transactionKeys = await redis.keys(`${transactionId}-*`);
 	const ifTransactionExist = transactionKeys.filter((e) =>
 		e.includes("on_confirm-to-server")
 	);
@@ -22,7 +22,7 @@ export const initiateCancelController = async (req: Request, res: Response) => {
 			},
 		});
 	}
-  const transaction = await redis.mget(ifTransactionExist);
+	const transaction = await redis.mget(ifTransactionExist);
 	const parsedTransaction = transaction.map((ele) => {
 		return JSON.parse(ele as string);
 	});
@@ -32,20 +32,20 @@ export const initiateCancelController = async (req: Request, res: Response) => {
 }
 
 const intializeRequest = async (res: Response, transaction: any, order_id: string, cancellation_reason_id: string) => {
-  const {context} = transaction;
+	const { context } = transaction;
 
-  const cancel = {
-    context: {
-      ...context,
-      action: "cancel",
+	const cancel = {
+		context: {
+			...context,
+			action: "cancel",
 			message_id: uuidv4()
-    },
-    message: {
-      order_id,
-      cancellation_reason_id
-    }
-  }
-  const header = await createAuthHeader(cancel);
+		},
+		message: {
+			order_id,
+			cancellation_reason_id
+		}
+	}
+	const header = await createAuthHeader(cancel);
 	try {
 		await redis.set(
 			`${context.transaction_id}-cancel-from-server`,
@@ -78,7 +78,7 @@ const intializeRequest = async (res: Response, transaction: any, order_id: strin
 		});
 	} catch (error) {
 		// logger.error({ type: "response", message: error });
-		// console.log("ERROR :::::::::::::", (error as any).response.data.error);
+		console.log("ERROR :::::::::::::", (error as any).response.data.error.message);
 
 		return res.json({
 			message: {

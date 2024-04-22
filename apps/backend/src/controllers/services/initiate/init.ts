@@ -64,7 +64,7 @@ const intializeRequest = async (
 		}
 		return accumulator
 	}, {});
-	
+
 	if (customized) {
 		items = [
 			items[0],
@@ -161,11 +161,7 @@ const intializeRequest = async (
 			},
 		},
 	};
-<<<<<<< HEAD
-	console.log(":::::Items:::", init.message.order.items)
-=======
-	
->>>>>>> 36e0fb964639b51ebc0096f8a9f0a71d34207cbc
+
 	const header = await createAuthHeader(init);
 	try {
 		await redis.set(

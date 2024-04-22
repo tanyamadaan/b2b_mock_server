@@ -40,7 +40,7 @@ export const initiateConfirmController = async (
 		return JSON.parse(ele as string);
 	});
 
-	console.log("parsedTransaction:::: ", parsedTransaction[0]);
+	// console.log("parsedTransaction:::: ", parsedTransaction[0]);
 	return intializeRequest(req, res, parsedTransaction[0].request, scenario);
 };
 
@@ -69,7 +69,7 @@ const intializeRequest = async (
 	const timestamp = new Date().toISOString();
 
 	const customized = checkIfCustomized(items);
-	console.log("Xinput ::", xinput)
+	// console.log("Xinput ::", xinput)
 	const confirm = {
 		context: {
 			...context,
@@ -166,8 +166,8 @@ const intializeRequest = async (
 			transaction_id,
 		});
 	} catch (error) {
-		// logger.error({ type: "response", message: error });
-		console.log("ERROR:::::", (error as any).response?.data.error);
+		logger.error({ type: "response", message: error });
+		// console.log("ERROR:::::", (error as any).response?.data.error);
 		return res.json({
 			message: {
 				ack: {
