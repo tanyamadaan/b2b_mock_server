@@ -93,8 +93,10 @@ export const b2bSchemaValidator =
 				break;
 			case "cancel":
 				validate = ajv.compile(cancelSchema)
+				break;
 			case "on_cancel":
 				validate = ajv.compile(onCancelSchema)
+				break;
 			default:
 				res.status(400).json({
 					message: {
