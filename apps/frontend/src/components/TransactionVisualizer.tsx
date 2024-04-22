@@ -13,7 +13,7 @@ export const TransactionVisualizer = () => {
 	const { nodes, edges, onNodesChange, onEdgesChange } = useAnalyse();
 	return (
 		<>
-			{nodes.length > 0 && edges.length > 0 && (
+			{nodes.length > 0  && (
 				<Paper
 					sx={{
 						my: 10,
