@@ -147,7 +147,7 @@ const updateFulfillment = async (res: Response, on_update: any) => {
 
 	const transactionKeys = await redis.keys(`${transaction_id}-*`);
 	const ifTransactionExist = transactionKeys.filter((e) =>
-		e.includes("on_confirm-to-server")
+		e.includes("on_confirm-from-server")
 	);
 
 	if (ifTransactionExist.length === 0) {
