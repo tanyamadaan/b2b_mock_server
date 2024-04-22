@@ -50,7 +50,7 @@ const intializeRequest = async (
 	const {
 		context,
 		message: {
-			order: { provider, provider_location, ...order },
+			order: { provider, provider_location, tags, ...order },
 		},
 	} = transaction;
 	const { transaction_id } = context;
@@ -105,6 +105,22 @@ const intializeRequest = async (
 								beneficiary_name: "xxxxx",
 								bank_name: "xxxx",
 								branch_name: "xxxx",
+							},
+						],
+					},
+				],
+				tags: [
+					...tags,
+					{
+						descriptor: {
+							code: "bap_terms",
+						},
+						list: [
+							{
+								descriptor: {
+									code: "accept_bpp_terms",
+								},
+								value: "Y",
 							},
 						],
 					},

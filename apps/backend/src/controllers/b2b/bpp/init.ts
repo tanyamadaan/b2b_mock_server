@@ -81,7 +81,10 @@ const initDomesticController = (req: Request, res: Response) => {
 	const response = YAML.parse(file.toString());
 	let { type, collected_by, ...staticPaymentInfo } =
 		response.value.message.order.payments[0];
-	if (remainingMessage.payments[0].type === "PRE-FULFILLMENT" && remainingMessage.payments[0].collected_by === "BAP") {
+	if (
+		remainingMessage.payments[0].type === "PRE-FULFILLMENT" &&
+		remainingMessage.payments[0].collected_by === "BAP"
+	) {
 		staticPaymentInfo = {
 			...staticPaymentInfo,
 			"@ondc/org/settlement_details": [
@@ -106,7 +109,46 @@ const initDomesticController = (req: Request, res: Response) => {
 				...each,
 				tracking: true,
 			})),
-			tags,
+			tags: [
+				...tags,
+				{
+					descriptor: {
+						code: "bpp_terms",
+					},
+					list: [
+						{
+							descriptor: {
+								code: "max_liability",
+							},
+							value: "2",
+						},
+						{
+							descriptor: {
+								code: "max_liability_cap",
+							},
+							value: "10000",
+						},
+						{
+							descriptor: {
+								code: "mandatory_arbitration",
+							},
+							value: "false",
+						},
+						{
+							descriptor: {
+								code: "court_jurisdiction",
+							},
+							value: "Bengaluru",
+						},
+						{
+							descriptor: {
+								code: "delay_interest",
+							},
+							value: "1000",
+						},
+					],
+				},
+			],
 			billing,
 			provider: { id: remainingMessage.provider.id },
 			provider_location: remainingMessage.provider.locations[0],

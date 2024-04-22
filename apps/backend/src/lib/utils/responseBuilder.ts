@@ -147,7 +147,7 @@ export const responseBuilder = async (
 					JSON.stringify(log)
 				);
 			} catch (error) {
-				console.log("ERROR", error);
+				// console.log("ERROR", error);
 				logger.error({
 					type: "response",
 					message: {
