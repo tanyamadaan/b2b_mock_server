@@ -161,7 +161,6 @@ const intializeRequest = async (
 			},
 		},
 	};
-
 	const header = await createAuthHeader(init);
 	try {
 		await redis.set(
