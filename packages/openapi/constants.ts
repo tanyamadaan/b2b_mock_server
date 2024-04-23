@@ -28,26 +28,26 @@ export const B2B_SCENARIOS = {
 	init: [
 		{
 			name: "On Fulfillment",
-			scenario: "on-fulfillment" //default
+			scenario: "on-fulfillment", //default
 		},
 		{
 			name: "Prepaid Payment Collected By BPP",
-			scenario: "prepaid-bpp-payment", 
+			scenario: "prepaid-bpp-payment",
 		},
 		{
 			name: "Prepaid Payment Collected By BAP",
-			scenario: "prepaid-bap-payment", 
+			scenario: "prepaid-bap-payment",
 		},
 	],
-	on_confirm:[
+	on_confirm: [
 		{
 			name: "Default",
-			scenario: "default"
+			scenario: "default",
 		},
 		{
 			name: "Cancelled",
-			scenario: "cancelled"
-		}
+			scenario: "cancelled",
+		},
 	],
 	on_status: [
 		{
@@ -86,7 +86,7 @@ export const B2B_SCENARIOS = {
 		},
 		{
 			name: "Prepaid BAP",
-			scenario: "prepaid-bap", 
+			scenario: "prepaid-bap",
 		},
 		{
 			name: "Prepaid",
@@ -104,7 +104,7 @@ export const SERVICES_SCENARIOS = {
 		{
 			name: "Customization",
 			scenario: "customization",
-		}
+		},
 	],
 	on_select: [
 		{
@@ -202,7 +202,6 @@ export const NEXT_ACTION = {
 	cancel: "on_cancel",
 };
 
-
 export const PREV_ACTION = {
 	on_search: "search",
 	select: "on_search",
@@ -215,6 +214,6 @@ export const PREV_ACTION = {
 	on_status: "status",
 	cancel: "on_confirm",
 	on_cancel: "cancel",
-
-
-}
+	update: "on_confirm",
+	on_update: "update",
+};
