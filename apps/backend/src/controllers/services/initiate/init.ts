@@ -58,35 +58,20 @@ const intializeRequest = async (
 	const customized = checkIfCustomized(items);
 	// console.log("Customized ", customized)
 	//get item_id with quantity
-	const id_quantity = quote.breakup.reduce((accumulator: any, itm: any) => {
-		if (itm.tags[0].list[0].value === "item") {
-			accumulator[itm.item.id] = itm.item.quantity
-		}
-		return accumulator
-	}, {});
 
 	if (customized) {
-		items = [
-			items[0],
-			...items
-				.slice(1)
-				.map(({ location_ids, ...item }: { location_ids: any }) => {
-					return {
-						...item,
-						quantity: {
-							measure: {
-								unit: "unit",
-								value: "1",
-							},
-						},
-					};
-				}),
-		];
+		items = items.map((e: { quantity: any; }) => (Object.keys(e).includes("quantity") ? {...e, quantity: {...e.quantity, 
+			measure: {
+				unit: "unit",
+				value: "1",
+			},}}: e))
 	} else {
 		items = items.map(
 			({ location_ids, ...items }: { location_ids: any }) => items
 		);
 	}
+
+	console.log("ITEMS BEING SENT:::", items)
 
 	const init = {
 		context: {
@@ -103,16 +88,7 @@ const intializeRequest = async (
 					...provider,
 					locations: [{ id: uuidv4() }],
 				},
-				items: items.map((itm: any) => ({
-					...itm,
-					quantity: {
-						...id_quantity[itm.id],
-						measure: {
-							unit: "seats",
-							value: "2"
-						}
-					}
-				})),
+				items,
 				billing: {
 					name: "ONDC buyer",
 					address:
@@ -183,8 +159,8 @@ const intializeRequest = async (
 			transaction_id,
 		});
 	} catch (error) {
-		logger.error({ type: "response", message: error });
-		// console.log("ERROR:::::", (error as any).response?.data.error);
+		// logger.error({ type: "response", message: error });
+		console.log("ERROR:::::", (error as any).response?.data.error);
 		return res.json({
 			message: {
 				ack: {
