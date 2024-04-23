@@ -60,11 +60,11 @@ const intializeRequest = async (
 	//get item_id with quantity
 
 	if (customized) {
-		items = items.map((e: { quantity: any; }) => (Object.keys(e).includes("quantity") ? {...e, quantity: {...e.quantity, 
-			measure: {
-				unit: "unit",
-				value: "1",
-			},}}: e))
+		// items = items.map((e: { quantity: any; }) => (Object.keys(e).includes("quantity") ? {...e, quantity: {...e.quantity, 
+		// 	measure: {
+		// 		unit: "unit",
+		// 		value: "1",
+		// 	},}}: e))
 	} else {
 		items = items.map(
 			({ location_ids, ...items }: { location_ids: any }) => items

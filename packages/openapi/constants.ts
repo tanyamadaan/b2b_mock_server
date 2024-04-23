@@ -183,10 +183,12 @@ export const SERVICES_SCENARIOS = {
 		},
 	],
 };
+
 export const DOMAINS = {
 	b2b: "B2B",
 	services: "Services - Home Services",
 };
+
 export const NEXT_ACTION = {
 	search: "on_search",
 	on_search: "select",
@@ -210,5 +212,9 @@ export const PREV_ACTION = {
 	confirm: "on_init",
 	on_confirm: "confirm",
 	status: "on_confirm",
-	on_status: "status"
+	on_status: "status",
+	cancel: "on_confirm",
+	on_cancel: "cancel",
+
+
 }

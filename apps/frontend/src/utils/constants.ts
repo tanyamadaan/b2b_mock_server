@@ -1,3 +1,6 @@
+
+import { B2B_SCENARIOS, SERVICES_SCENARIOS } from "openapi-specs/constants";
+
 export const SUPPORTED_DOMAINS = ["B2B", "SERVICES"];
 
 export const USER_GUIDE_LINK = "https://github.com/tanyamadaan/b2b_mock_server/blob/feat-monorepo/README.md"; 
@@ -36,3 +39,136 @@ export const CITY_CODE = [
 	"std:080",
 	"std:011"
 ]
+
+export const INITIATE_FIELDS = {
+	search: [
+		{
+			name: "bpp_uri",
+			placeholder: "Enter Your BPP URI",
+			type: "text",
+		},
+		{
+			name: "domain",
+			placeholder: "Select domain...",
+			type: "select",
+			domainDepended: true,
+			options: {
+				b2b: B2B_DOMAINS,
+				services: SERVICES_DOMAINS,
+			},
+		},
+		{
+			name: "city",
+			placeholder: "Select A City",
+			type: "select",
+			domainDepended: false,
+			options: CITY_CODE,
+		},
+	],
+	select: [
+		{
+			name: "transactionId",
+			placeholder: "Enter Your Transaction ID",
+			type: "text",
+		},
+		{
+			name: "scenario",
+			placeholder: "Select Scenario",
+			type: "select",
+			domainDepended: true,
+			options: {
+				b2b: B2B_SCENARIOS["select"].map((each) => each.scenario),
+				services: SERVICES_SCENARIOS["select"].map((each) => each.scenario),
+			},
+		},
+	],
+	init: [
+		{
+			name: "transactionId",
+			placeholder: "Enter Your Transaction ID",
+			type: "text",
+		},
+		{
+			name: "scenario",
+			placeholder: "Select Scenario",
+			type: "select",
+			domainDepended: true,
+			options: {
+				b2b: B2B_SCENARIOS["init"].map((each) => each.scenario),
+				services: SERVICES_SCENARIOS["init"].map((each) => each.scenario),
+			},
+		},
+	],
+	confirm: [
+		{
+			name: "transactionId",
+			placeholder: "Enter Your Transaction ID",
+			type: "text",
+		},
+		{
+			name: "scenario",
+			placeholder: "Select Scenario",
+			type: "select",
+			domainDepended: true,
+			options: {
+				services: SERVICES_SCENARIOS["confirm"].map((each) => each.scenario),
+			},
+		},
+	],
+	status: [
+		{
+			name: "transactionId",
+			placeholder: "Enter Your Transaction ID",
+			type: "text",
+		},
+		{
+			name: "scenario",
+			placeholder: "Select Scenario",
+			type: "select",
+			domainDepended: true,
+			options: {
+				// services: SERVICES_SCENARIOS["confirm"].map((each) => each.scenario),
+			},
+		},
+	],
+	update: [
+		{
+			name: "transactionId",
+			placeholder: "Enter Your Transaction ID",
+			type: "text",
+		},
+		{
+			name: "update_target",
+			placeholder: "Update Target",
+			type: "select",
+			domainDepended: false,
+			options: ["payments"],
+		},
+	],
+	cancel: [
+		{
+			name: "transactionId",
+			placeholder: "Enter Your Transaction ID",
+			type: "text",
+		},
+		{
+			name: "orderId",
+			placeholder: "Enter Your Order ID",
+			type: "text",
+		},
+		{
+			name: "cancellationReasonId",
+			placeholder: "Enter Your Cancellation Reason ID",
+			type: "text",
+		},
+		{
+			name: "scenario",
+			placeholder: "Select Scenario",
+			type: "select",
+			domainDepended: true,
+			options: {
+				// services: SERVICES_SCENARIOS["confirm"].map((each) => each.scenario),
+			},
+		},
+	],
+};

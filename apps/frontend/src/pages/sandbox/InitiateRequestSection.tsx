@@ -2,14 +2,13 @@
 import Fade from "@mui/material/Fade";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import { B2B_DOMAINS, checker, CITY_CODE, SERVICES_DOMAINS } from "../../utils";
+import { checker, INITIATE_FIELDS } from "../../utils";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 
 import { Input, Option, Select, Button } from "@mui/joy";
 import { useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
-import { B2B_SCENARIOS, SERVICES_SCENARIOS } from "openapi-specs/constants";
 import Divider from "@mui/material/Divider";
 import Grow from "@mui/material/Grow";
 import { useMessage } from "../../utils/hooks";
@@ -19,141 +18,6 @@ import Tooltip from "@mui/material/Tooltip";
 
 type InitiateRequestSectionProp = {
 	domain: "b2b" | "services";
-};
-
-const FIELDS = {
-	search: [
-		{
-			name: "bpp_uri",
-			placeholder: "Enter Your BPP URI",
-			type: "text",
-		},
-		{
-			name: "domain",
-			placeholder: "Select domain...",
-			type: "select",
-			domainDepended: true,
-			options: {
-				b2b: B2B_DOMAINS,
-				services: SERVICES_DOMAINS,
-			},
-		},
-		{
-			name: "city",
-			placeholder: "Select A City",
-			type: "select",
-			domainDepended: false,
-			options: CITY_CODE,
-		},
-	],
-	select: [
-		{
-			name: "transactionId",
-			placeholder: "Enter Your Transaction ID",
-			type: "text",
-		},
-		{
-			name: "scenario",
-			placeholder: "Select Scenario",
-			type: "select",
-			domainDepended: true,
-			options: {
-				b2b: B2B_SCENARIOS["select"].map((each) => each.scenario),
-				services: SERVICES_SCENARIOS["select"].map((each) => each.scenario),
-			},
-		},
-	],
-	init: [
-		{
-			name: "transactionId",
-			placeholder: "Enter Your Transaction ID",
-			type: "text",
-		},
-		{
-			name: "scenario",
-			placeholder: "Select Scenario",
-			type: "select",
-			domainDepended: true,
-			options: {
-				b2b: B2B_SCENARIOS["init"].map((each) => each.scenario),
-				services: SERVICES_SCENARIOS["init"].map((each) => each.scenario),
-			},
-		},
-	],
-	confirm: [
-		{
-			name: "transactionId",
-			placeholder: "Enter Your Transaction ID",
-			type: "text",
-		},
-		{
-			name: "scenario",
-			placeholder: "Select Scenario",
-			type: "select",
-			domainDepended: true,
-			options: {
-				services: SERVICES_SCENARIOS["confirm"].map((each) => each.scenario),
-			},
-		},
-	],
-	status: [
-		{
-			name: "transactionId",
-			placeholder: "Enter Your Transaction ID",
-			type: "text",
-		},
-		{
-			name: "scenario",
-			placeholder: "Select Scenario",
-			type: "select",
-			domainDepended: true,
-			options: {
-				// services: SERVICES_SCENARIOS["confirm"].map((each) => each.scenario),
-			},
-		},
-	],
-	update: [
-		{
-			name: "transactionId",
-			placeholder: "Enter Your Transaction ID",
-			type: "text",
-		},
-		{
-			name: "scenario",
-			placeholder: "Select Scenario",
-			type: "select",
-			domainDepended: true,
-			options: {
-				// services: SERVICES_SCENARIOS["confirm"].map((each) => each.scenario),
-			},
-		},
-	],
-	cancel: [
-		{
-			name: "transactionId",
-			placeholder: "Enter Your Transaction ID",
-			type: "text",
-		},
-		{
-			name: "orderId",
-			placeholder: "Enter Your Order ID",
-			type: "text",
-		},
-		{
-			name: "cancellationReasonId",
-			placeholder: "Enter Your Cancellation Reason ID",
-			type: "text",
-		},
-		{
-			name: "scenario",
-			placeholder: "Select Scenario",
-			type: "select",
-			domainDepended: true,
-			options: {
-				// services: SERVICES_SCENARIOS["confirm"].map((each) => each.scenario),
-			},
-		},
-	],
 };
 
 type SELECT_OPTIONS =
@@ -197,8 +61,8 @@ export const InitiateRequestSection = ({
 	useEffect(() => {
 		if (action) {
 			const keys = Object.keys(formState || {});
-			const formKeys = FIELDS[action as keyof typeof FIELDS].map((e) => e.name);
-			const scenarios = FIELDS[action as keyof typeof FIELDS].filter(
+			const formKeys = INITIATE_FIELDS[action as keyof typeof INITIATE_FIELDS].map((e) => e.name);
+			const scenarios = INITIATE_FIELDS[action as keyof typeof INITIATE_FIELDS].filter(
 				(e) => e.name === "scenario"
 			)[0];
 
@@ -289,7 +153,7 @@ export const InitiateRequestSection = ({
 				</Box>
 				<Stack spacing={2} sx={{ my: 2 }}>
 					<Select placeholder="Select Action" onChange={handleActionSelection}>
-						{Object.keys(FIELDS).map((action, idx) => (
+						{Object.keys(INITIATE_FIELDS).map((action, idx) => (
 							<Option value={action} key={"action-" + idx}>
 								{action}
 							</Option>
@@ -299,7 +163,7 @@ export const InitiateRequestSection = ({
 						<Stack spacing={2} sx={{ my: 2 }}>
 							<Divider />
 							{action &&
-								FIELDS[action as keyof typeof FIELDS].map((field, index) => (
+								INITIATE_FIELDS[action as keyof typeof INITIATE_FIELDS].map((field, index) => (
 									<>
 										{field.type === "text" ? (
 											<Input
