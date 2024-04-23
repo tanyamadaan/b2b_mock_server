@@ -38,11 +38,10 @@ export const initiateConfirmController = async (
 	});
 
 	// console.log("parsedTransaction:::: ", parsedTransaction[0]);
-	return intializeRequest(req, res, parsedTransaction[0].request, scenario);
+	return intializeRequest(res, parsedTransaction[0].request, scenario);
 };
 
 const intializeRequest = async (
-	req: Request,
 	res: Response,
 	transaction: any,
 	scenario: string
@@ -59,7 +58,7 @@ const intializeRequest = async (
 	const confirm = {
 		context: {
 			...context,
-			timestamp: new Date().toISOString(),
+			timestamp,
 			action: "confirm",
 			bap_id: MOCKSERVER_ID,
 			bap_uri: B2B_BAP_MOCKSERVER_URL,
