@@ -47,7 +47,6 @@ export const selectController = (req: Request, res: Response) => {
 			// 	},
 			// });
 			if (checkIfCustomized(req.body.message.order.items)) {
-				// console.log("Customized..")
 				return selectServiceCustomizationConfirmedController(req, res);
 			}
 			return selectConsultationConfirmController(req, res);
@@ -158,7 +157,6 @@ const selectServiceCustomizationConfirmedController = async (
 	req: Request,
 	res: Response
 ) => {
-	console.log("Customizing ....select");
 	const { context, message } = req.body;
 	const { locations, ...provider } = message.order.provider;
 	const { id: parent_item_id, location_ids, ...item } = message.order.items[0];
@@ -193,11 +191,10 @@ const selectServiceCustomizationConfirmedController = async (
 				collected_by: "BAP",
 			})),
 			items: [
-				{ id: parent_item_id, location_ids, fulfillment_ids: [fulfillment_id] },
-				...message.order.items
-					.map(
-						(item: any) => ({ ...item, fulfillment_ids: [fulfillment_id] })
-					),
+				{ parent_item_id, location_ids, fulfillment_ids: [uuidv4()] },
+				...message.order.items.slice(1).map(({ location_ids, ...remaining }:
+					{ location_ids: any; remaining: any; }) => ({ ...remaining, fulfilment_ids: [uuidv4()] })
+				)
 			],
 			fulfillments: 
 			// message.order.fulfillments.map(

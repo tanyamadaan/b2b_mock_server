@@ -58,7 +58,7 @@ const intializeRequest = async (
 	const customized = checkIfCustomized(items);
 	// console.log("Customized ", customized)
 	//get item_id with quantity
-	
+
 	if (customized) {
 		items = items.map((e: { quantity: any; }) => (Object.keys(e).includes("quantity") ? {...e, quantity: {...e.quantity, 
 			measure: {
@@ -137,7 +137,6 @@ const intializeRequest = async (
 			},
 		},
 	};
-	
 	const header = await createAuthHeader(init);
 	try {
 		await redis.set(
