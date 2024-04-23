@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { createAuthHeader, redis,logger } from "../../../lib/utils";
-import axios from "axios";
+import { createAuthHeader, redis, logger } from "../../../lib/utils";
+import axios, { AxiosError } from "axios";
 import { v4 as uuidv4 } from "uuid";
 
 export const initiateCancelController = async (req: Request, res: Response) => {
@@ -60,7 +60,7 @@ const intializeRequest = async (res: Response, transaction: any, order_id: strin
 		await redis.set(
 			`${context.transaction_id}-cancel-from-server`,
 			JSON.stringify({
-				request: { ...confirm },
+				request: { ...cancel },
 				response: {
 					response: response.data,
 					timestamp: new Date().toISOString(),
@@ -80,6 +80,19 @@ const intializeRequest = async (res: Response, transaction: any, order_id: strin
 		logger.error({ type: "response", message: error });
 		// console.log("ERROR :::::::::::::", (error as any).response.data.error.message);
 
+		if (error instanceof AxiosError) {
+			return res.json({
+				message: {
+					ack: {
+						status: "NACK",
+					},
+				},
+				error: {
+					// message: (error as any).message,
+					message: error.response?.data.error.message,
+				},
+			});
+		}
 		return res.json({
 			message: {
 				ack: {

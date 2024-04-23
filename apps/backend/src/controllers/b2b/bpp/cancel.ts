@@ -22,12 +22,12 @@ export const cancelController = async (req: Request, res: Response) => {
 		});
 	}
 	const transaction = await redis.mget(ifTransactionExist);
-	const parsedTransaction = transaction.map((ele) => {
+	const parsedTransaction = transaction.map((ele:any) => {
 		return JSON.parse(ele as string);
 	});
 	// getting on_search data for payment_ids
 	const search = await redis.mget(`${transaction_id}-on_search-from-server`);
-	const parsedSearch = search.map((ele) => {
+	const parsedSearch = search.map((ele:any) => {
 		return JSON.parse(ele as string);
 	})
 	// console.log("Search ::", parsedSearch[0].request.message.catalog.providers)
@@ -44,6 +44,18 @@ export const cancelController = async (req: Request, res: Response) => {
 		}
 	})
 
+	if (parsedTransaction[0].request.message.order.id != req.body.message.order_id) {
+		return res.status(400).json({
+			message: {
+				ack: {
+					status: "NACK",
+				},
+			},
+			error: {
+				message: "Order id does not exist",
+			},
+		});
+	}
 
 	// console.log("Items with there ids :", item_payment_ids[0])
 	cancelRequest(req, res, parsedTransaction[0].request, item_payment_ids[0], scenario);
