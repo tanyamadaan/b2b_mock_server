@@ -5,13 +5,34 @@ import {
 	quoteCreatorService,
 	quoteCreatorServiceCustomized,
 	responseBuilder,
+	redis
 } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 import { v4 as uuidv4 } from "uuid";
 
-export const initController = (req: Request, res: Response) => {
+export const initController = async (req: Request, res: Response) => {
+	const { transaction_id } = req.body.context;
+	const transactionKeys = await redis.keys(`${transaction_id}-*`);
+
+	// checking on_select response exits or not 
+	const ifTransactionExist = transactionKeys.filter((e) =>
+		e.includes("on_select-from-server")
+	);
+
+	if (ifTransactionExist.length === 0) {
+		return res.status(400).json({
+			message: {
+				ack: {
+					status: "NACK",
+				},
+			},
+			error: {
+				message: "On Select doesn't exist",
+			},
+		});
+	}
 	if (checkIfCustomized(req.body.message.order.items)) {
 		return initServiceCustomizationController(req, res);
 	}
@@ -86,13 +107,13 @@ const initConsultationController = (req: Request, res: Response) => {
 		}
 	}
 	//hardcoded value quantity
-	responseMessage.order.quote.breakup.forEach((itm: any) => {
-		itm.item.quantity = {
-			selected: {
-				count: 3
-			}
-		}
-	})
+	// responseMessage.order.quote.breakup.forEach((itm: any) => {
+	// 	itm.item.quantity = {
+	// 		selected: {
+	// 			count: 3
+	// 		}
+	// 	}
+	// })
 	return responseBuilder(
 		res,
 		context,

@@ -71,7 +71,7 @@ const intializeRequest = async (
 		);
 	}
 
-	console.log("ITEMS BEING SENT:::", items)
+	// console.log("ITEMS BEING SENT:::", items)
 
 	const init = {
 		context: {

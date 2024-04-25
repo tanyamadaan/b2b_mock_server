@@ -54,7 +54,7 @@ export const selectController = (req: Request, res: Response) => {
 };
 
 const selectConsultationConfirmController = (req: Request, res: Response) => {
-	console.log("HERE ::::::::");
+	// console.log("HERE ::::::::");
 	const { context, message } = req.body;
 	const { locations, ...provider } = message.order.provider;
 	var responseMessage = {
@@ -105,14 +105,16 @@ const selectConsultationConfirmController = (req: Request, res: Response) => {
 			quote: quoteCreatorService(message.order.items),
 		},
 	};
-	//Harcoded the values for quantity
-	responseMessage.order.quote.breakup.forEach((itm: any) => {
-		itm.item.quantity = {
-			selected: {
-				count: 3,
-			},
-		};
-	});
+
+	//Harcoded the values for quantity dev purpose
+	// responseMessage.order.quote.breakup.forEach((itm: any) => {
+	// 	itm.item.quantity = {
+	// 		selected: {
+	// 			count: 3,
+	// 		},
+	// 	};
+	// });
+
 	// const file = fs.readFileSync(
 	// 	path.join(
 	// 		SERVICES_EXAMPLES_PATH,
@@ -125,8 +127,7 @@ const selectConsultationConfirmController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
 		}`,
 		`on_select`,
 		"services"
@@ -159,7 +160,8 @@ const selectServiceCustomizationConfirmedController = async (
 ) => {
 	const { context, message } = req.body;
 	const { locations, ...provider } = message.order.provider;
-	const { id: parent_item_id, location_ids, ...item } = message.order.items[0];
+	const { id, parent_item_id, location_ids, quantity, ...item } = message.order.items[0];
+	// console.log("Items ::", message.order.items[0])
 
 	const transactionKeys = await redis.keys(`${context.transaction_id}-*`);
 	const ifTransactionToExist = transactionKeys.filter((e) =>
@@ -191,36 +193,36 @@ const selectServiceCustomizationConfirmedController = async (
 				collected_by: "BAP",
 			})),
 			items: [
-				{ parent_item_id, location_ids, fulfillment_ids: [uuidv4()] },
+				{ id, parent_item_id, location_ids, quantity, fulfillment_ids: [uuidv4()] },
 				...message.order.items.slice(1).map(({ location_ids, ...remaining }:
-					{ location_ids: any; remaining: any; }) => ({ ...remaining, fulfilment_ids: [uuidv4()] })
+					{ location_ids: any; remaining: any; }) => ({ ...remaining, location_ids, fulfilment_ids: [uuidv4()] })
 				)
 			],
-			fulfillments: 
-			// message.order.fulfillments.map(
-			// 	({ stops, type, ...each }: any) => ({
-			// 		id: fulfillment_id,
-			// 		type,
-			// 		tracking: false,
-			// 		state: {
-			// 			descriptor: {
-			// 				code: "Serviceable",
-			// 			},
-			// 		},
-			// 		stops,
-			// 	})
-			// )
-			[{
-				...fulfillment,
-				id: fulfillment_id,
-				tracking: false,
-				state: {
-					descriptor: {
-						code: "Serviceable",
+			fulfillments:
+				// message.order.fulfillments.map(
+				// 	({ stops, type, ...each }: any) => ({
+				// 		id: fulfillment_id,
+				// 		type,
+				// 		tracking: false,
+				// 		state: {
+				// 			descriptor: {
+				// 				code: "Serviceable",
+				// 			},
+				// 		},
+				// 		stops,
+				// 	})
+				// )
+				[{
+					...fulfillment,
+					id: fulfillment_id,
+					tracking: false,
+					state: {
+						descriptor: {
+							code: "Serviceable",
+						},
 					},
-				},
-				stops: fulfillment.stops.map((e: { time: any; }) => ({...e, time: {...e.time, label: "confirmed"}}))
-			}],
+					stops: fulfillment.stops.map((e: { time: any; }) => ({ ...e, time: { ...e.time, label: "confirmed" } }))
+				}],
 			quote: quoteCreatorServiceCustomized(message.order.items),
 		},
 	};
@@ -249,8 +251,7 @@ const selectServiceConfirmController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
 		}`,
 		`on_select`,
 		"services"
@@ -271,8 +272,7 @@ const selectServiceRejectController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
 		}`,
 		`on_select`,
 		"services"
@@ -290,8 +290,7 @@ const selectNackController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
 		}`,
 		`on_select`,
 		"services"

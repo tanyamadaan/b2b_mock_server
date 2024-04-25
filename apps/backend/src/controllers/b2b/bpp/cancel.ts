@@ -142,7 +142,7 @@ const cancelRequest = async (req: Request, res: Response, transaction: any, item
 			})),
 			items: transaction.message.order.items.map((itm: any) => ({
 				...itm,
-				payment_ids: item_payment_ids[itm.id] ? item_payment_ids[itm.id] : undefined
+				payment_ids: item_payment_ids && item_payment_ids[itm.id] ? item_payment_ids[itm.id] : undefined
 			})),
 		}
 	}
