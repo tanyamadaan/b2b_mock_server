@@ -1,5 +1,4 @@
 import { DOMAIN, VERSION } from "./constants";
-
 export const confirmSchema = {
   $id: "confirmSchema",
   type: "object",
@@ -157,20 +156,21 @@ export const confirmSchema = {
                         },
                         required: ["count"],
                       },
-                      measure: {
-                        type: "object",
-                        properties: {
-                          unit: {
-                            type: "string",
-                          },
-                          value: {
-                            type: "string",
-                          },
-                        },
-                        required: ["unit", "value"],
-                      },
+                      // measure: {
+                      //   type: "object",
+                      //   properties: {
+                      //     unit: {
+                      //       type: "string",
+                      //     },
+                      //     value: {
+                      //       type: "string",
+                      //     },
+                      //   },
+                      //   required: ["unit", "value"],
+                      // },
                     },
-                    required: ["selected", "measure"],
+                    // required: ["selected", "measure"],
+                    required: ["selected"],
                   },
                 },
                 required: [
@@ -322,7 +322,7 @@ export const confirmSchema = {
                               },
                               required: ["start", "end"],
                             },
-                         
+
                           },
                           required: ["label", "range"],
                         },
