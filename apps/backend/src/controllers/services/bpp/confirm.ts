@@ -7,7 +7,6 @@ import YAML from "yaml";
 
 export const confirmController = (req: Request, res: Response) => {
 	if (checkIfCustomized(req.body.message.order.items)) {
-		// console.log('Im here');
 		return confirmServiceCustomizationController(req, res);
 	}
 	confirmConsultationController(req, res);
@@ -187,7 +186,7 @@ export const confirmServiceCustomizationController = (req: Request, res: Respons
 				"name": "Kishan"
 			}
 		})
-	fulfillments[0].forEach((itm: any) => {
+	fulfillments[0].stops.forEach((itm: any) => {
 		if (itm.type === "end") {
 			itm.id = "L2"
 			itm.authorization = {

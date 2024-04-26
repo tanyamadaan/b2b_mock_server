@@ -66,7 +66,7 @@ const intializeRequest = async (
 			},
 			...providers[0].items.slice(1).map((item: any) => {
 				return {
-					...item,
+					// ...item,
 					id: item.id,
 					parent_item_id,
 					quantity: {
@@ -75,6 +75,7 @@ const intializeRequest = async (
 						},
 					},
 					category_ids: item.category_ids,
+					location_ids: item.location_ids,
 					tags: item.tags.map((tag: any) => ({
 						...tag,
 						list: tag.list.map((itm2: any, index: any) => {
@@ -86,7 +87,7 @@ const intializeRequest = async (
 									value: "customization"
 								};
 							} else {
-								return item; // Return the item unchanged if it's not the first element
+								return itm2; // Return the item unchanged if it's not the first element
 							}
 						})
 					}))

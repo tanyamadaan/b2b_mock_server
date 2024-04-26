@@ -354,7 +354,7 @@ export const onInitSchema = {
                         },
                       },
                       // required: ["type", "location", "contact", "time", "tags"],
-                      required: ["type", "location", "contact", "time"],
+                      required: ["type"],
                     },
                   },
                 },

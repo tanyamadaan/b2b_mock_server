@@ -97,7 +97,7 @@ const intializeRequest = async (
 								...stop,
 								contact: {
 									...stop.contact,
-									email: stop.contact.email ? stop.contact.email : "nobody@nomail.com"
+									email: stop.contact && stop.contact.email ? stop.contact.email : "nobody@nomail.com"
 								},
 								customer: {
 									person: {

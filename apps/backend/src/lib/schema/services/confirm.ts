@@ -302,7 +302,7 @@ export const confirmSchema = {
                               type: "string",
                             },
                           },
-                          required: ["phone", "email"],
+                          // required: ["phone", "email"],
                         },
                         time: {
                           type: "object",
@@ -342,12 +342,15 @@ export const confirmSchema = {
                           required: ["person"],
                         },
                       },
+                      // required: [
+                      //   "type",
+                      //   "location",
+                      //   "contact",
+                      //   "time",
+                      //   "customer",
+                      // ],
                       required: [
                         "type",
-                        "location",
-                        "contact",
-                        "time",
-                        "customer",
                       ],
                     },
                   },

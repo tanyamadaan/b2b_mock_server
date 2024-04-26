@@ -54,7 +54,6 @@ export const selectController = (req: Request, res: Response) => {
 };
 
 const selectConsultationConfirmController = (req: Request, res: Response) => {
-	// console.log("HERE ::::::::");
 	const { context, message } = req.body;
 	const { locations, ...provider } = message.order.provider;
 	var responseMessage = {
@@ -122,7 +121,6 @@ const selectConsultationConfirmController = (req: Request, res: Response) => {
 	// 	)
 	// );
 	// const response = YAML.parse(file.toString());
-
 	return responseBuilder(
 		res,
 		context,
@@ -195,7 +193,7 @@ const selectServiceCustomizationConfirmedController = async (
 			items: [
 				{ id, parent_item_id, location_ids, quantity, fulfillment_ids: [uuidv4()] },
 				...message.order.items.slice(1).map(({ location_ids, ...remaining }:
-					{ location_ids: any; remaining: any; }) => ({ ...remaining, location_ids, fulfilment_ids: [uuidv4()] })
+					{ location_ids: any; remaining: any; }) => ({ ...remaining, location_ids, fulfillment_ids: [uuidv4()] })
 				)
 			],
 			fulfillments:
