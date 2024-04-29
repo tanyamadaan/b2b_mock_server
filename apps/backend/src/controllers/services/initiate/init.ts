@@ -35,7 +35,21 @@ export const initiateInitController = async (req: Request, res: Response) => {
 		return JSON.parse(ele as string);
 	});
 
-	return intializeRequest(req, res, parsedTransaction[0].request, scenario);
+	const request = parsedTransaction[0].request;
+	if (Object.keys(request).includes("error")) {
+		return res.status(400).json({
+			message: {
+				ack: {
+					status: "NACK",
+				},
+			},
+			error: {
+				message: "On Select had errors",
+			},
+		});
+	}
+
+	return intializeRequest(req, res, request, scenario);
 };
 
 const intializeRequest = async (
@@ -60,7 +74,7 @@ const intializeRequest = async (
 	//get item_id with quantity
 
 	if (customized) {
-		// items = items.map((e: { quantity: any; }) => (Object.keys(e).includes("quantity") ? {...e, quantity: {...e.quantity, 
+		// items = items.map((e: { quantity: any; }) => (Object.keys(e).includes("quantity") ? {...e, quantity: {...e.quantity,
 		// 	measure: {
 		// 		unit: "unit",
 		// 		value: "1",
@@ -71,7 +85,7 @@ const intializeRequest = async (
 		);
 	}
 
-	console.log("ITEMS BEING SENT:::", items)
+	console.log("ITEMS BEING SENT:::", items);
 
 	const init = {
 		context: {
@@ -80,7 +94,7 @@ const intializeRequest = async (
 			action: "init",
 			bap_id: MOCKSERVER_ID,
 			bap_uri: SERVICES_BAP_MOCKSERVER_URL,
-			message_id: uuidv4()
+			message_id: uuidv4(),
 		},
 		message: {
 			order: {

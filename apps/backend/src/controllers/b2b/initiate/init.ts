@@ -38,8 +38,22 @@ export const initiateInitController = async (req: Request, res: Response) => {
 		return JSON.parse(ele as string);
 	});
 
+	const request = parsedTransaction[0].request;
+	if(Object.keys(request).includes("error")) {
+		return res.status(400).json({
+			message: {
+				ack: {
+					status: "NACK",
+				},
+			},
+			error: {
+				message: "On Select had errors",
+			},
+		});
+	}
+
 	// console.log("parsedTransaction:::: ", parsedTransaction[0]);
-	return intializeRequest(req, res, parsedTransaction[0].request, scenario);
+	return intializeRequest(req, res, request, scenario);
 };
 
 const intializeRequest = async (
