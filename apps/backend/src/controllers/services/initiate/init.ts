@@ -173,8 +173,8 @@ const intializeRequest = async (
 			transaction_id,
 		});
 	} catch (error) {
-		// logger.error({ type: "response", message: error });
-		console.log("ERROR:::::", (error as any).response?.data.error);
+		logger.error({ type: "response", message: error });
+		// console.log("ERROR:::::", (error as any).response?.data.error);
 		return res.json({
 			message: {
 				ack: {

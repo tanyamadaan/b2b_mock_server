@@ -97,7 +97,7 @@ const intializeRequest = async (
 								...stop,
 								contact: {
 									...stop.contact,
-									email: stop.contact.email ? stop.contact.email : "nobody@nomail.com"
+									email: stop.contact && stop.contact.email ? stop.contact.email : "nobody@nomail.com"
 								},
 								customer: {
 									person: {
@@ -116,7 +116,7 @@ const intializeRequest = async (
 					{
 						//hardcoded transaction_id
 						...payments[0],
-						params:{
+						params: {
 							...payments[0].params,
 							transaction_id: "xxxxxxxx",
 						},
@@ -166,8 +166,8 @@ const intializeRequest = async (
 			transaction_id,
 		});
 	} catch (error) {
-		logger.error({ type: "response", message: error });
-		// console.log("ERROR:::::", (error as any).response?.data.error);
+		// logger.error({ type: "response", message: error });
+		console.log("ERROR:::::", (error as any).response?.data.error);
 		return res.json({
 			message: {
 				ack: {

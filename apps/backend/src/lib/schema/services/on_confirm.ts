@@ -158,20 +158,21 @@ export const onConfirmSchema = {
                         },
                         required: ["count"],
                       },
-                      measure: {
-                        type: "object",
-                        properties: {
-                          unit: {
-                            type: "string",
-                          },
-                          value: {
-                            type: "string",
-                          },
-                        },
-                        required: ["unit", "value"],
-                      },
+                      // measure: {
+                      //   type: "object",
+                      //   properties: {
+                      //     unit: {
+                      //       type: "string",
+                      //     },
+                      //     value: {
+                      //       type: "string",
+                      //     },
+                      //   },
+                      //   required: ["unit", "value"],
+                      // },
                     },
-                    required: ["selected", "measure"],
+                    // required: ["selected", "measure"],
+                    required: ["selected"],
                   },
                 },
                 required: [
@@ -344,7 +345,7 @@ export const onConfirmSchema = {
                               type: "string",
                             },
                           },
-                          required: ["phone", "email"],
+                          // required: ["phone", "email"],
                         },
                         person: {
                           type: "object",
@@ -357,12 +358,12 @@ export const onConfirmSchema = {
                         },
                       },
                       required: [
-                        "id",
+                        // "id",
                         "type",
-                        "location",
-                        "time",
-                        "contact",
-                        "person",
+                        // "location",
+                        // "time",
+                        // "contact",
+                        // "person",
                       ],
                     },
                   },

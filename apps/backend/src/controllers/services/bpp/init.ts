@@ -135,7 +135,21 @@ const initServiceCustomizationController = (req: Request, res: Response) => {
 		path.join(SERVICES_EXAMPLES_PATH, "on_init/on_init_consultation.yaml")
 	);
 	const response = YAML.parse(file.toString());
-	stops.push({
+	// stops.push({
+	// 	"type": "start",
+	// 	"instructions": {
+	// 		"name": "Instuctions by provider",
+	// 		"short_desc": "Instuctions by provider",
+	// 		"long_desc": "Instuctions by provider",
+	// 		"additional_desc": {
+	// 			"url": "https//abc.com/checklist",
+	// 			"content_type": "text/html"
+	// 		}
+	// 	}
+	// })
+
+	// splice to insert element at index 0
+	stops.splice(0, 0, {
 		"type": "start",
 		"instructions": {
 			"name": "Instuctions by provider",
@@ -147,6 +161,7 @@ const initServiceCustomizationController = (req: Request, res: Response) => {
 			}
 		}
 	})
+	// console.log("Customized ;:", stops)
 	const responseMessage = {
 		order: {
 			provider: remainingProvider,
