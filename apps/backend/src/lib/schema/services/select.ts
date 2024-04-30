@@ -139,8 +139,20 @@ export const selectSchema = {
                       type: "string",
                     },
                   },
+                  quantity: {
+                    type: "object",
+                    properties:{
+                      selected: {
+                      type: "object",
+                      properties: {
+                        count: {
+                          type: "number",
+                        }
+                    }}
+                  }
+                }
                 },
-                required: ["id", "parent_item_id", "location_ids"],
+                required: ["id", "parent_item_id", "location_ids","quantity"],
               },
             },
             fulfillments: {

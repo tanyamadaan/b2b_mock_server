@@ -51,12 +51,19 @@ const intializeRequest = async (
 	} = transaction;
 	const { transaction_id } = context;
 	const { id, locations } = providers[0];
-	const { id: parent_item_id, location_ids, } = providers[0].items[0];
+	const { id: item_id, parent_item_id, location_ids, } = providers[0].items[0];
 	let items = [];
 	if (scenario === "customization") {
 		//parent_item_id not in customization
 		items = [
-			{ id: parent_item_id, parent_item_id, location_ids },
+			{
+				id: item_id, parent_item_id, location_ids,
+				quantity: {
+					selected: {
+						count: 1
+					}
+				}
+			},
 			...providers[0].items.slice(1).map((item: any) => {
 				return {
 					...item,
@@ -123,7 +130,12 @@ const intializeRequest = async (
 				},
 				items: items.map((itm: any) => ({
 					...itm,
-					location_ids: itm.location_ids ? itm.location_ids.map((id: any) => String(id)) : undefined
+					location_ids: itm.location_ids ? itm.location_ids.map((id: any) => String(id)) : undefined,
+					quantity: {
+						selected: {
+							count: 1
+						}
+					}
 				})),
 				fulfillments: [
 					{
