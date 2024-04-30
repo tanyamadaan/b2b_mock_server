@@ -11,12 +11,12 @@ import { selectController } from "../bpp/select";
 
 export const initiateUpdateController = async (req: Request, res: Response) => {
 
-  const { scenario, transactionId } = req.body;
-  const transactionKeys = await redis.keys(`${transactionId}-*`);
+	const { scenario, transactionId } = req.body;
+	const transactionKeys = await redis.keys(`${transactionId}-*`);
 	const ifTransactionExist = transactionKeys.filter((e) =>
 		e.includes("on_confirm-to-server")
 	);
-  if (ifTransactionExist.length === 0) {
+	if (ifTransactionExist.length === 0) {
 		return res.status(400).json({
 			message: {
 				ack: {
@@ -28,62 +28,108 @@ export const initiateUpdateController = async (req: Request, res: Response) => {
 			},
 		});
 	}
-  
+
 
 	const transaction = await redis.mget(ifTransactionExist);
 	const parsedTransaction = transaction.map((ele) => {
 		return JSON.parse(ele as string);
 	});
 
-	const {context,message} = parsedTransaction[0].request;
-  const timestamp = new Date().toISOString();
-  context.action="update"
-  context.timestamp=timestamp
+	const { context, message } = parsedTransaction[0].request;
+	const timestamp = new Date().toISOString();
+	context.action = "update"
+	context.timestamp = timestamp
 
-  switch(scenario){
-    case "selection":
-      const responseMessage=selectionRequest(message)
-      break 
-    case "customization":
-      const responseMessage1=customizationRequest(message)
-      break
-  }
+
+	switch (scenario) {
+		case "requote":
+			var responseMessage = requoteRequest(message)
+			break
+		case "reschedule":
+			var responseMessage = rescheduleRequest(message)
+			break
+		default:
+			var responseMessage = requoteRequest(message)
+			break;
+	}
+	const update = {
+		context,
+		message: responseMessage
+	}
+	const header = await createAuthHeader(update);
+
+	try {
+		await redis.set(
+			`${transactionId}-update-from-server`,
+			JSON.stringify({ request: { ...update } })
+		);
+		const response = await axios.post(`${context.bpp_uri}/update`, update, {
+			headers: {
+				"X-Gateway-Authorization": header,
+				authorization: header,
+			},
+		});
+
+		return res.json({
+			message: {
+				ack: {
+					status: "ACK",
+				},
+			},
+			transactionId,
+		});
+	} catch (error) {
+		// logger.error({ type: "response", message: error });
+		// console.log("ERROR :::::::::::::", (error as any).response.data.error);
+
+		return res.json({
+			message: {
+				ack: {
+					status: "NACK",
+				},
+			},
+			error: {
+				// message: (error as any).message,
+				message: "Error Occurred while pinging NP at BPP URI",
+			},
+		});
+	}
 }
-function selectionRequest(message:any){
-  let {
-		order: { items, payments ,fulfillments,quote},
+function requoteRequest(message: any) {
+	let {
+		order: { items, payments, fulfillments, quote },
 	} = message;
-  items = items.map(({ id, parent_item_id ,...every}: { id: string; parent_item_id: object }) => ({
+	items = items.map(({ id, parent_item_id, ...every }: { id: string; parent_item_id: object }) => ({
 		...every,
-    id,
+		id,
 		parent_item_id,
 	}));
-  fulfillments.map((itm:any)=>{
-    itm.state.descriptor.code="Completed"
-  });
-  
-  const responseMessage={
-    id: message.order.id,
-    state: message.order.state,
-    update_target:"payments",
-    provider: {
-      id: message.order.provider.id,
-    },
-    items,
-    payments,
-    fulfillments:fulfillments.map(({id,itm}:{id:String,itm:any})=>({
-      ...itm,
-      stops:itm.stops.map((stop:any)=>({
-        ...stop,
-      }))
-    })),
-    quote
-  }
-  return responseMessage
+	fulfillments.map((itm: any) => {
+		itm.state.descriptor.code = "Completed"
+	});
+
+	const responseMessage = {
+		id: message.order.id,
+		state: message.order.state,
+		update_target: "payments",
+		provider: {
+			id: message.order.provider.id,
+		},
+		items,
+		payments,
+		fulfillments: fulfillments.map(({ id, itm }: { id: String, itm: any }) => ({
+			...itm,
+			stops: itm.stops.map((stop: any) => ({
+				...stop,
+			}))
+		})),
+		quote
+	}
+	return responseMessage
 }
 
 
 
-function customizationRequest(message:any){
+function rescheduleRequest(message: any) {
 
 }
