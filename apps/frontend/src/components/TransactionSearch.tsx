@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import Grow from "@mui/material/Grow";
 import IconButton from "@mui/material/IconButton";
 import useTheme from "@mui/material/styles/useTheme";
-import { getNodesAndEdges } from "../utils";
+import { actionComparator, getNodesAndEdges } from "../utils";
 import axios from "axios";
 import * as _ from "lodash";
 import { useAnalyse, useMessage } from "../utils/hooks";
@@ -66,16 +66,17 @@ export const TransactionSearch = () => {
 					[]
 				)
 				.sort(
-					(
-						a: {
-							request: { context: { timestamp: string | number | Date } };
-						},
-						b: {
-							request: { context: { timestamp: string | number | Date } };
-						}
-					) =>
-						new Date(a.request.context.timestamp!).getTime() -
-						new Date(b.request.context.timestamp!).getTime()
+					// (
+					// 	a: {
+					// 		request: { context: { timestamp: string | number | Date } };
+					// 	},
+					// 	b: {
+					// 		request: { context: { timestamp: string | number | Date } };
+					// 	}
+					// ) =>
+					// 	new Date(a.request.context.timestamp!).getTime() -
+					// 	new Date(b.request.context.timestamp!).getTime()
+					actionComparator
 				);
 			// console.log("RESPONSE", response, formattedResponse);
 			const { edges, nodes } = getNodesAndEdges(formattedResponse, theme);

@@ -20,6 +20,16 @@ export const URL_MAPPING = {
 	],
 };
 
+export const ACTION_PRECENDENCE = [
+  'search', 'on_search',
+  'select', 'on_select',
+  'init', 'on_init',
+  'confirm', 'on_confirm',
+  'status', 'on_status',
+  'update', 'on_update',
+  'cancel', 'on_cancel'
+];
+
 export const B2B_DOMAINS = [
 	"ONDC:RET1A",
 	"ONDC:RET1B",
