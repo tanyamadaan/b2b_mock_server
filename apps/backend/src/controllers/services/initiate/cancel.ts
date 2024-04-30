@@ -57,7 +57,7 @@ const intializeRequest = async (res: Response, transaction: any, order_id: strin
         authorization: header,
       },
     });
-    console.log("Here.....2")
+    // console.log("Here.....2")
     await redis.set(
       `${context.transaction_id}-cancel-from-server`,
       JSON.stringify({
