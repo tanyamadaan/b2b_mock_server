@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { TransactionType, logger, redis } from "../lib/utils";
+import { redis } from "../lib/utils";
 
 export const redisRetriever = async (
 	req: Request,
-	res: Response,
+	_res: Response,
 	next: NextFunction
 ) => {
 	if (req.headers["mode"] === "mock") {
@@ -45,7 +45,6 @@ export const redisRetriever = async (
 				request: req.body,
 			})
 		);
-
 	}
 
 	// next();
