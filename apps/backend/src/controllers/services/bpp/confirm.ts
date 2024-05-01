@@ -10,37 +10,13 @@ export const confirmController = (req: Request, res: Response) => {
 		return confirmServiceCustomizationController(req, res);
 	}
 	confirmConsultationController(req, res);
-	// const { scenario } = req.query;
-	// switch (scenario) {
-	// 	case "consultation":
-	// 		confirmConsultationController(req, res);
-	// 		break;
-	// 	case "service":
-	// 		confirmServiceController(req, res);
-	// 		break;
-	// 	default:
-	// 		res.status(404).json({
-	// 			message: {
-	// 				ack: {
-	// 					status: "NACK",
-	// 				},
-	// 			},
-	// 			error: {
-	// 				message: "Invalid scenario",
-	// 			},
-	// 		});
-	// 		break;
-	// }
 };
 
 
 export const confirmConsultationController = (req: Request, res: Response) => {
 	const { context, message: { order } } = req.body;
 	const { fulfillments } = order
-	// const file = fs.readFileSync(
-	// 	path.join(SERVICES_EXAMPLES_PATH, "on_confirm/on_confirm_consultation.yaml")
-	// );
-	// const response = YAML.parse(file.toString());
+
 	const rangeStart = new Date().setHours(new Date().getHours() + 2)
 	const rangeEnd = new Date().setHours(new Date().getHours() + 3)
 	fulfillments[0].stops.push({
@@ -104,10 +80,6 @@ export const confirmConsultationController = (req: Request, res: Response) => {
 export const confirmServiceCustomizationController = (req: Request, res: Response) => {
 	const { context, message: { order } } = req.body;
 	const { fulfillments } = order
-	// const file = fs.readFileSync(
-	// 	path.join(SERVICES_EXAMPLES_PATH, "on_confirm/on_confirm_consultation.yaml")
-	// );
-	// const response = YAML.parse(file.toString());
 
 	const rangeStart = new Date().setHours(new Date().getHours() + 2)
 	const rangeEnd = new Date().setHours(new Date().getHours() + 3)
@@ -116,51 +88,6 @@ export const confirmServiceCustomizationController = (req: Request, res: Respons
 	// const fulfillments = response.value.message.order.fulfillments
 
 	context.action = "on_confirm"
-
-	// fulfillments[0].stops.push(
-	// 	{
-	// 		"id": "L2",
-	// 		"type": "end",
-	// 		"location": {
-	// 			"gps": "12.974002,77.613458",
-	// 			"address": "My House #, My buildin",
-	// 			"city": {
-	// 				"name": "Bengaluru"
-	// 			},
-	// 			"country": {
-	// 				"code": "IND"
-	// 			},
-	// 			"area_code": "560001",
-	// 			"state": {
-	// 				"name": "Karnataka"
-	// 			}
-	// 		},
-	// 		"contact": {
-	// 			"phone": "9886098860",
-	// 			"email": "nobody@nomail.com"
-	// 		},
-	// 		"time": {
-	// 			"label": "confirmed",
-	// 			"range": {
-	// 				"start": new Date(rangeStart).toISOString(),
-	// 				"end": new Date(rangeEnd).toISOString()
-	// 			}
-	// 		},
-	// 		"person": {
-	// 			"name": "Ramu"
-	// 		},
-	// 		"instructions": {
-	// 			"name": "Special Instructions",
-	// 			"short_desc": "Customer Special Instructions"
-	// 		},
-	// 		"authorization": {
-	// 			"type": "OTP",
-	// 			"token": "1234",
-	// 			"valid_from": "2023-11-16T09:30:00Z",
-	// 			"valid_to": "2023-11-16T09:35:00Z",
-	// 			"status": "valid"
-	// 		}
-	// 	})
 	fulfillments[0].stops.splice(1, 0,
 		{
 			"id": "L1",
@@ -196,6 +123,8 @@ export const confirmServiceCustomizationController = (req: Request, res: Respons
 				"valid_to": "2023-11-16T09:35:00.000Z",
 				"status": "valid"
 			}
+			itm.person = { name: itm.customer.person.name }
+			itm.customer = undefined
 		}
 	})
 	const responseMessage = {
@@ -247,104 +176,4 @@ export const confirmServiceController = (req: Request, res: Response) => {
 		"services"
 	);
 };
-// export const confirmServiceCustomizationController = (req: Request, res: Response) => {
-// 	const { context, message: { order } } = req.body;
-// 	const { fulfillments } = order
-// 	// const file = fs.readFileSync(
-// 	// 	path.join(SERVICES_EXAMPLES_PATH, "on_confirm/on_confirm_consultation.yaml")
-// 	// );
-// 	// const response = YAML.parse(file.toString());
-// 	const rangeStart = new Date().setHours(new Date().getHours() + 2)
-// 	const rangeEnd = new Date().setHours(new Date().getHours() + 3)
-
-// 	// const fulfillments = response.value.message.order.fulfillments
-
-// 	fulfillments[0].stops.push(
-// 		{
-// 			"id": "L1",
-// 			"type": "end",
-// 			"location": {
-// 				"gps": "12.974002,77.613458",
-// 				"address": "My House #, My buildin",
-// 				"city": {
-// 					"name": "Bengaluru"
-// 				},
-// 				"country": {
-// 					"code": "IND"
-// 				},
-// 				"area_code": "560001",
-// 				"state": {
-// 					"name": "Karnataka"
-// 				}
-// 			},
-// 			"contact": {
-// 				"phone": "9886098860",
-// 				"email": "nobody@nomail.com"
-// 			},
-// 			"time": {
-// 				"label": "confirmed",
-// 				"range": {
-// 					"start": new Date(rangeStart).toISOString(),
-// 					"end": new Date(rangeEnd).toISOString()
-// 				}
-// 			},
-// 			"person": {
-// 				"name": "Ramu"
-// 			},
-// 			"instructions": {
-// 				"name": "Special Instructions",
-// 				"short_desc": "Customer Special Instructions"
-// 			},
-// 			"authorization": {
-// 				"type": "OTP",
-// 				"token": "1234",
-// 				"valid_from": "2023-11-16T09:30:00Z",
-// 				"valid_to": "2023-11-16T09:35:00Z",
-// 				"status": "valid"
-// 			}
-// 		})
-
-// 	const responseMessage = {
-// 		order: {
-// 			...order,
-// 			provider: {
-// 				...order.provider,
-// 				rateable: true,
-// 			},
-// 			status: 'Accepted',
-// 			fulfillments: [{
-// 				...fulfillments[0],
-// 				rateable: true,
-// 				// stops: 
-// 			}]
-// 		}
-// 	}
-// 	return responseBuilder(
-// 		res,
-// 		context,
-// 		responseMessage,
-// 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
-// 		}`,
-// 		`on_confirm`,
-// 		"services"
-// 	);
-// };
-
-
-// export const confirmServiceController = (req: Request, res: Response) => {
-// 	const { context } = req.body;
-// 	const file = fs.readFileSync(
-// 		path.join(SERVICES_EXAMPLES_PATH, "on_confirm/on_confirm_service.yaml")
-// 	);
-// 	const response = YAML.parse(file.toString());
-// 	return responseBuilder(
-// 		res,
-// 		context,
-// 		response.value.message,
-// 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
-// 		}`,
-// 		`on_confirm`,
-// 		"services"
-// 	);
-// };
 

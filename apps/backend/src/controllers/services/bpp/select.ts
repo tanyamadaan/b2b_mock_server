@@ -26,26 +26,7 @@ export const selectController = (req: Request, res: Response) => {
 		case "schedule_rejected ":
 			selectConsultationRejectController(req, res);
 			break;
-		// case "service-confirmed":
-		// 	selectServiceConfirmController(req, res);
-		// 	break;
-		// case "service-rejected":
-		// 	selectServiceRejectController(req, res);
-		// 	break;
-		// case "nack":
-		// 	selectNackController(req, res);
-		// 	break;
 		default:
-			// res.status(404).json({
-			// 	message: {
-			// 		ack: {
-			// 			status: "NACK",
-			// 		},
-			// 	},
-			// 	error: {
-			// 		message: "Invalid scenario",
-			// 	},
-			// });
 			if (checkIfCustomized(req.body.message.order.items)) {
 				return selectServiceCustomizationConfirmedController(req, res);
 			}
@@ -80,7 +61,6 @@ const selectConsultationConfirmController = (req: Request, res: Response) => {
 						},
 					},
 					stops: stops.map((stop: any) => {
-						// if (stop.time.label === "selected")
 						stop.time.label = "confirmed";
 						stop.tags = {
 							descriptor: {
@@ -105,22 +85,6 @@ const selectConsultationConfirmController = (req: Request, res: Response) => {
 		},
 	};
 
-	//Harcoded the values for quantity dev purpose
-	// responseMessage.order.quote.breakup.forEach((itm: any) => {
-	// 	itm.item.quantity = {
-	// 		selected: {
-	// 			count: 3,
-	// 		},
-	// 	};
-	// });
-
-	// const file = fs.readFileSync(
-	// 	path.join(
-	// 		SERVICES_EXAMPLES_PATH,
-	// 		"on_select/on_select_consultation_confirmed.yaml"
-	// 	)
-	// );
-	// const response = YAML.parse(file.toString());
 	return responseBuilder(
 		res,
 		context,

@@ -346,6 +346,7 @@ export const onConfirmSchema = {
                             },
                           },
                           // required: ["phone", "email"],
+                          required: ["email"],
                         },
                         person: {
                           type: "object",
@@ -357,14 +358,13 @@ export const onConfirmSchema = {
                           required: ["name"],
                         },
                       },
-                      required: [
-                        // "id",
-                        "type",
-                        // "location",
-                        // "time",
-                        // "contact",
-                        // "person",
-                      ],
+                      if: { properties: { type: { const: "end" } } },
+                      then: {
+                        required: ["type", "location", "contact", "time"]
+                      },
+                      else: {
+                        required: ["type"],
+                      },
                     },
                   },
                   rateable: {
