@@ -354,7 +354,13 @@ export const onInitSchema = {
                         },
                       },
                       // required: ["type", "location", "contact", "time", "tags"],
-                      required: ["type"],
+                      if: { properties: { type: { const: "end" } } },
+                      then: {
+                        required: ["type", "location", "contact", "time"]
+                      },
+                      else: {
+                        required: ["type"],
+                      }
                     },
                   },
                 },

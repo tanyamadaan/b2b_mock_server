@@ -37,27 +37,6 @@ export const initController = async (req: Request, res: Response) => {
 		return initServiceCustomizationController(req, res);
 	}
 	initConsultationController(req, res);
-	// const { scenario } = req.query;
-	// switch (scenario) {
-	// 	case "consultation":
-	// 		initConsultationController(req, res);
-	// 		break;
-	// 	case "service":
-	// 		initServiceController(req, res);
-	// 		break;
-	// 	default:
-	// 		res.status(404).json({
-	// 			message: {
-	// 				ack: {
-	// 					status: "NACK",
-	// 				},
-	// 			},
-	// 			error: {
-	// 				message: "Invalid scenario",
-	// 			},
-	// 		});
-	// 		break;
-	// }
 };
 const initConsultationController = (req: Request, res: Response) => {
 	const { context, message: { order: { provider, items, billing, fulfillments, payments } } } = req.body;
@@ -77,7 +56,7 @@ const initConsultationController = (req: Request, res: Response) => {
 			billing,
 			fulfillments: [{
 				...remainingfulfillments,
-				"tracking": false,
+				tracking: false,
 				stops: stops.map((stop: any) => {
 					return {
 						...stop,
@@ -106,14 +85,6 @@ const initConsultationController = (req: Request, res: Response) => {
 			xinput: response.value.message.order.xinput
 		}
 	}
-	//hardcoded value quantity
-	// responseMessage.order.quote.breakup.forEach((itm: any) => {
-	// 	itm.item.quantity = {
-	// 		selected: {
-	// 			count: 3
-	// 		}
-	// 	}
-	// })
 	return responseBuilder(
 		res,
 		context,
@@ -135,19 +106,6 @@ const initServiceCustomizationController = (req: Request, res: Response) => {
 		path.join(SERVICES_EXAMPLES_PATH, "on_init/on_init_consultation.yaml")
 	);
 	const response = YAML.parse(file.toString());
-	// stops.push({
-	// 	"type": "start",
-	// 	"instructions": {
-	// 		"name": "Instuctions by provider",
-	// 		"short_desc": "Instuctions by provider",
-	// 		"long_desc": "Instuctions by provider",
-	// 		"additional_desc": {
-	// 			"url": "https//abc.com/checklist",
-	// 			"content_type": "text/html"
-	// 		}
-	// 	}
-	// })
-
 	// splice to insert element at index 0
 	stops.splice(0, 0, {
 		"type": "start",

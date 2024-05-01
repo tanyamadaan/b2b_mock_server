@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 export const initiateCancelController = async (req: Request, res: Response) => {
   const { transactionId, orderId, cancellationReasonId } = req.body;
   const transactionKeys = await redis.keys(`${transactionId}-*`);
+
   const ifTransactionExist = transactionKeys.filter((e) =>
     e.includes("on_confirm-to-server")
   );
@@ -57,7 +58,6 @@ const intializeRequest = async (res: Response, transaction: any, order_id: strin
         authorization: header,
       },
     });
-    // console.log("Here.....2")
     await redis.set(
       `${context.transaction_id}-cancel-from-server`,
       JSON.stringify({
