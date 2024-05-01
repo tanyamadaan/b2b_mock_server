@@ -1,35 +1,47 @@
 import { Request, Response } from "express";
-import { createAuthHeader, redis, logger } from "../../../lib/utils";
+import { createAuthHeader, redis, logger,redisFetch } from "../../../lib/utils";
 import axios, { AxiosError } from "axios";
 import { v4 as uuidv4 } from "uuid";
 
 export const initiateCancelController = async (req: Request, res: Response) => {
   const { transactionId, orderId, cancellationReasonId } = req.body;
-  const transactionKeys = await redis.keys(`${transactionId}-*`);
+  // const transactionKeys = await redis.keys(`${transactionId}-*`);
 
-  const ifTransactionExist = transactionKeys.filter((e) =>
-    e.includes("on_confirm-to-server")
-  );
+  // const ifTransactionExist = transactionKeys.filter((e) =>
+  //   e.includes("on_confirm-to-server")
+  // );
 
-  if (ifTransactionExist.length === 0) {
-    return res.status(400).json({
-      message: {
-        ack: {
-          status: "NACK",
-        },
-      },
-      error: {
-        message: "On Confirm doesn't exist",
-      },
-    });
+  // if (ifTransactionExist.length === 0) {
+  //   return res.status(400).json({
+  //     message: {
+  //       ack: {
+  //         status: "NACK",
+  //       },
+  //     },
+  //     error: {
+  //       message: "On Confirm doesn't exist",
+  //     },
+  //   });
+  // }
+  // const transaction = await redis.mget(ifTransactionExist);
+  // const parsedTransaction = transaction.map((ele) => {
+  //   return JSON.parse(ele as string);
+  // });
+  const on_confirm=await redisFetch("on_confirm",transactionId)
+  if(!on_confirm){
+        return res.status(400).json({
+          message: {
+            ack: {
+              status: "NACK",
+            },
+          },
+          error: {
+            message: "On Confirm doesn't exist",
+          },
+        });
   }
-  const transaction = await redis.mget(ifTransactionExist);
-  const parsedTransaction = transaction.map((ele) => {
-    return JSON.parse(ele as string);
-  });
-
   // console.log("parsedTransaction:::: ", parsedTransaction[0]);
-  return intializeRequest(res, parsedTransaction[0].request, orderId, cancellationReasonId);
+  return intializeRequest(res, on_confirm, orderId, cancellationReasonId);
 }
 
 const intializeRequest = async (res: Response, transaction: any, order_id: string, cancellation_reason_id: string) => {

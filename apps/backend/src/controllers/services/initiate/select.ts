@@ -6,6 +6,7 @@ import {
 	createAuthHeader,
 	logger,
 	redis,
+	redisFetch
 } from "../../../lib/utils";
 import axios, { AxiosError } from "axios";
 import { v4 as uuidv4 } from "uuid";
@@ -13,28 +14,42 @@ import { v4 as uuidv4 } from "uuid";
 export const initiateSelectController = async (req: Request, res: Response) => {
 	const { scenario, transactionId } = req.body;
 
-	const transactionKeys = await redis.keys(`${transactionId}-*`);
-	const ifTransactionExist = transactionKeys.filter((e) =>
-		e.includes("on_search-to-server")
-	);
+	// const transactionKeys = await redis.keys(`${transactionId}-*`);
+	// const ifTransactionExist = transactionKeys.filter((e) =>
+	// 	e.includes("on_search-to-server")
+	// );
 
-	if (ifTransactionExist.length === 0) {
-		return res.status(400).json({
-			message: {
-				ack: {
-					status: "NACK",
+	// if (ifTransactionExist.length === 0) {
+	// 	return res.status(400).json({
+	// 		message: {
+	// 			ack: {
+	// 				status: "NACK",
+	// 			},
+	// 		},
+	// 		error: {
+	// 			message: "On search doesn't exist",
+	// 		},
+	// 	});
+	// }
+	// const transaction = await redis.mget(ifTransactionExist);
+	// const parsedTransaction = transaction.map((ele) => {
+	// 	return JSON.parse(ele as string);
+	// });
+	const on_select = await redisFetch("on_select", transactionId)
+	if(!on_select){
+			return res.status(400).json({
+				message: {
+					ack: {
+						status: "NACK",
+					},
 				},
-			},
-			error: {
-				message: "On search doesn't exist",
-			},
-		});
+				error: {
+					message: "On Select doesn't exist",
+				},
+			});
 	}
-	const transaction = await redis.mget(ifTransactionExist);
-	const parsedTransaction = transaction.map((ele) => {
-		return JSON.parse(ele as string);
-	});
-	return intializeRequest(req, res, parsedTransaction[0].request, scenario);
+
+	return intializeRequest(req, res, on_select, scenario);
 };
 
 const intializeRequest = async (
