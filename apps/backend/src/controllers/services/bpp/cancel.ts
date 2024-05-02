@@ -1,15 +1,12 @@
 import { Request, Response } from "express";
-import { responseBuilder, B2B_EXAMPLES_PATH, redis } from "../../../lib/utils";
+import { responseBuilder, B2B_EXAMPLES_PATH, redis, redisFetch } from "../../../lib/utils";
 
 export const cancelController = async (req: Request, res: Response) => {
 	const { scenario } = req.query;
 	const { transaction_id } = req.body.context;
-	const transactionKeys = await redis.keys(`${transaction_id}-*`);
-	const ifTransactionExist = transactionKeys.filter((e) =>
-		e.includes("on_confirm-from-server")
-	);
 
-	if (ifTransactionExist.length === 0) {
+	const on_confirm_data = await redisFetch("on_confirm", transaction_id)
+	if (!on_confirm_data) {
 		return res.status(400).json({
 			message: {
 				ack: {
@@ -21,12 +18,7 @@ export const cancelController = async (req: Request, res: Response) => {
 			},
 		});
 	}
-	const transaction = await redis.mget(ifTransactionExist);
-	const parsedTransaction = transaction.map((ele: any) => {
-		return JSON.parse(ele as string);
-	});
-
-	if (parsedTransaction[0].request.message.order.id != req.body.message.order_id) {
+	if (on_confirm_data.message.order.id != req.body.message.order_id) {
 		return res.status(400).json({
 			message: {
 				ack: {
@@ -38,21 +30,19 @@ export const cancelController = async (req: Request, res: Response) => {
 			},
 		});
 	}
-	// getting on_search data for payment_ids
-	const search = await redis.mget(`${transaction_id}-on_search-from-server`);
-	const parsedSearch = search.map((ele: any) => {
-		return JSON.parse(ele as string);
-	})
-	// console.log("Search ::", parsedSearch[0].request.message.catalog.providers[0].items)
-	const provider_id = parsedTransaction[0].request.message.order.provider.id
 
-	const item_measure_ids = parsedSearch[0].request.message.catalog.providers[0].items.reduce((accumulator: any, currentItem: any) => {
+	const on_search_data = await redisFetch("on_search", transaction_id)
+	
+	// console.log("Search ::", parsedSearch[0].request.message.catalog.providers[0].items)
+	const provider_id = on_confirm_data.message.order.provider.id
+
+	const item_measure_ids = on_search_data.message.catalog.providers[0].items.reduce((accumulator: any, currentItem: any) => {
 		accumulator[currentItem.id] = currentItem.quantity ? currentItem.quantity.unitized.measure : undefined;
 		return accumulator;
 	}, {});
 	// console.log("Items with there ids :", item_measure_ids)
 	req.body.item_measure_ids = item_measure_ids
-	cancelRequest(req, res, parsedTransaction[0].request, scenario);
+	cancelRequest(req, res, on_confirm_data, scenario);
 }
 
 const cancelRequest = async (req: Request, res: Response, transaction: any, scenario: any) => {

@@ -5,7 +5,8 @@ import {
 	quoteCreatorService,
 	quoteCreatorServiceCustomized,
 	responseBuilder,
-	redis
+	redis,
+	redisExist
 } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
@@ -17,22 +18,37 @@ export const initController = async (req: Request, res: Response) => {
 	const transactionKeys = await redis.keys(`${transaction_id}-*`);
 
 	// checking on_select response exits or not 
-	const ifTransactionExist = transactionKeys.filter((e) =>
-		e.includes("on_select-from-server")
-	);
+	// const ifTransactionExist = transactionKeys.filter((e) =>
+	// 	e.includes("on_select-from-server")
+	// );
 
-	if (ifTransactionExist.length === 0) {
+	// if (ifTransactionExist.length === 0) {
+	// 	return res.status(400).json({
+	// 		message: {
+	// 			ack: {
+	// 				status: "NACK",
+	// 			},
+	// 		},
+	// 		error: {
+	// 			message: "On Select doesn't exist",
+	// 		},
+	// 	});
+	// }
+	// checking on_select response exits or not
+	const exit=await redisExist("on_search",transaction_id)
+	if (!exit){
 		return res.status(400).json({
-			message: {
-				ack: {
-					status: "NACK",
-				},
-			},
-			error: {
-				message: "On Select doesn't exist",
-			},
-		});
+					message: {
+						ack: {
+							status: "NACK",
+						},
+					},
+					error: {
+						message: "On Select doesn't exist",
+					},
+				});
 	}
+	
 	if (checkIfCustomized(req.body.message.order.items)) {
 		return initServiceCustomizationController(req, res);
 	}

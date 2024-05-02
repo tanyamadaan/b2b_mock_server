@@ -4,6 +4,7 @@ import {
 	createAuthHeader,
 	MOCKSERVER_ID,
 	redis,
+	redisFetch
 } from "../../../lib/utils";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
@@ -12,11 +13,30 @@ import { selectController } from "../bpp/select";
 export const initiateUpdateController = async (req: Request, res: Response) => {
 
 	const { scenario, transactionId } = req.body;
-	const transactionKeys = await redis.keys(`${transactionId}-*`);
-	const ifTransactionExist = transactionKeys.filter((e) =>
-		e.includes("on_confirm-to-server")
-	);
-	if (ifTransactionExist.length === 0) {
+	// const transactionKeys = await redis.keys(`${transactionId}-*`);
+	// const ifTransactionExist = transactionKeys.filter((e) =>
+	// 	e.includes("on_confirm-to-server")
+	// );
+	// if (ifTransactionExist.length === 0) {
+	// 	return res.status(400).json({
+	// 		message: {
+	// 			ack: {
+	// 				status: "NACK",
+	// 			},
+	// 		},
+	// 		error: {
+	// 			message: "On Confirm doesn't exist",
+	// 		},
+	// 	});
+	// }
+
+
+	// const transaction = await redis.mget(ifTransactionExist);
+	// const parsedTransaction = transaction.map((ele) => {
+	// 	return JSON.parse(ele as string);
+	// });
+	const on_confirm = await redisFetch("on_confirm", transactionId)
+	if (!on_confirm) {
 		return res.status(400).json({
 			message: {
 				ack: {
@@ -28,14 +48,7 @@ export const initiateUpdateController = async (req: Request, res: Response) => {
 			},
 		});
 	}
-
-
-	const transaction = await redis.mget(ifTransactionExist);
-	const parsedTransaction = transaction.map((ele) => {
-		return JSON.parse(ele as string);
-	});
-
-	const { context, message } = parsedTransaction[0].request;
+	const { context, message } = on_confirm;
 	const timestamp = new Date().toISOString();
 	context.action = "update"
 	context.timestamp = timestamp

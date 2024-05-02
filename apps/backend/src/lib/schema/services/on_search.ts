@@ -697,7 +697,7 @@ export const onSearchSchema = {
                                   },
                                 },
                               },
-                              required: ["holidays"],
+                              // required: ["holidays"],
                             },
                           },
                           required: ["label", "schedule"],
@@ -713,9 +713,9 @@ export const onSearchSchema = {
                       then: {
                         required: [
                           "id",
-                          "parent_item_id",
+                          // "parent_item_id",
                           "descriptor",
-                          "creator",
+                          // "creator",
                           "price",
                           "category_ids",
                           "fulfillment_ids",

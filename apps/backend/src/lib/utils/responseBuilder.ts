@@ -160,7 +160,7 @@ export const responseBuilder = async (
 					message: {
 						message: { ack: { status: "NACK" } },
 						error: {
-							message: (error as any).response.data,
+							message: (error as any).response?.data,
 						},
 					},
 				});

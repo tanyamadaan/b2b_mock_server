@@ -134,7 +134,7 @@ const onSearchServiceCustomizationController = (
 									"end": providers[0].time.schedule.times[1]
 								}
 							},
-							"days": fulfillments[0].days.split(',')[0] // will be from onsearch
+							"days": fulfillments[0].days?.split(',')[0] // will be from onsearch
 						}
 					]
 				}

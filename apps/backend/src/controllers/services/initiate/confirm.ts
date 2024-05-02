@@ -8,6 +8,7 @@ import {
 	quoteCreatorService,
 	quoteCreatorServiceCustomized,
 	redis,
+	redisFetch
 } from "../../../lib/utils";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
@@ -18,30 +19,43 @@ export const initiateConfirmController = async (
 ) => {
 	const { scenario, transactionId } = req.body;
 
-	const transactionKeys = await redis.keys(`${transactionId}-*`);
-	const ifTransactionExist = transactionKeys.filter((e) =>
-		e.includes("on_init-to-server")
-	);
+	// const transactionKeys = await redis.keys(`${transactionId}-*`);
+	// const ifTransactionExist = transactionKeys.filter((e) =>
+	// 	e.includes("on_init-to-server")
+	// );
 
-	if (ifTransactionExist.length === 0) {
-		return res.status(400).json({
-			message: {
-				ack: {
-					status: "NACK",
+	// if (ifTransactionExist.length === 0) {
+	// 	return res.status(400).json({
+	// 		message: {
+	// 			ack: {
+	// 				status: "NACK",
+	// 			},
+	// 		},
+	// 		error: {
+	// 			message: "On Init doesn't exist",
+	// 		},
+	// 	});
+	// }
+	// const transaction = await redis.mget(ifTransactionExist);
+	// const parsedTransaction = transaction.map((ele) => {
+	// 	return JSON.parse(ele as string);
+	// });
+	const on_init = await redisFetch("on_init", transactionId)
+	if(!on_init){
+			return res.status(400).json({
+				message: {
+					ack: {
+						status: "NACK",
+					},
 				},
-			},
-			error: {
-				message: "On Init doesn't exist",
-			},
-		});
+				error: {
+					message: "On Init doesn't exist",
+				},
+			});
 	}
-	const transaction = await redis.mget(ifTransactionExist);
-	const parsedTransaction = transaction.map((ele) => {
-		return JSON.parse(ele as string);
-	});
 
 	// console.log("parsedTransaction:::: ", parsedTransaction[0]);
-	return intializeRequest(req, res, parsedTransaction[0].request, scenario);
+	return intializeRequest(req, res, on_init, scenario);
 };
 
 const intializeRequest = async (
