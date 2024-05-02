@@ -51,18 +51,20 @@ const intializeRequest = async (
 	} = transaction;
 	const { transaction_id } = context;
 	const { id, locations } = providers[0];
-	const { id: item_id, parent_item_id, location_ids, } = providers[0].items[0];
+	const { id: item_id, parent_item_id, location_ids } = providers[0].items[0];
 	let items = [];
 	if (scenario === "customization") {
 		//parent_item_id not in customization
 		items = [
 			{
-				id: item_id, parent_item_id, location_ids,
+				id: item_id,
+				parent_item_id,
+				location_ids,
 				quantity: {
 					selected: {
-						count: 1
-					}
-				}
+						count: 3,
+					},
+				},
 			},
 			...providers[0].items.slice(1).map((item: any) => {
 				return {
@@ -75,24 +77,24 @@ const intializeRequest = async (
 						},
 					},
 					category_ids: item.category_ids,
-					location_ids: item.location_ids,
+					location_ids: [location_ids],
 					tags: item.tags.map((tag: any) => ({
 						...tag,
 						list: tag.list.map((itm2: any, index: any) => {
 							if (index === 0) {
 								return {
 									descriptor: {
-										code: "type"
+										code: "type",
 									},
-									value: "customization"
+									value: "customization",
 								};
 							} else {
 								return itm2; // Return the item unchanged if it's not the first element
 							}
-						})
-					}))
-				}
-			})
+						}),
+					})),
+				};
+			}),
 		];
 	} else {
 		items = providers[0].items = [
@@ -117,7 +119,7 @@ const intializeRequest = async (
 			action: "select",
 			bap_id: MOCKSERVER_ID,
 			bap_uri: SERVICES_BAP_MOCKSERVER_URL,
-			message_id: uuidv4()
+			message_id: uuidv4(),
 		},
 		message: {
 			order: {
@@ -131,12 +133,14 @@ const intializeRequest = async (
 				},
 				items: items.map((itm: any) => ({
 					...itm,
-					location_ids: itm.location_ids ? itm.location_ids.map((id: any) => String(id)) : undefined,
+					location_ids: itm.location_ids
+						? itm.location_ids.map((id: any) => String(id))
+						: undefined,
 					quantity: {
 						selected: {
-							count: 1
-						}
-					}
+							count: 1,
+						},
+					},
 				})),
 				fulfillments: [
 					{
@@ -157,7 +161,7 @@ const intializeRequest = async (
 										end: providers[0].time.schedule.times[1],
 									},
 								},
-								days: (scenario === "customization") ? "4" : undefined
+								days: scenario === "customization" ? "4" : undefined,
 								// 	? fulfillments[0].stops[0].time.days.split(",")[0]
 								// 	: undefined,
 							},
