@@ -6,6 +6,7 @@ import {
 	createAuthHeader,
 	logger,
 	redis,
+	redisFetch, redisExist
 } from "../../../lib/utils";
 import axios, { AxiosError } from "axios";
 import { v4 as uuidv4 } from "uuid";
@@ -13,12 +14,43 @@ import { v4 as uuidv4 } from "uuid";
 export const initiateSelectController = async (req: Request, res: Response) => {
 	const { scenario, transactionId } = req.body;
 
-	const transactionKeys = await redis.keys(`${transactionId}-*`);
-	const ifTransactionExist = transactionKeys.filter((e) =>
-		e.includes("on_search-to-server")
-	);
+	// const transactionKeys = await redis.keys(`${transactionId}-*`);
+	// const ifTransactionExist = transactionKeys.filter((e) =>
+	// 	e.includes("on_search-to-server")
+	// );
 
-	if (ifTransactionExist.length === 0) {
+	// if (ifTransactionExist.length === 0) {
+	// 	return res.status(400).json({
+	// 		message: {
+	// 			ack: {
+	// 				status: "NACK",
+	// 			},
+	// 		},
+	// 		error: {
+	// 			message: "On search doesn't exist",
+	// 		},
+	// 	});
+	// }
+	// const transaction = await redis.mget(ifTransactionExist);
+	// const parsedTransaction = transaction.map((ele) => {
+	// 	return JSON.parse(ele as string);
+	// });
+	const prev_call = await redisExist("on_init", transactionId)
+	if (!prev_call) {
+		return res.status(400).json({
+			message: {
+				ack: {
+					status: "NACK",
+				},
+			},
+			error: {
+				message: "On init doesn't exist",
+			},
+		});
+	}
+	
+	const on_search = await redisFetch("on_search", transactionId)
+	if (!on_search) {
 		return res.status(400).json({
 			message: {
 				ack: {
@@ -30,11 +62,8 @@ export const initiateSelectController = async (req: Request, res: Response) => {
 			},
 		});
 	}
-	const transaction = await redis.mget(ifTransactionExist);
-	const parsedTransaction = transaction.map((ele) => {
-		return JSON.parse(ele as string);
-	});
-	return intializeRequest(req, res, parsedTransaction[0].request, scenario);
+
+	return intializeRequest(req, res, on_search, scenario);
 };
 
 const intializeRequest = async (
@@ -51,15 +80,24 @@ const intializeRequest = async (
 	} = transaction;
 	const { transaction_id } = context;
 	const { id, locations } = providers[0];
-	const { id: parent_item_id, location_ids, } = providers[0].items[0];
+	const { id: item_id, parent_item_id, location_ids } = providers[0].items[0];
 	let items = [];
 	if (scenario === "customization") {
 		//parent_item_id not in customization
 		items = [
-			{ id: parent_item_id, parent_item_id, location_ids },
+			{
+				id: item_id,
+				parent_item_id,
+				location_ids,
+				quantity: {
+					selected: {
+						count: 3,
+					},
+				},
+			},
 			...providers[0].items.slice(1).map((item: any) => {
 				return {
-					...item,
+					// ...item,
 					id: item.id,
 					parent_item_id,
 					quantity: {
@@ -68,23 +106,24 @@ const intializeRequest = async (
 						},
 					},
 					category_ids: item.category_ids,
+					location_ids: [location_ids],
 					tags: item.tags.map((tag: any) => ({
 						...tag,
 						list: tag.list.map((itm2: any, index: any) => {
 							if (index === 0) {
 								return {
 									descriptor: {
-										code: "type"
+										code: "type",
 									},
-									value: "customization"
+									value: "customization",
 								};
 							} else {
-								return item; // Return the item unchanged if it's not the first element
+								return itm2; // Return the item unchanged if it's not the first element
 							}
-						})
-					}))
-				}
-			})
+						}),
+					})),
+				};
+			}),
 		];
 	} else {
 		items = providers[0].items = [
@@ -109,7 +148,7 @@ const intializeRequest = async (
 			action: "select",
 			bap_id: MOCKSERVER_ID,
 			bap_uri: SERVICES_BAP_MOCKSERVER_URL,
-			message_id: uuidv4()
+			message_id: uuidv4(),
 		},
 		message: {
 			order: {
@@ -123,7 +162,14 @@ const intializeRequest = async (
 				},
 				items: items.map((itm: any) => ({
 					...itm,
-					location_ids: itm.location_ids ? itm.location_ids.map((id: any) => String(id)) : undefined
+					location_ids: itm.location_ids
+						? itm.location_ids.map((id: any) => String(id))
+						: undefined,
+					quantity: {
+						selected: {
+							count: 1,
+						},
+					},
 				})),
 				fulfillments: [
 					{
@@ -144,7 +190,7 @@ const intializeRequest = async (
 										end: providers[0].time.schedule.times[1],
 									},
 								},
-								days: (scenario === "customization") ? "4" : undefined
+								days: scenario === "customization" ? "4" : undefined,
 								// 	? fulfillments[0].stops[0].time.days.split(",")[0]
 								// 	: undefined,
 							},

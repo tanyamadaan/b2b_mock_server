@@ -11,7 +11,7 @@ export const onSelectController = (req: Request, res: Response) => {
 	}
 	onSelectConsultationController(req, res);
 
-	// const { scenario } = req.query;
+	// const { scenario } = req.query
 	// switch (scenario) {
 	// 	case "consultation":
 	// 		break;

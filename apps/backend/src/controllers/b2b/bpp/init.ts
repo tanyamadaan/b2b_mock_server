@@ -12,6 +12,25 @@ import YAML from "yaml";
 export const initController = async (req: Request, res: Response) => {
 	const { transaction_id } = req.body.context;
 	const transactionKeys = await redis.keys(`${transaction_id}-*`);
+
+	// checking on_select response exits or not 
+	const ifTransactionExist = transactionKeys.filter((e) =>
+		e.includes("on_select-from-server")
+	);
+
+	if (ifTransactionExist.length === 0) {
+		return res.status(400).json({
+			message: {
+				ack: {
+					status: "NACK",
+				},
+			},
+			error: {
+				message: "On Select doesn't exist",
+			},
+		});
+	}
+	//
 	const ifToTransactionExist = transactionKeys.filter((e) =>
 		e.includes("on_search-to-server")
 	);

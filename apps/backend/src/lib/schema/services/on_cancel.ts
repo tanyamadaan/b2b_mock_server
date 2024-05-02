@@ -366,7 +366,8 @@ export const onCancelSchema = {
                               type: "string",
                             },
                           },
-                          required: ["phone", "email"],
+                          // required: ["phone", "email"],
+                          required: ["email"],
                         },
                         person: {
                           type: "object",
@@ -378,13 +379,13 @@ export const onCancelSchema = {
                           required: ["name"],
                         },
                       },
-                      required: [
-                        "type",
-                        "location",
-                        "time",
-                        "contact",
-                        "person",
-                      ],
+                      if: { properties: { type: { const: "end" } } },
+                      then: {
+                        required: ["type", "location", "contact", "time"]
+                      },
+                      else: {
+                        required: ["type"],
+                      },
                     },
                   },
                 },
