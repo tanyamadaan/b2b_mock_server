@@ -9,7 +9,7 @@ import YAML from "yaml";
 
 export const searchController = (req: Request, res: Response) => {
 	const file = fs.readFileSync(
-		path.join(SERVICES_EXAMPLES_PATH, "on_search/on_search.yaml")
+		path.join(SERVICES_EXAMPLES_PATH, "on_search/on_search_customized.yaml")
 	);
 	const response = YAML.parse(file.toString());
 	return responseBuilder(
