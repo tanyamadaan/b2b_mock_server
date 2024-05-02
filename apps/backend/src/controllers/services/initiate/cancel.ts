@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createAuthHeader, redis, logger,redisFetch } from "../../../lib/utils";
+import { createAuthHeader, redis, logger, redisFetch } from "../../../lib/utils";
 import axios, { AxiosError } from "axios";
 import { v4 as uuidv4 } from "uuid";
 
@@ -27,18 +27,18 @@ export const initiateCancelController = async (req: Request, res: Response) => {
   // const parsedTransaction = transaction.map((ele) => {
   //   return JSON.parse(ele as string);
   // });
-  const on_confirm=await redisFetch("on_confirm",transactionId)
-  if(!on_confirm){
-        return res.status(400).json({
-          message: {
-            ack: {
-              status: "NACK",
-            },
-          },
-          error: {
-            message: "On Confirm doesn't exist",
-          },
-        });
+  const on_confirm = await redisFetch("on_confirm", transactionId)
+  if (!on_confirm) {
+    return res.status(400).json({
+      message: {
+        ack: {
+          status: "NACK",
+        },
+      },
+      error: {
+        message: "On Confirm doesn't exist",
+      },
+    });
   }
   // console.log("parsedTransaction:::: ", parsedTransaction[0]);
   return intializeRequest(res, on_confirm, orderId, cancellationReasonId);

@@ -6,7 +6,7 @@ import {
 	createAuthHeader,
 	logger,
 	redis,
-	redisFetch
+	redisFetch, redisExist
 } from "../../../lib/utils";
 import axios, { AxiosError } from "axios";
 import { v4 as uuidv4 } from "uuid";
@@ -35,21 +35,35 @@ export const initiateSelectController = async (req: Request, res: Response) => {
 	// const parsedTransaction = transaction.map((ele) => {
 	// 	return JSON.parse(ele as string);
 	// });
-	const on_select = await redisFetch("on_select", transactionId)
-	if(!on_select){
-			return res.status(400).json({
-				message: {
-					ack: {
-						status: "NACK",
-					},
+	const prev_call = await redisExist("on_init", transactionId)
+	if (!prev_call) {
+		return res.status(400).json({
+			message: {
+				ack: {
+					status: "NACK",
 				},
-				error: {
-					message: "On Select doesn't exist",
+			},
+			error: {
+				message: "On init doesn't exist",
+			},
+		});
+	}
+	
+	const on_search = await redisFetch("on_search", transactionId)
+	if (!on_search) {
+		return res.status(400).json({
+			message: {
+				ack: {
+					status: "NACK",
 				},
-			});
+			},
+			error: {
+				message: "On search doesn't exist",
+			},
+		});
 	}
 
-	return intializeRequest(req, res, on_select, scenario);
+	return intializeRequest(req, res, on_search, scenario);
 };
 
 const intializeRequest = async (
