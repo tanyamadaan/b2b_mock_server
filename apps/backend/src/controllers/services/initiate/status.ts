@@ -5,8 +5,6 @@ import {
     checkIfCustomized,
     createAuthHeader,
     logger,
-    quoteCreatorService,
-    quoteCreatorServiceCustomized,
     redis,
     redisFetch
 } from "../../../lib/utils";
@@ -18,7 +16,7 @@ export const initiateStatusController = async (
     res: Response
 ) => {
     const { scenario, transactionId } = req.body;
-
+    const transactionKeys = await redis.keys(`${transactionId}-*`);
     const on_confirm = await redisFetch("on_confirm", transactionId)
     if (!on_confirm) {
         return res.status(400).json({
@@ -32,14 +30,18 @@ export const initiateStatusController = async (
             },
         });
     }
-    return intializeRequest(req, res, on_confirm, scenario);
+    const statusIndex = transactionKeys.filter((e) =>
+        e.includes("status-to-server")
+    ).length;
+    return intializeRequest(req, res, on_confirm, scenario, statusIndex);
 }
 
 const intializeRequest = async (
     req: Request,
     res: Response,
     transaction: any,
-    scenario: string
+    scenario: string,
+    statusIndex: number
 ) => {
     const { context } = transaction;
     const { transaction_id } = context;
@@ -54,7 +56,7 @@ const intializeRequest = async (
             bap_uri: SERVICES_BAP_MOCKSERVER_URL,
         },
         message: {
-            "order_id": transaction.message.order.id
+            order_id: transaction.message.order.id
         }
     }
     const header = await createAuthHeader(status);
@@ -90,7 +92,7 @@ const intializeRequest = async (
             transaction_id,
         });
     } catch (error) {
-        // logger.error({ type: "response", message: error });
+        logger.error({ type: "response", message: error });
         // console.log("ERROR :::::::::::::", (error as any).response.data.error);
 
         return res.json({
