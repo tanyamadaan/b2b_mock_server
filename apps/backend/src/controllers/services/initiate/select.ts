@@ -35,20 +35,6 @@ export const initiateSelectController = async (req: Request, res: Response) => {
 	// const parsedTransaction = transaction.map((ele) => {
 	// 	return JSON.parse(ele as string);
 	// });
-	const prev_call = await redisExist("on_search", transactionId)
-	if (!prev_call) {
-		return res.status(400).json({
-			message: {
-				ack: {
-					status: "NACK",
-				},
-			},
-			error: {
-				message: "On search doesn't exist",
-			},
-		});
-	}
-
 	const on_search = await redisFetch("on_search", transactionId)
 	if (!on_search) {
 		return res.status(400).json({
