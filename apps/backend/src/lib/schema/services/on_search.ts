@@ -246,7 +246,7 @@ export const onSearchSchema = {
                             },
                           },
                         },
-                        required: ["holidays"],
+                        required: [],
                       },
                     },
                     required: ["label", "schedule"],
@@ -553,8 +553,9 @@ export const onSearchSchema = {
                             maximum_value: {
                               type: "string",
                             },
+                            
                           },
-                          required: ["currency", "value"],
+                          required: ["currency"],
                         },
                         category_ids: {
                           type: "array",
@@ -781,7 +782,7 @@ export const onSearchSchema = {
                             "code",
                             "short_desc",
                             "long_desc",
-                            "images",
+                            // "images",
                           ],
                         },
                         location_ids: {
@@ -900,7 +901,7 @@ export const onSearchSchema = {
                   "id",
                   "descriptor",
                   "rating",
-                  "ttl",
+                  // "ttl",
                   "time",
                   "locations",
                   "tags",
