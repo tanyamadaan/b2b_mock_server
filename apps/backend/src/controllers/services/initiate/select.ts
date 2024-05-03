@@ -69,6 +69,11 @@ const intializeRequest = async (
 	const { id: item_id, parent_item_id, location_ids } = providers[0].items[0];
 	let items = [];
 	if (scenario === "customization") {
+		const startDate = providers?.[0]?.time?.scehdule?.times?.[0]
+		const endDateFrequency = providers?.[0]?.time?.schedule?.frequency // have to add start time
+		const frequency  = parseInt(endDateFrequency?.match(/\d+/)[0])
+		const endDate = new Date()
+	
 		//parent_item_id not in customization
 		items = [
 			{
@@ -187,6 +192,8 @@ const intializeRequest = async (
 			},
 		},
 	};
+
+
 
 	const header = await createAuthHeader(select);
 	try {
