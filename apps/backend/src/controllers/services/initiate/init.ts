@@ -175,7 +175,7 @@ const intializeRequest = async (
 		);
 		await axios.post(`${context.bpp_uri}/init?scenario=${scenario}`, init, {
 			headers: {
-				"X-Gateway-Authorization": header,
+				// "X-Gateway-Authorization": header,
 				authorization: header,
 			},
 		});
