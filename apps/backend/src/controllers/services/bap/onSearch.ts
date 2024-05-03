@@ -9,7 +9,7 @@ export const onSearchController = (req: Request, res: Response) => {
 	switch (scenario) {
 		case "selection":
 			if (checkIfCustomized(req.body.message.catalog.providers[0].items)) { // check "code": "attribute" only
-				// return onSearchServiceCustomizationController(req, res);
+				return onSearchServiceCustomizationController(req, res);
 			}
 			onSearchSelectionController(req, res);
 			break;
@@ -51,39 +51,39 @@ const onSearchSelectionController = (req: Request, res: Response) => {
 	// );
 	// const response = YAML.parse(file.toString());
 	const resposneMessage = {
-		order: {
-			provider: {
-				id,
-				locations: [{
-					id: locations[0]?.id
-				}],
-			},
-			items: [providers[0]?.items.map(({ id, parent_item_id, location_ids }:
-				{ id: any, parent_item_id: any, location_ids: any }) => ({ id, parent_item_id, location_ids: [{ id: location_ids[0] }] }))[0]],
-			fulfillments: [
-				{
-					type: fulfillments[0].type,
-					stops: [
-						{
-							"type": "end",
-							"location":
-							{
-								"gps": "12.974002,77.613458",
-								"area_code": "560001"
-							},
-							"time": {
-								"label": "selected",
-								"range": { // should be dynamic on the basis of scehdule
-									"start": providers[0].time.schedule.times[0],
-									"end": providers[0].time.schedule.times[1]
-								}
-							}
-						}
-					]
-				}
-			],
-			payments: [{ type: payments[0].type }]
-		}
+		// order: {
+		// 	provider: {
+		// 		id,
+		// 		locations: [{
+		// 			id: locations[0]?.id
+		// 		}],
+		// 	},
+		// 	items: [providers[0]?.items.map(({ id, parent_item_id, location_ids }:
+		// 		{ id: any, parent_item_id: any, location_ids: any }) => ({ id, parent_item_id, location_ids: [{ id: location_ids[0] }] }))[0]],
+		// 	fulfillments: [
+		// 		{
+		// 			type: fulfillments[0].type,
+		// 			stops: [
+		// 				{
+		// 					"type": "end",
+		// 					"location":
+		// 					{
+		// 						"gps": "12.974002,77.613458",
+		// 						"area_code": "560001"
+		// 					},
+		// 					"time": {
+		// 						"label": "selected",
+		// 						"range": { // should be dynamic on the basis of scehdule
+		// 							"start": providers[0].time.schedule.times[0],
+		// 							"end": providers[0].time.schedule.times[1]
+		// 						}
+		// 					}
+		// 				}
+		// 			]
+		// 		}
+		// 	],
+		// 	payments: [{ type: payments[0].type }]
+		// }
 	}
 
 	return responseBuilder(
