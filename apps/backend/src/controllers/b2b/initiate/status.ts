@@ -82,7 +82,7 @@ const intializeRequest = async (
 		);
 		const response = await axios.post(`${context.bpp_uri}/status`, status, {
 			headers: {
-				"X-Gateway-Authorization": header,
+				// "X-Gateway-Authorization": header,
 				authorization: header,
 			},
 		});

@@ -10,7 +10,9 @@ import YAML from "yaml";
 export const searchController = (req: Request, res: Response) => {
 	const { message: { intent } } = req.body
 	const id = intent?.category?.id
-	console.log(`on_search/${id === "SRV11-1041" ? "on_search_customized.yaml" : "on_search.yaml"}`)
+
+	// uncomment for default selection of customization response
+	// const id = "SRV11-1041" 
 	const file = fs.readFileSync(
 		path.join(SERVICES_EXAMPLES_PATH, `on_search/${id === "SRV11-1041" ? "on_search_customized.yaml" : "on_search.yaml"}`)
 	);

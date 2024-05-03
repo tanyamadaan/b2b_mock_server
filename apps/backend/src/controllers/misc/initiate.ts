@@ -52,7 +52,7 @@ export const initiateServicesController = async (
 		);
 		const response = await axios.post(`${bpp_uri}/search`, search, {
 			headers: {
-				"X-Gateway-Authorization": header,
+				// "X-Gateway-Authorization": header,
 				authorization: header,
 			},
 		});

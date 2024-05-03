@@ -59,7 +59,7 @@ export const initiateUpdateController = async (req: Request, res: Response) => {
 			var responseMessage = requoteRequest(message)
 			break
 		case "reschedule":
-			var responseMessage = rescheduleRequest(message)
+			// var responseMessage = rescheduleRequest(message)
 			break
 		default:
 			var responseMessage = requoteRequest(message)
@@ -67,7 +67,7 @@ export const initiateUpdateController = async (req: Request, res: Response) => {
 	}
 	const update = {
 		context,
-		message: responseMessage
+		// message: responseMessage
 	}
 	const header = await createAuthHeader(update);
 
@@ -78,7 +78,7 @@ export const initiateUpdateController = async (req: Request, res: Response) => {
 		);
 		const response = await axios.post(`${context.bpp_uri}/update`, update, {
 			headers: {
-				"X-Gateway-Authorization": header,
+				// "X-Gateway-Authorization": header,
 				authorization: header,
 			},
 		});
