@@ -35,7 +35,7 @@ export const initController = async (req: Request, res: Response) => {
 	// 	});
 	// }
 	// checking on_select response exits or not
-	const exit=await redisExist("on_search",transaction_id)
+	const exit=await redisExist("on_select",transaction_id)
 	if (!exit){
 		return res.status(400).json({
 					message: {

@@ -118,7 +118,7 @@ const intializeRequest = async (
 				select,
 				{
 					headers: {
-						"X-Gateway-Authorization": header,
+						// "X-Gateway-Authorization": header,
 						authorization: header,
 					},
 				}

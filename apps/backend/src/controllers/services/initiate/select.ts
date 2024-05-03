@@ -35,6 +35,7 @@ export const initiateSelectController = async (req: Request, res: Response) => {
 	// const parsedTransaction = transaction.map((ele) => {
 	// 	return JSON.parse(ele as string);
 	// });
+
 	const on_search = await redisFetch("on_search", transactionId)
 	if (!on_search) {
 		return res.status(400).json({
@@ -44,11 +45,24 @@ export const initiateSelectController = async (req: Request, res: Response) => {
 				},
 			},
 			error: {
-				message: "On search doesn't exist",
+				message: "On Search doesn't exist",
 			},
 		});
 	}
-
+	const items = on_search.message.catalog.providers[0]?.categories;
+	// console.log("+++++", items)
+	let child_ids
+	if (items) {
+		const parent_id = items.find((ele: any) => ele.descriptor.code === "MEAL")?.id
+		child_ids = items.reduce((acc: string[], ele: any) => {
+			if (ele.parent_category_id === parent_id) {
+				acc.push(ele.id)
+			}
+			return acc
+		}, [])
+	}
+	req.body.child_ids = child_ids
+	// console.log("Child_ids::", child_ids)
 	return intializeRequest(req, res, on_search, scenario);
 };
 
@@ -66,15 +80,32 @@ const intializeRequest = async (
 	} = transaction;
 	const { transaction_id } = context;
 	const { id, locations } = providers[0];
-	const { id: item_id, parent_item_id, location_ids } = providers[0].items[0];
+	// const { id: item_id, parent_item_id, location_ids } = providers[0].items[0];
 	let items = [];
 	if (scenario === "customization") {
-		const startDate = providers?.[0]?.time?.scehdule?.times?.[0]
-		const endDateFrequency = providers?.[0]?.time?.schedule?.frequency // have to add start time
-		const frequency  = parseInt(endDateFrequency?.match(/\d+/)[0])
-		const endDate = new Date()
-	
 		//parent_item_id not in customization
+		items = [...providers[0].items]
+		// console.log("----------", req.body.child_ids)
+		if (req.body.child_ids) {
+			// items = items.filter(item => item.category_ids.includes(req.body.child_ids[0])).slice(0,1);
+			const new_items: any[] = []
+			let count = 0
+			let index = 0
+			while (index < items.length && count < 2) {
+				if (items[index].category_ids.includes(req.body.child_ids[0])) {
+					if (new_items.length > 0 && new_items[0].parent_item_id !== items[index].parent_item_id) {
+						continue
+					}
+					new_items.push(items[index])
+					count++
+				}
+				index++
+			}
+			const parent_item = items.find((item: any) => item.id === new_items[0].parent_item_id)
+			items = [parent_item, ...new_items]
+		}
+		const { id: item_id, parent_item_id, location_ids } = items[0]
+		// console.log("Items:::", items)
 		items = [
 			{
 				id: item_id,
@@ -82,18 +113,18 @@ const intializeRequest = async (
 				location_ids,
 				quantity: {
 					selected: {
-						count: 3,
+						count: 1,
 					},
 				},
 			},
-			...providers[0].items.slice(1).map((item: any) => {
+			...items.slice(1).map((item: any) => {
 				return {
 					// ...item,
 					id: item.id,
 					parent_item_id,
 					quantity: {
 						selected: {
-							count: 3,
+							count: 1,
 						},
 					},
 					category_ids: item.category_ids,
@@ -131,7 +162,7 @@ const intializeRequest = async (
 			)[0],
 		];
 	}
-	// console.log("Items::", JSON.stringify(items), "Senario::", scenario)
+	// console.log("Items::", items, "Senario::", scenario)
 	const select = {
 		context: {
 			...context,
@@ -192,9 +223,7 @@ const intializeRequest = async (
 			},
 		},
 	};
-
-
-
+	// console.log("Final __ Items::", select.message.order.items)
 	const header = await createAuthHeader(select);
 	try {
 		await redis.set(
