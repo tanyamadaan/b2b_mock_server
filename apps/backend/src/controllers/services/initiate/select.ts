@@ -121,7 +121,7 @@ const intializeRequest = async (
 				return {
 					// ...item,
 					id: item.id,
-					parent_item_id,
+					parent_item_id: item.parent_item_id,
 					quantity: {
 						selected: {
 							count: 1,
