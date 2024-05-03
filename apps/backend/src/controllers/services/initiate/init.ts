@@ -37,17 +37,17 @@ export const initiateInitController = async (req: Request, res: Response) => {
 	// });
 
 	const on_select = await redisFetch("on_select", transactionId)
-	if(!on_select){
-			return res.status(400).json({
-				message: {
-					ack: {
-						status: "NACK",
-					},
+	if (!on_select) {
+		return res.status(400).json({
+			message: {
+				ack: {
+					status: "NACK",
 				},
-				error: {
-					message: "On Select doesn't exist",
-				},
-			});
+			},
+			error: {
+				message: "On Select doesn't exist",
+			},
+		});
 	}
 
 	// const request = parsedTransaction[0].request;
@@ -175,7 +175,7 @@ const intializeRequest = async (
 		);
 		await axios.post(`${context.bpp_uri}/init?scenario=${scenario}`, init, {
 			headers: {
-				"X-Gateway-Authorization": header,
+				// "X-Gateway-Authorization": header,
 				authorization: header,
 			},
 		});
