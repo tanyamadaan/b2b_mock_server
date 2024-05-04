@@ -8,10 +8,10 @@ export const searchController = (req: Request, res: Response) => {
   const {
     message: { intent },
   } = req.body;
-  // const id = intent?.category?.id
+  const id = intent?.category?.id
 
   // uncomment for default selection of customization response
-  const id = "SRV11-1041";
+  // const id = "SRV11-1041";
   const file = fs.readFileSync(
     path.join(
       SERVICES_EXAMPLES_PATH,

@@ -2,7 +2,7 @@ import { redis } from "./redis"
 async function redisFetch(action: string, transaction_id: string) {
     const transactionKeys = await redis.keys(`${transaction_id}-*`);
     const ifTransactionExist = transactionKeys.filter((e) =>
-        e.includes(`${action}-from-server`)
+        e.includes(`${action}-to-server`)
     );
 
     if (ifTransactionExist.length === 0) {
@@ -19,7 +19,7 @@ async function redisFetch(action: string, transaction_id: string) {
 async function redisExist(action: string, transaction_id: string) {
     const transactionKeys = await redis.keys(`${transaction_id}-*`);
     const ifTransactionExist = transactionKeys.filter((e) =>
-        e.includes(`${action}-from-server`)
+        e.includes(`${action}-to-server`)
     );
 
     if (ifTransactionExist.length === 0) {
