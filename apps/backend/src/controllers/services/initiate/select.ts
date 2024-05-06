@@ -11,7 +11,7 @@ import {
 } from "../../../lib/utils";
 import axios, { AxiosError } from "axios";
 import { v4 as uuidv4 } from "uuid";
-import { set } from "lodash";
+import { set,eq } from "lodash";
 
 export const initiateSelectController = async (
 	req: Request,
@@ -55,6 +55,12 @@ export const initiateSelectController = async (
 			},
 		});
 	}
+  // selecting the senarios
+  let scenario = "selection";
+  if (checkIfCustomized(on_search.message.catalog.providers[0].items)) {
+    scenario = "customization";
+  }
+
 	const items = on_search.message.catalog.providers[0]?.categories;
 	// console.log("+++++", items)
 	let child_ids;
@@ -258,9 +264,10 @@ const intializeRequest = async (
 			},
 		},
 	};
-
-	set(select, "message.order.fulfillments[0].stops[0].time.range.start", start);
-	set(select, "message.order.fulfillments[0].stops[0].time.range.end", endDate);
+  if(eq(scenario,'customization')){
+    set(select, "message.order.fulfillments[0].stops[0].time.range.start", start);
+    set(select, "message.order.fulfillments[0].stops[0].time.range.end", endDate);  
+  }
 
 	// console.log("Final __ Items::", select.message.order.items)
 	const header = await createAuthHeader(select);
