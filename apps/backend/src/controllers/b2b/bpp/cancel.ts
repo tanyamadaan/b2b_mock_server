@@ -44,6 +44,19 @@ export const cancelController = async (req: Request, res: Response) => {
 		}
 	})
 
+	if(!item_payment_ids) {
+		return res.status(400).json({
+			message: {
+				ack: {
+					status: "NACK",
+				},
+			},
+			error: {
+				message: "Payment and Provider ID related mismatch",
+			},
+		});
+	}
+
 	if (parsedTransaction[0].request.message.order.id != req.body.message.order_id) {
 		return res.status(400).json({
 			message: {
