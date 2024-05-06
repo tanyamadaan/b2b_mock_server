@@ -1,5 +1,5 @@
 
-import { B2B_SCENARIOS, SERVICES_SCENARIOS } from "openapi-specs/constants";
+import { B2B_SCENARIOS } from "openapi-specs/constants";
 
 export const SUPPORTED_DOMAINS = ["B2B", "SERVICES"];
 
@@ -88,7 +88,7 @@ export const INITIATE_FIELDS = {
 			domainDepended: true,
 			options: {
 				b2b: B2B_SCENARIOS["select"].map((each) => each.scenario),
-				services: SERVICES_SCENARIOS["select"].map((each) => each.scenario),
+				// services: SERVICES_SCENARIOS["select"].map((each) => each.scenario),
 			},
 		},
 	],
@@ -105,7 +105,7 @@ export const INITIATE_FIELDS = {
 			domainDepended: true,
 			options: {
 				b2b: B2B_SCENARIOS["init"].map((each) => each.scenario),
-				services: SERVICES_SCENARIOS["init"].map((each) => each.scenario),
+				// services: SERVICES_SCENARIOS["init"].map((each) => each.scenario),
 			},
 		},
 	],
@@ -121,7 +121,7 @@ export const INITIATE_FIELDS = {
 			type: "select",
 			domainDepended: true,
 			options: {
-				services: SERVICES_SCENARIOS["confirm"].map((each) => each.scenario),
+				// services: SERVICES_SCENARIOS["confirm"].map((each) => each.scenario),
 			},
 		},
 	],

@@ -96,16 +96,16 @@ export const B2B_SCENARIOS = {
 };
 
 export const SERVICES_SCENARIOS = {
-	select: [
-		{
-			name: "Selections",
-			scenario: "selection",
-		},
-		{
-			name: "Customization",
-			scenario: "customization",
-		},
-	],
+	// select: [
+	// 	{
+	// 		name: "Selections",
+	// 		scenario: "selection",
+	// 	},
+	// 	{
+	// 		name: "Customization",
+	// 		scenario: "customization",
+	// 	},
+	// ],
 	on_select: [
 		{
 			name: "Schedule Confirmed",
@@ -116,24 +116,24 @@ export const SERVICES_SCENARIOS = {
 			scenario: "schedule_rejected",
 		},
 	],
-	init: [
-		{
-			name: "Service",
-			scenario: "service",
-		},
-	],
+	// init: [
+	// 	{
+	// 		name: "Service",
+	// 		scenario: "service",
+	// 	},
+	// ],
 	on_init: [
 		{
 			name: "Service",
 			scenario: "service",
 		},
 	],
-	confirm: [
-		{
-			name: "Service",
-			scenario: "service",
-		},
-	],
+	// confirm: [
+	// 	{
+	// 		name: "Service",
+	// 		scenario: "service",
+	// 	},
+	// ],
 	on_confirm: [
 		{
 			name: "Service",
