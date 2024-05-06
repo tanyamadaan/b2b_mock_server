@@ -11,7 +11,8 @@ import {
 } from "../../../lib/utils";
 import axios, { AxiosError } from "axios";
 import { v4 as uuidv4 } from "uuid";
-import { set,eq } from "lodash";
+import { set, eq } from "lodash";
+import { isBefore, addDays } from "date-fns";
 
 export const initiateSelectController = async (req: Request, res: Response) => {
   const { transactionId } = req.body;
@@ -97,7 +98,7 @@ const intializeRequest = async (
   let endDate;
   if (scenario === "customization") {
     const startDate = new Date(providers?.[0]?.time?.range?.start);
-  
+
     const startCategory = providers?.[0]?.categories?.find((cat: any) => {
       return cat.id === req.body.child_ids[0];
     });
@@ -109,10 +110,31 @@ const intializeRequest = async (
     ).value;
 
     start = new Date(startDate.setHours(Number(startTime?.split(":")[0])));
-    const endDateFrequency = providers?.[0]?.time?.schedule?.frequency; // have to add start time
-    const frequency = parseInt(endDateFrequency?.match(/\d+/)[0]);
-    endDate = new Date(startDate.setHours(start.getHours() + frequency));
+    start = new Date(start.setMinutes(Number(startTime?.split(":")[1])));
+    // Checking for a valid date and time
+    const currentDate = new Date();
 
+    // Compare the start date with the current date and time
+    if (isBefore(start, currentDate)) {
+      currentDate.setHours(start.getHours());
+      currentDate.setMinutes(start.getMinutes());
+      currentDate.setSeconds(start.getSeconds());
+      start = addDays(currentDate, 1);
+    }
+
+    const scheduleobj = providers[0]?.categories
+      .find((itm: any) => itm.id === req.body.child_ids[0])
+      ?.tags.find((tag: any) => tag.descriptor.code === "schedule");
+
+    const endDateFrequency = scheduleobj?.list.find(
+      (ele: any) => ele.descriptor.code === "frequency"
+    )?.value;
+
+    const frequency = parseInt(endDateFrequency?.match(/\d+/)[0]);
+
+    //end date
+    endDate = new Date(start.setHours(start.getHours() + frequency));
+  
     //parent_item_id not in customization
     items = [...providers[0].items];
     // console.log("----------", req.body.child_ids)
@@ -259,9 +281,17 @@ const intializeRequest = async (
       },
     },
   };
-  if(eq(scenario,'customization')){
-    set(select, "message.order.fulfillments[0].stops[0].time.range.start", start);
-    set(select, "message.order.fulfillments[0].stops[0].time.range.end", endDate);  
+  if (eq(scenario, "customization")) {
+    set(
+      select,
+      "message.order.fulfillments[0].stops[0].time.range.start",
+      start
+    );
+    set(
+      select,
+      "message.order.fulfillments[0].stops[0].time.range.end",
+      endDate
+    );
   }
 
   // console.log("Final __ Items::", select.message.order.items)
