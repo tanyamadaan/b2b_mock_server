@@ -237,8 +237,8 @@ const intializeRequest = async (
                   label: "selected",
                   range: {
                     // should be dynamic on the basis of scehdule
-                    start: providers[0].time.schedule.times[0],
-                    end: providers[0].time.schedule.times[1],
+                    start: providers[0]?.time?.schedule?.times?.[0] ?? new Date(),
+                    end: providers[0]?.time?.schedule?.times?.[1] ?? new Date(),
                   },
                 },
                 days: scenario === "customization" ? "4" : undefined,
