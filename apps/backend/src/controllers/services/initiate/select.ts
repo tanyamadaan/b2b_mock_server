@@ -18,7 +18,7 @@ export const initiateSelectController = async (
 	res: Response,
 	next: NextFunction
 ) => {
-	const { scenario, transactionId } = req.body;
+	const { transactionId } = req.body;
 
 	// const transactionKeys = await redis.keys(`${transactionId}-*`);
 	// const ifTransactionExist = transactionKeys.filter((e) =>
