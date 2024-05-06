@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 
 import {
@@ -13,28 +13,28 @@ import path from "path";
 import fs from "fs";
 import YAML from "yaml";
 
-export const selectController = (req: Request, res: Response) => {
+export const selectController = (req: Request, res: Response, next: NextFunction) => {
 	const { scenario } = req.query;
 	switch (scenario) {
 		// schedule_confirmed, schedule_rejected
 		case "schedule_confirmed":
 			if (checkIfCustomized(req.body.message.order.items)) {
-				return selectServiceCustomizationConfirmedController(req, res);
+				return selectServiceCustomizationConfirmedController(req, res, next);
 			}
-			selectConsultationConfirmController(req, res);
+			selectConsultationConfirmController(req, res, next);
 			break;
 		case "schedule_rejected ":
-			selectConsultationRejectController(req, res);
+			selectConsultationRejectController(req, res, next);
 			break;
 		default:
 			if (checkIfCustomized(req.body.message.order.items)) {
-				return selectServiceCustomizationConfirmedController(req, res);
+				return selectServiceCustomizationConfirmedController(req, res, next);
 			}
-			return selectConsultationConfirmController(req, res);
+			return selectConsultationConfirmController(req, res, next);
 	}
 };
 
-const selectConsultationConfirmController = (req: Request, res: Response) => {
+const selectConsultationConfirmController = (req: Request, res: Response, next: NextFunction) => {
 	const { context, message } = req.body;
 	const { locations, ...provider } = message.order.provider;
 	var responseMessage = {
@@ -87,6 +87,7 @@ const selectConsultationConfirmController = (req: Request, res: Response) => {
 
 	return responseBuilder(
 		res,
+		next,
 		context,
 		responseMessage,
 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
@@ -96,7 +97,7 @@ const selectConsultationConfirmController = (req: Request, res: Response) => {
 	);
 };
 
-const selectConsultationRejectController = (req: Request, res: Response) => {
+const selectConsultationRejectController = (req: Request, res: Response, next: NextFunction) => {
 	const { context } = req.body;
 	const file = fs.readFileSync(
 		path.join(
@@ -108,6 +109,7 @@ const selectConsultationRejectController = (req: Request, res: Response) => {
 
 	return responseBuilder(
 		res,
+		next,
 		context,
 		response.value.message,
 		`${context.bap_uri}/on_select`,
@@ -118,7 +120,8 @@ const selectConsultationRejectController = (req: Request, res: Response) => {
 
 const selectServiceCustomizationConfirmedController = async (
 	req: Request,
-	res: Response
+	res: Response,
+	next: NextFunction
 ) => {
 	const { context, message } = req.body;
 	const { locations, ...provider } = message.order.provider;
@@ -191,6 +194,7 @@ const selectServiceCustomizationConfirmedController = async (
 
 	return responseBuilder(
 		res,
+		next,
 		context,
 		responseMessage,
 		`${context.bap_uri}/on_select`,
@@ -199,62 +203,62 @@ const selectServiceCustomizationConfirmedController = async (
 	);
 };
 
-const selectServiceConfirmController = (req: Request, res: Response) => {
-	const { context } = req.body;
-	const file = fs.readFileSync(
-		path.join(
-			SERVICES_EXAMPLES_PATH,
-			"on_select/on_select_service_confirmed.yaml"
-		)
-	);
-	const response = YAML.parse(file.toString());
+// const selectServiceConfirmController = (req: Request, res: Response) => {
+// 	const { context } = req.body;
+// 	const file = fs.readFileSync(
+// 		path.join(
+// 			SERVICES_EXAMPLES_PATH,
+// 			"on_select/on_select_service_confirmed.yaml"
+// 		)
+// 	);
+// 	const response = YAML.parse(file.toString());
 
-	return responseBuilder(
-		res,
-		context,
-		response.value.message,
-		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
-		}`,
-		`on_select`,
-		"services"
-	);
-};
+// 	return responseBuilder(
+// 		res,
+// 		context,
+// 		response.value.message,
+// 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+// 		}`,
+// 		`on_select`,
+// 		"services"
+// 	);
+// };
 
-const selectServiceRejectController = (req: Request, res: Response) => {
-	const { context } = req.body;
-	const file = fs.readFileSync(
-		path.join(
-			SERVICES_EXAMPLES_PATH,
-			"on_select/on_select_service_rejected.yaml"
-		)
-	);
-	const response = YAML.parse(file.toString());
+// const selectServiceRejectController = (req: Request, res: Response) => {
+// 	const { context } = req.body;
+// 	const file = fs.readFileSync(
+// 		path.join(
+// 			SERVICES_EXAMPLES_PATH,
+// 			"on_select/on_select_service_rejected.yaml"
+// 		)
+// 	);
+// 	const response = YAML.parse(file.toString());
 
-	return responseBuilder(
-		res,
-		context,
-		response.value.message,
-		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
-		}`,
-		`on_select`,
-		"services"
-	);
-};
+// 	return responseBuilder(
+// 		res,
+// 		context,
+// 		response.value.message,
+// 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+// 		}`,
+// 		`on_select`,
+// 		"services"
+// 	);
+// };
 
-const selectNackController = (req: Request, res: Response) => {
-	const { context } = req.body;
-	const file = fs.readFileSync(
-		path.join(SERVICES_EXAMPLES_PATH, "on_select/on_select_nack.yaml")
-	);
-	const response = YAML.parse(file.toString());
+// const selectNackController = (req: Request, res: Response) => {
+// 	const { context } = req.body;
+// 	const file = fs.readFileSync(
+// 		path.join(SERVICES_EXAMPLES_PATH, "on_select/on_select_nack.yaml")
+// 	);
+// 	const response = YAML.parse(file.toString());
 
-	return responseBuilder(
-		res,
-		context,
-		response.value.message,
-		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
-		}`,
-		`on_select`,
-		"services"
-	);
-};
+// 	return responseBuilder(
+// 		res,
+// 		context,
+// 		response.value.message,
+// 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+// 		}`,
+// 		`on_select`,
+// 		"services"
+// 	);
+// };

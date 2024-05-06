@@ -1,98 +1,102 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import {
-  MOCKSERVER_ID,
-  SERVICES_BAP_MOCKSERVER_URL,
-  checkIfCustomized,
-  createAuthHeader,
-  logger,
-  redis,
-  redisFetch,
-  redisExist,
+	MOCKSERVER_ID,
+	SERVICES_BAP_MOCKSERVER_URL,
+	checkIfCustomized,
+	createAuthHeader,
+	logger,
+	redis,
+	redisFetch,
+	redisExist,
 } from "../../../lib/utils";
 import axios, { AxiosError } from "axios";
 import { v4 as uuidv4 } from "uuid";
 import { set, eq } from "lodash";
 import { isBefore, addDays } from "date-fns";
 
-export const initiateSelectController = async (req: Request, res: Response) => {
-  const { transactionId } = req.body;
+export const initiateSelectController = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	const { transactionId } = req.body;
 
-  // const transactionKeys = await redis.keys(`${transactionId}-*`);
-  // const ifTransactionExist = transactionKeys.filter((e) =>
-  // 	e.includes("on_search-to-server")
-  // );
+	// const transactionKeys = await redis.keys(`${transactionId}-*`);
+	// const ifTransactionExist = transactionKeys.filter((e) =>
+	// 	e.includes("on_search-to-server")
+	// );
 
-  // if (ifTransactionExist.length === 0) {
-  // 	return res.status(400).json({
-  // 		message: {
-  // 			ack: {
-  // 				status: "NACK",
-  // 			},
-  // 		},
-  // 		error: {
-  // 			message: "On search doesn't exist",
-  // 		},
-  // 	});
-  // }
-  // const transaction = await redis.mget(ifTransactionExist);
-  // const parsedTransaction = transaction.map((ele) => {
-  // 	return JSON.parse(ele as string);
-  // });
+	// if (ifTransactionExist.length === 0) {
+	// 	return res.status(400).json({
+	// 		message: {
+	// 			ack: {
+	// 				status: "NACK",
+	// 			},
+	// 		},
+	// 		error: {
+	// 			message: "On search doesn't exist",
+	// 		},
+	// 	});
+	// }
+	// const transaction = await redis.mget(ifTransactionExist);
+	// const parsedTransaction = transaction.map((ele) => {
+	// 	return JSON.parse(ele as string);
+	// });
 
-  const on_search = await redisFetch("on_search", transactionId);
-  if (!on_search) {
-    return res.status(400).json({
-      message: {
-        ack: {
-          status: "NACK",
-        },
-      },
-      error: {
-        message: "On Search doesn't exist",
-      },
-    });
-  }
+	const on_search = await redisFetch("on_search", transactionId);
+	if (!on_search) {
+		return res.status(400).json({
+			message: {
+				ack: {
+					status: "NACK",
+				},
+			},
+			error: {
+				message: "On Search doesn't exist",
+			},
+		});
+	}
   // selecting the senarios
   let scenario = "selection";
   if (checkIfCustomized(on_search.message.catalog.providers[0].items)) {
     scenario = "customization";
   }
 
-  const items = on_search.message.catalog.providers[0]?.categories;
-  // console.log("+++++", items)
-  let child_ids;
-  if (items) {
-    const parent_id = items.find(
-      (ele: any) => ele.descriptor.code === "MEAL"
-    )?.id;
-    child_ids = items.reduce((acc: string[], ele: any) => {
-      if (ele.parent_category_id === parent_id) {
-        acc.push(ele.id);
-      }
-      return acc;
-    }, []);
-  }
-  req.body.child_ids = child_ids;
-  // console.log("Child_ids::", child_ids)
-  return intializeRequest(req, res, on_search, scenario);
+	const items = on_search.message.catalog.providers[0]?.categories;
+	// console.log("+++++", items)
+	let child_ids;
+	if (items) {
+		const parent_id = items.find(
+			(ele: any) => ele.descriptor.code === "MEAL"
+		)?.id;
+		child_ids = items.reduce((acc: string[], ele: any) => {
+			if (ele.parent_category_id === parent_id) {
+				acc.push(ele.id);
+			}
+			return acc;
+		}, []);
+	}
+	req.body.child_ids = child_ids;
+	// console.log("Child_ids::", child_ids)
+	return intializeRequest(req, res, next, on_search, scenario);
 };
 
 const intializeRequest = async (
-  req: Request,
-  res: Response,
-  transaction: any,
-  scenario: string
+	req: Request,
+	res: Response,
+	next: NextFunction,
+	transaction: any,
+	scenario: string
 ) => {
-  const {
-    context,
-    message: {
-      catalog: { fulfillments, payments, providers },
-    },
-  } = transaction;
-  const { transaction_id } = context;
-  const { id, locations } = providers[0];
-  // const { id: item_id, parent_item_id, location_ids } = providers[0].items[0];
-
+	const {
+		context,
+		message: {
+			catalog: { fulfillments, payments, providers },
+		},
+	} = transaction;
+	const { transaction_id } = context;
+	const { id, locations } = providers[0];
+	// const { id: item_id, parent_item_id, location_ids } = providers[0].items[0];
   let items = [];
   let start;
   let endDate;
@@ -294,40 +298,38 @@ const intializeRequest = async (
     );
   }
 
-  // console.log("Final __ Items::", select.message.order.items)
-  const header = await createAuthHeader(select);
-  try {
-    await redis.set(
-      `${transaction_id}-select-from-server`,
-      JSON.stringify({ request: { ...select } })
-    );
-    const response = await axios.post(`${context.bpp_uri}/select`, select, {
-      headers: {
-        "X-Gateway-Authorization": header,
-        authorization: header,
-      },
-    });
-    return res.json({
-      message: {
-        ack: {
-          status: "ACK",
-        },
-      },
-      transaction_id,
-    });
-  } catch (error) {
-    logger.error({ type: "response", message: (error as any).response?.data });
-    // console.log("ERROR:::::", (error as any).response?.data);
-    return res.json({
-      message: {
-        ack: {
-          status: "NACK",
-        },
-      },
-      error: {
-        // message: (error as any).message,
-        message: "Error Occurred while pinging NP at BPP URI",
-      },
-    });
-  }
+	// console.log("Final __ Items::", select.message.order.items)
+	const header = await createAuthHeader(select);
+	try {
+		await redis.set(
+			`${transaction_id}-select-from-server`,
+			JSON.stringify({ request: { ...select } })
+		);
+		const response = await axios.post(`${context.bpp_uri}/select`, select, {
+			headers: {
+				"X-Gateway-Authorization": header,
+				authorization: header,
+			},
+		});
+		await redis.set(
+			`${transaction_id}-select-from-server`,
+			JSON.stringify({
+				request: { ...select },
+				response: {
+					response: response.data,
+					timestamp: new Date().toISOString(),
+				},
+			})
+		);
+		return res.json({
+			message: {
+				ack: {
+					status: "ACK",
+				},
+			},
+			transaction_id,
+		});
+	} catch (error) {
+		return next(error);
+	}
 };

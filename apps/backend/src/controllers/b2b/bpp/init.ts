@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import {
 	quoteCreator,
 	responseBuilder,
@@ -9,7 +9,7 @@ import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 
-export const initController = async (req: Request, res: Response) => {
+export const initController = async (req: Request, res: Response, next: NextFunction) => {
 	const { transaction_id } = req.body.context;
 	const transactionKeys = await redis.keys(`${transaction_id}-*`);
 
@@ -83,12 +83,12 @@ export const initController = async (req: Request, res: Response) => {
 	// // 	initRejectRfq(req, res);
 	// // 	break;
 	// default:
-	initDomesticController(req, res);
+	initDomesticController(req, res, next);
 	// 		break;
 	// }
 };
 
-const initDomesticController = (req: Request, res: Response) => {
+const initDomesticController = (req: Request, res: Response, next: NextFunction) => {
 	const { context, message } = req.body;
 	const { items, fulfillments, tags, billing, ...remainingMessage } =
 		message.order;
@@ -188,7 +188,7 @@ const initDomesticController = (req: Request, res: Response) => {
 			}
 		});
 	} catch (error) {
-		console.log("ERROR Occurred while matching item ID and name:::", error);
+
 		return res.status(400).json({
 			message: {
 				ack: {
@@ -202,6 +202,7 @@ const initDomesticController = (req: Request, res: Response) => {
 	}
 	return responseBuilder(
 		res,
+		next,
 		context,
 		responseMessage,
 		`${req.body.context.bap_uri}${
@@ -209,54 +210,5 @@ const initDomesticController = (req: Request, res: Response) => {
 		}`,
 		`on_init`,
 		"b2b"
-	);
-};
-
-const initRejectRfq = (req: Request, res: Response) => {
-	const { context, message } = req.body;
-	const { items, fulfillments, tags, billing, ...remainingMessage } =
-		message.order;
-
-	const file = fs.readFileSync(
-		path.join(B2B_EXAMPLES_PATH, "on_init/on_init_domestic.yaml")
-	);
-
-	const response = YAML.parse(file.toString());
-	const { type, collected_by, ...staticPaymentInfo } =
-		response.value.message.order.payments[0];
-
-	const responseMessage = {
-		order: {
-			items,
-			fulfillments: fulfillments.map((each: any) => ({
-				...each,
-				tracking: true,
-			})),
-			tags,
-			billing,
-			provider: { id: remainingMessage.provider.id },
-			provider_location: remainingMessage.provider.locations[0],
-			payments: remainingMessage.payments.map((each: any) => ({
-				...each,
-				...staticPaymentInfo,
-			})),
-			quote: quoteCreator(items),
-		},
-	};
-
-	return responseBuilder(
-		res,
-		context,
-		responseMessage,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_init" : "/on_init"
-		}`,
-		`on_init`,
-		"b2b",
-		{
-			type: "DOMAIN-ERROR",
-			code: "50005",
-			message: "Incoterm - CIF not supported",
-		}
 	);
 };

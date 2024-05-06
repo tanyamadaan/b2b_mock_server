@@ -1,15 +1,15 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { SERVICES_EXAMPLES_PATH, checkIfCustomized, quoteCreatorService, responseBuilder } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 import { v4 as uuidv4 } from "uuid";
 
-export const onInitController = (req: Request, res: Response) => {
+export const onInitController = (req: Request, res: Response, next: NextFunction) => {
 	if (checkIfCustomized(req.body.message.order.items)) {
-		return onInitServiceCustomizedController(req, res);
+		return onInitServiceCustomizedController(req, res, next);
 	}
-	onInitConsultationController(req, res)
+	onInitConsultationController(req, res, next)
 	// const { scenario } = req.query
 	// switch (scenario) {
 	// 	case 'consultation':
@@ -33,7 +33,7 @@ export const onInitController = (req: Request, res: Response) => {
 	// }
 };
 
-const onInitConsultationController = (req: Request, res: Response) => {
+const onInitConsultationController = (req: Request, res: Response, next: NextFunction) => {
 	const { context, message: { order: { provider, locations, items, billing, fulfillments, payments, xinput } } } = req.body;
 	const { stops, ...remainingfulfillments } = fulfillments[0]
 
@@ -77,6 +77,7 @@ const onInitConsultationController = (req: Request, res: Response) => {
 	}
 	return responseBuilder(
 		res,
+		next,
 		context,
 		responseMessage,
 		`${context.bpp_uri}${context.bpp_uri.endsWith("/") ? "confirm" : "/confirm"
@@ -86,7 +87,7 @@ const onInitConsultationController = (req: Request, res: Response) => {
 	);
 };
 
-const onInitServiceCustomizedController = (req: Request, res: Response) => {
+const onInitServiceCustomizedController = (req: Request, res: Response, next: NextFunction) => {
 	const { context, message: { order: { provider, locations, items, billing, fulfillments, payments, xinput } } } = req.body;
 	const { stops, ...remainingfulfillments } = fulfillments[0]
 
@@ -130,6 +131,7 @@ const onInitServiceCustomizedController = (req: Request, res: Response) => {
 	}
 	return responseBuilder(
 		res,
+		next,
 		context,
 		responseMessage,
 		`${context.bpp_uri}${context.bpp_uri.endsWith("/") ? "confirm" : "/confirm"
@@ -139,20 +141,20 @@ const onInitServiceCustomizedController = (req: Request, res: Response) => {
 	);
 };
 
-const onInitServiceController = (req: Request, res: Response) => {
-	const { context } = req.body;
-	const file = fs.readFileSync(
-		path.join(SERVICES_EXAMPLES_PATH, "confirm/confirm_service.yaml")
-	);
-	const response = YAML.parse(file.toString());
-	return responseBuilder(
-		res,
-		context,
-		response.value.message,
-		`${context.bpp_uri}${context.bpp_uri.endsWith("/") ? "confirm" : "/confirm"
-		}`,
-		`confirm`,
-		"services"
-	);
-};
+// const onInitServiceController = (req: Request, res: Response) => {
+// 	const { context } = req.body;
+// 	const file = fs.readFileSync(
+// 		path.join(SERVICES_EXAMPLES_PATH, "confirm/confirm_service.yaml")
+// 	);
+// 	const response = YAML.parse(file.toString());
+// 	return responseBuilder(
+// 		res,
+// 		context,
+// 		response.value.message,
+// 		`${context.bpp_uri}${context.bpp_uri.endsWith("/") ? "confirm" : "/confirm"
+// 		}`,
+// 		`confirm`,
+// 		"services"
+// 	);
+// };
 

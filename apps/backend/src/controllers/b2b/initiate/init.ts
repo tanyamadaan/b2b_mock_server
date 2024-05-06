@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import {
 	B2B_BAP_MOCKSERVER_URL,
 	B2B_EXAMPLES_PATH,
@@ -13,7 +13,11 @@ import path from "path";
 import YAML from "yaml";
 import { v4 as uuidv4 } from "uuid";
 
-export const initiateInitController = async (req: Request, res: Response) => {
+export const initiateInitController = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	const { scenario, transactionId } = req.body;
 
 	const transactionKeys = await redis.keys(`${transactionId}-*`);
@@ -39,7 +43,7 @@ export const initiateInitController = async (req: Request, res: Response) => {
 	});
 
 	const request = parsedTransaction[0].request;
-	if(Object.keys(request).includes("error")) {
+	if (Object.keys(request).includes("error")) {
 		return res.status(400).json({
 			message: {
 				ack: {
@@ -53,12 +57,12 @@ export const initiateInitController = async (req: Request, res: Response) => {
 	}
 
 	// console.log("parsedTransaction:::: ", parsedTransaction[0]);
-	return intializeRequest(req, res, request, scenario);
+	return intializeRequest(res, next, request, scenario);
 };
 
 const intializeRequest = async (
-	req: Request,
 	res: Response,
+	next: NextFunction,
 	transaction: any,
 	scenario: string
 ) => {
@@ -107,8 +111,8 @@ const intializeRequest = async (
 			bap_uri: B2B_BAP_MOCKSERVER_URL,
 			// bpp_id: MOCKSERVER_ID,
 			// bpp_uri,
-      ttl: "PT30S",
-			message_id: uuidv4()
+			ttl: "PT30S",
+			message_id: uuidv4(),
 		},
 		message: {
 			order: {
@@ -130,12 +134,16 @@ const intializeRequest = async (
 			`${transaction_id}-init-from-server`,
 			JSON.stringify({ request: { ...init } })
 		);
-		const response = await axios.post(`${context.bpp_uri}/init?scenario=${scenario}`, init, {
-			headers: {
-				// "X-Gateway-Authorization": header,
-				authorization: header,
-			},
-		});
+		const response = await axios.post(
+			`${context.bpp_uri}/init?scenario=${scenario}`,
+			init,
+			{
+				headers: {
+					// "X-Gateway-Authorization": header,
+					authorization: header,
+				},
+			}
+		);
 
 		await redis.set(
 			`${transaction_id}-init-from-server`,
@@ -157,18 +165,6 @@ const intializeRequest = async (
 			transaction_id,
 		});
 	} catch (error) {
-		logger.error({ type: "response", message: error });
-		// console.log("ERROR :::::::::::::", (error as any).response.data.error);
-		return res.json({
-			message: {
-				ack: {
-					status: "NACK",
-				},
-			},
-			error: {
-				// message: (error as any).message,
-				message: "Error Occurred while pinging NP at BPP URI",
-			},
-		});
+		return next(error);
 	}
 };

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import {
 	SERVICES_BAP_MOCKSERVER_URL,
 	MOCKSERVER_ID,
@@ -15,7 +15,8 @@ import { v4 as uuidv4 } from "uuid";
 
 export const initiateConfirmController = async (
 	req: Request,
-	res: Response
+	res: Response,
+	next: NextFunction
 ) => {
 	const { scenario, transactionId } = req.body;
 
@@ -55,12 +56,12 @@ export const initiateConfirmController = async (
 	}
 
 	// console.log("parsedTransaction:::: ", parsedTransaction[0]);
-	return intializeRequest(req, res, on_init, scenario);
+	return intializeRequest(res, next, on_init, scenario);
 };
 
 const intializeRequest = async (
-	req: Request,
 	res: Response,
+	next: NextFunction,
 	transaction: any,
 	scenario: string
 ) => {
@@ -180,18 +181,6 @@ const intializeRequest = async (
 			transaction_id,
 		});
 	} catch (error) {
-		// logger.error({ type: "response", message: error });
-		console.log("ERROR:::::", (error as any).response?.data.error);
-		return res.json({
-			message: {
-				ack: {
-					status: "NACK",
-				},
-			},
-			error: {
-				// message: (error as any).message,
-				message: "Error Occurred while pinging NP at BPP URI",
-			},
-		});
+		return next(error)
 	}
 };
