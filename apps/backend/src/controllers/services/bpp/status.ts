@@ -27,16 +27,7 @@ export const statusController = (req: Request, res: Response) => {
 			statusServiceStartedController(req, res)
 			break;
 		default:
-			res.status(404).json({
-				message: {
-					ack: {
-						status: "NACK",
-					},
-				},
-				error: {
-					message: "Invalid scenario",
-				},
-			});
+			statusCompletedController(req, res)//default senario : completed
 			break;
 	}
 }
@@ -51,8 +42,7 @@ const statusCompletedController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
 		}`,
 		`on_status`,
 		"services"
@@ -69,8 +59,7 @@ const statusInTransitController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
 		}`,
 		`on_status`,
 		"services"
@@ -87,8 +76,7 @@ const statusReachedReOtpController = (req: Request, res: Response) => {
 		res,
 		context,
 		response.value.message,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
 		}`,
 		`on_status`,
 		"services"
@@ -107,8 +95,7 @@ const statusReachedController = (
 		res,
 		context,
 		response.value.message,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
 		}`,
 		`on_status`,
 		"services"
@@ -128,8 +115,7 @@ const statusServiceStartedController = (
 		res,
 		context,
 		response.value.message,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
 		}`,
 		`on_status`,
 		"services"

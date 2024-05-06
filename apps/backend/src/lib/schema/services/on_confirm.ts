@@ -158,20 +158,21 @@ export const onConfirmSchema = {
                         },
                         required: ["count"],
                       },
-                      measure: {
-                        type: "object",
-                        properties: {
-                          unit: {
-                            type: "string",
-                          },
-                          value: {
-                            type: "string",
-                          },
-                        },
-                        required: ["unit", "value"],
-                      },
+                      // measure: {
+                      //   type: "object",
+                      //   properties: {
+                      //     unit: {
+                      //       type: "string",
+                      //     },
+                      //     value: {
+                      //       type: "string",
+                      //     },
+                      //   },
+                      //   required: ["unit", "value"],
+                      // },
                     },
-                    required: ["selected", "measure"],
+                    // required: ["selected", "measure"],
+                    required: ["selected"],
                   },
                 },
                 required: [
@@ -344,7 +345,8 @@ export const onConfirmSchema = {
                               type: "string",
                             },
                           },
-                          required: ["phone", "email"],
+                          // required: ["phone", "email"],
+                          required: ["email"],
                         },
                         person: {
                           type: "object",
@@ -356,14 +358,13 @@ export const onConfirmSchema = {
                           required: ["name"],
                         },
                       },
-                      required: [
-                        "id",
-                        "type",
-                        "location",
-                        "time",
-                        "contact",
-                        "person",
-                      ],
+                      if: { properties: { type: { const: "end" } } },
+                      then: {
+                        required: ["type", "location", "contact", "time"]
+                      },
+                      else: {
+                        required: ["type"],
+                      },
                     },
                   },
                   rateable: {

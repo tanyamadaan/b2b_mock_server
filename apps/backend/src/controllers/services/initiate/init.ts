@@ -6,6 +6,7 @@ import {
 	createAuthHeader,
 	logger,
 	redis,
+	redisFetch
 } from "../../../lib/utils";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
@@ -13,12 +14,30 @@ import { v4 as uuidv4 } from "uuid";
 export const initiateInitController = async (req: Request, res: Response) => {
 	const { scenario, transactionId } = req.body;
 
-	const transactionKeys = await redis.keys(`${transactionId}-*`);
-	const ifTransactionExist = transactionKeys.filter((e) =>
-		e.includes("on_select-to-server")
-	);
+	// const transactionKeys = await redis.keys(`${transactionId}-*`);
+	// const ifTransactionExist = transactionKeys.filter((e) =>
+	// 	e.includes("on_select-to-server")
+	// );
 
-	if (ifTransactionExist.length === 0) {
+	// if (ifTransactionExist.length === 0) {
+	// 	return res.status(400).json({
+	// 		message: {
+	// 			ack: {
+	// 				status: "NACK",
+	// 			},
+	// 		},
+	// 		error: {
+	// 			message: "On Select doesn't exist",
+	// 		},
+	// 	});
+	// }
+	// const transaction = await redis.mget(ifTransactionExist);
+	// const parsedTransaction = transaction.map((ele) => {
+	// 	return JSON.parse(ele as string);
+	// });
+
+	const on_select = await redisFetch("on_select", transactionId)
+	if (!on_select) {
 		return res.status(400).json({
 			message: {
 				ack: {
@@ -30,13 +49,9 @@ export const initiateInitController = async (req: Request, res: Response) => {
 			},
 		});
 	}
-	const transaction = await redis.mget(ifTransactionExist);
-	const parsedTransaction = transaction.map((ele) => {
-		return JSON.parse(ele as string);
-	});
 
-	const request = parsedTransaction[0].request;
-	if (Object.keys(request).includes("error")) {
+	// const request = parsedTransaction[0].request;
+	if (Object.keys(on_select).includes("error")) {
 		return res.status(400).json({
 			message: {
 				ack: {
@@ -49,7 +64,8 @@ export const initiateInitController = async (req: Request, res: Response) => {
 		});
 	}
 
-	return intializeRequest(req, res, request, scenario);
+	return intializeRequest(req, res, on_select
+		, scenario);
 };
 
 const intializeRequest = async (
@@ -85,7 +101,7 @@ const intializeRequest = async (
 		);
 	}
 
-	console.log("ITEMS BEING SENT:::", items);
+	// console.log("ITEMS BEING SENT:::", items)
 
 	const init = {
 		context: {
@@ -159,7 +175,7 @@ const intializeRequest = async (
 		);
 		await axios.post(`${context.bpp_uri}/init?scenario=${scenario}`, init, {
 			headers: {
-				"X-Gateway-Authorization": header,
+				// "X-Gateway-Authorization": header,
 				authorization: header,
 			},
 		});
@@ -173,8 +189,8 @@ const intializeRequest = async (
 			transaction_id,
 		});
 	} catch (error) {
-		// logger.error({ type: "response", message: error });
-		console.log("ERROR:::::", (error as any).response?.data.error);
+		logger.error({ type: "response", message: error });
+		// console.log("ERROR:::::", (error as any).response?.data.error);
 		return res.json({
 			message: {
 				ack: {

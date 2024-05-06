@@ -131,6 +131,19 @@ export const onSelectSchema = {
                       type: "string",
                     },
                   },
+                  quantity: {
+                    type: "object",
+                    properties: {
+                      selected: {
+                        type: "object",
+                        properties: {
+                          count: {
+                            type: "number",
+                          }
+                        }
+                      }
+                    }
+                  },
                   time: {
                     type: "object",
                     properties: {
@@ -177,6 +190,7 @@ export const onSelectSchema = {
                   "fulfillment_ids",
                   "id",
                   "location_ids",
+                  "quantity"
                 ],
               },
             },
@@ -199,7 +213,7 @@ export const onSelectSchema = {
                         properties: {
                           code: {
                             type: "string",
-                            enum:["Serviceable","Non-serviceable"]
+                            enum: ["Serviceable", "Non-serviceable"]
                           },
                         },
                         required: ["code"],
@@ -232,7 +246,7 @@ export const onSelectSchema = {
                           properties: {
                             label: {
                               type: "string",
-                              enum: ["confirmed","rejected"]
+                              enum: ["confirmed", "rejected"]
                             },
                             range: {
                               type: "object",
@@ -410,7 +424,7 @@ export const onSelectSchema = {
                   type: "string",
                 },
               },
-              isQuoteMatching:true,
+              isQuoteMatching: true,
               required: ["price", "breakup", "ttl"],
             },
             payments: {
@@ -423,14 +437,14 @@ export const onSelectSchema = {
                   },
                   collected_by: {
                     type: "string",
-                    enum:["BAP","BPP"]
+                    enum: ["BAP", "BPP"]
                   },
                 },
-                required: ["type","collected_by"],
+                required: ["type", "collected_by"],
               },
             },
           },
-          required: ["provider", "items", "fulfillments", "quote","payments"],
+          required: ["provider", "items", "fulfillments", "quote", "payments"],
         },
       },
       required: ["order"],

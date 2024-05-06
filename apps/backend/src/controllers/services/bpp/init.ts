@@ -5,38 +5,54 @@ import {
 	quoteCreatorService,
 	quoteCreatorServiceCustomized,
 	responseBuilder,
+	redis,
+	redisExist
 } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 import { v4 as uuidv4 } from "uuid";
 
-export const initController = (req: Request, res: Response) => {
+export const initController = async (req: Request, res: Response) => {
+	const { transaction_id } = req.body.context;
+	const transactionKeys = await redis.keys(`${transaction_id}-*`);
+
+	// checking on_select response exits or not 
+	// const ifTransactionExist = transactionKeys.filter((e) =>
+	// 	e.includes("on_select-from-server")
+	// );
+
+	// if (ifTransactionExist.length === 0) {
+	// 	return res.status(400).json({
+	// 		message: {
+	// 			ack: {
+	// 				status: "NACK",
+	// 			},
+	// 		},
+	// 		error: {
+	// 			message: "On Select doesn't exist",
+	// 		},
+	// 	});
+	// }
+	// checking on_select response exits or not
+	const exit=await redisExist("on_select",transaction_id)
+	if (!exit){
+		return res.status(400).json({
+					message: {
+						ack: {
+							status: "NACK",
+						},
+					},
+					error: {
+						message: "On Select doesn't exist",
+					},
+				});
+	}
+	
 	if (checkIfCustomized(req.body.message.order.items)) {
 		return initServiceCustomizationController(req, res);
 	}
 	initConsultationController(req, res);
-	// const { scenario } = req.query;
-	// switch (scenario) {
-	// 	case "consultation":
-	// 		initConsultationController(req, res);
-	// 		break;
-	// 	case "service":
-	// 		initServiceController(req, res);
-	// 		break;
-	// 	default:
-	// 		res.status(404).json({
-	// 			message: {
-	// 				ack: {
-	// 					status: "NACK",
-	// 				},
-	// 			},
-	// 			error: {
-	// 				message: "Invalid scenario",
-	// 			},
-	// 		});
-	// 		break;
-	// }
 };
 const initConsultationController = (req: Request, res: Response) => {
 	const { context, message: { order: { provider, items, billing, fulfillments, payments } } } = req.body;
@@ -56,7 +72,7 @@ const initConsultationController = (req: Request, res: Response) => {
 			billing,
 			fulfillments: [{
 				...remainingfulfillments,
-				"tracking": false,
+				tracking: false,
 				stops: stops.map((stop: any) => {
 					return {
 						...stop,
@@ -85,14 +101,6 @@ const initConsultationController = (req: Request, res: Response) => {
 			xinput: response.value.message.order.xinput
 		}
 	}
-	//hardcoded value quantity
-	responseMessage.order.quote.breakup.forEach((itm: any) => {
-		itm.item.quantity = {
-			selected: {
-				count: 3
-			}
-		}
-	})
 	return responseBuilder(
 		res,
 		context,
@@ -114,7 +122,8 @@ const initServiceCustomizationController = (req: Request, res: Response) => {
 		path.join(SERVICES_EXAMPLES_PATH, "on_init/on_init_consultation.yaml")
 	);
 	const response = YAML.parse(file.toString());
-	stops.push({
+	// splice to insert element at index 0
+	stops.splice(0, 0, {
 		"type": "start",
 		"instructions": {
 			"name": "Instuctions by provider",
@@ -126,6 +135,7 @@ const initServiceCustomizationController = (req: Request, res: Response) => {
 			}
 		}
 	})
+	// console.log("Customized ;:", stops)
 	const responseMessage = {
 		order: {
 			provider: remainingProvider,

@@ -160,7 +160,7 @@ export const responseBuilder = async (
 					message: {
 						message: { ack: { status: "NACK" } },
 						error: {
-							message: (error as any).response.data,
+							message: (error as any).response?.data,
 						},
 					},
 				});
@@ -172,7 +172,7 @@ export const responseBuilder = async (
 					},
 					error: {
 						// message: (error as any).message,
-						message: (error as any).response.data,
+						message: (error as any).response?.data,
 					},
 				};
 				log.response = {
@@ -395,10 +395,11 @@ export const quoteCreatorService = (items: Item[]) => {
 					currency: "INR",
 					value: "99",
 				},
+				quantity: item.quantity ? item.quantity : undefined
 			};
 		});
 	});
-
+	console
 	return {
 		breakup,
 		price: {
@@ -809,9 +810,17 @@ export const quoteCreatorServiceCustomized = (items: Item[]) => {
 	// 	}
 	// ]
 
-	items.forEach((item, i) => {
-		breakup.forEach((each: any, j: number) => {
-			if (i == j) each.item.id = item.id;
+
+	items.forEach((item) => {
+		breakup.forEach((each: any) => {
+			each.item = {
+				id: item.id,
+				price: {
+					currency: "INR",
+					value: "99",
+				},
+				quantity: item.quantity ? item.quantity : undefined
+			};
 		});
 	});
 

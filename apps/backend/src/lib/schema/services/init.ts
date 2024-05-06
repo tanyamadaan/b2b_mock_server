@@ -149,20 +149,21 @@ export const initSchema = {
                         },
                         required: ["count"],
                       },
-                      measure: {
-                        type: "object",
-                        properties: {
-                          unit: {
-                            type: "string",
-                          },
-                          value: {
-                            type: "string",
-                          },
-                        },
-                        required: ["unit", "value"],
-                      },
+                      // measure: {
+                      //   type: "object",
+                      //   properties: {
+                      //     unit: {
+                      //       type: "string",
+                      //     },
+                      //     value: {
+                      //       type: "string",
+                      //     },
+                      //   },
+                      //   required: ["unit", "value"],
+                      // },
                     },
-                    required: ["selected", "measure"],
+                    // required: ["selected", "measure"],
+                    required: ["selected"],
                   },
                 },
                 required: [
@@ -300,7 +301,7 @@ export const initSchema = {
                           properties: {
                             label: {
                               type: "string",
-                              enum:["confirmed"]
+                              enum: ["confirmed"]
                             },
                             range: {
                               type: "object",
@@ -314,7 +315,7 @@ export const initSchema = {
                               },
                               required: ["start", "end"],
                             },
-                         
+
                           },
                           required: ["label", "range"],
                         },
@@ -338,7 +339,7 @@ export const initSchema = {
                     type: "string",
                   },
                 },
-                required: ["type","collected_by"],
+                required: ["type", "collected_by"],
               },
             },
           },

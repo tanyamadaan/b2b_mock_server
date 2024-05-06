@@ -149,20 +149,21 @@ export const onInitSchema = {
                         },
                         required: ["count"],
                       },
-                      measure: {
-                        type: "object",
-                        properties: {
-                          unit: {
-                            type: "string",
-                          },
-                          value: {
-                            type: "string",
-                          },
-                        },
-                        required: ["unit", "value"],
-                      },
+                      // measure: {
+                      //   type: "object",
+                      //   properties: {
+                      //     unit: {
+                      //       type: "string",
+                      //     },
+                      //     value: {
+                      //       type: "string",
+                      //     },
+                      //   },
+                      //   required: ["unit", "value"],
+                      // },
                     },
-                    required: ["selected", "measure"],
+                    // required: ["selected", "measure"],
+                    required: ["selected"],
                   },
                 },
                 required: [
@@ -311,7 +312,7 @@ export const onInitSchema = {
                               },
                               required: ["start", "end"],
                             },
-                          
+
                           },
                           required: ["label", "range"],
                         },
@@ -352,7 +353,14 @@ export const onInitSchema = {
                           required: ["descriptor", "list"],
                         },
                       },
-                      required: ["type", "location", "contact", "time", "tags"],
+                      // required: ["type", "location", "contact", "time", "tags"],
+                      if: { properties: { type: { const: "end" } } },
+                      then: {
+                        required: ["type", "location", "contact", "time"]
+                      },
+                      else: {
+                        required: ["type"],
+                      }
                     },
                   },
                 },

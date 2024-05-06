@@ -53,7 +53,7 @@ const intializeRequest = async (res: Response, transaction: any, order_id: strin
 		);
 		const response = await axios.post(`${context.bpp_uri}/cancel`, cancel, {
 			headers: {
-				"X-Gateway-Authorization": header,
+				// "X-Gateway-Authorization": header,
 				authorization: header,
 			},
 		});

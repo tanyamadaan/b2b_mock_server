@@ -8,6 +8,7 @@ import {
 	quoteCreatorService,
 	quoteCreatorServiceCustomized,
 	redis,
+	redisFetch
 } from "../../../lib/utils";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
@@ -18,30 +19,43 @@ export const initiateConfirmController = async (
 ) => {
 	const { scenario, transactionId } = req.body;
 
-	const transactionKeys = await redis.keys(`${transactionId}-*`);
-	const ifTransactionExist = transactionKeys.filter((e) =>
-		e.includes("on_init-to-server")
-	);
+	// const transactionKeys = await redis.keys(`${transactionId}-*`);
+	// const ifTransactionExist = transactionKeys.filter((e) =>
+	// 	e.includes("on_init-to-server")
+	// );
 
-	if (ifTransactionExist.length === 0) {
-		return res.status(400).json({
-			message: {
-				ack: {
-					status: "NACK",
+	// if (ifTransactionExist.length === 0) {
+	// 	return res.status(400).json({
+	// 		message: {
+	// 			ack: {
+	// 				status: "NACK",
+	// 			},
+	// 		},
+	// 		error: {
+	// 			message: "On Init doesn't exist",
+	// 		},
+	// 	});
+	// }
+	// const transaction = await redis.mget(ifTransactionExist);
+	// const parsedTransaction = transaction.map((ele) => {
+	// 	return JSON.parse(ele as string);
+	// });
+	const on_init = await redisFetch("on_init", transactionId)
+	if(!on_init){
+			return res.status(400).json({
+				message: {
+					ack: {
+						status: "NACK",
+					},
 				},
-			},
-			error: {
-				message: "On Init doesn't exist",
-			},
-		});
+				error: {
+					message: "On Init doesn't exist",
+				},
+			});
 	}
-	const transaction = await redis.mget(ifTransactionExist);
-	const parsedTransaction = transaction.map((ele) => {
-		return JSON.parse(ele as string);
-	});
 
 	// console.log("parsedTransaction:::: ", parsedTransaction[0]);
-	return intializeRequest(req, res, parsedTransaction[0].request, scenario);
+	return intializeRequest(req, res, on_init, scenario);
 };
 
 const intializeRequest = async (
@@ -97,7 +111,7 @@ const intializeRequest = async (
 								...stop,
 								contact: {
 									...stop.contact,
-									email: stop.contact.email ? stop.contact.email : "nobody@nomail.com"
+									email: stop.contact && stop.contact.email ? stop.contact.email : "nobody@nomail.com"
 								},
 								customer: {
 									person: {
@@ -116,7 +130,7 @@ const intializeRequest = async (
 					{
 						//hardcoded transaction_id
 						...payments[0],
-						params:{
+						params: {
 							...payments[0].params,
 							transaction_id: "xxxxxxxx",
 						},
@@ -152,7 +166,7 @@ const intializeRequest = async (
 		);
 		await axios.post(`${context.bpp_uri}/confirm?scenario=${scenario}`, confirm, {
 			headers: {
-				"X-Gateway-Authorization": header,
+				// "X-Gateway-Authorization": header,
 				authorization: header,
 			},
 		});
@@ -166,8 +180,8 @@ const intializeRequest = async (
 			transaction_id,
 		});
 	} catch (error) {
-		logger.error({ type: "response", message: error });
-		// console.log("ERROR:::::", (error as any).response?.data.error);
+		// logger.error({ type: "response", message: error });
+		console.log("ERROR:::::", (error as any).response?.data.error);
 		return res.json({
 			message: {
 				ack: {

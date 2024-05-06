@@ -43,11 +43,28 @@ export const selectController = async (req: Request, res: Response) => {
 		const mappedItems = pro.items.map((item: any) => ({
 			id: item.id,
 			name: item.descriptor.name,
+			available_qty: item.quantity.available.count
 		}));
 		return mappedItems;
 	});
 
 	req.body.item_arr = item_id_name.flat();
+
+	req.body.message.order.items.forEach((itm: any) => {
+		const item = req.body.item_arr.find((item: any) => item.id == itm.id);
+		if (itm.quantity.selected.count > item.available_qty) {
+			return res.status(400).json({
+				message: {
+					ack: {
+						status: "NACK",
+					},
+				},
+				error: {
+					message: `Required Quantity for Item:${item.name} is unavailable.`,
+				},
+			});
+		}
+	})
 
 	switch (scenario) {
 		case "default":
@@ -122,13 +139,12 @@ export const selectDomesticController = (req: Request, res: Response) => {
 			},
 		});
 	}
-	
+
 	return responseBuilder(
 		res,
 		context,
 		responseMessage,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
 		}`,
 		`on_select`,
 		"b2b"
@@ -175,8 +191,7 @@ export const selectNonServiceableController = (req: Request, res: Response) => {
 		res,
 		context,
 		responseMessage,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
 		}`,
 		`on_select`,
 		"b2b",
@@ -231,8 +246,7 @@ export const selectQuantityUnavailableController = (
 		res,
 		context,
 		responseMessage,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
 		}`,
 		`on_select`,
 		"b2b",
