@@ -1,19 +1,19 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { SERVICES_EXAMPLES_PATH, checkIfCustomized, quoteCreatorService, responseBuilder } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 
 
-export const confirmController = (req: Request, res: Response) => {
+export const confirmController = (req: Request, res: Response, next: NextFunction) => {
 	if (checkIfCustomized(req.body.message.order.items)) {
-		return confirmServiceCustomizationController(req, res);
+		return confirmServiceCustomizationController(req, res, next);
 	}
-	confirmConsultationController(req, res);
+	confirmConsultationController(req, res, next);
 };
 
 
-export const confirmConsultationController = (req: Request, res: Response) => {
+export const confirmConsultationController = (req: Request, res: Response, next: NextFunction) => {
 	const { context, message: { order } } = req.body;
 	const { fulfillments } = order
 
@@ -67,6 +67,7 @@ export const confirmConsultationController = (req: Request, res: Response) => {
 	}
 	return responseBuilder(
 		res,
+		next,
 		context,
 		responseMessage,
 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
@@ -77,7 +78,7 @@ export const confirmConsultationController = (req: Request, res: Response) => {
 };
 
 
-export const confirmServiceCustomizationController = (req: Request, res: Response) => {
+export const confirmServiceCustomizationController = (req: Request, res: Response, next: NextFunction) => {
 	const { context, message: { order } } = req.body;
 	const { fulfillments } = order
 
@@ -150,6 +151,7 @@ export const confirmServiceCustomizationController = (req: Request, res: Respons
 	}
 	return responseBuilder(
 		res,
+		next,
 		context,
 		responseMessage,
 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
@@ -160,20 +162,20 @@ export const confirmServiceCustomizationController = (req: Request, res: Respons
 };
 
 
-export const confirmServiceController = (req: Request, res: Response) => {
-	const { context } = req.body;
-	const file = fs.readFileSync(
-		path.join(SERVICES_EXAMPLES_PATH, "on_confirm/on_confirm_service.yaml")
-	);
-	const response = YAML.parse(file.toString());
-	return responseBuilder(
-		res,
-		context,
-		response.value.message,
-		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
-		}`,
-		`on_confirm`,
-		"services"
-	);
-};
+// const confirmServiceController = (req: Request, res: Response) => {
+// 	const { context } = req.body;
+// 	const file = fs.readFileSync(
+// 		path.join(SERVICES_EXAMPLES_PATH, "on_confirm/on_confirm_service.yaml")
+// 	);
+// 	const response = YAML.parse(file.toString());
+// 	return responseBuilder(
+// 		res,
+// 		context,
+// 		response.value.message,
+// 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
+// 		}`,
+// 		`on_confirm`,
+// 		"services"
+// 	);
+// };
 

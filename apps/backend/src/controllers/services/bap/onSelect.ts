@@ -1,15 +1,15 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { SERVICES_EXAMPLES_PATH, checkIfCustomized, responseBuilder } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 import { v4 as uuidv4 } from "uuid";
 
-export const onSelectController = (req: Request, res: Response) => {
+export const onSelectController = (req: Request, res: Response, next: NextFunction) => {
 	if (checkIfCustomized(req.body.message.order.items)) {
-		return onSelectServiceCustomizedController(req, res);
+		return onSelectServiceCustomizedController(req, res, next);
 	}
-	onSelectConsultationController(req, res);
+	return onSelectConsultationController(req, res, next);
 
 	// const { scenario } = req.query
 	// switch (scenario) {
@@ -33,7 +33,7 @@ export const onSelectController = (req: Request, res: Response) => {
 	// }
 };
 
-const onSelectConsultationController = (req: Request, res: Response) => {
+const onSelectConsultationController = (req: Request, res: Response, next: NextFunction) => {
 	const { context, message:
 		{ order: { provider, items, payments, fulfillments
 		} } } = req.body;
@@ -95,6 +95,7 @@ const onSelectConsultationController = (req: Request, res: Response) => {
 	}
 	return responseBuilder(
 		res,
+		next,
 		context,
 		responseMessage,
 		`${req.body.context.bpp_uri}${req.body.context.bpp_uri.endsWith("/") ? "init" : "/init"}`,
@@ -103,7 +104,7 @@ const onSelectConsultationController = (req: Request, res: Response) => {
 	);
 };
 
-const onSelectServiceCustomizedController = (req: Request, res: Response) => {
+const onSelectServiceCustomizedController = (req: Request, res: Response, next: NextFunction) => {
 	const { context, message:
 		{ order: { provider, items, payments, fulfillments
 		} } } = req.body;
@@ -180,6 +181,7 @@ const onSelectServiceCustomizedController = (req: Request, res: Response) => {
 	}
 	return responseBuilder(
 		res,
+		next,
 		context,
 		responseMessage,
 		`${req.body.context.bpp_uri}${req.body.context.bpp_uri.endsWith("/") ? "init" : "/init"}`,
@@ -188,21 +190,21 @@ const onSelectServiceCustomizedController = (req: Request, res: Response) => {
 	);
 };
 
-const onSelectServiceController = (
-	req: Request,
-	res: Response
-) => {
-	const { context } = req.body;
-	const file = fs.readFileSync(
-		path.join(SERVICES_EXAMPLES_PATH, "init/init_service.yaml")
-	);
-	const response = YAML.parse(file.toString());
-	return responseBuilder(
-		res,
-		context,
-		response.value.message,
-		`${req.body.context.bpp_uri}${req.body.context.bpp_uri.endsWith("/") ? "init" : "/init"}`,
-		`init`,
-		"services"
-	);
-};
+// const onSelectServiceController = (
+// 	req: Request,
+// 	res: Response
+// ) => {
+// 	const { context } = req.body;
+// 	const file = fs.readFileSync(
+// 		path.join(SERVICES_EXAMPLES_PATH, "init/init_service.yaml")
+// 	);
+// 	const response = YAML.parse(file.toString());
+// 	return responseBuilder(
+// 		res,
+// 		context,
+// 		response.value.message,
+// 		`${req.body.context.bpp_uri}${req.body.context.bpp_uri.endsWith("/") ? "init" : "/init"}`,
+// 		`init`,
+// 		"services"
+// 	);
+// };

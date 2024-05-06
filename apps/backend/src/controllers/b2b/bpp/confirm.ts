@@ -1,25 +1,25 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { responseBuilder, B2B_EXAMPLES_PATH } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 
-export const confirmController = (req: Request, res: Response) => {
+export const confirmController = (req: Request, res: Response, next: NextFunction) => {
 	const { scenario } = req.query;
 	switch (scenario) {
 		case "default":
-			confirmDomesticController(req, res);
+			confirmDomesticController(req, res, next);
 			break;
 		case "cancelled":
-			confirmDomesticRejected(req, res);
+			confirmDomesticRejected(req, res, next);
 			break;
 		default:
-			confirmDomesticController(req, res);
+			confirmDomesticController(req, res, next);
 			break;
 	}
 };
 
-const confirmDomesticController = (req: Request, res: Response) => {
+const confirmDomesticController = (req: Request, res: Response, next: NextFunction) => {
 	const { context, message } = req.body;
 	const start = new Date(message.order.created_at);
 	start.setHours(start.getHours() + 1);
@@ -64,6 +64,7 @@ const confirmDomesticController = (req: Request, res: Response) => {
 	};
 	return responseBuilder(
 		res,
+		next,
 		context,
 		responseMessage,
 		`${req.body.context.bap_uri}${
@@ -74,7 +75,7 @@ const confirmDomesticController = (req: Request, res: Response) => {
 	);
 };
 
-const confirmDomesticRejected = (req: Request, res: Response) => {
+const confirmDomesticRejected = (req: Request, res: Response, next: NextFunction) => {
 	const { context, message } = req.body;
 	const start = new Date(message.order.created_at);
 	start.setHours(start.getHours() + 1);
@@ -119,6 +120,7 @@ const confirmDomesticRejected = (req: Request, res: Response) => {
 	};
 	return responseBuilder(
 		res,
+		next,
 		context,
 		responseMessage,
 		`${req.body.context.bap_uri}${

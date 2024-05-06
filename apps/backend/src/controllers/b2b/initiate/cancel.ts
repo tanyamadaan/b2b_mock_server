@@ -1,9 +1,13 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { createAuthHeader, redis, logger } from "../../../lib/utils";
 import axios, { AxiosError } from "axios";
 import { v4 as uuidv4 } from "uuid";
 
-export const initiateCancelController = async (req: Request, res: Response) => {
+export const initiateCancelController = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	const { transactionId, orderId, cancellationReasonId } = req.body;
 	const transactionKeys = await redis.keys(`${transactionId}-*`);
 	const ifTransactionExist = transactionKeys.filter((e) =>
@@ -28,23 +32,35 @@ export const initiateCancelController = async (req: Request, res: Response) => {
 	});
 
 	// console.log("parsedTransaction:::: ", parsedTransaction[0]);
-	return intializeRequest(res, parsedTransaction[0].request, orderId, cancellationReasonId);
-}
+	return intializeRequest(
+		res,
+		next,
+		parsedTransaction[0].request,
+		orderId,
+		cancellationReasonId
+	);
+};
 
-const intializeRequest = async (res: Response, transaction: any, order_id: string, cancellation_reason_id: string) => {
+const intializeRequest = async (
+	res: Response,
+	next: NextFunction,
+	transaction: any,
+	order_id: string,
+	cancellation_reason_id: string
+) => {
 	const { context } = transaction;
 
 	const cancel = {
 		context: {
 			...context,
 			action: "cancel",
-			message_id: uuidv4()
+			message_id: uuidv4(),
 		},
 		message: {
 			order_id,
-			cancellation_reason_id
-		}
-	}
+			cancellation_reason_id,
+		},
+	};
 	const header = await createAuthHeader(cancel);
 	try {
 		await redis.set(
@@ -77,33 +93,6 @@ const intializeRequest = async (res: Response, transaction: any, order_id: strin
 			transaction_id: context.transaction_id,
 		});
 	} catch (error) {
-		logger.error({ type: "response", message: error });
-		// console.log("ERROR :::::::::::::", (error as any).response.data.error.message);
-
-		if (error instanceof AxiosError) {
-			return res.json({
-				message: {
-					ack: {
-						status: "NACK",
-					},
-				},
-				error: {
-					// message: (error as any).message,
-					message: error.response?.data.error.message,
-				},
-			});
-		}
-		return res.json({
-			message: {
-				ack: {
-					status: "NACK",
-				},
-			},
-			error: {
-				// message: (error as any).message,
-				message: "Error Occurred while pinging NP at BPP URI",
-			},
-		});
+		return next(error)
 	}
-
-}
+};

@@ -1,7 +1,7 @@
-import { Request, Response } from "express";
-import { responseBuilder, B2B_EXAMPLES_PATH, redis, redisFetch } from "../../../lib/utils";
+import { NextFunction, Request, Response } from "express";
+import { responseBuilder, redisFetch } from "../../../lib/utils";
 
-export const cancelController = async (req: Request, res: Response) => {
+export const cancelController = async (req: Request, res: Response, next: NextFunction) => {
 	const { scenario } = req.query;
 	const { transaction_id } = req.body.context;
 
@@ -42,10 +42,10 @@ export const cancelController = async (req: Request, res: Response) => {
 	}, {});
 	// console.log("Items with there ids :", item_measure_ids)
 	req.body.item_measure_ids = item_measure_ids
-	cancelRequest(req, res, on_confirm_data, scenario);
+	cancelRequest(req, res, next, on_confirm_data, scenario);
 }
 
-const cancelRequest = async (req: Request, res: Response, transaction: any, scenario: any) => {
+const cancelRequest = async (req: Request, res: Response, next: NextFunction, transaction: any, scenario: any) => {
 
 	const { context } = req.body;
 
@@ -95,6 +95,7 @@ const cancelRequest = async (req: Request, res: Response, transaction: any, scen
 
 	return responseBuilder(
 		res,
+		next,
 		context,
 		responseMessage,
 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_cancel" : "/on_cancel"

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 // import fs from "fs";
 // import path from "path";
 // import YAML from "yaml";
@@ -7,7 +7,7 @@ import { responseBuilder, B2B_EXAMPLES_PATH, redis } from "../../../lib/utils";
 // import { stringify } from "querystring";
 // import { AnyARecord } from "dns";
 
-export const statusController = async (req: Request, res: Response) => {
+export const statusController = async (req: Request, res: Response, next: NextFunction) => {
 	const { scenario } = req.query;
 	const { transaction_id } = req.body.context;
 
@@ -33,12 +33,13 @@ export const statusController = async (req: Request, res: Response) => {
 		return JSON.parse(ele as string);
 	});
 
-	statusRequest(req, res, parsedTransaction[0].request, scenario);
+	return statusRequest(req, res, next, parsedTransaction[0].request, scenario);
 };
 
 const statusRequest = async (
 	req: Request,
 	res: Response,
+	next: NextFunction,
 	transaction: any,
 	scenario: any
 ) => {
@@ -256,6 +257,7 @@ const statusRequest = async (
 
 	return responseBuilder(
 		res,
+		next,
 		req.body.context,
 		responseMessage,
 		`${req.body.context.bap_uri}${

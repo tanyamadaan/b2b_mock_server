@@ -1,7 +1,11 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { quoteCreator, responseBuilder, redis } from "../../../lib/utils";
 
-export const selectController = async (req: Request, res: Response) => {
+export const selectController = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	const { scenario } = req.query;
 	const { transaction_id } = req.body.context;
 
@@ -43,7 +47,7 @@ export const selectController = async (req: Request, res: Response) => {
 		const mappedItems = pro.items.map((item: any) => ({
 			id: item.id,
 			name: item.descriptor.name,
-			available_qty: item.quantity.available.count
+			available_qty: item.quantity.available.count,
 		}));
 		return mappedItems;
 	});
@@ -64,25 +68,29 @@ export const selectController = async (req: Request, res: Response) => {
 				},
 			});
 		}
-	})
+	});
 
 	switch (scenario) {
 		case "default":
-			selectDomesticController(req, res);
+			selectDomesticController(req, res, next);
 			break;
 		case "non-serviceable":
-			selectNonServiceableController(req, res);
+			selectNonServiceableController(req, res, next);
 			break;
 		case "quantity-unavailable":
-			selectQuantityUnavailableController(req, res);
+			selectQuantityUnavailableController(req, res, next);
 			break;
 		default:
-			selectDomesticController(req, res);
+			selectDomesticController(req, res, next);
 			break;
 	}
 };
 
-export const selectDomesticController = (req: Request, res: Response) => {
+export const selectDomesticController = (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	const { context, message } = req.body;
 	const { ttl, ...provider } = message.order.provider;
 
@@ -127,31 +135,27 @@ export const selectDomesticController = (req: Request, res: Response) => {
 			}
 		});
 	} catch (error) {
-		console.log("ERROR Occurred while matching item ID and name:::", error)
-		return res.status(400).json({
-			message: {
-				ack: {
-					status: "NACK",
-				},
-			},
-			error: {
-				message: "Item Name and ID not matching",
-			},
-		});
+		return next(error);
 	}
 
 	return responseBuilder(
 		res,
+		next,
 		context,
 		responseMessage,
-		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
 		}`,
 		`on_select`,
 		"b2b"
 	);
 };
 
-export const selectNonServiceableController = (req: Request, res: Response) => {
+export const selectNonServiceableController = (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	const { context, message } = req.body;
 	const { ttl, ...provider } = message.order.provider;
 
@@ -189,9 +193,11 @@ export const selectNonServiceableController = (req: Request, res: Response) => {
 	};
 	return responseBuilder(
 		res,
+		next,
 		context,
 		responseMessage,
-		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
 		}`,
 		`on_select`,
 		"b2b",
@@ -205,7 +211,8 @@ export const selectNonServiceableController = (req: Request, res: Response) => {
 
 export const selectQuantityUnavailableController = (
 	req: Request,
-	res: Response
+	res: Response,
+	next: NextFunction
 ) => {
 	const { context, message } = req.body;
 	const { ttl, ...provider } = message.order.provider;
@@ -244,9 +251,11 @@ export const selectQuantityUnavailableController = (
 	};
 	return responseBuilder(
 		res,
+		next,
 		context,
 		responseMessage,
-		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
 		}`,
 		`on_select`,
 		"b2b",

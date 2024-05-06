@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import {
 	MOCKSERVER_ID,
 	SERVICES_BAP_MOCKSERVER_URL,
@@ -13,7 +13,7 @@ import path from "path";
 import YAML from "yaml";
 import { v4 as uuidv4 } from "uuid";
 
-export const initiateSearchController = async (req: Request, res: Response) => {
+export const initiateSearchController = async (req: Request, res: Response,  next: NextFunction) => {
 	const { bpp_uri, city, domain } = req.body;
 
 	var file = fs.readFileSync(
@@ -65,18 +65,6 @@ export const initiateSearchController = async (req: Request, res: Response) => {
 			transaction_id,
 		});
 	} catch (error) {
-		logger.error({ type: "response", message: error });
-		// console.log("ERROR:::::Search", (error as any).response?.data.error);
-		return res.json({
-			message: {
-				ack: {
-					status: "NACK",
-				},
-			},
-			error: {
-				// message: (error as any).message,
-				message: "Error Occurred while pinging NP at BPP URI",
-			},
-		});
+		return next(error)
 	}
 };

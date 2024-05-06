@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import {
 	B2B_BAP_MOCKSERVER_URL,
 	B2B_EXAMPLES_PATH,
@@ -14,8 +14,13 @@ import YAML from "yaml";
 
 import { v4 as uuidv4 } from "uuid";
 import { set } from "lodash";
+import { AxiosError } from "axios";
 
-export const initiateSelectController = async (req: Request, res: Response) => {
+export const initiateSelectController = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	const { scenario, transactionId } = req.body;
 
 	const transactionKeys = await redis.keys(`${transactionId}-*`);
@@ -40,12 +45,12 @@ export const initiateSelectController = async (req: Request, res: Response) => {
 		return JSON.parse(ele as string);
 	});
 
-	return intializeRequest(req, res, parsedTransaction[0].request, scenario);
+	return intializeRequest(res, next, parsedTransaction[0].request, scenario);
 };
 
 const intializeRequest = async (
-	req: Request,
 	res: Response,
+	next: NextFunction,
 	transaction: any,
 	scenario: string
 ) => {
@@ -106,7 +111,6 @@ const intializeRequest = async (
 			},
 		};
 
-
 		const header = await createAuthHeader(select);
 		try {
 			await redis.set(
@@ -144,21 +148,20 @@ const intializeRequest = async (
 				transaction_id,
 			});
 		} catch (error) {
-			logger.error({ type: "response", message: error });
-			// console.log("ERROR::::::::::::::::", (error as any).response.data.error)
-			return res.json({
-				message: {
-					ack: {
-						status: "NACK",
+			await redis.set(
+				`${transaction_id}-select-from-server`,
+				JSON.stringify({
+					request: { ...select },
+					response: {
+						response: error instanceof AxiosError ? error.response : error,
+						timestamp: new Date().toISOString(),
 					},
-				},
-				error: {
-					// message: (error as any).message,
-					message: "Error Occurred while pinging NP at BPP URI",
-				},
-			});
+				})
+			);
+
+			return next(error);
 		}
 	} catch (err) {
-		logger.error(err);
+		return next(err);
 	}
 };

@@ -1,20 +1,8 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import { responseBuilder } from "../../../lib/utils";
 
-export const onInitController = (req: Request, res: Response) => {
-	// const { scenario } = req.query;
-	// switch (scenario) {
-	// 	// case "default":
-	// 	// 	onInitDomesticController(req, res);
-	// 	// 	break;
-	// 	default:
-	onInitDomesticController(req, res);
-	// 		break;
-	// }
-};
-
-const onInitDomesticController = (req: Request, res: Response) => {
+export const onInitController = (req: Request, res: Response, next: NextFunction) => {
 	const {
 		context,
 		message: {
@@ -88,6 +76,7 @@ const onInitDomesticController = (req: Request, res: Response) => {
 	};
 	return responseBuilder(
 		res,
+		next,
 		context,
 		responseMessage,
 		`${context.bpp_uri}${

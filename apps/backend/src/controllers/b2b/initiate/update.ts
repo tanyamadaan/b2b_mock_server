@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import {
 	B2B_BAP_MOCKSERVER_URL,
 	createAuthHeader,
@@ -8,7 +8,7 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 
-export const initiateUpdateController = async (req: Request, res: Response) => {
+export const initiateUpdateController = async (req: Request, res: Response, next: NextFunction) => {
 	const { update_targets, transactionId } = req.body;
 
 	const transactionKeys = await redis.keys(`${transactionId}-*`);
@@ -54,11 +54,12 @@ export const initiateUpdateController = async (req: Request, res: Response) => {
 		});
 
 	// console.log("parsedTransaction:::: ", parsedTransaction[0]);
-	return intializeRequest(res, update_targets, onConfirm);
+	return intializeRequest(res, next, update_targets, onConfirm);
 };
 
 async function intializeRequest(
 	res: Response,
+	next: NextFunction,
 	update_target: "payments",
 	transaction: any
 ) {
@@ -145,19 +146,6 @@ async function intializeRequest(
 			transaction_id,
 		});
 	} catch (error) {
-		// logger.error({ type: "response", message: error });
-		// console.log("ERROR :::::::::::::", (error as any).response.data.error);
-
-		return res.json({
-			message: {
-				ack: {
-					status: "NACK",
-				},
-			},
-			error: {
-				// message: (error as any).message,
-				message: "Error Occurred while pinging NP at BPP URI",
-			},
-		});
+		return next(error)
 	}
 }

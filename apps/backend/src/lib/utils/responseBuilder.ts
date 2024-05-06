@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Response } from "express";
+import { NextFunction, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import {
 	B2B_BAP_MOCKSERVER_URL,
@@ -15,6 +15,7 @@ import { TransactionType, redis } from "./redis";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
+import { AxiosError } from "axios";
 
 interface TagDescriptor {
 	code: string;
@@ -50,12 +51,13 @@ interface Item {
 
 export const responseBuilder = async (
 	res: Response,
+	next: NextFunction,
 	reqContext: object,
 	message: object,
 	uri: string,
 	action: string,
 	domain: "b2b" | "services",
-	error?: object | undefined
+	error?: object | undefined,
 ) => {
 	res.locals = {};
 	// var ts = new Date((reqContext as any).timestamp);
@@ -120,10 +122,11 @@ export const responseBuilder = async (
 					e.includes("on_status-to-server")
 				).length;
 				await redis.set(
-					`${(async.context! as any).transaction_id}-${logIndex}-${action}-from-server`,
+					`${
+						(async.context! as any).transaction_id
+					}-${logIndex}-${action}-from-server`,
 					JSON.stringify(log)
 				);
-
 			} else {
 				await redis.set(
 					`${(async.context! as any).transaction_id}-${action}-from-server`,
@@ -147,37 +150,22 @@ export const responseBuilder = async (
 					JSON.stringify(log)
 				);
 			} catch (error) {
-				// console.log("ERROR", error);
-				logger.error({
-					type: "response",
-					message: {
-						message: "ERROR OCCURRED WHILE PINGING SANDBOX RESPONSE",
-						error: error,
-					},
-				});
-				logger.error({
-					type: "response",
-					message: {
-						message: { ack: { status: "NACK" } },
-						error: {
-							message: (error as any).response?.data,
-						},
-					},
-				});
-				const response = {
-					message: {
-						ack: {
-							status: "NACK",
-						},
-					},
-					error: {
-						// message: (error as any).message,
-						message: (error as any).response?.data,
-					},
-				};
+				const response =
+					error instanceof AxiosError
+						? error.response
+						: {
+								message: {
+									ack: {
+										status: "NACK",
+									},
+								},
+								error: {
+									message: error,
+								},
+						  };
 				log.response = {
 					timestamp: new Date().toISOString(),
-					response: response.message,
+					response: response,
 				};
 
 				await redis.set(
@@ -185,32 +173,9 @@ export const responseBuilder = async (
 					JSON.stringify(log)
 				);
 
-				return res.json({
-					...response,
-					async,
-				});
+				return next(error)
 			}
 		}
-		// } else {
-		// 	transaction.actionStats = {
-		// 		...transaction.actionStats,
-		// 		[action]: {
-		// 			requestFromServer: true,
-		// 			requestToServer: false,
-		// 			cached: true,
-		// 			npRequest: {
-		// 				timestamp: ts.toISOString(),
-		// 				request: async,
-		// 			},
-		// 		},
-		// 	};
-		// 	await redis.set(
-		// 		(async.context! as any).transaction_id,
-		// 		JSON.stringify(transaction)
-		// 	);
-		// }
-		// logger.info("TRANSACTION AFTER:", log);
-		// logger.info("**********************");
 
 		logger.info({
 			type: "response",
@@ -226,12 +191,6 @@ export const responseBuilder = async (
 			},
 		});
 	} else {
-		logger.info({
-			type: "response",
-			action: action,
-			transaction_id: (reqContext as any).transaction_id,
-			message: { sync: { message: { ack: { status: "ACK" } } }, async },
-		});
 		return res.json({
 			sync: {
 				message: {
@@ -395,11 +354,11 @@ export const quoteCreatorService = (items: Item[]) => {
 					currency: "INR",
 					value: "99",
 				},
-				quantity: item.quantity ? item.quantity : undefined
+				quantity: item.quantity ? item.quantity : undefined,
 			};
 		});
 	});
-	console
+	console;
 	return {
 		breakup,
 		price: {
@@ -810,7 +769,6 @@ export const quoteCreatorServiceCustomized = (items: Item[]) => {
 	// 	}
 	// ]
 
-
 	items.forEach((item) => {
 		breakup.forEach((each: any) => {
 			each.item = {
@@ -819,7 +777,7 @@ export const quoteCreatorServiceCustomized = (items: Item[]) => {
 					currency: "INR",
 					value: "99",
 				},
-				quantity: item.quantity ? item.quantity : undefined
+				quantity: item.quantity ? item.quantity : undefined,
 			};
 		});
 	});

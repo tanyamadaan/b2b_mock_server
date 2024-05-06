@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import {
 	B2B_BAP_MOCKSERVER_URL,
 	MOCKSERVER_ID,
@@ -11,7 +11,8 @@ import { v4 as uuidv4 } from "uuid";
 
 export const initiateStatusController = async (
 	req: Request,
-	res: Response
+	res: Response,
+	next: NextFunction
 ) => {
 	const { scenario, transactionId } = req.body;
 
@@ -42,14 +43,13 @@ export const initiateStatusController = async (
 	});
 
 	// console.log("parsedTransaction:::: ", parsedTransaction[0]);
-	return intializeRequest(req, res, parsedTransaction[0].request, scenario, statusIndex);
+	return intializeRequest(res, next, parsedTransaction[0].request, statusIndex);
 };
 
 const intializeRequest = async (
-	req: Request,
 	res: Response,
+	next: NextFunction,
 	transaction: any,
-	scenario: string,
 	statusIndex: number
 ) => {
 	const {
@@ -70,9 +70,9 @@ const intializeRequest = async (
 			bap_uri: B2B_BAP_MOCKSERVER_URL,
 		},
 		message: {
-			"order_id": order.id
-		}
-	}
+			order_id: order.id,
+		},
+	};
 
 	const header = await createAuthHeader(status);
 	try {
@@ -107,19 +107,6 @@ const intializeRequest = async (
 			transaction_id,
 		});
 	} catch (error) {
-		// logger.error({ type: "response", message: error });
-		// console.log("ERROR :::::::::::::", (error as any).response.data.error);
-
-		return res.json({
-			message: {
-				ack: {
-					status: "NACK",
-				},
-			},
-			error: {
-				// message: (error as any).message,
-				message: "Error Occurred while pinging NP at BPP URI",
-			},
-		});
+		return next(error);
 	}
 };

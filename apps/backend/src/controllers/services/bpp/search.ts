@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { SERVICES_EXAMPLES_PATH, responseBuilder } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 
-export const searchController = (req: Request, res: Response) => {
+export const searchController = (req: Request, res: Response, next: NextFunction) => {
   const {
     message: { intent },
   } = req.body;
@@ -23,6 +23,7 @@ export const searchController = (req: Request, res: Response) => {
   const response = YAML.parse(file.toString());
   return responseBuilder(
     res,
+    next,
     req.body.context,
     response.value.message,
     `${req.body.context.bap_uri}${

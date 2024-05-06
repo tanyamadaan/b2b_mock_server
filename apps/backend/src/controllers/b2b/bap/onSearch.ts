@@ -1,28 +1,28 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { responseBuilder, B2B_EXAMPLES_PATH } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 
-export const onSearchController = (req: Request, res: Response) => {
+export const onSearchController = (req: Request, res: Response, next: NextFunction) => {
 	let { scenario } = req.query;
 	switch (scenario) {
 		case "rfq":
-			onSearchDomesticController(req, res);
+			onSearchDomesticController(req, res, next);
 			break;
 		case "non-rfq":
-			onSearchDomesticNonRfqController(req, res);
+			onSearchDomesticNonRfqController(req, res, next);
 			break;
 		case "bap-chat":
-			onSearchBAPchatController(req, res);
+			onSearchBAPchatController(req, res, next);
 			break;
 		default:
-			onSearchDomesticController(req, res);
+			onSearchDomesticController(req, res, next);
 			break;
 	}
 };
 
-const onSearchDomesticController = (req: Request, res: Response) => {
+const onSearchDomesticController = (req: Request, res: Response, next: NextFunction) => {
 	const { context, message } = req.body;
 	const file = fs.readFileSync(
 		path.join(B2B_EXAMPLES_PATH, "select/select_domestic.yaml")
@@ -62,6 +62,7 @@ const onSearchDomesticController = (req: Request, res: Response) => {
 	};
 	return responseBuilder(
 		res,
+		next,
 		{ ...context, ttl: "P1D" },
 		responseMessage,
 		`${context.bpp_uri}${context.bpp_uri.endsWith("/") ? "select" : "/select"}`,
@@ -72,7 +73,8 @@ const onSearchDomesticController = (req: Request, res: Response) => {
 
 const onSearchDomesticNonRfqController = (
 	req: Request,
-	res: Response
+	res: Response,
+	next: NextFunction
 ) => {
 	const { context, message } = req.body;
 	const file = fs.readFileSync(
@@ -113,6 +115,7 @@ const onSearchDomesticNonRfqController = (
 
 	return responseBuilder(
 		res,
+		next,
 		{ ...context, ttl: "PT30S" },
 		responseMessage,
 		`${context.bpp_uri}${context.bpp_uri.endsWith("/") ? "select" : "/select"}`,
@@ -121,7 +124,7 @@ const onSearchDomesticNonRfqController = (
 	);
 };
 
-const onSearchBAPchatController = (req: Request, res: Response) => {
+const onSearchBAPchatController = (req: Request, res: Response, next: NextFunction) => {
 	const file = fs.readFileSync(
 		path.join(B2B_EXAMPLES_PATH, "select/select_BAP_chat.yaml")
 	);
@@ -129,6 +132,7 @@ const onSearchBAPchatController = (req: Request, res: Response) => {
 
 	return responseBuilder(
 		res,
+		next,
 		req.body.context,
 		response.value.message,
 		`${req.body.context.bpp_uri}${

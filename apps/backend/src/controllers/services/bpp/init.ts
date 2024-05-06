@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import {
 	SERVICES_EXAMPLES_PATH,
 	checkIfCustomized,
@@ -13,9 +13,9 @@ import path from "path";
 import YAML from "yaml";
 import { v4 as uuidv4 } from "uuid";
 
-export const initController = async (req: Request, res: Response) => {
+export const initController = async (req: Request, res: Response, next: NextFunction) => {
 	const { transaction_id } = req.body.context;
-	const transactionKeys = await redis.keys(`${transaction_id}-*`);
+	// const transactionKeys = await redis.keys(`${transaction_id}-*`);
 
 	// checking on_select response exits or not 
 	// const ifTransactionExist = transactionKeys.filter((e) =>
@@ -50,11 +50,11 @@ export const initController = async (req: Request, res: Response) => {
 	}
 	
 	if (checkIfCustomized(req.body.message.order.items)) {
-		return initServiceCustomizationController(req, res);
+		return initServiceCustomizationController(req, res, next);
 	}
-	initConsultationController(req, res);
+	return initConsultationController(req, res, next);
 };
-const initConsultationController = (req: Request, res: Response) => {
+const initConsultationController = (req: Request, res: Response, next: NextFunction) => {
 	const { context, message: { order: { provider, items, billing, fulfillments, payments } } } = req.body;
 
 	const { locations, ...remainingProvider } = provider
@@ -103,6 +103,7 @@ const initConsultationController = (req: Request, res: Response) => {
 	}
 	return responseBuilder(
 		res,
+		next,
 		context,
 		responseMessage,
 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_init" : "/on_init"
@@ -112,7 +113,7 @@ const initConsultationController = (req: Request, res: Response) => {
 	);
 };
 
-const initServiceCustomizationController = (req: Request, res: Response) => {
+const initServiceCustomizationController = (req: Request, res: Response, next: NextFunction) => {
 	const { context, message: { order: { provider, items, billing, fulfillments, payments } } } = req.body;
 
 	const { locations, ...remainingProvider } = provider
@@ -158,6 +159,7 @@ const initServiceCustomizationController = (req: Request, res: Response) => {
 	}
 	return responseBuilder(
 		res,
+		next,
 		context,
 		responseMessage,
 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_init" : "/on_init"
@@ -167,19 +169,19 @@ const initServiceCustomizationController = (req: Request, res: Response) => {
 	);
 };
 
-const initServiceController = (req: Request, res: Response) => {
-	const { context } = req.body;
-	const file = fs.readFileSync(
-		path.join(SERVICES_EXAMPLES_PATH, "on_init/on_init_service.yaml")
-	);
-	const response = YAML.parse(file.toString());
-	return responseBuilder(
-		res,
-		context,
-		response.value.message,
-		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_init" : "/on_init"
-		}`,
-		`on_init`,
-		"services"
-	);
-};
+// const initServiceController = (req: Request, res: Response) => {
+// 	const { context } = req.body;
+// 	const file = fs.readFileSync(
+// 		path.join(SERVICES_EXAMPLES_PATH, "on_init/on_init_service.yaml")
+// 	);
+// 	const response = YAML.parse(file.toString());
+// 	return responseBuilder(
+// 		res,
+// 		context,
+// 		response.value.message,
+// 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_init" : "/on_init"
+// 		}`,
+// 		`on_init`,
+// 		"services"
+// 	);
+// };
