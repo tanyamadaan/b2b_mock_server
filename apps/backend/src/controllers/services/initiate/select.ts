@@ -11,7 +11,8 @@ import {
 } from "../../../lib/utils";
 import axios, { AxiosError } from "axios";
 import { v4 as uuidv4 } from "uuid";
-import { set,eq } from "lodash";
+import { set, eq } from "lodash";
+import { isBefore, addDays } from "date-fns";
 
 export const initiateSelectController = async (
 	req: Request,
@@ -55,14 +56,13 @@ export const initiateSelectController = async (
 			},
 		});
 	}
-  // selecting the senarios
-  let scenario = "selection";
-  if (checkIfCustomized(on_search.message.catalog.providers[0].items)) {
-    scenario = "customization";
-  }
+	// selecting the senarios
+	let scenario = "selection";
+	if (checkIfCustomized(on_search.message.catalog.providers[0].items)) {
+		scenario = "customization";
+	}
 
 	const items = on_search.message.catalog.providers[0]?.categories;
-	// console.log("+++++", items)
 	let child_ids;
 	if (items) {
 		const parent_id = items.find(
@@ -76,7 +76,6 @@ export const initiateSelectController = async (
 		}, []);
 	}
 	req.body.child_ids = child_ids;
-	// console.log("Child_ids::", child_ids)
 	return intializeRequest(req, res, next, on_search, scenario);
 };
 
@@ -96,7 +95,6 @@ const intializeRequest = async (
 	const { transaction_id } = context;
 	const { id, locations } = providers[0];
 	// const { id: item_id, parent_item_id, location_ids } = providers[0].items[0];
-
 	let items = [];
 	let start;
 	let endDate;
@@ -112,15 +110,38 @@ const intializeRequest = async (
 		const startTime = startSchedule?.list?.find(
 			(ele: any) => ele.descriptor.code === "start_time"
 		).value;
+		const hour = Number(startTime?.split(":")[0]);
+		const minutes = Number(startTime?.split(":")[1]);
 
-		start = new Date(startDate.setHours(Number(startTime?.split(":")[0])));
-		const endDateFrequency = providers?.[0]?.time?.schedule?.frequency; // have to add start time
+		start = new Date(startDate);
+		start.setUTCHours(hour, minutes, 0, 0);
+
+		const currentDate = new Date();
+
+		// Compare the start date with the current date and time
+		if (isBefore(start, currentDate)) {
+			currentDate.setUTCHours(start.getUTCHours());
+			currentDate.setUTCMinutes(start.getUTCMinutes());
+			currentDate.setUTCSeconds(start.getUTCSeconds());
+			start = addDays(currentDate, 1);
+		}
+
+		const scheduleobj = providers[0]?.categories
+			.find((itm: any) => itm.id === req.body.child_ids[0])
+			?.tags.find((tag: any) => tag.descriptor.code === "schedule");
+
+		const endDateFrequency = scheduleobj?.list.find(
+			(ele: any) => ele.descriptor.code === "frequency"
+		)?.value;
+
 		const frequency = parseInt(endDateFrequency?.match(/\d+/)[0]);
-		endDate = new Date(startDate.setHours(start.getHours() + frequency));
+
+		//end date
+		endDate = new Date(start);
+		endDate.setUTCHours(start.getUTCHours() + frequency);
 
 		//parent_item_id not in customization
 		items = [...providers[0].items];
-		// console.log("----------", req.body.child_ids)
 		if (req.body.child_ids) {
 			// items = items.filter(item => item.category_ids.includes(req.body.child_ids[0])).slice(0,1);
 			const new_items: any[] = [];
@@ -145,7 +166,6 @@ const intializeRequest = async (
 			items = [parent_item, ...new_items];
 		}
 		const { id: item_id, parent_item_id, location_ids } = items[0];
-		// console.log("Items:::", items)
 		items = [
 			{
 				id: item_id,
@@ -264,12 +284,19 @@ const intializeRequest = async (
 			},
 		},
 	};
-  if(eq(scenario,'customization')){
-    set(select, "message.order.fulfillments[0].stops[0].time.range.start", start);
-    set(select, "message.order.fulfillments[0].stops[0].time.range.end", endDate);  
-  }
+	if (eq(scenario, "customization")) {
+		set(
+			select,
+			"message.order.fulfillments[0].stops[0].time.range.start",
+			start
+		);
+		set(
+			select,
+			"message.order.fulfillments[0].stops[0].time.range.end",
+			endDate
+		);
+	}
 
-	// console.log("Final __ Items::", select.message.order.items)
 	const header = await createAuthHeader(select);
 	try {
 		await redis.set(
