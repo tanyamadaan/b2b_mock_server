@@ -103,7 +103,7 @@ const intializeRequest = async (
 				},
 			},
 		};
-		// await send_response(res, next, select, transaction_id, "select",scenario=scenario);
+		await send_response(res, next, select, transaction_id, "select",scenario=scenario);
 		// const header = await createAuthHeader(select);
 		// try {
 		// 	await redis.set(
