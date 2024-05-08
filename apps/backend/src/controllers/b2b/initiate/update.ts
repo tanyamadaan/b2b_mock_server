@@ -1,9 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import {
 	B2B_BAP_MOCKSERVER_URL,
-	createAuthHeader,
+	send_response,
 	MOCKSERVER_ID,
 	redis,
+	send_nack,
+	createAuthHeader,
 } from "../../../lib/utils";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
@@ -17,16 +19,7 @@ export const initiateUpdateController = async (req: Request, res: Response, next
 	);
 
 	if (ifTransactionExist.length === 0) {
-		return res.status(400).json({
-			message: {
-				ack: {
-					status: "NACK",
-				},
-			},
-			error: {
-				message: "On Confirm doesn't exist",
-			},
-		});
+		send_nack(res,"On Confirm doesn't exist")
 	}
 
 	const transaction = await redis.mget(ifTransactionExist);
@@ -42,16 +35,17 @@ export const initiateUpdateController = async (req: Request, res: Response, next
 			(p: { type: string }) => p.type === "PRE-FULFILLMENT"
 		)
 	)
-		return res.status(400).json({
-			message: {
-				ack: {
-					status: "NACK",
-				},
-			},
-			error: {
-				message: "Update targets are allowed for RFQ flows only",
-			},
-		});
+		send_nack(res,"Update targets are allowed for RFQ flows only")
+		// return res.status(400).json({
+		// 	message: {
+		// 		ack: {
+		// 			status: "NACK",
+		// 		},
+		// 	},
+		// 	error: {
+		// 		message: "Update targets are allowed for RFQ flows only",
+		// 	},
+		// });
 
 	// console.log("parsedTransaction:::: ", parsedTransaction[0]);
 	return intializeRequest(res, next, update_targets, onConfirm);
@@ -113,39 +107,39 @@ async function intializeRequest(
 			},
 		},
 	};
+	await send_response(res, next, update, transaction_id, "update");
+	// const header = await createAuthHeader(update);
 
-	const header = await createAuthHeader(update);
+	// try {
+	// 	await redis.set(
+	// 		`${transaction_id}-update-from-server`,
+	// 		JSON.stringify({ request: { ...update } })
+	// 	);
+	// 	const response = await axios.post(`${context.bpp_uri}/update`, update, {
+	// 		headers: {
+	// 			authorization: header,
+	// 		},
+	// 	});
+	// 	await redis.set(
+	// 		`${transaction_id}-update-from-server`,
+	// 		JSON.stringify({
+	// 			request: { ...update },
+	// 			response: {
+	// 				response: response.data,
+	// 				timestamp: new Date().toISOString(),
+	// 			},
+	// 		})
+	// 	);
 
-	try {
-		await redis.set(
-			`${transaction_id}-update-from-server`,
-			JSON.stringify({ request: { ...update } })
-		);
-		const response = await axios.post(`${context.bpp_uri}/update`, update, {
-			headers: {
-				authorization: header,
-			},
-		});
-		await redis.set(
-			`${transaction_id}-update-from-server`,
-			JSON.stringify({
-				request: { ...update },
-				response: {
-					response: response.data,
-					timestamp: new Date().toISOString(),
-				},
-			})
-		);
-
-		return res.json({
-			message: {
-				ack: {
-					status: "ACK",
-				},
-			},
-			transaction_id,
-		});
-	} catch (error) {
-		return next(error)
-	}
+	// 	return res.json({
+	// 		message: {
+	// 			ack: {
+	// 				status: "ACK",
+	// 			},
+	// 		},
+	// 		transaction_id,
+	// 	});
+	// } catch (error) {
+	// 	return next(error)
+	// }
 }

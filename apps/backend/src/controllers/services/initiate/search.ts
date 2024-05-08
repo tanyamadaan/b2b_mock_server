@@ -3,6 +3,7 @@ import {
 	MOCKSERVER_ID,
 	SERVICES_BAP_MOCKSERVER_URL,
 	SERVICES_EXAMPLES_PATH,
+	send_response,
 	createAuthHeader,
 	logger,
 	redis,
@@ -42,29 +43,30 @@ export const initiateSearchController = async (req: Request, res: Response,  nex
 			message_id: uuidv4()
 		},
 	};
+	search.bpp_uri=bpp_uri
+	await send_response(res, next, search,transaction_id, "search");
+	// const header = await createAuthHeader(search);
+	// try {
+	// 	await redis.set(
+	// 		`${transaction_id}-search-from-server`,
+	// 		JSON.stringify({ request: { ...search } })
+	// 	);
+	// 	const response = await axios.post(`${bpp_uri}/search`, search, {
+	// 		headers: {
+	// 			// "X-Gateway-Authorization": header,
+	// 			authorization: header,
+	// 		},
+	// 	});
 
-	const header = await createAuthHeader(search);
-	try {
-		await redis.set(
-			`${transaction_id}-search-from-server`,
-			JSON.stringify({ request: { ...search } })
-		);
-		const response = await axios.post(`${bpp_uri}/search`, search, {
-			headers: {
-				// "X-Gateway-Authorization": header,
-				authorization: header,
-			},
-		});
-
-		return res.json({
-			message: {
-				ack: {
-					status: "ACK",
-				},
-			},
-			transaction_id,
-		});
-	} catch (error) {
-		return next(error)
-	}
+	// 	return res.json({
+	// 		message: {
+	// 			ack: {
+	// 				status: "ACK",
+	// 			},
+	// 		},
+	// 		transaction_id,
+	// 	});
+	// } catch (error) {
+	// 	return next(error)
+	// }
 };

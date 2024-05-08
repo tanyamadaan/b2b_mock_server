@@ -3,11 +3,14 @@ import {
   MOCKSERVER_ID,
   SERVICES_BAP_MOCKSERVER_URL,
   checkIfCustomized,
+  send_response,
+  send_nack,
+  redisFetch,
   createAuthHeader,
   logger,
   redis,
-  redisFetch,
   redisExist,
+
 } from "../../../lib/utils";
 import axios, { AxiosError } from "axios";
 import { v4 as uuidv4 } from "uuid";
@@ -22,40 +25,9 @@ export const initiateSelectController = async (
 ) => {
   const { transactionId } = req.body;
 
-  // const transactionKeys = await redis.keys(`${transactionId}-*`);
-  // const ifTransactionExist = transactionKeys.filter((e) =>
-  // 	e.includes("on_search-to-server")
-  // );
-
-  // if (ifTransactionExist.length === 0) {
-  // 	return res.status(400).json({
-  // 		message: {
-  // 			ack: {
-  // 				status: "NACK",
-  // 			},
-  // 		},
-  // 		error: {
-  // 			message: "On search doesn't exist",
-  // 		},
-  // 	});
-  // }
-  // const transaction = await redis.mget(ifTransactionExist);
-  // const parsedTransaction = transaction.map((ele) => {
-  // 	return JSON.parse(ele as string);
-  // });
-
   const on_search = await redisFetch("on_search", transactionId);
   if (!on_search) {
-    return res.status(400).json({
-      message: {
-        ack: {
-          status: "NACK",
-        },
-      },
-      error: {
-        message: "On Search doesn't exist",
-      },
-    });
+    send_nack(res,"On Search doesn't exist")
   }
   // selecting the senarios
   let scenario = "selection";
@@ -328,41 +300,41 @@ const intializeRequest = async (
       endDate
     );
   }
-
-  const header = await createAuthHeader(select);
-  try {
-    await redis.set(
-      `${transaction_id}-select-from-server`,
-      JSON.stringify({ request: { ...select } })
-    );
-    const response = await axios.post(`${context.bpp_uri}/select`, select, {
-      headers: {
-        "X-Gateway-Authorization": header,
-        authorization: header,
-      },
-    });
-    await redis.set(
-      `${transaction_id}-select-from-server`,
-      JSON.stringify({
-        request: { ...select },
-        response: {
-          response: response.data,
-          timestamp: new Date().toISOString(),
-        },
-      })
-    );
-    return res.json({
-      message: {
-        ack: {
-          status: "ACK",
-        },
-      },
-      transaction_id,
-    });
-  } catch (error) {
-    console.log("ERROR :::::::::::::", (error as any).response.data.error);
-    return next(error);
-  }
+  await send_response(res, next, select,transaction_id, "select");
+  // const header = await createAuthHeader(select);
+  // try {
+  //   await redis.set(
+  //     `${transaction_id}-select-from-server`,
+  //     JSON.stringify({ request: { ...select } })
+  //   );
+  //   const response = await axios.post(`${context.bpp_uri}/select`, select, {
+  //     headers: {
+  //       "X-Gateway-Authorization": header,
+  //       authorization: header,
+  //     },
+  //   });
+  //   await redis.set(
+  //     `${transaction_id}-select-from-server`,
+  //     JSON.stringify({
+  //       request: { ...select },
+  //       response: {
+  //         response: response.data,
+  //         timestamp: new Date().toISOString(),
+  //       },
+  //     })
+  //   );
+  //   return res.json({
+  //     message: {
+  //       ack: {
+  //         status: "ACK",
+  //       },
+  //     },
+  //     transaction_id,
+  //   });
+  // } catch (error) {
+  //   console.log("ERROR :::::::::::::", (error as any).response.data.error);
+  //   return next(error);
+  // }
 };
 
 function processCategories(categories: Array<any>) {

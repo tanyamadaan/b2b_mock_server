@@ -3,6 +3,8 @@ import {
 	SERVICES_BAP_MOCKSERVER_URL,
 	MOCKSERVER_ID,
 	checkIfCustomized,
+	send_response,
+	send_nack,
 	createAuthHeader,
 	logger,
 	quoteCreatorService,
@@ -43,16 +45,7 @@ export const initiateConfirmController = async (
 	// });
 	const on_init = await redisFetch("on_init", transactionId)
 	if(!on_init){
-			return res.status(400).json({
-				message: {
-					ack: {
-						status: "NACK",
-					},
-				},
-				error: {
-					message: "On Init doesn't exist",
-				},
-			});
+		send_nack(res,"On Init doesn't exist")
 	}
 
 	// console.log("parsedTransaction:::: ", parsedTransaction[0]);
@@ -159,28 +152,29 @@ const intializeRequest = async (
 			}
 		}
 	})
-	const header = await createAuthHeader(confirm);
-	try {
-		await redis.set(
-			`${transaction_id}-confirm-from-server`,
-			JSON.stringify({ request: confirm })
-		);
-		await axios.post(`${context.bpp_uri}/confirm?scenario=${scenario}`, confirm, {
-			headers: {
-				// "X-Gateway-Authorization": header,
-				authorization: header,
-			},
-		});
+	await send_response(res, next, confirm, transaction_id, "confirm",scenario=scenario);
+	// const header = await createAuthHeader(confirm);
+	// try {
+	// 	await redis.set(
+	// 		`${transaction_id}-confirm-from-server`,
+	// 		JSON.stringify({ request: confirm })
+	// 	);
+	// 	await axios.post(`${context.bpp_uri}/confirm?scenario=${scenario}`, confirm, {
+	// 		headers: {
+	// 			// "X-Gateway-Authorization": header,
+	// 			authorization: header,
+	// 		},
+	// 	});
 
-		return res.json({
-			message: {
-				ack: {
-					status: "ACK",
-				},
-			},
-			transaction_id,
-		});
-	} catch (error) {
-		return next(error)
-	}
+	// 	return res.json({
+	// 		message: {
+	// 			ack: {
+	// 				status: "ACK",
+	// 			},
+	// 		},
+	// 		transaction_id,
+	// 	});
+	// } catch (error) {
+	// 	return next(error)
+	// }
 };

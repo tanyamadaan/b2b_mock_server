@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import {
 	B2B_BAP_MOCKSERVER_URL,
 	MOCKSERVER_ID,
+	send_response,
+	send_nack,
 	createAuthHeader,
 	logger,
 	redis,
@@ -22,16 +24,7 @@ export const initiateStatusController = async (
 	);
 
 	if (ifTransactionExist.length === 0) {
-		return res.status(400).json({
-			message: {
-				ack: {
-					status: "NACK",
-				},
-			},
-			error: {
-				message: "On confirm doesn't exist",
-			},
-		});
+		send_nack(res,"On Confirm doesn't exist")
 	}
 	const statusIndex = transactionKeys.filter((e) =>
 		e.includes("status-to-server")
@@ -73,40 +66,40 @@ const intializeRequest = async (
 			order_id: order.id,
 		},
 	};
+	await send_response(res, next, status, transaction_id, "status");
+	// const header = await createAuthHeader(status);
+	// try {
+	// 	await redis.set(
+	// 		`${transaction_id}-${statusIndex}-status-from-server`,
+	// 		JSON.stringify({ request: { ...status } })
+	// 	);
+	// 	const response = await axios.post(`${context.bpp_uri}/status`, status, {
+	// 		headers: {
+	// 			// "X-Gateway-Authorization": header,
+	// 			authorization: header,
+	// 		},
+	// 	});
 
-	const header = await createAuthHeader(status);
-	try {
-		await redis.set(
-			`${transaction_id}-${statusIndex}-status-from-server`,
-			JSON.stringify({ request: { ...status } })
-		);
-		const response = await axios.post(`${context.bpp_uri}/status`, status, {
-			headers: {
-				// "X-Gateway-Authorization": header,
-				authorization: header,
-			},
-		});
+	// 	await redis.set(
+	// 		`${transaction_id}-${statusIndex}-status-from-server`,
+	// 		JSON.stringify({
+	// 			request: { ...status },
+	// 			response: {
+	// 				response: response.data,
+	// 				timestamp: new Date().toISOString(),
+	// 			},
+	// 		})
+	// 	);
 
-		await redis.set(
-			`${transaction_id}-${statusIndex}-status-from-server`,
-			JSON.stringify({
-				request: { ...status },
-				response: {
-					response: response.data,
-					timestamp: new Date().toISOString(),
-				},
-			})
-		);
-
-		return res.json({
-			message: {
-				ack: {
-					status: "ACK",
-				},
-			},
-			transaction_id,
-		});
-	} catch (error) {
-		return next(error);
-	}
+	// 	return res.json({
+	// 		message: {
+	// 			ack: {
+	// 				status: "ACK",
+	// 			},
+	// 		},
+	// 		transaction_id,
+	// 	});
+	// } catch (error) {
+	// 	return next(error);
+	// }
 };

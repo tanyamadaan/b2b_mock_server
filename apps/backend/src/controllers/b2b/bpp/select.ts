@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { quoteCreator, responseBuilder, redis } from "../../../lib/utils";
+import { quoteCreator, responseBuilder, redis,send_nack } from "../../../lib/utils";
 
 export const selectController = async (
 	req: Request,
@@ -22,16 +22,7 @@ export const selectController = async (
 		ifFromTransactionExist.length === 0 &&
 		ifToTransactionExist.length === 0
 	) {
-		return res.status(400).json({
-			message: {
-				ack: {
-					status: "NACK",
-				},
-			},
-			error: {
-				message: "on search doesn't exist",
-			},
-		});
+		send_nack(res,"On Search doesn't exist")
 	}
 	const transaction = await redis.mget(
 		ifFromTransactionExist.length > 0
@@ -57,16 +48,17 @@ export const selectController = async (
 	req.body.message.order.items.forEach((itm: any) => {
 		const item = req.body.item_arr.find((item: any) => item.id == itm.id);
 		if (itm.quantity.selected.count > item.available_qty) {
-			return res.status(400).json({
-				message: {
-					ack: {
-						status: "NACK",
-					},
-				},
-				error: {
-					message: `Required Quantity for Item:${item.name} is unavailable.`,
-				},
-			});
+			send_nack(res,`Required Quantity for Item:${item.name} is unavailable.`)
+			// return res.status(400).json({
+			// 	message: {
+			// 		ack: {
+			// 			status: "NACK",
+			// 		},
+			// 	},
+			// 	error: {
+			// 		message: `Required Quantity for Item:${item.name} is unavailable.`,
+			// 	},
+			// });
 		}
 	});
 
