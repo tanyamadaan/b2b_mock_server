@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { responseBuilder, B2B_EXAMPLES_PATH, redis } from "../../../lib/utils";
+import { responseBuilder,send_nack, B2B_EXAMPLES_PATH, redis } from "../../../lib/utils";
 
 export const cancelController = async (req: Request, res: Response, next: NextFunction) => {
 	const { transaction_id } = req.body.context;
@@ -9,16 +9,7 @@ export const cancelController = async (req: Request, res: Response, next: NextFu
 	);
 
 	if (ifTransactionExist.length === 0) {
-		return res.status(400).json({
-			message: {
-				ack: {
-					status: "NACK",
-				},
-			},
-			error: {
-				message: "on confirm doesn't exist",
-			},
-		});
+		send_nack(res,"On Confirm doesn't exist")
 	}
 	const transaction = await redis.mget(ifTransactionExist);
 	const parsedTransaction = transaction.map((ele: any) => {
@@ -48,31 +39,13 @@ export const cancelController = async (req: Request, res: Response, next: NextFu
 		});
 
 	if (!item_payment_ids) {
-		return res.status(400).json({
-			message: {
-				ack: {
-					status: "NACK",
-				},
-			},
-			error: {
-				message: "Payment and Provider ID related mismatch",
-			},
-		});
+		send_nack(res,"Payment and Provider ID related mismatch")
 	}
 
 	if (
 		parsedTransaction[0].request.message.order.id != req.body.message.order_id
 	) {
-		return res.status(400).json({
-			message: {
-				ack: {
-					status: "NACK",
-				},
-			},
-			error: {
-				message: "Order id does not exist",
-			},
-		});
+		send_nack(res,"Order id does not exist")
 	}
 
 	// console.log("Items with there ids :", item_payment_ids[0])

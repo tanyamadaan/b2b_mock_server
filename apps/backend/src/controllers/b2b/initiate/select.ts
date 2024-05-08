@@ -3,6 +3,8 @@ import {
 	B2B_BAP_MOCKSERVER_URL,
 	B2B_EXAMPLES_PATH,
 	MOCKSERVER_ID,
+	send_nack,
+	send_response,
 	createAuthHeader,
 	logger,
 	redis,
@@ -29,16 +31,7 @@ export const initiateSelectController = async (
 	);
 
 	if (ifTransactionExist.length === 0) {
-		return res.status(400).json({
-			message: {
-				ack: {
-					status: "NACK",
-				},
-			},
-			error: {
-				message: "On search doesn't exist",
-			},
-		});
+		send_nack(res,"On Search doesn't exist")
 	}
 	const transaction = await redis.mget(ifTransactionExist);
 	const parsedTransaction = transaction.map((ele) => {
@@ -110,57 +103,57 @@ const intializeRequest = async (
 				},
 			},
 		};
+		// await send_response(res, next, select, transaction_id, "select",scenario=scenario);
+		// const header = await createAuthHeader(select);
+		// try {
+		// 	await redis.set(
+		// 		`${transaction_id}-select-from-server`,
+		// 		JSON.stringify({ request: { ...select } })
+		// 	);
+		// 	const response = await axios.post(
+		// 		`${context.bpp_uri}/select?scenario=${scenario}`,
+		// 		select,
+		// 		{
+		// 			headers: {
+		// 				// "X-Gateway-Authorization": header,
+		// 				authorization: header,
+		// 			},
+		// 		}
+		// 	);
 
-		const header = await createAuthHeader(select);
-		try {
-			await redis.set(
-				`${transaction_id}-select-from-server`,
-				JSON.stringify({ request: { ...select } })
-			);
-			const response = await axios.post(
-				`${context.bpp_uri}/select?scenario=${scenario}`,
-				select,
-				{
-					headers: {
-						// "X-Gateway-Authorization": header,
-						authorization: header,
-					},
-				}
-			);
+		// 	await redis.set(
+		// 		`${transaction_id}-select-from-server`,
+		// 		JSON.stringify({
+		// 			request: { ...select },
+		// 			response: {
+		// 				response: response.data,
+		// 				timestamp: new Date().toISOString(),
+		// 			},
+		// 		})
+		// 	);
 
-			await redis.set(
-				`${transaction_id}-select-from-server`,
-				JSON.stringify({
-					request: { ...select },
-					response: {
-						response: response.data,
-						timestamp: new Date().toISOString(),
-					},
-				})
-			);
+		// 	return res.json({
+		// 		message: {
+		// 			ack: {
+		// 				status: "ACK",
+		// 			},
+		// 		},
+		// 		transaction_id,
+		// 	});
+		// } catch (error) {
+		// 	await redis.set(
+		// 		`${transaction_id}-select-from-server`,
+		// 		JSON.stringify({
+		// 			request: { ...select },
+		// 			response: {
+		// 				response: error instanceof AxiosError ? error.response : error,
+		// 				timestamp: new Date().toISOString(),
+		// 			},
+		// 		})
+		// 	);
 
-			return res.json({
-				message: {
-					ack: {
-						status: "ACK",
-					},
-				},
-				transaction_id,
-			});
-		} catch (error) {
-			await redis.set(
-				`${transaction_id}-select-from-server`,
-				JSON.stringify({
-					request: { ...select },
-					response: {
-						response: error instanceof AxiosError ? error.response : error,
-						timestamp: new Date().toISOString(),
-					},
-				})
-			);
-
-			return next(error);
-		}
+		// 	return next(error);
+		// }
 	} catch (err) {
 		return next(err);
 	}

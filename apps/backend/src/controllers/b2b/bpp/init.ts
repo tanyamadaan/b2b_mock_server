@@ -4,6 +4,7 @@ import {
 	responseBuilder,
 	B2B_EXAMPLES_PATH,
 	redis,
+	send_nack
 } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
@@ -19,16 +20,7 @@ export const initController = async (req: Request, res: Response, next: NextFunc
 	);
 
 	if (ifTransactionExist.length === 0) {
-		return res.status(400).json({
-			message: {
-				ack: {
-					status: "NACK",
-				},
-			},
-			error: {
-				message: "On Select doesn't exist",
-			},
-		});
+		send_nack(res,"On Select doesn't exist")
 	}
 	//
 	const ifToTransactionExist = transactionKeys.filter((e) =>
@@ -43,16 +35,7 @@ export const initController = async (req: Request, res: Response, next: NextFunc
 		ifFromTransactionExist.length === 0 &&
 		ifToTransactionExist.length === 0
 	) {
-		return res.status(400).json({
-			message: {
-				ack: {
-					status: "NACK",
-				},
-			},
-			error: {
-				message: "on search doesn't exist",
-			},
-		});
+		send_nack(res,"On Search doesn't exist")
 	}
 	const transaction = await redis.mget(
 		ifFromTransactionExist.length > 0

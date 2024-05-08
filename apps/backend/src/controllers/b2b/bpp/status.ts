@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 // import path from "path";
 // import YAML from "yaml";
 
-import { responseBuilder, B2B_EXAMPLES_PATH, redis } from "../../../lib/utils";
+import { responseBuilder, send_nack,B2B_EXAMPLES_PATH, redis } from "../../../lib/utils";
 // import { stringify } from "querystring";
 // import { AnyARecord } from "dns";
 
@@ -17,16 +17,7 @@ export const statusController = async (req: Request, res: Response, next: NextFu
 	);
 
 	if (ifTransactionExist.length === 0) {
-		return res.status(400).json({
-			message: {
-				ack: {
-					status: "NACK",
-				},
-			},
-			error: {
-				message: "on confirm doesn't exist",
-			},
-		});
+		send_nack(res,"On Confirm doesn't exist")
 	}
 	const transaction = await redis.mget(ifTransactionExist);
 	const parsedTransaction = transaction.map((ele) => {
