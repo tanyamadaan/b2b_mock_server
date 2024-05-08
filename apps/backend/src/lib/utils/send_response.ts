@@ -58,7 +58,7 @@ async function send_response(
 			transaction_id,
 		});
 	} catch (error) {
-		// console.log("ERROR", (error as any)?.response);
+		// console.log("ERROR", (error as any)?.response)
 		return next(error);
 	}
 }
