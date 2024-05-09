@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { responseBuilder, redisFetch } from "../../../lib/utils";
+import { responseBuilder, redisFetch ,send_nack} from "../../../lib/utils";
 
 export const cancelController = async (req: Request, res: Response, next: NextFunction) => {
 	const { scenario } = req.query;
@@ -7,28 +7,10 @@ export const cancelController = async (req: Request, res: Response, next: NextFu
 
 	const on_confirm_data = await redisFetch("on_confirm", transaction_id)
 	if (!on_confirm_data) {
-		return res.status(400).json({
-			message: {
-				ack: {
-					status: "NACK",
-				},
-			},
-			error: {
-				message: "on confirm doesn't exist",
-			},
-		});
+		send_nack(res,"on confirm doesn't exist")
 	}
 	if (on_confirm_data.message.order.id != req.body.message.order_id) {
-		return res.status(400).json({
-			message: {
-				ack: {
-					status: "NACK",
-				},
-			},
-			error: {
-				message: "Order id does not exist",
-			},
-		});
+		send_nack(res,"Order id does not exist")
 	}
 
 	const on_search_data = await redisFetch("on_search", transaction_id)
