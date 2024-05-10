@@ -10,11 +10,10 @@ import {
   logger,
   redis,
   redisExist,
-
 } from "../../../lib/utils";
 import axios, { AxiosError } from "axios";
 import { v4 as uuidv4 } from "uuid";
-import { set, eq } from "lodash";
+import { set, eq, isEmpty, min } from "lodash";
 import _ from "lodash";
 import { isBefore, addDays } from "date-fns";
 
@@ -27,7 +26,7 @@ export const initiateSelectController = async (
 
   const on_search = await redisFetch("on_search", transactionId);
   if (!on_search) {
-    send_nack(res,"On Search doesn't exist")
+    send_nack(res, "On Search doesn't exist");
   }
   // selecting the senarios
   let scenario = "selection";
@@ -35,20 +34,20 @@ export const initiateSelectController = async (
     scenario = "customization";
   }
 
-  const items = on_search.message.catalog.providers[0]?.categories;
-  let child_ids;
-  if (items) {
-    const parent_id = items.find(
-      (ele: any) => ele.descriptor.code === "MEAL"
-    )?.id;
-    child_ids = items.reduce((acc: string[], ele: any) => {
-      if (ele.parent_category_id === parent_id) {
-        acc.push(ele.id);
-      }
-      return acc;
-    }, []);
-  }
-  req.body.child_ids = child_ids;
+  // const items = on_search.message.catalog.providers[0]?.categories;
+  // let child_ids;
+  // if (items) {
+  //   const parent_id = items.find(
+  //     (ele: any) => ele.descriptor.code === "MEAL"
+  //   )?.id;
+  //   child_ids = items.reduce((acc: string[], ele: any) => {
+  //     if (ele.parent_category_id === parent_id) {
+  //       acc.push(ele.id);
+  //     }
+  //     return acc;
+  //   }, []);
+  // }
+  // req.body.child_ids = child_ids;
   return intializeRequest(req, res, next, on_search, scenario);
 };
 
@@ -67,30 +66,46 @@ const intializeRequest = async (
   } = transaction;
   const { transaction_id } = context;
   const { id, locations } = providers[0];
-//   const { location_ids } = providers[0].items[0];
+  //   const { location_ids } = providers[0].items[0];
   let items = [];
   let start;
   let endDate;
   if (scenario === "customization") {
+    //getting parent item
+    const parent_obj = providers[0]?.items?.find((itm: any) =>
+      isEmpty(itm.parent_item_id)
+    );
+    let startTime = parent_obj.time?.schedule?.times[0].split("T")[1];
+    // console.log("Start Time from parent_item::", startTime);
+
+    // getting the required categories ids to look  for
+    const { cat_ids, child_selected } = processCategories(
+      providers[0].categories
+    );
+    const required_categories = cat_ids;
+    //Start Date for items
     const startDate = new Date(providers?.[0]?.time?.range?.start);
 
-    const startCategory = providers?.[0]?.categories?.find((cat: any) => {
-      return cat.id === req.body.child_ids[0];
-    });
-    const startSchedule = startCategory?.tags?.find(
-      (ele: any) => ele.descriptor.code === "schedule"
-    );
-    const startTime = startSchedule?.list?.find(
-      (ele: any) => ele.descriptor.code === "start_time"
-    ).value;
-    const hour = Number(startTime?.split(":")[0]);
-    const minutes = Number(startTime?.split(":")[1]);
+    if (isEmpty(startTime) && !isEmpty(child_selected)) {
+      const startCategory = providers?.[0]?.categories?.find((cat: any) => {
+        return cat.id === child_selected[0];
+      });
+      const startSchedule = startCategory?.tags?.find(
+        (ele: any) => ele.descriptor.code === "schedule"
+      );
+      startTime = startSchedule?.list?.find(
+        (ele: any) => ele.descriptor.code === "start_time"
+      ).value;
+    }
+
+    //else case is to be defined
+    const hour = Number(startTime?.split(":")[0]) || startDate.getUTCHours();
+    const minutes =
+      Number(startTime?.split(":")[1]) || startDate.getUTCMinutes();
 
     start = new Date(startDate);
     start.setUTCHours(hour, minutes, 0, 0);
-
     const currentDate = new Date();
-
     // Compare the start date with the current date and time
     if (isBefore(start, currentDate)) {
       currentDate.setUTCHours(start.getUTCHours());
@@ -100,21 +115,19 @@ const intializeRequest = async (
     }
 
     const scheduleobj = providers[0]?.categories
-      .find((itm: any) => itm.id === req.body.child_ids[0])
+      .find((itm: any) => itm.id === child_selected[0]) //getting the schedule based on category
       ?.tags.find((tag: any) => tag.descriptor.code === "schedule");
 
     const endDateFrequency = scheduleobj?.list.find(
       (ele: any) => ele.descriptor.code === "frequency"
     )?.value;
 
-    const frequency = parseInt(endDateFrequency?.match(/\d+/)[0]);
+    const frequency = parseInt(endDateFrequency?.match(/\d+/)[0]) || 1; //defaul value of frequency is set to 1
 
     //end date
     endDate = new Date(start);
     endDate.setUTCHours(start.getUTCHours() + frequency);
 
-    // getting the required categories ids to look  for
-    const required_categories = processCategories(providers[0].categories);
     // console.log(
     //   "-----Required Categories to include------",
     //   required_categories
@@ -130,7 +143,7 @@ const intializeRequest = async (
     const parent_item = items.find((itm: any) =>
       _.isEmpty(itm.parent_category_id)
     );
-	
+
     // selecting elements based on categories selected
     items = items.filter((itm: any) => {
       let flag = 0;
@@ -169,7 +182,7 @@ const intializeRequest = async (
     //   );
     //   items = [parent_item, ...new_items];
     // }
-    const { id: item_id, parent_item_id ,location_ids} = parent_item;
+    const { id: item_id, parent_item_id, location_ids } = parent_item;
     items = [
       {
         id: item_id,
@@ -227,6 +240,7 @@ const intializeRequest = async (
     ];
   }
   // console.log("Items::", items, "Senario::", scenario)
+
   const select = {
     context: {
       ...context,
@@ -288,6 +302,7 @@ const intializeRequest = async (
       },
     },
   };
+  // console.log("Final start and end time ::", start, endDate);
   if (eq(scenario, "customization")) {
     set(
       select,
@@ -300,7 +315,8 @@ const intializeRequest = async (
       endDate
     );
   }
-  await send_response(res, next, select,transaction_id, "select");
+
+  await send_response(res, next, select, transaction_id, "select");
   // const header = await createAuthHeader(select);
   // try {
   //   await redis.set(
@@ -354,15 +370,17 @@ function processCategories(categories: Array<any>) {
     return acc;
   }, []);
   // sort the categories
+  const child_selected: string[] = [];
   categories.forEach((cat: any) => {
     if ("parent_category_id" in cat) {
       if (cat_ids.includes(cat.parent_category_id)) {
         cat_ids.push(cat.id);
+        child_selected.push(cat.id);
         if (cat_ids.indexOf(cat.parent_category_id) != -1) {
           cat_ids.splice(cat_ids.indexOf(cat.parent_category_id), 1);
         }
       }
     }
   });
-  return cat_ids;
+  return { cat_ids, child_selected };
 }
