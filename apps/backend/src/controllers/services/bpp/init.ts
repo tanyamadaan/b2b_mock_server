@@ -7,7 +7,8 @@ import {
 	responseBuilder,
 	send_nack,
 	redis,
-	redisExist
+	redisExist,
+	Stop
 } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
@@ -46,7 +47,7 @@ const initConsultationController = (req: Request, res: Response, next: NextFunct
 			fulfillments: [{
 				...remainingfulfillments,
 				tracking: false,
-				stops: stops.map((stop: any) => {
+				stops: stops.map((stop: Stop) => {
 					return {
 						...stop,
 						tags: {

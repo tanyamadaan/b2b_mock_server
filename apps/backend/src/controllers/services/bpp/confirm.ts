@@ -1,8 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { SERVICES_EXAMPLES_PATH, checkIfCustomized, quoteCreatorService, responseBuilder } from "../../../lib/utils";
-import fs from "fs";
-import path from "path";
-import YAML from "yaml";
+import { SERVICES_EXAMPLES_PATH, Stop, checkIfCustomized, quoteCreatorService, responseBuilder } from "../../../lib/utils";
 
 
 export const confirmController = (req: Request, res: Response, next: NextFunction) => {
@@ -53,7 +50,7 @@ export const confirmConsultationController = (req: Request, res: Response, next:
 						code: "Pending"
 					}
 				},
-				stops: fulfillments[0].stops.map((itm: any) => ({
+				stops: fulfillments[0].stops.map((itm: Stop) => ({
 					...itm,
 					person: itm.customer && itm.customer.person ? itm.customer.person : undefined,
 				})),
@@ -114,7 +111,7 @@ export const confirmServiceCustomizationController = (req: Request, res: Respons
 				"name": "Kishan"
 			}
 		})
-	fulfillments[0].stops.forEach((itm: any) => {
+	fulfillments[0].stops.forEach((itm: Stop) => {
 		if (itm.type === "end") {
 			itm.id = "L2"
 			itm.authorization = {
@@ -124,7 +121,7 @@ export const confirmServiceCustomizationController = (req: Request, res: Respons
 				"valid_to": "2023-11-16T09:35:00.000Z",
 				"status": "valid"
 			}
-			itm.person = { name: itm.customer.person.name }
+			itm.person = { name: itm?.customer?.person.name ||"" }
 			itm.customer = undefined
 		}
 	})

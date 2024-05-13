@@ -10,10 +10,14 @@ import {
   logger,
   redis,
   redisExist,
+  Item,
+  Category,
+  Tag,
+  TagItem,
 } from "../../../lib/utils";
 import axios, { AxiosError } from "axios";
 import { v4 as uuidv4 } from "uuid";
-import { set, eq, isEmpty, min } from "lodash";
+import { set, eq, isEmpty, min, keys } from "lodash";
 import _ from "lodash";
 import { isBefore, addDays } from "date-fns";
 
@@ -72,7 +76,7 @@ const intializeRequest = async (
   let endDate;
   if (scenario === "customization") {
     //getting parent item
-    const parent_obj = providers[0]?.items?.find((itm: any) =>
+    const parent_obj = providers[0]?.items?.find((itm: Item) =>
       isEmpty(itm.parent_item_id)
     );
     let startTime = parent_obj.time?.schedule?.times[0].split("T")[1];
@@ -87,14 +91,16 @@ const intializeRequest = async (
     const startDate = new Date(providers?.[0]?.time?.range?.start);
 
     if (isEmpty(startTime) && !isEmpty(child_selected)) {
-      const startCategory = providers?.[0]?.categories?.find((cat: any) => {
-        return cat.id === child_selected[0];
-      });
+      const startCategory = providers?.[0]?.categories?.find(
+        (cat: Category) => {
+          return cat.id === child_selected[0];
+        }
+      );
       const startSchedule = startCategory?.tags?.find(
-        (ele: any) => ele.descriptor.code === "schedule"
+        (ele: Tag) => ele.descriptor.code === "schedule"
       );
       startTime = startSchedule?.list?.find(
-        (ele: any) => ele.descriptor.code === "start_time"
+        (ele: TagItem) => ele.descriptor.code === "start_time"
       ).value;
     }
 
@@ -115,11 +121,11 @@ const intializeRequest = async (
     }
 
     const scheduleobj = providers[0]?.categories
-      .find((itm: any) => itm.id === child_selected[0]) //getting the schedule based on category
-      ?.tags.find((tag: any) => tag.descriptor.code === "schedule");
+      .find((itm: Category) => itm.id === child_selected[0]) //getting the schedule based on category
+      ?.tags.find((tag: Tag) => tag.descriptor.code === "schedule");
 
     const endDateFrequency = scheduleobj?.list.find(
-      (ele: any) => ele.descriptor.code === "frequency"
+      (ele: TagItem) => ele.descriptor.code === "frequency"
     )?.value;
 
     const frequency = parseInt(endDateFrequency?.match(/\d+/)[0]) || 1; //defaul value of frequency is set to 1
@@ -133,21 +139,21 @@ const intializeRequest = async (
     //   required_categories
     // );
 
-    const count_cat: any = {};
-    required_categories.forEach((cat: any) => {
+    const count_cat: { [key: string]: number } = {};
+    required_categories.forEach((cat: string) => {
       count_cat[cat] = 0;
     });
 
     //get the parent item in customization
     items = [...providers[0].items];
-    const parent_item = items.find((itm: any) =>
-      _.isEmpty(itm.parent_category_id)
+    const parent_item = items.find((itm: Item) =>
+      _.isEmpty(itm.parent_item_id)
     );
 
     // selecting elements based on categories selected
-    items = items.filter((itm: any) => {
+    items = items.filter((itm: Item) => {
       let flag = 0;
-      itm?.category_ids.forEach((id: string) => {
+      itm?.category_ids?.forEach((id: string) => {
         if (id in count_cat && count_cat[id] < 1) {
           count_cat[id]++;
           flag = 1;
@@ -194,7 +200,7 @@ const intializeRequest = async (
           },
         },
       },
-      ...items.map((item: any) => {
+      ...items.map((item: Item) => {
         return {
           // ...item,
           id: item.id,
@@ -206,9 +212,9 @@ const intializeRequest = async (
           },
           category_ids: item.category_ids,
           location_ids: [location_ids],
-          tags: item.tags.map((tag: any) => ({
+          tags: item.tags?.map((tag: Tag) => ({
             ...tag,
-            list: tag.list.map((itm2: any, index: any) => {
+            list: tag.list.map((itm2: TagItem, index: Number) => {
               if (index === 0) {
                 return {
                   descriptor: {
@@ -232,9 +238,9 @@ const intializeRequest = async (
           parent_item_id,
           location_ids,
         }: {
-          id: any;
-          parent_item_id: any;
-          location_ids: any;
+          id: string;
+          parent_item_id: string;
+          location_ids: string[];
         }) => ({ id, parent_item_id, location_ids: [{ id: location_ids[0] }] })
       )[0],
     ];
@@ -260,10 +266,10 @@ const intializeRequest = async (
             },
           ],
         },
-        items: items.map((itm: any) => ({
+        items: items.map((itm: Item) => ({
           ...itm,
           location_ids: itm.location_ids
-            ? itm.location_ids.map((id: any) => String(id))
+            ? itm.location_ids.map((id: string) => String(id))
             : undefined,
           quantity: {
             selected: {
@@ -353,27 +359,33 @@ const intializeRequest = async (
   // }
 };
 
-function processCategories(categories: Array<any>) {
+function processCategories(categories: Category[]) {
   // sort the mandatory parent_ids
-  const cat_ids: string[] = categories.reduce((acc: string[], itm: any) => {
-    if (!("parent_category_id" in itm)) {
-      const lis_selection = itm.tags?.find(
-        (tag: any) => tag.descriptor?.code.toLowerCase() === "selection"
-      );
-      const mandatory = lis_selection?.list.find(
-        (ele: any) => ele.descriptor.code === "mandatory_selection"
-      )?.value;
-      if (mandatory) {
-        acc.push(itm.id);
+  const cat_ids: string[] = categories.reduce(
+    (acc: string[], itm: Category) => {
+      if (!("parent_category_id" in itm)) {
+        const lis_selection = itm.tags?.find(
+          (tag: Tag) => tag.descriptor?.code.toLowerCase() === "selection"
+        );
+        const mandatory = lis_selection?.list?.find(
+          (ele: TagItem) => ele.descriptor.code === "mandatory_selection"
+        )?.value;
+        if (mandatory) {
+          acc.push(itm.id);
+        }
       }
-    }
-    return acc;
-  }, []);
+      return acc;
+    },
+    []
+  );
   // sort the categories
   const child_selected: string[] = [];
-  categories.forEach((cat: any) => {
+  categories.forEach((cat: Category) => {
     if ("parent_category_id" in cat) {
-      if (cat_ids.includes(cat.parent_category_id)) {
+      if (
+        cat.parent_category_id !== undefined &&
+        cat_ids.includes(cat.parent_category_id)
+      ) {
         cat_ids.push(cat.id);
         child_selected.push(cat.id);
         if (cat_ids.indexOf(cat.parent_category_id) != -1) {

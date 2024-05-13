@@ -1,9 +1,14 @@
 import { Request, Response } from "express";
 import {
   send_nack,
-  redis,
+  redis,Payment,
   responseBuilder,
   B2B_EXAMPLES_PATH,
+  SettlementDetails,
+  Tag,
+  Fulfillment,
+  Item,
+  Stop,
 } from "../../../lib/utils";
 import { on } from "events";
 // import fs from "fs";
@@ -104,12 +109,12 @@ export const updateController = async (req: Request, res: Response) => {
       order: {
         ...update.message.order,
 
-        payments: update.message.order.payments.map((payment: any) => {
+        payments: update.message.order.payments.map((payment: Payment) => {
           return {
             ...payment,
             "@ondc/org/settlement_details": payment[
               "@ondc/org/settlement_details"
-            ].map((order: any) => ({
+            ]?.map((order:SettlementDetails) => ({
               ...order,
               settlement_phase: "finder-fee",
             })),
@@ -124,10 +129,10 @@ export const updateController = async (req: Request, res: Response) => {
       on_update = await updateFulfillment(res, on_update);
       break;
     case "prepaid":
-      on_update.message.order.payments.forEach((itm: any) => {
+      on_update.message.order.payments.forEach((itm: Payment) => {
         itm.collected_by = "BPP";
-        itm["@ondc/org/settlement_details"].forEach((itm: any) => {
-          itm.settlement_counterparty = "buyer-app";
+        itm["@ondc/org/settlement_details"]?.forEach((s_detail:SettlementDetails ) => {
+          s_detail.settlement_counterparty = "buyer-app";
         });
       });
       break;
@@ -165,29 +170,29 @@ const updateFulfillment = async (res: Response, on_update: any) => {
   const { fulfillments, items } = parsedTransaction[0].request.message.order;
 
   //get item tags based on fulfillment_ids for inserting it in message.order.fulfillment
-  const result = items.reduce((acc: any, item: any) => {
-    item.fulfillment_ids.forEach((id: any) => {
-      acc[id] = item.tags;
+  const result = items.reduce((acc: {[key:string]:Tag[]}, item: Item) => {
+    item.fulfillment_ids.forEach((id: string) => {
+      acc[id] = item.tags? item.tags : [];
     });
     return acc;
   }, {});
 
-  console.log("Result of tags::", result);
-  on_update.message.order.payments.forEach((itm: any) => {
+  // console.log("Result of tags::", result);
+  on_update.message.order.payments.forEach((itm: Payment) => {
     itm.collected_by = "BPP";
     delete itm["@ondc/org/settlement_basis"];
     delete itm["@ondc/org/settlement_window"];
     delete itm["@ondc/org/withholding_amount"];
-    itm["@ondc/org/settlement_details"].forEach((itm: any) => {
+    itm["@ondc/org/settlement_details"]?.forEach((itm: SettlementDetails) => {
       itm.settlement_counterparty = "buyer-app";
       itm.settlement_phase = "sale-amount";
     });
   });
 
   on_update.message.order.fulfillments = fulfillments.map(
-    (fulfillment: any) => ({
+    (fulfillment:Fulfillment) => ({
       ...fulfillment,
-      stops: fulfillment.stops.map((stop: any) => ({
+      stops: fulfillment.stops.map((stop: Stop) => ({
         ...stop,
         instructions:
           stop.type === "end"

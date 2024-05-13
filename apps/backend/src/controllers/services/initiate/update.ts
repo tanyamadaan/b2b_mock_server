@@ -6,6 +6,8 @@ import {
   redisFetch,
   B2B_BAP_MOCKSERVER_URL,
   MOCKSERVER_ID,
+  Stop,
+  Fulfillment,
 } from "../../../lib/utils";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
@@ -117,7 +119,7 @@ function requoteRequest(message: any) {
       parent_item_id,
     })
   );
-  fulfillments.map((itm: any) => {
+  fulfillments.map((itm: Fulfillment) => {
     itm.state.descriptor.code = "Completed";
   });
 
@@ -132,7 +134,7 @@ function requoteRequest(message: any) {
     payments,
     fulfillments: fulfillments.map(({ id, itm }: { id: String; itm: any }) => ({
       ...itm,
-      stops: itm.stops.map((stop: any) => ({
+      stops: itm.stops.map((stop: Stop) => ({
         ...stop,
       })),
     })),

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { responseBuilder, B2B_EXAMPLES_PATH } from "../../../lib/utils";
+import { responseBuilder, B2B_EXAMPLES_PATH, Fulfillment } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
@@ -40,7 +40,7 @@ const confirmDomesticController = (req: Request, res: Response, next: NextFuncti
 				...message.order.provider,
 				rateable: true,
 			},
-			fulfillments: message.order.fulfillments.map((eachFulfillment: any) => ({
+			fulfillments: message.order.fulfillments.map((eachFulfillment: Fulfillment) => ({
 				...eachFulfillment,
 				"@ondc/org/provider_name":
 					response.value.message.order.fulfillments[0][
@@ -96,7 +96,7 @@ const confirmDomesticRejected = (req: Request, res: Response, next: NextFunction
 				...message.order.provider,
 				rateable: true,
 			},
-			fulfillments: message.order.fulfillments.map((eachFulfillment: any) => ({
+			fulfillments: message.order.fulfillments.map((eachFulfillment: Fulfillment) => ({
 				...eachFulfillment,
 				"@ondc/org/provider_name":
 					response.value.message.order.fulfillments[0][

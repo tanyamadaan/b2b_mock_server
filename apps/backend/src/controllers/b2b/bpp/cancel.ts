@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { responseBuilder,send_nack, B2B_EXAMPLES_PATH, redis } from "../../../lib/utils";
+import { responseBuilder,send_nack, B2B_EXAMPLES_PATH, redis, Stop, Fulfillment, Item } from "../../../lib/utils";
 
+interface Item_payment_id{[key:string]:string[]}
 export const cancelController = async (req: Request, res: Response, next: NextFunction) => {
 	const { transaction_id } = req.body.context;
 	const transactionKeys = await redis.keys(`${transaction_id}-*`);
@@ -28,7 +29,7 @@ export const cancelController = async (req: Request, res: Response, next: NextFu
 		parsedSearch[0].request.message.catalog.providers.map((itm: any) => {
 			if (itm.id === provider_id) {
 				const result = itm.items.reduce(
-					(accumulator: any, currentItem: any) => {
+					(accumulator: Item_payment_id, currentItem: any) => {
 						accumulator[currentItem.id] = currentItem.payment_ids;
 						return accumulator;
 					},
@@ -63,7 +64,7 @@ const cancelRequest = async (
 	res: Response,
 	next: NextFunction,
 	transaction: any,
-	item_payment_ids: any,
+	item_payment_ids: Item_payment_id,
 ) => {
 	// const { message } = transaction
 	const { context } = req.body;
@@ -79,7 +80,7 @@ const cancelRequest = async (
 				},
 			},
 			fulfillments: transaction.message.order.fulfillments.map(
-				(fulfillment: any) => ({
+				(fulfillment: Fulfillment) => ({
 					...fulfillment,
 					state: {
 						...fulfillment.state,
@@ -87,7 +88,7 @@ const cancelRequest = async (
 							code: "Cancelled",
 						},
 					},
-					stops: fulfillment.stops.map((stop: any) => {
+					stops: fulfillment.stops.map((stop: Stop) => {
 						// Add the instructions to both start and end stops
 						const instructions = {
 							name: "Proof of pickup",
@@ -126,7 +127,7 @@ const cancelRequest = async (
 								location: {
 									...stop.location,
 									descriptor: {
-										...stop.location.descriptor,
+										...stop.location?.descriptor,
 										images: ["https://gf-integration/images/5.png"],
 									},
 								},
@@ -142,7 +143,7 @@ const cancelRequest = async (
 					rateable: undefined,
 				})
 			),
-			items: transaction.message.order.items.map((itm: any) => ({
+			items: transaction.message.order.items.map((itm: Item) => ({
 				...itm,
 				payment_ids:
 					item_payment_ids && item_payment_ids[itm.id]

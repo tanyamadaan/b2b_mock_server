@@ -60,7 +60,7 @@ const intializeRequest = async (
 		// 	},}}: e))
 	} else {
 		items = items.map(
-			({ location_ids, ...items }: { location_ids: any }) => items
+			({ location_ids, ...items }: { location_ids: string[] }) => items
 		);
 	}
 
