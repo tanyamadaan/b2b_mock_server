@@ -4,12 +4,17 @@ import {
 	responseBuilder,
 	B2B_EXAMPLES_PATH,
 	redis,
-	send_nack
+	send_nack,
+	Item,
+	Fulfillment,
+	Breakup
 } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
-
+interface Item_id_name{
+ [key:string]:string
+}
 export const initController = async (req: Request, res: Response, next: NextFunction) => {
 	const { transaction_id } = req.body.context;
 	const transactionKeys = await redis.keys(`${transaction_id}-*`);
@@ -47,10 +52,10 @@ export const initController = async (req: Request, res: Response, next: NextFunc
 	});
 
 	const providers = parsedTransaction[0].request.message.catalog.providers;
-	const item_id_name = providers.map((pro: any) => {
-		const mappedItems = pro.items.map((item: any) => ({
+	const item_id_name:Item_id_name[]= providers.map((pro: any) => {
+		const mappedItems = pro.items.map((item: Item) => ({
 			id: item.id,
-			name: item.descriptor.name,
+			name: item.descriptor?.name,
 		}));
 		return mappedItems;
 	});
@@ -107,7 +112,7 @@ const initDomesticController = (req: Request, res: Response, next: NextFunction)
 	const responseMessage = {
 		order: {
 			items,
-			fulfillments: fulfillments.map((each: any) => ({
+			fulfillments: fulfillments.map((each: Fulfillment) => ({
 				...each,
 				tracking: true,
 			})),
@@ -163,10 +168,10 @@ const initDomesticController = (req: Request, res: Response, next: NextFunction)
 	};
 
 	try {
-		responseMessage.order.quote.breakup.forEach((element: any) => {
+		responseMessage.order.quote.breakup.forEach((element: Breakup) => {
 			if (element["@ondc/org/title_type"] === "item") {
 				const id = element["@ondc/org/item_id"];
-				const item = req.body.item_arr.find((item: any) => item.id == id);
+				const item = req.body.item_arr.find((item: Item_id_name) => item.id == id);
 				element.title = item.name;
 			}
 		});

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { SERVICES_EXAMPLES_PATH, responseBuilder } from "../../../lib/utils";
+import { SERVICES_EXAMPLES_PATH, Stop, responseBuilder } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
@@ -52,7 +52,7 @@ export const updateRescheduleController = (req: Request, res: Response, next: Ne
 		fulfillments: [
 			{
 				...order.fulfillments[0],
-				stops: order.fulfillments[0].stops.map((stop: any) => ({
+				stops: order.fulfillments[0].stops.map((stop: Stop) => ({
 					...stop,
 					time:
 						stop.type === "end"

@@ -7,6 +7,7 @@ import {
 	createAuthHeader,
 	logger,
 	redis,
+	Stop,
 } from "../../../lib/utils";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
@@ -73,7 +74,7 @@ const intializeRequest = async (
 					],
 				},
 				fulfillments: order.fulfillments.map(
-					({ id, type, tracking, stops }: any) => ({
+					({ id, type, tracking, stops }: {id:string,type:string,tracking:boolean,stops:Stop}) => ({
 						id,
 						type,
 						tracking,

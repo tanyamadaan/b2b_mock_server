@@ -10,7 +10,9 @@ import {
 	quoteCreatorService,
 	quoteCreatorServiceCustomized,
 	redis,
-	redisFetch
+	redisFetch,
+	Stop,
+	Item
 } from "../../../lib/utils";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
@@ -100,7 +102,7 @@ const intializeRequest = async (
 				fulfillments: [
 					{
 						...remainingfulfillments,
-						stops: stops.map((stop: any) => {
+						stops: stops.map((stop: Stop) => {
 							return {
 								...stop,
 								contact: {
