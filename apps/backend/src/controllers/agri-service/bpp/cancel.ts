@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import { responseBuilder, redisFetch ,send_nack} from "../../../lib/utils";
+import { responseBuilder, redisFetchFromServer ,send_nack} from "../../../lib/utils";
 
 export const cancelController = async (req: Request, res: Response, next: NextFunction) => {
 	const { scenario } = req.query;
 	const { transaction_id } = req.body.context;
 
-	const on_confirm_data = await redisFetch("on_confirm", transaction_id)
+	const on_confirm_data = await redisFetchFromServer("on_confirm", transaction_id)
 	if (!on_confirm_data) {
 		send_nack(res,"on confirm doesn't exist")
 	}
@@ -13,7 +13,7 @@ export const cancelController = async (req: Request, res: Response, next: NextFu
 		send_nack(res,"Order id does not exist")
 	}
 
-	const on_search_data = await redisFetch("on_search", transaction_id)
+	const on_search_data = await redisFetchFromServer("on_search", transaction_id)
 	const item_measure_ids = on_search_data.message.catalog.providers[0].items.reduce((accumulator: any, currentItem: any) => {
 		accumulator[currentItem.id] = currentItem.quantity ? currentItem.quantity.unitized.measure : undefined;
 		return accumulator;

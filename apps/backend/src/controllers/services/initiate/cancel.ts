@@ -5,7 +5,8 @@ import {
 	createAuthHeader,
 	redis,
 	logger,
-	redisFetch,
+	redisFetchToServer,
+	redisExistToServer,
 } from "../../../lib/utils";
 import axios, { AxiosError } from "axios";
 import { v4 as uuidv4 } from "uuid";
@@ -18,7 +19,7 @@ export const initiateCancelController = async (
 	const { transactionId, orderId, cancellationReasonId } = req.body;
 	// const transactionKeys = await redis.keys(`${transactionId}-*`);
 
-	const on_confirm = await redisFetch("on_confirm", transactionId);
+	const on_confirm = await redisFetchToServer("on_confirm", transactionId);
 	if (!on_confirm) {
 		return send_nack(res, "On Confirm doesn't exist");
 	}

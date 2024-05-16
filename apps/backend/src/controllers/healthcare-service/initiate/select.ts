@@ -8,7 +8,7 @@ import {
   checkIfCustomized,
   send_response,
   send_nack,
-  redisFetch,
+  redisFetchToServer,
   HEALTHCARE_SERVICES_BAP_MOCKSERVER_URL,
   HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
 } from "../../../lib/utils";
@@ -20,7 +20,7 @@ export const initiateSelectController = async (
   next: NextFunction
 ) => {
   const { transactionId } = req.body;
-  const on_search = await redisFetch("on_search", transactionId);
+  const on_search = await redisFetchToServer("on_search", transactionId);
   if (!on_search) {
     send_nack(res, "On Search doesn't exist")
   }
