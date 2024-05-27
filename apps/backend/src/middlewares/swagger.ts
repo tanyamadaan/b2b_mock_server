@@ -5,7 +5,7 @@ import swaggerAuthSpec from "openapi-specs/auth.json";
 import swaggerMiscSpec from "openapi-specs/misc.json";
 import swaggerRetailB2BSpec from "openapi-specs/retail-b2b.json";
 import swaggerServicesSpec from "openapi-specs/services.json";
-
+import swaggerAgriServicesSpec from "openapi-specs/agri-services.json";
 export const authSwagger =
 	(url: string) => (req: Request, res: Response, next: NextFunction) => {
 		if (!req.originalUrl.includes(url)) return next();
@@ -28,4 +28,10 @@ export const b2bSwagger =
 	(url: string) => (req: Request, res: Response, next: NextFunction) => {
 		if (!req.originalUrl.includes(url)) return next();
 		swaggerUi.setup(swaggerRetailB2BSpec)(req, res, next);
+	};
+
+export const agriServiceSwagger =
+	(url: string) => (req: Request, res: Response, next: NextFunction) => {
+		if (!req.originalUrl.includes(url)) return next();
+		swaggerUi.setup(swaggerAgriServicesSpec)(req, res, next);
 	};

@@ -1,7 +1,8 @@
 import { b2bSchemaValidator } from "../lib/schema/b2b";
 import { srvSchemaValidator } from "../lib/schema/services";
+import {agriSrvSchemaValidator} from "../lib/schema/agri-services"
 type JsonSchemaValidatorType = {
-	domain: "b2b" | "services";
+	domain: "b2b" | "services" | "agri-services";
 	action:
 		| "search"
 		| "on_search"
@@ -26,7 +27,9 @@ export const jsonSchemaValidator = ({
 }: JsonSchemaValidatorType) => {
 	if (domain === "b2b") {
 	return b2bSchemaValidator(action);
-	} else {
+	} else if(domain === "services"){
 		return srvSchemaValidator(action)
+	}else{
+		return agriSrvSchemaValidator(action)
 	}
 };

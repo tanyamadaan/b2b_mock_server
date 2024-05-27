@@ -15,6 +15,7 @@ import {
 } from "./utils/context";
 import { B2BMock, ServicesMock } from "./pages/mock/domains";
 import { B2BSandbox, ServicesSandbox } from "./pages/sandbox/domains";
+import { AgriServicesSandbox } from "./pages/sandbox/domains/agri-services";
 
 const router = createBrowserRouter([
 	{
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
 						path: "services",
 						Component: ServicesMock,
 					},
+					{
+						path: "agri-services",
+						Component: ServicesMock,
+					},
 				],
 			},
 			{
@@ -63,6 +68,10 @@ const router = createBrowserRouter([
 						path: "services",
 						Component: ServicesSandbox,
 					},
+					{
+						path: "agri-services",
+						Component: AgriServicesSandbox,
+					},
 				],
 			},
 			{
@@ -71,6 +80,7 @@ const router = createBrowserRouter([
 				children: [
 					{ path: "b2b", Component: B2BSwagger },
 					{ path: "services", Component: ServicesSwagger },
+					{ path: "agri-services", Component: ServicesSwagger },
 					{ path: "auth", Component: AuthSwagger },
 					{ path: "misc", Component: MiscSwagger },
 				],

@@ -32,6 +32,8 @@ async function send_response(
 		if (action === "search") {
 			headers["X-Gateway-Authorization"] = header;
 		}
+
+		console.log("ddddddddddddddddddddd",`${bpp_uri}/${action}${scenario ? `?scenario=${scenario}` : ""}`,res_obj)
 		const response = await axios.post(
 			`${bpp_uri}/${action}${scenario ? `?scenario=${scenario}` : ""}`,
 			res_obj,
@@ -39,6 +41,7 @@ async function send_response(
 				headers: { ...headers },
 			}
 		);
+
 		await redis.set(
 			`${transaction_id}-${action}-from-server`,
 			JSON.stringify({

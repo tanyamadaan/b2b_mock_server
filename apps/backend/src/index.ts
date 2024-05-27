@@ -2,6 +2,7 @@ import express, { Express, Request, Response } from "express";
 import swaggerUi from "swagger-ui-express";
 
 import {
+	agriServiceRouter,
 	authRouter,
 	b2bRouter,
 	miscRouter,
@@ -15,6 +16,7 @@ import {
 	miscSwagger,
 	requestParser,
 	servicesSwagger,
+	agriServiceSwagger,
 	globalErrorHandler,
 	errorHandlingWrapper,
 } from "./middlewares";
@@ -31,6 +33,11 @@ app.use(
 	swaggerUi.serve,
 	servicesSwagger("/api-docs/services")
 );
+app.use(
+	"/api-docs/agri-services",
+	swaggerUi.serve,
+	agriServiceSwagger("/api-docs/agri-services")
+);
 
 app.use(express.raw({ type: "*/*", limit: "1mb" }));
 app.use(requestParser);
@@ -39,7 +46,7 @@ app.use("/", miscRouter);
 app.use("/b2b", errorHandlingWrapper(b2bRouter));
 app.use("/auth", errorHandlingWrapper(authRouter));
 app.use("/services", errorHandlingWrapper(servicesRouter));
-
+app.use("/agri-services", errorHandlingWrapper(agriServiceRouter));
 app.use(globalErrorHandler);
 
 app.use("/detect_app_installation", (req: Request, res: Response) => {

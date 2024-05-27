@@ -17,12 +17,18 @@ import { v4 as uuidv4 } from "uuid";
 export const initiateSearchController = async (req: Request, res: Response,  next: NextFunction) => {
 	const { bpp_uri, city, domain } = req.body;
 
+	console.log("bodydddddddddddddddd",req.body);
+
 	var file = fs.readFileSync(
 		path.join(SERVICES_EXAMPLES_PATH, "search/search_by_category.yaml")
 	);
+
+
 	var search = YAML.parse(file.toString());
 	search = search.value;
 	const transaction_id = uuidv4();
+
+	
 	search = {
 		...search,
 		context: {

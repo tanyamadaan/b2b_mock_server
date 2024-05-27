@@ -17,14 +17,15 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 
 type InitiateRequestSectionProp = {
-	domain: "b2b" | "services";
+	domain: "b2b" | "services" | "agri-services";
 };
 
 type SELECT_OPTIONS =
 	| string[]
-	| { b2b: string[]; services: string[] }
-	| { b2b: string[]; services: string[] }
+	| { b2b: string[]; services: string[]; agri_services: string[] }
+	| { b2b: string[]; services: string[]; agri_services: string[] }
 	| { services: string[] }
+	| { agri_services: string[] }
 	| object;
 
 type SELECT_FIELD = {
@@ -38,6 +39,9 @@ type SELECT_FIELD = {
 export const InitiateRequestSection = ({
 	domain,
 }: InitiateRequestSectionProp) => {
+
+	console.log("domain=>>>>>>>>>>>",domain)
+
 	const { handleMessageToggle, setMessageType, setCopy } = useMessage();
 	const [action, setAction] = useState<string>();
 	const [renderActionFields, setRenderActionFields] = useState(false);
@@ -48,6 +52,9 @@ export const InitiateRequestSection = ({
 		_event: React.SyntheticEvent | null,
 		newValue: string | null
 	) => {
+
+		console.log("newValue=>>>>>>>>>>>>>>",newValue)
+
 		setRenderActionFields(false);
 		setAction(newValue as string);
 		setFormState({});
@@ -153,10 +160,12 @@ export const InitiateRequestSection = ({
 				</Box>
 				<Stack spacing={2} sx={{ my: 2 }}>
 					<Select placeholder="Select Action" onChange={handleActionSelection}>
+
 						{Object.keys(INITIATE_FIELDS).map((action, idx) => (
 							<Option value={action} key={"action-" + idx}>
 								{action}
 							</Option>
+
 						))}
 					</Select>
 					<Grow in={renderActionFields} timeout={500}>
