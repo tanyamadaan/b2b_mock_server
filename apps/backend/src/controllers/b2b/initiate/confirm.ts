@@ -25,7 +25,7 @@ export const initiateConfirmController = async (
 	);
 
 	if (ifTransactionExist.length === 0) {
-		send_nack(res,"On Init doesn't exist")
+		return send_nack(res, "On Init doesn't exist");
 	}
 	const transaction = await redis.mget(ifTransactionExist);
 	const parsedTransaction = transaction.map((ele) => {
@@ -58,7 +58,7 @@ const intializeRequest = async (
 			action: "confirm",
 			bap_id: MOCKSERVER_ID,
 			bap_uri: B2B_BAP_MOCKSERVER_URL,
-			message_id: uuidv4()
+			message_id: uuidv4(),
 		},
 		message: {
 			order: {
@@ -74,7 +74,17 @@ const intializeRequest = async (
 					],
 				},
 				fulfillments: order.fulfillments.map(
-					({ id, type, tracking, stops }: {id:string,type:string,tracking:boolean,stops:Stop}) => ({
+					({
+						id,
+						type,
+						tracking,
+						stops,
+					}: {
+						id: string;
+						type: string;
+						tracking: boolean;
+						stops: Stop;
+					}) => ({
 						id,
 						type,
 						tracking,
@@ -126,7 +136,14 @@ const intializeRequest = async (
 		},
 	};
 
-	await send_response(res, next, confirm, transaction_id, "confirm",scenario=scenario);
+	await send_response(
+		res,
+		next,
+		confirm,
+		transaction_id,
+		"confirm",
+		(scenario = scenario)
+	);
 	// const header = await createAuthHeader(confirm);
 	// try {
 	// 	await redis.set(

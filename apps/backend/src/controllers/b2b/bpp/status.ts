@@ -3,12 +3,26 @@ import { NextFunction, Request, Response } from "express";
 // import path from "path";
 // import YAML from "yaml";
 
-import { responseBuilder, send_nack,B2B_EXAMPLES_PATH, redis, Item, Fulfillment, Stop, Payment, SettlementDetails } from "../../../lib/utils";
+import {
+	responseBuilder,
+	send_nack,
+	B2B_EXAMPLES_PATH,
+	redis,
+	Item,
+	Fulfillment,
+	Stop,
+	Payment,
+	SettlementDetails,
+} from "../../../lib/utils";
 // import { stringify } from "querystring";
 // import { AnyARecord } from "dns";
 
-export const statusController = async (req: Request, res: Response, next: NextFunction) => {
-	const  scenario :string = String(req.query.scenario) || "";
+export const statusController = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	const scenario: string = String(req.query.scenario) || "";
 	const { transaction_id } = req.body.context;
 
 	const transactionKeys = await redis.keys(`${transaction_id}-*`);
@@ -17,7 +31,7 @@ export const statusController = async (req: Request, res: Response, next: NextFu
 	);
 
 	if (ifTransactionExist.length === 0) {
-		send_nack(res,"On Confirm doesn't exist")
+		return send_nack(res, "On Confirm doesn't exist");
 	}
 	const transaction = await redis.mget(ifTransactionExist);
 	const parsedTransaction = transaction.map((ele) => {
@@ -32,11 +46,11 @@ const statusRequest = async (
 	res: Response,
 	next: NextFunction,
 	transaction: any,
-	scenario: string 
+	scenario: string
 ) => {
 	const timestamp = new Date().toISOString();
 
-	const responseMessage:any = {
+	const responseMessage: any = {
 		order: {
 			id: transaction.message.order.id,
 			state: "Completed",
@@ -127,9 +141,9 @@ const statusRequest = async (
 					...payment.params,
 					transaction_id: "3937",
 				},
-				"@ondc/org/settlement_details":payment[
+				"@ondc/org/settlement_details": payment[
 					"@ondc/org/settlement_details"
-				]?.map((itm:SettlementDetails ) => ({
+				]?.map((itm: SettlementDetails) => ({
 					...itm,
 					settlement_counterparty: "seller-app",
 					settlement_reference: "XXXX",
@@ -144,7 +158,9 @@ const statusRequest = async (
 		},
 	};
 
-	responseMessage.order.payments.forEach((itm: Payment) => (itm.status = "PAID"));
+	responseMessage.order.payments.forEach(
+		(itm: Payment) => (itm.status = "PAID")
+	);
 
 	switch (scenario) {
 		case "delivered":
@@ -155,7 +171,7 @@ const statusRequest = async (
 				},
 			];
 			responseMessage.order.fulfillments.forEach(
-				(itm:Fulfillment) => (itm.state.descriptor.code = "Order-delivered")
+				(itm: Fulfillment) => (itm.state.descriptor.code = "Order-delivered")
 			);
 			break;
 		case "out-for-delivery":
@@ -186,10 +202,12 @@ const statusRequest = async (
 				itm.status = "NOT-PAID";
 			});
 			responseMessage.order.payments.forEach((itm: Payment) =>
-				itm["@ondc/org/settlement_details"]?.forEach((itm: SettlementDetails) => {
-					delete itm.settlement_status;
-					delete itm.settlement_timestamp;
-				})
+				itm["@ondc/org/settlement_details"]?.forEach(
+					(itm: SettlementDetails) => {
+						delete itm.settlement_status;
+						delete itm.settlement_timestamp;
+					}
+				)
 			);
 			break;
 		case "bpp-payment-error":
@@ -204,12 +222,14 @@ const statusRequest = async (
 				(itm: Fulfillment) => (itm.state.descriptor.code = "Order-delivered")
 			);
 			responseMessage.order.payments.forEach((itm: Payment) =>
-				itm["@ondc/org/settlement_details"]?.forEach((itm: SettlementDetails) => {
-					delete itm.settlement_reference;
-					delete itm.settlement_status;
-					delete itm.settlement_timestamp;
-					itm.settlement_counterparty = "buyer-app";
-				})
+				itm["@ondc/org/settlement_details"]?.forEach(
+					(itm: SettlementDetails) => {
+						delete itm.settlement_reference;
+						delete itm.settlement_status;
+						delete itm.settlement_timestamp;
+						itm.settlement_counterparty = "buyer-app";
+					}
+				)
 			);
 			responseMessage.order.fulfillments.forEach(
 				(itm: Fulfillment) => (itm.state.descriptor.code = "Order-delivered")
@@ -217,12 +237,14 @@ const statusRequest = async (
 			break;
 		case "bpp-payment":
 			responseMessage.order.payments.forEach((itm: Payment) =>
-				itm["@ondc/org/settlement_details"]?.forEach((itm: SettlementDetails) => {
-					delete itm.settlement_reference;
-					delete itm.settlement_status;
-					delete itm.settlement_timestamp;
-					itm.settlement_counterparty = "buyer-app";
-				})
+				itm["@ondc/org/settlement_details"]?.forEach(
+					(itm: SettlementDetails) => {
+						delete itm.settlement_reference;
+						delete itm.settlement_status;
+						delete itm.settlement_timestamp;
+						itm.settlement_counterparty = "buyer-app";
+					}
+				)
 			);
 			break;
 		case "self-picked-up":

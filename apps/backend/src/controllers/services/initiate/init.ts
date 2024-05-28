@@ -8,27 +8,30 @@ import {
 	createAuthHeader,
 	logger,
 	redis,
-	redisFetch
+	redisFetch,
 } from "../../../lib/utils";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
-export const initiateInitController = async (req: Request, res: Response, next: NextFunction) => {
+export const initiateInitController = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	const { scenario, transactionId } = req.body;
 
-	const on_select = await redisFetch("on_select", transactionId)
+	const on_select = await redisFetch("on_select", transactionId);
 	if (Object.keys(on_select).includes("error")) {
-		send_nack(res,"On Select had errors")
+		return send_nack(res, "On Select had errors");
 	}
-	
+
 	if (!on_select) {
-		send_nack(res,"On Select doesn't exist")
+		return send_nack(res, "On Select doesn't exist");
 	}
 
 	// const request = parsedTransaction[0].request;
 
-	return intializeRequest(res, next, on_select
-		, scenario);
+	return intializeRequest(res, next, on_select, scenario);
 };
 
 const intializeRequest = async (
@@ -130,7 +133,14 @@ const intializeRequest = async (
 			},
 		},
 	};
-	await send_response(res, next, init, context.transaction_id, "init",scenario=scenario);
+	await send_response(
+		res,
+		next,
+		init,
+		context.transaction_id,
+		"init",
+		(scenario = scenario)
+	);
 	// const header = await createAuthHeader(init);
 	// try {
 	// 	await redis.set(

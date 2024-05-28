@@ -12,7 +12,7 @@ import {
 	redis,
 	redisFetch,
 	Stop,
-	Item
+	Item,
 } from "../../../lib/utils";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
@@ -45,9 +45,9 @@ export const initiateConfirmController = async (
 	// const parsedTransaction = transaction.map((ele) => {
 	// 	return JSON.parse(ele as string);
 	// });
-	const on_init = await redisFetch("on_init", transactionId)
-	if(!on_init){
-		send_nack(res,"On Init doesn't exist")
+	const on_init = await redisFetch("on_init", transactionId);
+	if (!on_init) {
+		return send_nack(res, "On Init doesn't exist");
 	}
 
 	// console.log("parsedTransaction:::: ", parsedTransaction[0]);
@@ -63,14 +63,7 @@ const intializeRequest = async (
 	const {
 		context,
 		message: {
-			order: {
-				provider,
-				locations,
-				payments,
-				fulfillments,
-				xinput,
-				items,
-			},
+			order: { provider, locations, payments, fulfillments, xinput, items },
 		},
 	} = transaction;
 	const { transaction_id } = context;
@@ -87,7 +80,7 @@ const intializeRequest = async (
 			action: "confirm",
 			bap_id: MOCKSERVER_ID,
 			bap_uri: SERVICES_BAP_MOCKSERVER_URL,
-			message_id: uuidv4()
+			message_id: uuidv4(),
 		},
 		message: {
 			order: {
@@ -107,14 +100,17 @@ const intializeRequest = async (
 								...stop,
 								contact: {
 									...stop.contact,
-									email: stop.contact && stop.contact.email ? stop.contact.email : "nobody@nomail.com"
+									email:
+										stop.contact && stop.contact.email
+											? stop.contact.email
+											: "nobody@nomail.com",
 								},
 								customer: {
 									person: {
 										name: "Ramu",
 									},
 								},
-								tags: undefined
+								tags: undefined,
 							};
 						}),
 					},
@@ -141,8 +137,7 @@ const intializeRequest = async (
 						...xinput.form,
 						submission_id: "xxxxxxxxxx",
 						status: "SUCCESS",
-
-					}
+					},
 				},
 			},
 		},
@@ -150,11 +145,18 @@ const intializeRequest = async (
 	confirm.message.order.quote.breakup.forEach((itm: any) => {
 		itm.item.quantity = {
 			selected: {
-				count: 3
-			}
-		}
-	})
-	await send_response(res, next, confirm, transaction_id, "confirm",scenario=scenario);
+				count: 3,
+			},
+		};
+	});
+	await send_response(
+		res,
+		next,
+		confirm,
+		transaction_id,
+		"confirm",
+		(scenario = scenario)
+	);
 	// const header = await createAuthHeader(confirm);
 	// try {
 	// 	await redis.set(
