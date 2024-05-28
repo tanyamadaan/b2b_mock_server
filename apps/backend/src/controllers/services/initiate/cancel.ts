@@ -20,7 +20,7 @@ export const initiateCancelController = async (
 
 	const on_confirm = await redisFetch("on_confirm", transactionId);
 	if (!on_confirm) {
-		send_nack(res,"On Confirm doesn't exist")
+		return send_nack(res, "On Confirm doesn't exist");
 	}
 	// console.log("parsedTransaction:::: ", parsedTransaction[0]);
 	return intializeRequest(res, next, on_confirm, orderId, cancellationReasonId);
@@ -34,7 +34,7 @@ const intializeRequest = async (
 	cancellation_reason_id: string
 ) => {
 	const { context } = transaction;
-	let scenario="ack"
+	let scenario = "ack";
 	const cancel = {
 		context: {
 			...context,
@@ -46,7 +46,14 @@ const intializeRequest = async (
 			cancellation_reason_id,
 		},
 	};
-	await send_response(res, next, cancel, context.transaction_id, "cancel",scenario=scenario);
+	await send_response(
+		res,
+		next,
+		cancel,
+		context.transaction_id,
+		"cancel",
+		(scenario = scenario)
+	);
 	// const header = await createAuthHeader(cancel);
 	// try {
 	// 	await redis.set(

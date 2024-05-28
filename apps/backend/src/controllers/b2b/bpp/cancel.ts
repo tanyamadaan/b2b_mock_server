@@ -1,8 +1,22 @@
 import { NextFunction, Request, Response } from "express";
-import { responseBuilder,send_nack, B2B_EXAMPLES_PATH, redis, Stop, Fulfillment, Item } from "../../../lib/utils";
+import {
+	responseBuilder,
+	send_nack,
+	B2B_EXAMPLES_PATH,
+	redis,
+	Stop,
+	Fulfillment,
+	Item,
+} from "../../../lib/utils";
 
-interface Item_payment_id{[key:string]:string[]}
-export const cancelController = async (req: Request, res: Response, next: NextFunction) => {
+interface Item_payment_id {
+	[key: string]: string[];
+}
+export const cancelController = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	const { transaction_id } = req.body.context;
 	const transactionKeys = await redis.keys(`${transaction_id}-*`);
 	const ifTransactionExist = transactionKeys.filter((e) =>
@@ -10,7 +24,7 @@ export const cancelController = async (req: Request, res: Response, next: NextFu
 	);
 
 	if (ifTransactionExist.length === 0) {
-		send_nack(res,"On Confirm doesn't exist")
+		return send_nack(res, "On Confirm doesn't exist");
 	}
 	const transaction = await redis.mget(ifTransactionExist);
 	const parsedTransaction = transaction.map((ele: any) => {
@@ -40,13 +54,13 @@ export const cancelController = async (req: Request, res: Response, next: NextFu
 		});
 
 	if (!item_payment_ids) {
-		send_nack(res,"Payment and Provider ID related mismatch")
+		return send_nack(res, "Payment and Provider ID related mismatch");
 	}
 
 	if (
 		parsedTransaction[0].request.message.order.id != req.body.message.order_id
 	) {
-		send_nack(res,"Order id does not exist")
+		return send_nack(res, "Order id does not exist");
 	}
 
 	// console.log("Items with there ids :", item_payment_ids[0])
@@ -55,7 +69,7 @@ export const cancelController = async (req: Request, res: Response, next: NextFu
 		res,
 		next,
 		parsedTransaction[0].request,
-		item_payment_ids[0],
+		item_payment_ids[0]
 	);
 };
 
@@ -64,7 +78,7 @@ const cancelRequest = async (
 	res: Response,
 	next: NextFunction,
 	transaction: any,
-	item_payment_ids: Item_payment_id,
+	item_payment_ids: Item_payment_id
 ) => {
 	// const { message } = transaction
 	const { context } = req.body;

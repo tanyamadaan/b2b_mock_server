@@ -7,25 +7,29 @@ import {
 	send_nack,
 	Item,
 	Fulfillment,
-	Breakup
+	Breakup,
 } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
-interface Item_id_name{
- [key:string]:string
+interface Item_id_name {
+	[key: string]: string;
 }
-export const initController = async (req: Request, res: Response, next: NextFunction) => {
+export const initController = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	const { transaction_id } = req.body.context;
 	const transactionKeys = await redis.keys(`${transaction_id}-*`);
 
-	// checking on_select response exits or not 
+	// checking on_select response exits or not
 	const ifTransactionExist = transactionKeys.filter((e) =>
 		e.includes("on_select-from-server")
 	);
 
 	if (ifTransactionExist.length === 0) {
-		send_nack(res,"On Select doesn't exist")
+		return send_nack(res, "On Select doesn't exist");
 	}
 	//
 	const ifToTransactionExist = transactionKeys.filter((e) =>
@@ -40,7 +44,7 @@ export const initController = async (req: Request, res: Response, next: NextFunc
 		ifFromTransactionExist.length === 0 &&
 		ifToTransactionExist.length === 0
 	) {
-		send_nack(res,"On Search doesn't exist")
+		return send_nack(res, "On Search doesn't exist");
 	}
 	const transaction = await redis.mget(
 		ifFromTransactionExist.length > 0
@@ -52,7 +56,7 @@ export const initController = async (req: Request, res: Response, next: NextFunc
 	});
 
 	const providers = parsedTransaction[0].request.message.catalog.providers;
-	const item_id_name:Item_id_name[]= providers.map((pro: any) => {
+	const item_id_name: Item_id_name[] = providers.map((pro: any) => {
 		const mappedItems = pro.items.map((item: Item) => ({
 			id: item.id,
 			name: item.descriptor?.name,
@@ -76,7 +80,11 @@ export const initController = async (req: Request, res: Response, next: NextFunc
 	// }
 };
 
-const initDomesticController = (req: Request, res: Response, next: NextFunction) => {
+const initDomesticController = (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	const { context, message } = req.body;
 	const { items, fulfillments, tags, billing, ...remainingMessage } =
 		message.order;
@@ -171,12 +179,13 @@ const initDomesticController = (req: Request, res: Response, next: NextFunction)
 		responseMessage.order.quote.breakup.forEach((element: Breakup) => {
 			if (element["@ondc/org/title_type"] === "item") {
 				const id = element["@ondc/org/item_id"];
-				const item = req.body.item_arr.find((item: Item_id_name) => item.id == id);
+				const item = req.body.item_arr.find(
+					(item: Item_id_name) => item.id == id
+				);
 				element.title = item.name;
 			}
 		});
 	} catch (error) {
-
 		return res.status(400).json({
 			message: {
 				ack: {
