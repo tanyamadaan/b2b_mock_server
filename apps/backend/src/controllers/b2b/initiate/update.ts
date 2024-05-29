@@ -10,7 +10,11 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 
-export const initiateUpdateController = async (req: Request, res: Response, next: NextFunction) => {
+export const initiateUpdateController = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	const { update_targets, transactionId } = req.body;
 
 	const transactionKeys = await redis.keys(`${transactionId}-*`);
@@ -19,7 +23,7 @@ export const initiateUpdateController = async (req: Request, res: Response, next
 	);
 
 	if (ifTransactionExist.length === 0) {
-		send_nack(res,"On Confirm doesn't exist")
+		return send_nack(res, "On Confirm doesn't exist");
 	}
 
 	const transaction = await redis.mget(ifTransactionExist);
@@ -35,17 +39,17 @@ export const initiateUpdateController = async (req: Request, res: Response, next
 			(p: { type: string }) => p.type === "PRE-FULFILLMENT"
 		)
 	)
-		send_nack(res,"Update targets are allowed for RFQ flows only")
-		// return res.status(400).json({
-		// 	message: {
-		// 		ack: {
-		// 			status: "NACK",
-		// 		},
-		// 	},
-		// 	error: {
-		// 		message: "Update targets are allowed for RFQ flows only",
-		// 	},
-		// });
+		return send_nack(res, "Update targets are allowed for RFQ flows only");
+	// return res.status(400).json({
+	// 	message: {
+	// 		ack: {
+	// 			status: "NACK",
+	// 		},
+	// 	},
+	// 	error: {
+	// 		message: "Update targets are allowed for RFQ flows only",
+	// 	},
+	// });
 
 	// console.log("parsedTransaction:::: ", parsedTransaction[0]);
 	return intializeRequest(res, next, update_targets, onConfirm);

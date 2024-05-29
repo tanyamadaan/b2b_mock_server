@@ -22,7 +22,7 @@ export const initiateStatusController = async (
 	const transactionKeys = await redis.keys(`${transactionId}-*`);
 	const on_confirm = await redisFetch("on_confirm", transactionId);
 	if (!on_confirm) {
-		send_nack(res,"On Confirm doesn't exist")
+		return send_nack(res, "On Confirm doesn't exist");
 	}
 	const statusIndex = transactionKeys.filter((e) =>
 		e.includes("status-to-server")

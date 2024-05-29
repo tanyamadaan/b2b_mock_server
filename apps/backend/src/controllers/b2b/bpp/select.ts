@@ -1,6 +1,18 @@
 import { NextFunction, Request, Response } from "express";
-import { quoteCreator, responseBuilder, redis,send_nack } from "../../../lib/utils";
-
+import {
+	quoteCreator,
+	responseBuilder,
+	redis,
+	send_nack,
+	Item,
+	Quantity,
+	Breakup,
+} from "../../../lib/utils";
+interface Item_id_name {
+	id: string;
+	name: string;
+	available_qty: number;
+}
 export const selectController = async (
 	req: Request,
 	res: Response,
@@ -22,7 +34,7 @@ export const selectController = async (
 		ifFromTransactionExist.length === 0 &&
 		ifToTransactionExist.length === 0
 	) {
-		send_nack(res,"On Search doesn't exist")
+		return send_nack(res, "On Search doesn't exist");
 	}
 	const transaction = await redis.mget(
 		ifFromTransactionExist.length > 0
@@ -34,21 +46,28 @@ export const selectController = async (
 	});
 
 	const providers = parsedTransaction[0].request.message.catalog.providers;
-	const item_id_name = providers.map((pro: any) => {
-		const mappedItems = pro.items.map((item: any) => ({
+	const item_id_name: Item_id_name[] = providers.map((pro: any) => {
+		const mappedItems = pro.items.map((item: Item) => ({
 			id: item.id,
-			name: item.descriptor.name,
-			available_qty: item.quantity.available.count,
+			name: item.descriptor?.name,
+			available_qty: (item.quantity as Quantity).available.count,
 		}));
 		return mappedItems;
 	});
-
 	req.body.item_arr = item_id_name.flat();
 
-	req.body.message.order.items.forEach((itm: any) => {
-		const item = req.body.item_arr.find((item: any) => item.id == itm.id);
-		if (itm.quantity.selected.count > item.available_qty) {
-			send_nack(res,`Required Quantity for Item:${item.name} is unavailable.`)
+	req.body.message.order.items.forEach((itm: Item) => {
+		const item = req.body.item_arr.find(
+			(item: Item_id_name) => item.id == itm.id
+		);
+		if (
+			"selected" in itm.quantity &&
+			itm.quantity.selected.count > item.available_qty
+		) {
+			return send_nack(
+				res,
+				`Required Quantity for Item:${item.name} is unavailable.`
+			);
 			// return res.status(400).json({
 			// 	message: {
 			// 		ack: {
@@ -96,33 +115,37 @@ export const selectDomesticController = (
 					add_ons,
 					...remaining
 				}: {
-					location_ids: any;
+					location_ids: string[];
 					add_ons: any;
 					remaining: any;
 				}) => ({
 					...remaining,
 				})
 			),
-			fulfillments: message.order.fulfillments.map(({ id, ...each }: any) => ({
-				id,
-				tracking: false,
-				"@ondc/org/provider_name": "ONDC Mock Server",
-				"@ondc/org/category": "Express Delivery",
-				"@ondc/org/TAT": "P7D",
-				state: {
-					descriptor: {
-						code: "Serviceable",
+			fulfillments: message.order.fulfillments.map(
+				({ id, ...each }: { id: string; each: any }) => ({
+					id,
+					tracking: false,
+					"@ondc/org/provider_name": "ONDC Mock Server",
+					"@ondc/org/category": "Express Delivery",
+					"@ondc/org/TAT": "P7D",
+					state: {
+						descriptor: {
+							code: "Serviceable",
+						},
 					},
-				},
-			})),
+				})
+			),
 			quote: quoteCreator(message.order.items),
 		},
 	};
 	try {
-		responseMessage.order.quote.breakup.forEach((element: any) => {
+		responseMessage.order.quote.breakup.forEach((element: Breakup) => {
 			if (element["@ondc/org/title_type"] === "item") {
 				const id = element["@ondc/org/item_id"];
-				const item = req.body.item_arr.find((item: any) => item.id == id);
+				const item = req.body.item_arr.find(
+					(item: Item_id_name) => item.id == id
+				);
 				element.title = item.name;
 			}
 		});
@@ -161,25 +184,27 @@ export const selectNonServiceableController = (
 					add_ons,
 					...remaining
 				}: {
-					location_ids: any;
+					location_ids: string[];
 					add_ons: any;
 					remaining: any;
 				}) => ({
 					...remaining,
 				})
 			),
-			fulfillments: message.order.fulfillments.map(({ id, ...each }: any) => ({
-				id,
-				tracking: false,
-				"@ondc/org/provider_name": "ONDC Mock Server",
-				"@ondc/org/category": "Express Delivery",
-				"@ondc/org/TAT": "P7D",
-				state: {
-					descriptor: {
-						code: "Non-Serviceable",
+			fulfillments: message.order.fulfillments.map(
+				({ id, ...each }: { id: string; each: any }) => ({
+					id,
+					tracking: false,
+					"@ondc/org/provider_name": "ONDC Mock Server",
+					"@ondc/org/category": "Express Delivery",
+					"@ondc/org/TAT": "P7D",
+					state: {
+						descriptor: {
+							code: "Non-Serviceable",
+						},
 					},
-				},
-			})),
+				})
+			),
 			quote: quoteCreator(message.order.items),
 		},
 	};
@@ -219,25 +244,27 @@ export const selectQuantityUnavailableController = (
 					add_ons,
 					...remaining
 				}: {
-					location_ids: any;
+					location_ids: string[];
 					add_ons: any;
 					remaining: any;
 				}) => ({
 					...remaining,
 				})
 			),
-			fulfillments: message.order.fulfillments.map(({ id, ...each }: any) => ({
-				id,
-				tracking: false,
-				"@ondc/org/provider_name": "ONDC Mock Server",
-				"@ondc/org/category": "Express Delivery",
-				"@ondc/org/TAT": "P7D",
-				state: {
-					descriptor: {
-						code: "Serviceable",
+			fulfillments: message.order.fulfillments.map(
+				({ id, ...each }: { id: string; each: any }) => ({
+					id,
+					tracking: false,
+					"@ondc/org/provider_name": "ONDC Mock Server",
+					"@ondc/org/category": "Express Delivery",
+					"@ondc/org/TAT": "P7D",
+					state: {
+						descriptor: {
+							code: "Serviceable",
+						},
 					},
-				},
-			})),
+				})
+			),
 			quote: quoteCreator(message.order.items),
 		},
 	};

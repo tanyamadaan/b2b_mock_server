@@ -8,6 +8,8 @@ import {
 	createAuthHeader,
 	logger,
 	redis,
+	Payment,
+	Fulfillment,
 } from "../../../lib/utils";
 import axios from "axios";
 import fs from "fs";
@@ -28,7 +30,7 @@ export const initiateInitController = async (
 	);
 
 	if (ifTransactionExist.length === 0) {
-		send_nack(res,"On Select doesn't exist")
+		return send_nack(res, "On Select doesn't exist");
 	}
 	const transaction = await redis.mget(ifTransactionExist);
 	const parsedTransaction = transaction.map((ele) => {
@@ -37,7 +39,7 @@ export const initiateInitController = async (
 
 	const request = parsedTransaction[0].request;
 	if (Object.keys(request).includes("error")) {
-		send_nack(res,"On Select had errors")
+		return send_nack(res, "On Select had errors");
 	}
 
 	// console.log("parsedTransaction:::: ", parsedTransaction[0]);
@@ -64,7 +66,7 @@ const intializeRequest = async (
 	);
 	const response = YAML.parse(file.toString());
 
-	payments = payments.map((payment: any) => {
+	payments = payments.map((payment: Payment) => {
 		if (scenario === "prepaid-bpp-payment") {
 			return {
 				...payment,
@@ -104,14 +106,21 @@ const intializeRequest = async (
 				provider,
 				items,
 				payments,
-				fulfillments: fulfillments.map((fulfillment: any) => ({
+				fulfillments: fulfillments.map((fulfillment: Fulfillment) => ({
 					...response.value.message.order.fulfillments[0],
 					id: fulfillment.id,
 				})),
 			},
 		},
 	};
-	await send_response(res, next, init, transaction_id, "init",scenario=scenario);
+	await send_response(
+		res,
+		next,
+		init,
+		transaction_id,
+		"init",
+		(scenario = scenario)
+	);
 	// const header = await createAuthHeader(init);
 	// try {
 	// 	await redis.set(
