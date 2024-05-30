@@ -1,6 +1,6 @@
 import { styled } from "@mui/material/styles";
 import { Button, Box } from "@mui/material";
-import Background_Img from "../../assets/images/low_poly_banner_design_2203.jpg";
+import Background_Img from "../../assets/images/Background.jpg";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const BackgroundContainer = styled(Box)(({ theme }) => ({
