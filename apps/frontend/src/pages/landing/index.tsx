@@ -124,7 +124,7 @@ export const Landing = () => {
 							To get started
 						</Typography>
 						<Typography variant="h5" gutterBottom sx={{ alignItems: "left" }}>
-							select a domain from the Navigation.
+							select a domain from the Navigation menu.
 						</Typography>
 					</StyledBox>
 				</Container>
