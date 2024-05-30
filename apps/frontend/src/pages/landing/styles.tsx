@@ -7,7 +7,7 @@ export const BackgroundContainer = styled(Box)(({ theme }) => ({
 	backgroundImage: `url(${Background_Img})`,
 	backgroundSize: "cover",
 	backgroundPosition: "center",
-	height: "96.5vh",
+	height: "calc(100vh - 64px)",
 	justifyContent: "center",
 	alignItems: "center",
 }));
@@ -16,6 +16,7 @@ export const StyledBox = styled(Box)(({ theme }) => ({
 	flex: 1,
 	padding: theme.spacing(4),
 	backgroundColor: theme.palette.background.paper,
+	zIndex: 1,
 	boxShadow: theme.shadows[5],
 	borderRadius: theme.shape.borderRadius,
 	display: "flex",
@@ -26,7 +27,7 @@ export const StyledBox = styled(Box)(({ theme }) => ({
 	maxHeight: "70%",
 	margin: theme.spacing(2),
 	textAlign: "center",
-	overflow: "scroll",
+	overflow: "auto",
 }));
 export const InfoPanel = styled(Box)(({ theme }) => ({
 	flex: 1,
@@ -39,10 +40,11 @@ export const InfoPanel = styled(Box)(({ theme }) => ({
 	flexDirection: "column",
 	alignItems: "flex-start",
 	maxWidth: "23%",
-	maxHeight: "100vh",
+	maxHeight: "100%",
 	margin: theme.spacing(2),
 	marginBottom: 0,
-	overflow: "scroll",
+	overflow: "auto",
+	zindex: 1,
 }));
 
 export const CustomButton = styled(Button)(({ theme }) => ({
@@ -51,7 +53,4 @@ export const CustomButton = styled(Button)(({ theme }) => ({
 	width: "180px",
 	height: "45px",
 	fontSize: "1rem",
-	// [theme.breakpoints.down("sm")]: {
-	// 	width: "30%", 
-	// },
 }));
