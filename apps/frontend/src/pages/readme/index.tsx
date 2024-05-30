@@ -293,10 +293,10 @@ const ONDCDocumentation = () => {
 					environments.
 				</p>
 				<p>
-					Curl host for Buyer instance: https://ret-mock.ondc.org/api/b2b/bap
+					Curl host for Buyer instance: https://mock.ondc.org/api/b2b/bap
 				</p>
 				<p>
-					Curl host for Seller instance: https://ret-mock.ondc.org/api/b2b/bpp
+					Curl host for Seller instance: https://mock.ondc.org/api/b2b/bpp
 				</p>
 				{/* Add more details about using Swagger */}
 			</div>
