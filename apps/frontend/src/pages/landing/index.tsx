@@ -1,9 +1,12 @@
 import Container from "@mui/material/Container";
-import Typography from "@mui/material/Typography";
-import { SUPPORTED_DOMAINS, USER_GUIDE_LINK } from "../../utils";
-import Button from "@mui/material/Button";
+import { SUPPORTED_DOMAINS } from "../../utils";
+import { Typography, Button } from "@mui/material";
 
 export const Landing = () => {
+	const openReadme = () => {
+		window.location.href = "/user-guide";
+	};
+
 	return (
 		<Container>
 			<Typography variant="h2">Welcome to ONDC Server</Typography>
@@ -23,8 +26,8 @@ export const Landing = () => {
 				))}
 			</ul>
 			<Button
-				href={USER_GUIDE_LINK}
 				sx={{ textTransform: "none", mt: 2 }}
+				onClick={openReadme}
 				color="primary"
 				variant="contained"
 			>

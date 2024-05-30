@@ -15,6 +15,7 @@ import {
 } from "./utils/context";
 import { B2BMock, ServicesMock } from "./pages/mock/domains";
 import { B2BSandbox, ServicesSandbox } from "./pages/sandbox/domains";
+import Readme from "./pages/readme";
 
 const router = createBrowserRouter([
 	{
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
 			{
 				path: "/",
 				Component: Landing,
+			},
+			{
+				path: "/user-guide",
+				Component: Readme,
 			},
 			{
 				path: "/sign-check",
