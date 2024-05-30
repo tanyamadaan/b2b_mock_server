@@ -31,7 +31,7 @@ const ONDCDocumentation = () => {
 		<Container
 			maxWidth="lg"
 			sx={{
-				paddingBottom: "20px", // Add some padding to separate content from border
+				paddingBottom: "20px", 
 			}}
 		>
 			<div>
