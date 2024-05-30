@@ -27,8 +27,8 @@ export const Landing = () => {
 					maxWidth="xl"
 				>
 					<img
-						src={ONDC_logo} // Example image URL
-						style={{ marginRight: "16px", height: "55px" }} // Adjust height to match button
+						src={ONDC_logo} 
+						style={{ marginRight: "16px", height: "55px" }} 
 					/>
 					<CustomButton
 						onClick={openReadme}
