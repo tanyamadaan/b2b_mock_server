@@ -1,0 +1,28 @@
+name: mock_server
+
+on:
+  push:
+    branches: [ "draft-mock_server" ]
+  pull_request:
+    branches: [ "draft-mock_server" ]
+
+jobs:
+  ssh-ec2:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: executing remote ssh commands using ssh key
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: 22
+          script: |
+            ls
+            whoami
+            pwd
+            curl ifconfig.me
