@@ -38,6 +38,9 @@ const statusCompletedController = (req: Request, res: Response, next: NextFuncti
 		path.join(SERVICES_EXAMPLES_PATH, "on_status/on_status_Completed.yaml")
 	);
 	const response = YAML.parse(file.toString());
+
+	console.log("services on status message",JSON.stringify(response.value.message))
+
 	return responseBuilder(
 		res,
 		next,
