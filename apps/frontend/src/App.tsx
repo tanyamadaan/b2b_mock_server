@@ -17,6 +17,8 @@ import { B2BMock, ServicesMock } from "./pages/mock/domains";
 import { B2BSandbox, ServicesSandbox } from "./pages/sandbox/domains";
 import Readme from "./pages/readme";
 
+// log
+
 const router = createBrowserRouter([
 	{
 		path: "/",
