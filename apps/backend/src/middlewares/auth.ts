@@ -45,18 +45,18 @@ export const authValidatorMiddleware = async (
 			console.log("auth header",auth_header)
 			var verified = await verifyHeader(auth_header, (req as any).rawBody.toString());
 
-			// if (!verified) {
-			// 	return res.status(401).json({
-			// 		message: {
-			// 			ack: {
-			// 				status: "NACK",
-			// 			},
-			// 		},
-			// 		error: {
-			// 			message: "Authentication failed",
-			// 		},
-			// 	});
-			// }
+			if (!verified) {
+				return res.status(401).json({
+					message: {
+						ack: {
+							status: "NACK",
+						},
+					},
+					error: {
+						message: "Authentication failed",
+					},
+				});
+			}
 			next();
 		}
 	} catch (err) {
