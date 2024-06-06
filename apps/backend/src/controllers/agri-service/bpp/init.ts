@@ -1,23 +1,29 @@
+
+import fs from "fs";
+import path from "path";
+import YAML from "yaml";
 import { NextFunction, Request, Response } from "express";
 import {
 	SERVICES_EXAMPLES_PATH,
 	checkIfCustomized,
-	quoteCreatorService,
+	quoteCreatorAgriService,
 	quoteCreatorServiceCustomized,
 	responseBuilder,
 	send_nack,
-	redis,
-	redisExist
+	redisExist,
+	AGRI_SERVICES_EXAMPLES_PATH,
+	redisFetch
 } from "../../../lib/utils";
-import fs from "fs";
-import path from "path";
-import YAML from "yaml";
-import { v4 as uuidv4 } from "uuid";
 
 export const initController = async (req: Request, res: Response, next: NextFunction) => {
 	const { transaction_id } = req.body.context;
 	
-	const exit=await redisExist("on_select",transaction_id)
+	const on_search = await redisFetch("on_search", transaction_id);
+	const providersItems = on_search?.message?.catalog?.providers[0]?.items;
+	req.body.providersItems = providersItems
+
+	const exit=await redisExist("on_select",transaction_id);
+
 	if (!exit){
 		send_nack(res,"On Select doesn't exist")
 	}
@@ -27,21 +33,24 @@ export const initController = async (req: Request, res: Response, next: NextFunc
 	}
 	return initConsultationController(req, res, next);
 };
-const initConsultationController = (req: Request, res: Response, next: NextFunction) => {
-	const { context, message: { order: { provider, items, billing, fulfillments, payments } } } = req.body;
 
+
+const initConsultationController = (req: Request, res: Response, next: NextFunction) => {
+	const { context,providersItems,message: { order: { provider, items, billing, fulfillments, payments } } } = req.body;
 	const { locations, ...remainingProvider } = provider
 	const { stops, ...remainingfulfillments } = fulfillments[0]
 
 	const file = fs.readFileSync(
-		path.join(SERVICES_EXAMPLES_PATH, "on_init/on_init_consultation.yaml")
+		path.join(AGRI_SERVICES_EXAMPLES_PATH, "on_init/on_init.yaml")
 	);
 	const response = YAML.parse(file.toString());
+	const quoteData = quoteCreatorAgriService(items,providersItems)
+
 	const responseMessage = {
 		order: {
 			provider: remainingProvider,
 			locations,
-			items: [items[0]],
+			items,
 			billing,
 			fulfillments: [{
 				...remainingfulfillments,
@@ -65,15 +74,23 @@ const initConsultationController = (req: Request, res: Response, next: NextFunct
 					}
 				})
 			}],
-			quote: quoteCreatorService(items),
+			quote: quoteData,
 			payments: [{
-				id: payments[0].id,
+				id: response.value.message.order.payments[0]?.id,
 				type: payments[0].type,
-				...response.value.message.order.payments[0]
+				collected_by:payments[0].collected_by,
+				params:{
+					amount:quoteData?.price?.value,
+					currency: quoteData?.price?.currency,
+					bank_account_number:response.value.message.order.payments[0]?.params.bank_account_number,
+					virtual_payment_address: response.value.message.order.payments[0]?.params.virtual_payment_address
+				},
+				tags:response.value.message.order.payments[0].tags
 			}],
 			xinput: response.value.message.order.xinput
 		}
 	}
+
 	return responseBuilder(
 		res,
 		next,
@@ -82,18 +99,19 @@ const initConsultationController = (req: Request, res: Response, next: NextFunct
 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_init" : "/on_init"
 		}`,
 		`on_init`,
-		"services"
+		"agri-services"
 	);
 };
 
 const initServiceCustomizationController = (req: Request, res: Response, next: NextFunction) => {
+
 	const { context, message: { order: { provider, items, billing, fulfillments, payments } } } = req.body;
 
 	const { locations, ...remainingProvider } = provider
 	const { stops, ...remainingfulfillments } = fulfillments[0]
 
 	const file = fs.readFileSync(
-		path.join(SERVICES_EXAMPLES_PATH, "on_init/on_init_consultation.yaml")
+		path.join(SERVICES_EXAMPLES_PATH, "on_init/on_init.yaml")
 	);
 	const response = YAML.parse(file.toString());
 	// splice to insert element at index 0
@@ -109,7 +127,6 @@ const initServiceCustomizationController = (req: Request, res: Response, next: N
 			}
 		}
 	})
-	// console.log("Customized ;:", stops)
 	const responseMessage = {
 		order: {
 			provider: remainingProvider,
@@ -130,6 +147,7 @@ const initServiceCustomizationController = (req: Request, res: Response, next: N
 			xinput: response.value.message.order.xinput
 		}
 	}
+
 	return responseBuilder(
 		res,
 		next,
@@ -138,23 +156,6 @@ const initServiceCustomizationController = (req: Request, res: Response, next: N
 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_init" : "/on_init"
 		}`,
 		`on_init`,
-		"services"
+		"agri-services"
 	);
 };
-
-// const initServiceController = (req: Request, res: Response) => {
-// 	const { context } = req.body;
-// 	const file = fs.readFileSync(
-// 		path.join(SERVICES_EXAMPLES_PATH, "on_init/on_init_service.yaml")
-// 	);
-// 	const response = YAML.parse(file.toString());
-// 	return responseBuilder(
-// 		res,
-// 		context,
-// 		response.value.message,
-// 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_init" : "/on_init"
-// 		}`,
-// 		`on_init`,
-// 		"services"
-// 	);
-// };

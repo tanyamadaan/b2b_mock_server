@@ -26,6 +26,8 @@ export const initiateSelectController = async (
   const { transactionId } = req.body;
 
   const on_search = await redisFetch("on_search", transactionId);
+
+  console.log("on search respons",on_search)
   if (!on_search) {
     send_nack(res,"On Search doesn't exist")
   }

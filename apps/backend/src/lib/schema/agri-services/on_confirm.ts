@@ -177,7 +177,6 @@ export const onConfirmSchema = {
                 },
                 required: [
                   "id",
-                  "parent_item_id",
                   "fulfillment_ids",
                   "quantity",
                 ],

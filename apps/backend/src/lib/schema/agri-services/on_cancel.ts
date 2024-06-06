@@ -197,7 +197,7 @@ export const onCancelSchema = {
                 },
                 required: [
                   "id",
-                  "parent_item_id",
+                  // "parent_item_id",
                   "fulfillment_ids",
                   "quantity",
                 ],

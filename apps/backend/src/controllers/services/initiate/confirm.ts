@@ -152,6 +152,7 @@ const intializeRequest = async (
 			}
 		}
 	})
+
 	await send_response(res, next, confirm, transaction_id, "confirm",scenario=scenario);
 	// const header = await createAuthHeader(confirm);
 	// try {

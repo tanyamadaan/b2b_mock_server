@@ -259,7 +259,7 @@ export const searchSchema = {
 						},
 					},
 					additionalProperties: false,
-					required: [ "fulfillment", "payment", "tags"],
+					required: ["fulfillment", "payment", "tags"],
 				},
 			},
 			required: ["intent"],

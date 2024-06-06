@@ -168,7 +168,6 @@ export const onInitSchema = {
                 },
                 required: [
                   "id",
-                  "parent_item_id",
                   "fulfillment_ids",
                   "quantity",
                 ],

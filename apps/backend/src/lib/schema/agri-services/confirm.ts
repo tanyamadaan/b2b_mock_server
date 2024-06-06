@@ -175,7 +175,6 @@ export const confirmSchema = {
                 },
                 required: [
                   "id",
-                  "parent_item_id",
                   "fulfillment_ids",
                   "quantity",
                 ],

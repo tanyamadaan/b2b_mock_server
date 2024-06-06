@@ -49,6 +49,10 @@ export const SERVICES_DOMAINS = [
 export const AGRI_SERVICES_DOMAINS = [
 	"ONDC:SRV14",
 ]
+
+export const HEALTHCARE_SERVICES_DOMAINS = [
+	"ONDC:SRV13",
+]
 export const CITY_CODE = [
 	"std:080",
 	"std:011"
@@ -70,6 +74,7 @@ export const INITIATE_FIELDS = {
 				"b2b": B2B_DOMAINS,
 				"services": SERVICES_DOMAINS,
 				"agri-services": AGRI_SERVICES_DOMAINS,
+				"healthcare-services": HEALTHCARE_SERVICES_DOMAINS,
 			},
 		},
 		{

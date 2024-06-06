@@ -157,3 +157,19 @@ generateSwagger(
 		},
 	]
 );
+
+generateSwagger(
+	"./domain-repos/@services/draft-agri-services/api/build/build.yaml",
+	"./openapi/agri-services",
+	SERVICES_SCENARIOS,
+	[
+		{
+			url: `${process.env.SERVER_LINK}/services/bpp`,
+			description: "Sandbox as seller",
+		},
+		{
+			url: `${process.env.SERVER_LINK}/services/bap`,
+			description: "Sandbox as buyer",
+		},
+	]
+);

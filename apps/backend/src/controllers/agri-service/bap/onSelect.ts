@@ -1,8 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { SERVICES_EXAMPLES_PATH, checkIfCustomized, responseBuilder } from "../../../lib/utils";
-import fs from "fs";
-import path from "path";
-import YAML from "yaml";
+import { checkIfCustomized, responseBuilder } from "../../../lib/utils";
 import { v4 as uuidv4 } from "uuid";
 
 export const onSelectController = (req: Request, res: Response, next: NextFunction) => {
@@ -10,27 +7,6 @@ export const onSelectController = (req: Request, res: Response, next: NextFuncti
 		return onSelectServiceCustomizedController(req, res, next);
 	}
 	return onSelectConsultationController(req, res, next);
-
-	// const { scenario } = req.query
-	// switch (scenario) {
-	// 	case "consultation":
-	// 		break;
-	// 	case "service":
-	// 		onSelectServiceController(req, res);
-	// 		break;
-	// 	default:
-	// 		res.status(404).json({
-	// 			message: {
-	// 				ack: {
-	// 					status: "NACK",
-	// 				},
-	// 			},
-	// 			error: {
-	// 				message: "Invalid scenario",
-	// 			},
-	// 		});
-	// 		break;
-	// }
 };
 
 const onSelectConsultationController = (req: Request, res: Response, next: NextFunction) => {
@@ -39,10 +15,6 @@ const onSelectConsultationController = (req: Request, res: Response, next: NextF
 		} } } = req.body;
 
 	const { id, type, stops } = fulfillments[0]
-	// const file = fs.readFileSync(
-	// 	path.join(SERVICES_EXAMPLES_PATH, "init/init_consultation.yaml")
-	// );
-	// const response = YAML.parse(file.toString());
 	const responseMessage = {
 		order: {
 			provider: {
@@ -100,7 +72,7 @@ const onSelectConsultationController = (req: Request, res: Response, next: NextF
 		responseMessage,
 		`${req.body.context.bpp_uri}${req.body.context.bpp_uri.endsWith("/") ? "init" : "/init"}`,
 		`init`,
-		"services"
+		"agri-services"
 	);
 };
 
@@ -110,11 +82,7 @@ const onSelectServiceCustomizedController = (req: Request, res: Response, next: 
 		} } } = req.body;
 
 	const { id, type, stops } = fulfillments[0]
-	const { id: parent_item_id, location_ids, ...item } = items[0]
-	// const file = fs.readFileSync(
-	// 	path.join(SERVICES_EXAMPLES_PATH, "init/init_consultation.yaml")
-	// );
-	// const response = YAML.parse(file.toString());
+
 	const responseMessage = {
 		order: {
 			provider: {
@@ -179,6 +147,7 @@ const onSelectServiceCustomizedController = (req: Request, res: Response, next: 
 			payments
 		}
 	}
+
 	return responseBuilder(
 		res,
 		next,
@@ -186,25 +155,7 @@ const onSelectServiceCustomizedController = (req: Request, res: Response, next: 
 		responseMessage,
 		`${req.body.context.bpp_uri}${req.body.context.bpp_uri.endsWith("/") ? "init" : "/init"}`,
 		`init`,
-		"services"
+		"agri-services"
 	);
 };
 
-// const onSelectServiceController = (
-// 	req: Request,
-// 	res: Response
-// ) => {
-// 	const { context } = req.body;
-// 	const file = fs.readFileSync(
-// 		path.join(SERVICES_EXAMPLES_PATH, "init/init_service.yaml")
-// 	);
-// 	const response = YAML.parse(file.toString());
-// 	return responseBuilder(
-// 		res,
-// 		context,
-// 		response.value.message,
-// 		`${req.body.context.bpp_uri}${req.body.context.bpp_uri.endsWith("/") ? "init" : "/init"}`,
-// 		`init`,
-// 		"services"
-// 	);
-// };

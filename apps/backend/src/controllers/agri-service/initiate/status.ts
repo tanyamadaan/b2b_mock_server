@@ -1,16 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import {
-	SERVICES_BAP_MOCKSERVER_URL,
 	MOCKSERVER_ID,
 	send_response,
 	send_nack,
 	redisFetch,
-	checkIfCustomized,
-	createAuthHeader,
-	logger,
 	redis,
+	AGRI_SERVICES_BAP_MOCKSERVER_URL,
+	AGRI_SERVICES_BPP_MOCKSERVER_URL,
 } from "../../../lib/utils";
-import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
 export const initiateStatusController = async (
@@ -19,26 +16,24 @@ export const initiateStatusController = async (
 	next: NextFunction
 ) => {
 	const { transactionId } = req.body;
-	const transactionKeys = await redis.keys(`${transactionId}-*`);
 	const on_confirm = await redisFetch("on_confirm", transactionId);
+	
 	if (!on_confirm) {
 		send_nack(res,"On Confirm doesn't exist")
 	}
-	const statusIndex = transactionKeys.filter((e) =>
-		e.includes("status-to-server")
-	).length;
-	return intializeRequest(res, next, on_confirm, statusIndex);
+
+	return intializeRequest(res, next, on_confirm);
 };
 
 const intializeRequest = async (
 	res: Response,
 	next: NextFunction,
-	transaction: any,
-	statusIndex: number
+	transaction: any
 ) => {
 	const { context } = transaction;
 	const { transaction_id } = context;
-
+	context.bpp_uri = AGRI_SERVICES_BPP_MOCKSERVER_URL
+	
 	const status = {
 		context: {
 			...context,
@@ -46,47 +41,11 @@ const intializeRequest = async (
 			timestamp: new Date().toISOString(),
 			action: "status",
 			bap_id: MOCKSERVER_ID,
-			bap_uri: SERVICES_BAP_MOCKSERVER_URL,
+			bap_uri: AGRI_SERVICES_BAP_MOCKSERVER_URL,
 		},
 		message: {
 			order_id: transaction.message.order.id,
 		},
 	};
-
 	await send_response(res, next, status, transaction_id, "status");
-	// const header = await createAuthHeader(status);
-	// try {
-	// 	await redis.set(
-	// 		`${transaction_id}-${statusIndex}-status-from-server`,
-	// 		JSON.stringify({ request: { ...status } })
-	// 	);
-	// 	const response = await axios.post(`${context.bpp_uri}/status`, status, {
-	// 		headers: {
-	// 			// "X-Gateway-Authorization": header,
-	// 			authorization: header,
-	// 		},
-	// 	});
-
-	// 	await redis.set(
-	// 		`${transaction_id}-${statusIndex}-status-from-server`,
-	// 		JSON.stringify({
-	// 			request: { ...status },
-	// 			response: {
-	// 				response: response.data,
-	// 				timestamp: new Date().toISOString(),
-	// 			},
-	// 		})
-	// 	);
-
-	// 	return res.json({
-	// 		message: {
-	// 			ack: {
-	// 				status: "ACK",
-	// 			},
-	// 		},
-	// 		transaction_id,
-	// 	});
-	// } catch (error) {
-	// 	return next(error);
-	// }
 };

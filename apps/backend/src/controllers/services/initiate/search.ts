@@ -3,12 +3,8 @@ import {
 	MOCKSERVER_ID,
 	SERVICES_BAP_MOCKSERVER_URL,
 	SERVICES_EXAMPLES_PATH,
-	send_response,
-	createAuthHeader,
-	logger,
-	redis,
+	send_response
 } from "../../../lib/utils";
-import axios from "axios";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
@@ -50,6 +46,8 @@ export const initiateSearchController = async (req: Request, res: Response,  nex
 		},
 	};
 	search.bpp_uri=bpp_uri
+
+	console.log("transaction servicesssssssss",JSON.stringify(search))
 	await send_response(res, next, search,transaction_id, "search");
 	// const header = await createAuthHeader(search);
 	// try {

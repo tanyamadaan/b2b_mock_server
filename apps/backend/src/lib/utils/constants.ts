@@ -23,3 +23,6 @@ export const SERVICES_BAP_MOCKSERVER_URL = `http://localhost:3005/api/services/b
 
 export const AGRI_SERVICES_BPP_MOCKSERVER_URL = `http://localhost:3005/api/agri-services/bpp`;
 export const AGRI_SERVICES_BAP_MOCKSERVER_URL = `http://localhost:3005/api/agri-services/bap`;
+
+export const HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL = `http://localhost:3005/api/healthcare-services/bpp`;
+export const HEALTHCARE_SERVICES_BAP_MOCKSERVER_URL = `http://localhost:3005/api/healthcare-services/bap`;

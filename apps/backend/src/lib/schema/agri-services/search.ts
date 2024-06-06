@@ -194,14 +194,14 @@ export const searchSchema = {
                     properties: {
                       code: {
                         type: "string",
-                        enum: ["BAP_TERMS", "BAP_DETAILS"]
+                        enum: ["BAP_Terms","BAP_DETAILS","BAP_TYPE"]
                       },
                     },
                     required: ["code"],
                   },
                   list: {
                     type: "array",
-                    minItems: 1,
+                    // minItems: 2,
                     items: {
                       type: "object",
                       properties: {
@@ -210,7 +210,7 @@ export const searchSchema = {
                           properties: {
                             code: {
                               type: "string",
-                              enum:["finder_fee_type","finder_fee_amount", "BAP_TYPE"]
+                              enum:["finder_fee_type","finder_fee_amount","BAP_TYPE"]
                             },
                           },
                           required: ["code"],

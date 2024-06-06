@@ -1,22 +1,21 @@
+
+import { v4 as uuidv4 } from "uuid";
 import { NextFunction, Request, Response } from "express";
 import {
 	MOCKSERVER_ID,
-	SERVICES_BAP_MOCKSERVER_URL,
 	checkIfCustomized,
 	send_response,
 	send_nack,
-	createAuthHeader,
-	logger,
-	redis,
-	redisFetch
+	redisFetch,
+	AGRI_SERVICES_BPP_MOCKSERVER_URL,
+	AGRI_SERVICES_BAP_MOCKSERVER_URL
 } from "../../../lib/utils";
-import axios from "axios";
-import { v4 as uuidv4 } from "uuid";
 
 export const initiateInitController = async (req: Request, res: Response, next: NextFunction) => {
 	const { scenario, transactionId } = req.body;
-
 	const on_select = await redisFetch("on_select", transactionId)
+
+
 	if (Object.keys(on_select).includes("error")) {
 		send_nack(res,"On Select had errors")
 	}
@@ -24,11 +23,9 @@ export const initiateInitController = async (req: Request, res: Response, next: 
 	if (!on_select) {
 		send_nack(res,"On Select doesn't exist")
 	}
+	on_select.context.bpp_uri = AGRI_SERVICES_BPP_MOCKSERVER_URL
 
-	// const request = parsedTransaction[0].request;
-
-	return intializeRequest(res, next, on_select
-		, scenario);
+	return intializeRequest(res, next, on_select, scenario);
 };
 
 const intializeRequest = async (
@@ -43,28 +40,19 @@ const intializeRequest = async (
 			order: { provider, fulfillments, quote },
 		},
 	} = transaction;
+
 	let { payments, items } = transaction.message.order;
 	const { id, type, stops } = fulfillments[0];
 	const { id: parent_item_id, location_ids, ...item } = items[0];
-	const { transaction_id } = context;
 
 	const customized = checkIfCustomized(items);
-	// console.log("Customized ", customized)
-	//get item_id with quantity
 
 	if (customized) {
-		// items = items.map((e: { quantity: any; }) => (Object.keys(e).includes("quantity") ? {...e, quantity: {...e.quantity,
-		// 	measure: {
-		// 		unit: "unit",
-		// 		value: "1",
-		// 	},}}: e))
 	} else {
 		items = items.map(
 			({ location_ids, ...items }: { location_ids: any }) => items
 		);
 	}
-
-	// console.log("ITEMS BEING SENT:::", items)
 
 	const init = {
 		context: {
@@ -72,7 +60,7 @@ const intializeRequest = async (
 			timestamp: new Date().toISOString(),
 			action: "init",
 			bap_id: MOCKSERVER_ID,
-			bap_uri: SERVICES_BAP_MOCKSERVER_URL,
+			bap_uri: AGRI_SERVICES_BAP_MOCKSERVER_URL,
 			message_id: uuidv4(),
 		},
 		message: {
@@ -130,29 +118,6 @@ const intializeRequest = async (
 			},
 		},
 	};
+	
 	await send_response(res, next, init, context.transaction_id, "init",scenario=scenario);
-	// const header = await createAuthHeader(init);
-	// try {
-	// 	await redis.set(
-	// 		`${transaction_id}-init-from-server`,
-	// 		JSON.stringify({ request: { ...init } })
-	// 	);
-	// 	await axios.post(`${context.bpp_uri}/init?scenario=${scenario}`, init, {
-	// 		headers: {
-	// 			// "X-Gateway-Authorization": header,
-	// 			authorization: header,
-	// 		},
-	// 	});
-
-	// 	return res.json({
-	// 		message: {
-	// 			ack: {
-	// 				status: "ACK",
-	// 			},
-	// 		},
-	// 		transaction_id,
-	// 	});
-	// } catch (error) {
-	// 	return next(error)
-	// }
 };

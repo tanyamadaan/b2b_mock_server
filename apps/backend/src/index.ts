@@ -5,6 +5,7 @@ import {
 	agriServiceRouter,
 	authRouter,
 	b2bRouter,
+	healthCareServiceRouter,
 	miscRouter,
 	servicesRouter,
 } from "./controllers";
@@ -47,6 +48,8 @@ app.use("/b2b", errorHandlingWrapper(b2bRouter));
 app.use("/auth", errorHandlingWrapper(authRouter));
 app.use("/services", errorHandlingWrapper(servicesRouter));
 app.use("/agri-services", errorHandlingWrapper(agriServiceRouter));
+app.use("/healthcare-services", errorHandlingWrapper(healthCareServiceRouter));
+
 app.use(globalErrorHandler);
 
 app.use("/detect_app_installation", (req: Request, res: Response) => {

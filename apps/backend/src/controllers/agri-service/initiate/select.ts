@@ -1,22 +1,18 @@
 import { NextFunction, Request, Response } from "express";
-import {
-  MOCKSERVER_ID,
-  SERVICES_BAP_MOCKSERVER_URL,
-  checkIfCustomized,
-  send_response,
-  send_nack,
-  redisFetch,
-  createAuthHeader,
-  logger,
-  redis,
-  redisExist,
-
-} from "../../../lib/utils";
-import axios, { AxiosError } from "axios";
 import { v4 as uuidv4 } from "uuid";
 import { set, eq } from "lodash";
 import _ from "lodash";
 import { isBefore, addDays } from "date-fns";
+import {
+  MOCKSERVER_ID,
+  checkIfCustomized,
+  send_response,
+  send_nack,
+  redisFetch,
+  AGRI_SERVICES_BAP_MOCKSERVER_URL,
+  AGRI_SERVICES_BPP_MOCKSERVER_URL
+
+} from "../../../lib/utils";
 
 export const initiateSelectController = async (
   req: Request,
@@ -24,11 +20,14 @@ export const initiateSelectController = async (
   next: NextFunction
 ) => {
   const { transactionId } = req.body;
-
   const on_search = await redisFetch("on_search", transactionId);
+
   if (!on_search) {
     send_nack(res,"On Search doesn't exist")
   }
+  
+  on_search.context.bpp_uri = AGRI_SERVICES_BPP_MOCKSERVER_URL
+
   // selecting the senarios
   let scenario = "selection";
   if (checkIfCustomized(on_search.message.catalog.providers[0].items)) {
@@ -67,7 +66,6 @@ const intializeRequest = async (
   } = transaction;
   const { transaction_id } = context;
   const { id, locations } = providers[0];
-//   const { location_ids } = providers[0].items[0];
   let items = [];
   let start;
   let endDate;
@@ -115,11 +113,6 @@ const intializeRequest = async (
 
     // getting the required categories ids to look  for
     const required_categories = processCategories(providers[0].categories);
-    // console.log(
-    //   "-----Required Categories to include------",
-    //   required_categories
-    // );
-
     const count_cat: any = {};
     required_categories.forEach((cat: any) => {
       count_cat[cat] = 0;
@@ -145,30 +138,7 @@ const intializeRequest = async (
       }
       return false;
     });
-    // console.log("Items selected ::", items);
-    // if (req.body.child_ids) {
-    //   // items = items.filter(item => item.category_ids.includes(req.body.child_ids[0])).slice(0,1);
-    //   const new_items: any[] = [];
-    //   let count = 0;
-    //   let index = 0;
-    //   while (index < items.length && count < 2) {
-    //     if (items[index].category_ids.includes(req.body.child_ids[0])) {
-    //       if (
-    //         new_items.length > 0 &&
-    //         new_items[0].parent_item_id !== items[index].parent_item_id
-    //       ) {
-    //         continue;
-    //       }
-    //       new_items.push(items[index]);
-    //       count++;
-    //     }
-    //     index++;
-    //   }
-    //   const parent_item = items.find(
-    //     (item: any) => item.id === new_items[0].parent_item_id
-    //   );
-    //   items = [parent_item, ...new_items];
-    // }
+  
     const { id: item_id, parent_item_id ,location_ids} = parent_item;
     items = [
       {
@@ -218,22 +188,26 @@ const intializeRequest = async (
           id,
           parent_item_id,
           location_ids,
+          fulfillment_ids,
+          tags
         }: {
           id: any;
           parent_item_id: any;
           location_ids: any;
-        }) => ({ id, parent_item_id, location_ids: [{ id: location_ids[0] }] })
+          fulfillment_ids: any;
+          tags:any
+        }) => 
+          ({ id, parent_item_id, location_ids: [{ id: location_ids[0] }],fulfillment_ids:{ id: fulfillment_ids[0] },tags:[tags[0]]})
       )[0],
     ];
   }
-  // console.log("Items::", items, "Senario::", scenario)
   const select = {
     context: {
       ...context,
       timestamp: new Date().toISOString(),
       action: "select",
       bap_id: MOCKSERVER_ID,
-      bap_uri: SERVICES_BAP_MOCKSERVER_URL,
+      bap_uri: AGRI_SERVICES_BAP_MOCKSERVER_URL,
       message_id: uuidv4(),
     },
     message: {
@@ -246,17 +220,22 @@ const intializeRequest = async (
             },
           ],
         },
-        items: items.map((itm: any) => ({
-          ...itm,
-          location_ids: itm.location_ids
-            ? itm.location_ids.map((id: any) => String(id))
-            : undefined,
-          quantity: {
-            selected: {
-              count: 1,
+        items: items.map((itm) => {
+          return {
+            ...itm,
+            location_ids: itm.location_ids
+              ? itm.location_ids.map((id:any) => {
+                  return id?.id;
+                })
+              : undefined,
+              fulfillment_ids: [itm?.fulfillment_ids?.id],
+            quantity: {
+              selected: {
+                count: 1,
+              },
             },
-          },
-        })),
+          };
+        }),
         fulfillments: [
           {
             ...fulfillments[0],
@@ -271,21 +250,20 @@ const intializeRequest = async (
                 time: {
                   label: "selected",
                   range: {
-                    // should be dynamic on the basis of scehdule
+                    // should be dynamic on the basis of schedule
                     start:
                       providers[0]?.time?.schedule?.times?.[0] ?? new Date(),
                     end: providers[0]?.time?.schedule?.times?.[1] ?? new Date(),
                   },
                 },
                 days: scenario === "customization" ? "4" : undefined,
-                // 	? fulfillments[0].stops[0].time.days.split(",")[0]
-                // 	: undefined,
               },
             ],
           },
         ],
         payments: [{ type: payments[0].type }],
       },
+      
     },
   };
   if (eq(scenario, "customization")) {
@@ -301,40 +279,6 @@ const intializeRequest = async (
     );
   }
   await send_response(res, next, select,transaction_id, "select");
-  // const header = await createAuthHeader(select);
-  // try {
-  //   await redis.set(
-  //     `${transaction_id}-select-from-server`,
-  //     JSON.stringify({ request: { ...select } })
-  //   );
-  //   const response = await axios.post(`${context.bpp_uri}/select`, select, {
-  //     headers: {
-  //       "X-Gateway-Authorization": header,
-  //       authorization: header,
-  //     },
-  //   });
-  //   await redis.set(
-  //     `${transaction_id}-select-from-server`,
-  //     JSON.stringify({
-  //       request: { ...select },
-  //       response: {
-  //         response: response.data,
-  //         timestamp: new Date().toISOString(),
-  //       },
-  //     })
-  //   );
-  //   return res.json({
-  //     message: {
-  //       ack: {
-  //         status: "ACK",
-  //       },
-  //     },
-  //     transaction_id,
-  //   });
-  // } catch (error) {
-  //   console.log("ERROR :::::::::::::", (error as any).response.data.error);
-  //   return next(error);
-  // }
 };
 
 function processCategories(categories: Array<any>) {

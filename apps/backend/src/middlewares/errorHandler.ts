@@ -11,7 +11,7 @@ export const globalErrorHandler = (err: Error, _req: Request, res: Response, _ne
 			},
 		},
 		error: {
-			message: err instanceof AxiosError ? err.response : err.message,
+			message: err instanceof AxiosError ? err?.response?.data : err.message,
 		},
 	});
 }

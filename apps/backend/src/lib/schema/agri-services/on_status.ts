@@ -169,14 +169,14 @@ export const onStatusSchema = {
                         required: ["unit", "value"],
                       },
                     },
-                    required: ["selected", "measure"],
+                    // required: ["selected", "measure"],
                   },
                 },
                 required: [
                   "id",
-                  "parent_item_id",
-                  "fulfillment_ids",
-                  "quantity",
+                  // "parent_item_id",
+                  // "fulfillment_ids",
+                  // "quantity",
                 ],
               },
             },
@@ -242,7 +242,7 @@ export const onStatusSchema = {
                         properties: {
                           code: {
                             type: "string",
-                            enum: SRV_FULFILLMENT_STATE,
+                            // enum: SRV_FULFILLMENT_STATE,
                           },
                         },
                         required: ["code"],
@@ -436,7 +436,7 @@ export const onStatusSchema = {
                             required: ["currency", "value"],
                           },
                         },
-                        required: ["id", "quantity", "price"],
+                        // required: ["id", "quantity", "price"],
                       },
                       tags: {
                         type: "array",
@@ -478,14 +478,14 @@ export const onStatusSchema = {
                         },
                       },
                     },
-                    required: ["title", "price", "item", "tags"],
+                    // required: ["title", "price", "item", "tags"],
                   },
                 },
                 ttl: {
                   type: "string",
                 },
               },
-              required: ["price", "breakup", "ttl"],
+              // required: ["price", "breakup", "ttl"],
             },
             payments: {
               type: "array",
@@ -520,7 +520,7 @@ export const onStatusSchema = {
                     required: [
                       "amount",
                       "currency",
-                      "transaction_id",
+                      // "transaction_id",
                       "bank_account_number",
                       "virtual_payment_address",
                     ],

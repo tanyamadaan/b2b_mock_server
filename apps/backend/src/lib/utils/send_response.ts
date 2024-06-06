@@ -1,6 +1,6 @@
 import { NextFunction, Response, Request } from "express";
-import { createAuthHeader, redis } from "./index";
 import axios, { AxiosError } from "axios";
+import { createAuthHeader, redis } from "./index";
 
 interface headers {
 	authorization: string;
@@ -18,9 +18,11 @@ async function send_response(
 	try {
 		const { context } = res_obj;
 		const bpp_uri = context.bpp_uri || res_obj.bpp_uri;
+		// res_obj.context.bpp_uri = bpp_uri
 		if (res_obj.bpp_uri) delete res_obj.bpp_uri;
 
 		const header = await createAuthHeader(res_obj);
+		// res_obj.bpp_uri = bpp_uri
 		await redis.set(
 			`${transaction_id}-${action}-from-server`,
 			JSON.stringify({ request: { ...res_obj } })
@@ -32,15 +34,12 @@ async function send_response(
 		if (action === "search") {
 			headers["X-Gateway-Authorization"] = header;
 		}
+		const uri = `${bpp_uri}/${action}${scenario ? `?scenario=${scenario}` : ""}`
+		console.log(`send_response URL - ${uri} \n - Payload - ${JSON.stringify(res_obj)}`)
 
-		console.log("ddddddddddddddddddddd",`${bpp_uri}/${action}${scenario ? `?scenario=${scenario}` : ""}`,res_obj)
-		const response = await axios.post(
-			`${bpp_uri}/${action}${scenario ? `?scenario=${scenario}` : ""}`,
-			res_obj,
-			{
-				headers: { ...headers },
-			}
-		);
+		const response = await axios.post(uri, res_obj, {
+			headers: { ...headers },
+		});
 
 		await redis.set(
 			`${transaction_id}-${action}-from-server`,
@@ -61,7 +60,6 @@ async function send_response(
 			transaction_id,
 		});
 	} catch (error) {
-		// console.log("ERROR", (error as any)?.response)
 		return next(error);
 	}
 }

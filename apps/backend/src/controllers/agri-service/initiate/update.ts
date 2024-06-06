@@ -4,12 +4,9 @@ import {
   createAuthHeader,
   redis,
   redisFetch,
-  B2B_BAP_MOCKSERVER_URL,
-  MOCKSERVER_ID,
+  AGRI_SERVICES_BPP_MOCKSERVER_URL,
 } from "../../../lib/utils";
-import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
-import { selectController } from "../bpp/select";
 
 export const initiateUpdateController = async (
   req: Request,
@@ -17,32 +14,15 @@ export const initiateUpdateController = async (
   next: NextFunction
 ) => {
   const { scenario, transactionId } = req.body;
-  // const transactionKeys = await redis.keys(`${transactionId}-*`);
-  // const ifTransactionExist = transactionKeys.filter((e) =>
-  // 	e.includes("on_confirm-to-server")
-  // );
-  // if (ifTransactionExist.length === 0) {
-  // 	return res.status(400).json({
-  // 		message: {
-  // 			ack: {
-  // 				status: "NACK",
-  // 			},
-  // 		},
-  // 		error: {
-  // 			message: "On Confirm doesn't exist",
-  // 		},
-  // 	});
-  // }
-
-  // const transaction = await redis.mget(ifTransactionExist);
-  // const parsedTransaction = transaction.map((ele) => {
-  // 	return JSON.parse(ele as string);
-  // });
   const on_confirm = await redisFetch("on_confirm", transactionId);
+
   if (!on_confirm) {
     send_nack(res, "On Confirm doesn't exist");
   }
+
+  on_confirm.context.bpp_uri = AGRI_SERVICES_BPP_MOCKSERVER_URL
   const { context, message } = on_confirm;
+
   const timestamp = new Date().toISOString();
   context.action = "update";
   context.timestamp = timestamp;
@@ -58,10 +38,24 @@ export const initiateUpdateController = async (
       var responseMessage = requoteRequest(message);
       break;
   }
+
   const update = {
     context,
-    // message: responseMessage
+    message:{
+      update_target:"payments",
+      order:{
+        id:message.order.id,
+        fulfillments:[{
+          id:"C1",
+          type:"Cancel"
+        }],
+        payments:{
+          tags:message.order.payments[0].tags
+        }
+      }
+    }
   };
+
   const header = await createAuthHeader(update);
 
   try {
@@ -69,9 +63,9 @@ export const initiateUpdateController = async (
       `${transactionId}-update-from-server`,
       JSON.stringify({ request: { ...update } })
     );
+
     const response = await axios.post(`${context.bpp_uri}/update`, update, {
       headers: {
-        // "X-Gateway-Authorization": header,
         authorization: header,
       },
     });
@@ -99,6 +93,7 @@ export const initiateUpdateController = async (
     return next(error);
   }
 };
+
 function requoteRequest(message: any) {
   let {
     order: { items, payments, fulfillments, quote },
@@ -130,7 +125,7 @@ function requoteRequest(message: any) {
     },
     items,
     payments,
-    fulfillments: fulfillments.map(({ id, itm }: { id: String; itm: any }) => ({
+    fulfillments: fulfillments.map((itm: any) => ({
       ...itm,
       stops: itm.stops.map((stop: any) => ({
         ...stop,
@@ -141,4 +136,4 @@ function requoteRequest(message: any) {
   return responseMessage;
 }
 
-function rescheduleRequest(message: any) {}
+function rescheduleRequest(message: any) { }

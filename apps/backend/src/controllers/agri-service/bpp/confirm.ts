@@ -1,8 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { SERVICES_EXAMPLES_PATH, checkIfCustomized, quoteCreatorService, responseBuilder } from "../../../lib/utils";
-import fs from "fs";
-import path from "path";
-import YAML from "yaml";
+import { checkIfCustomized, responseBuilder } from "../../../lib/utils";
 
 
 export const confirmController = (req: Request, res: Response, next: NextFunction) => {
@@ -73,7 +70,7 @@ export const confirmConsultationController = (req: Request, res: Response, next:
 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
 		}`,
 		`on_confirm`,
-		"services"
+		"agri-services"
 	);
 };
 
@@ -82,8 +79,6 @@ export const confirmServiceCustomizationController = (req: Request, res: Respons
 	const { context, message: { order } } = req.body;
 	const { fulfillments } = order
 
-	const rangeStart = new Date().setHours(new Date().getHours() + 2)
-	const rangeEnd = new Date().setHours(new Date().getHours() + 3)
 	const timestamp = new Date()
 	const end_time = new Date(timestamp.getTime() + 30 * 60 * 1000)
 	// const fulfillments = response.value.message.order.fulfillments
@@ -127,7 +122,8 @@ export const confirmServiceCustomizationController = (req: Request, res: Respons
 			itm.person = { name: itm.customer.person.name }
 			itm.customer = undefined
 		}
-	})
+	});
+
 	const responseMessage = {
 		order: {
 			...order,
@@ -157,25 +153,8 @@ export const confirmServiceCustomizationController = (req: Request, res: Respons
 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
 		}`,
 		`on_confirm`,
-		"services"
+		"agri-services"
 	);
 };
 
-
-// const confirmServiceController = (req: Request, res: Response) => {
-// 	const { context } = req.body;
-// 	const file = fs.readFileSync(
-// 		path.join(SERVICES_EXAMPLES_PATH, "on_confirm/on_confirm_service.yaml")
-// 	);
-// 	const response = YAML.parse(file.toString());
-// 	return responseBuilder(
-// 		res,
-// 		context,
-// 		response.value.message,
-// 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
-// 		}`,
-// 		`on_confirm`,
-// 		"services"
-// 	);
-// };
 

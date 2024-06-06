@@ -2,8 +2,11 @@ import axios from "axios";
 import { NextFunction, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import {
+	AGRI_SERVICES_BAP_MOCKSERVER_URL,
+	AGRI_SERVICES_BPP_MOCKSERVER_URL,
 	B2B_BAP_MOCKSERVER_URL,
 	B2B_BPP_MOCKSERVER_URL,
+	HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL,
 	MOCKSERVER_ID,
 	SERVICES_BAP_MOCKSERVER_URL,
 	SERVICES_BPP_MOCKSERVER_URL,
@@ -16,6 +19,7 @@ import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 import { AxiosError } from "axios";
+import { redisFetch } from "./redisFetch";
 
 interface TagDescriptor {
 	code: string;
@@ -42,6 +46,8 @@ interface Tag {
 }
 
 interface Item {
+	price: any;
+	title: any;
 	fulfillment_ids: string[];
 	id: string;
 	quantity: Quantity;
@@ -56,20 +62,20 @@ export const responseBuilder = async (
 	message: object,
 	uri: string,
 	action: string,
-	domain: "b2b" | "services",
+	domain: "b2b" | "services" | "agri-services" | "healthcare-service",
 	error?: object | undefined,
 ) => {
 	res.locals = {};
-	// var ts = new Date((reqContext as any).timestamp);
-	var ts = new Date();
+	let ts = new Date();
 	ts.setSeconds(ts.getSeconds() + 1);
 	const sandboxMode = res.getHeader("mode") === "sandbox";
-	// console.log("SANDBOX>", sandboxMode);
 	var async: { message: object; context?: object; error?: object } = {
 		context: {},
 		message,
 	};
-
+	const bppURI = domain === "b2b"
+		? B2B_BPP_MOCKSERVER_URL : (domain === "agri-services" ? AGRI_SERVICES_BPP_MOCKSERVER_URL
+			: (domain === "healthcare-service" ? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL : SERVICES_BPP_MOCKSERVER_URL))
 	if (action.startsWith("on_")) {
 		// const { bap_uri, bap_id, ...remainingContext } = reqContext as any;
 		async = {
@@ -78,10 +84,7 @@ export const responseBuilder = async (
 				// ...remainingContext,
 				...reqContext,
 				bpp_id: MOCKSERVER_ID,
-				bpp_uri:
-					domain === "b2b"
-						? B2B_BPP_MOCKSERVER_URL
-						: SERVICES_BPP_MOCKSERVER_URL,
+				bpp_uri: bppURI,
 				timestamp: ts.toISOString(),
 				action,
 			},
@@ -94,10 +97,7 @@ export const responseBuilder = async (
 				// ...remainingContext,
 				...reqContext,
 				bap_id: MOCKSERVER_ID,
-				bap_uri:
-					domain === "b2b"
-						? B2B_BAP_MOCKSERVER_URL
-						: SERVICES_BAP_MOCKSERVER_URL,
+				bap_uri: bppURI,
 				timestamp: ts.toISOString(),
 				message_id: uuidv4(),
 				action,
@@ -122,8 +122,7 @@ export const responseBuilder = async (
 					e.includes("on_status-to-server")
 				).length;
 				await redis.set(
-					`${
-						(async.context! as any).transaction_id
+					`${(async.context! as any).transaction_id
 					}-${logIndex}-${action}-from-server`,
 					JSON.stringify(log)
 				);
@@ -145,29 +144,28 @@ export const responseBuilder = async (
 					response: response.data,
 				};
 
+				console.log("respone data", response.data.context, uri)
 				await redis.set(
 					`${(async.context! as any).transaction_id}-${action}-from-server`,
 					JSON.stringify(log)
 				);
 			} catch (error) {
-				const response =
-					error instanceof AxiosError
-						? error.response
-						: {
-								message: {
-									ack: {
-										status: "NACK",
-									},
-								},
-								error: {
-									message: error,
-								},
-						  };
+				const response = error instanceof AxiosError
+					? error?.response?.data
+					: {
+						message: {
+							ack: {
+								status: "NACK",
+							},
+						},
+						error: {
+							message: error,
+						},
+					}
 				log.response = {
 					timestamp: new Date().toISOString(),
 					response: response,
 				};
-
 				await redis.set(
 					`${(async.context! as any).transaction_id}-${action}-from-server`,
 					JSON.stringify(log)
@@ -358,7 +356,8 @@ export const quoteCreatorService = (items: Item[]) => {
 			};
 		});
 	});
-	console;
+
+	console.log("breakupwwwwwwww",breakup)
 	return {
 		breakup,
 		price: {
@@ -368,6 +367,324 @@ export const quoteCreatorService = (items: Item[]) => {
 		ttl: "P1D",
 	};
 };
+
+export const quoteCreatorAgriService = (items: Item[], providersItems?: any) => {
+	//get price from on_search
+	items.forEach(item => {
+		// Find the corresponding item in the second array
+		const matchingItem = providersItems.find((secondItem: { id: string; }) => secondItem.id === item.id);
+		// If a matching item is found, update the price in the items array
+		if (matchingItem) {
+			item.title = matchingItem.descriptor.name
+			item.price = matchingItem.price
+			item.tags = matchingItem.tags
+		};
+	});
+
+	let breakup: any[] = [];
+
+	items.forEach((item) => {
+		breakup.push({
+			title: item.title,
+			price: {
+				currency: "INR",
+				value: (Number(item.price.value) * item.quantity.selected.count).toString()
+			},
+			tags: item.tags,
+			item: item.title === "tax" ? {
+				id: item.id,
+			} : {
+				id: item.id,
+				price: item.price,
+				quantity: item.quantity ? item.quantity : undefined,
+			}
+		})
+	});
+
+
+	//ADD STATIC TAX IN BREAKUP QUOTE
+	breakup.push({
+		title: "tax",
+		price: {
+			currency: "INR",
+			value: "10",
+		},
+		item: items[0],
+		tags: [
+			{
+				descriptor: {
+					code: "title",
+				},
+				list: [
+					{
+						descriptor: {
+							code: "type",
+						},
+						value: "tax",
+					},
+				],
+			},
+		],
+	})
+
+	console.log("breakuppppppppppppppp", breakup)
+
+	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
+
+
+	let totalPrice = 0;
+
+	breakup.forEach(entry => {
+		const priceValue = parseFloat(entry.price.value);
+		if (!isNaN(priceValue)) {
+			totalPrice += priceValue;
+		}
+	});
+
+	console.log("totalPriceaaaaaaa", totalPrice)
+	const result = {
+		breakup,
+		price: {
+			currency: "INR",
+			value: totalPrice.toFixed(2)
+		},
+		ttl: "P1D"
+	};
+
+	return result;
+
+};
+
+export const quoteCreatorHealthCareService = (items: Item[], providersItems?: any,offers?:any) => {
+
+	//GET PACKAGE ITEMS
+
+	console.log("offerssssssssss",JSON.stringify(offers))
+
+	console.log("providersItems", JSON.stringify(providersItems))
+	//get price from on_search
+	items.forEach(item => {
+		if(item.tags[0].list[0].value === "PACKAGE"){
+			const getItems = item.tags[0].list[1].value.split(",")
+			console.log("getItemsssssssss",getItems)
+
+			getItems.forEach(pItem => {
+		// Find the corresponding item in the second array
+		const matchingItem = providersItems.find((secondItem: { id: string; }) => secondItem.id === pItem);
+		// If a matching item is found, update the price in the items array
+        items.push({...matchingItem,quantity:item.quantity});
+		console.log("matchingItemsssssssss",matchingItem)
+		
+	});
+		}
+	});
+
+	console.log("packageItems", items)
+	items.forEach(item => {
+		// Find the corresponding item in the second array
+		const matchingItem = providersItems.find((secondItem: { id: string; }) => secondItem.id === item.id);
+		// If a matching item is found, update the price in the items array
+		if (matchingItem) {
+			item.title = matchingItem.descriptor.name
+			item.price = matchingItem.price
+			item.tags = matchingItem.tags
+		};
+	});
+
+
+	let breakup: any[] = [];
+
+	items.forEach((item) => {
+		breakup.push({
+			title: item.title,
+			price: {
+				currency: "INR",
+				value: (Number(item.price.value) * item.quantity.selected.count).toString()
+			},
+			tags: item.tags,
+			item: item.title === "tax" ? {
+				id: item.id,
+			} : {
+				id: item.id,
+				price: item.price,
+				quantity: item.quantity ? item.quantity : undefined,
+			}
+		})
+
+		console.log("breakuppppppppppppp", JSON.stringify(breakup[0].tags))
+
+	});
+
+	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
+
+
+	//ADD STATIC TAX FOR ITEM ONE
+
+	breakup.push(
+	{
+		title: "tax",
+		price: {
+			currency: "INR",
+			value: "10",
+		},
+		item:items[0],
+		tags: [
+			{
+				descriptor: {
+					code: "title",
+				},
+				list: [
+					{
+						descriptor: {
+							code: "type",
+						},
+						value: "tax",
+					},
+				],
+			},
+		],
+	},
+	)
+
+
+    //ADD OFFERS TAGS INTO BREAKUP
+    // if(offers){
+    // 	breakup.push(
+	// {
+	// 	title: "offers",
+	// 	price: {
+	// 		currency: "INR",
+	// 		value: "10",
+	// 	},
+	// 	item:items[0],
+	// 	tags: [
+	// 		{
+	// 			descriptor: {
+	// 				code: "title",
+	// 			},
+	// 			list: [
+	// 				{
+	// 					descriptor: {
+	// 						code: "type",
+	// 					},
+	// 					value: "tax",
+	// 				},
+	// 			],
+	// 		},
+	// 	],
+	// },
+	// )
+    // }
+	let totalPrice = 0;
+
+	breakup.forEach(entry => {
+		const priceValue = parseFloat(entry.price.value);
+		if (!isNaN(priceValue)) {
+			totalPrice += priceValue;
+		}
+	});
+
+	const result = {
+		breakup,
+		price: {
+			currency: "INR",
+			value: totalPrice.toFixed(2)
+		},
+		ttl: "P1D"
+	};
+
+	return result;
+
+};
+
+export const quoteCreatorHealthCareForItemsService = (items: Item[], providersItems?: any) => {
+	//get price from on_search
+	items.forEach(item => {
+		// Find the corresponding item in the second array
+		const matchingItem = providersItems.find((secondItem: { id: string; }) => secondItem.id === item.id);
+		// If a matching item is found, update the price in the items array
+		if (matchingItem) {
+			item.title = matchingItem.descriptor.name
+			item.price = matchingItem.price
+			item.tags = matchingItem.tags
+		};
+	});
+
+	let breakup: any[] = [];
+
+	items.forEach((item) => {
+		breakup.push({
+			title: item.title,
+			price: {
+				currency: "INR",
+				value: (Number(item.price.value) * item.quantity.selected.count).toString()
+			},
+			tags: item.tags,
+			item: item.title === "tax" ? {
+				id: item.id,
+			} : {
+				id: item.id,
+				price: item.price,
+				quantity: item.quantity ? item.quantity : undefined,
+			}
+		})
+
+		console.log("breakuppppppppppppp", JSON.stringify(breakup[0].tags))
+
+	});
+
+	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
+
+
+	//ADD STATIC TAX FOR ITEM ONE
+
+	breakup.push({
+		title: "tax",
+		price: {
+			currency: "INR",
+			value: "10",
+		},
+		item:items[0],
+		tags: [
+			{
+				descriptor: {
+					code: "title",
+				},
+				list: [
+					{
+						descriptor: {
+							code: "type",
+						},
+						value: "tax",
+					},
+				],
+			},
+		],
+	})
+
+
+	let totalPrice = 0;
+
+	breakup.forEach(entry => {
+		const priceValue = parseFloat(entry.price.value);
+		if (!isNaN(priceValue)) {
+			totalPrice += priceValue;
+		}
+	});
+
+	const result = {
+		breakup,
+		price: {
+			currency: "INR",
+			value: totalPrice.toFixed(2)
+		},
+		ttl: "P1D"
+	};
+
+	return result;
+
+};
+
 
 export const quoteCreatorServiceCustomized = (items: Item[]) => {
 	// var breakup: any[] = [
@@ -807,3 +1124,8 @@ export const checkIfCustomized = (items: Item[]) => {
 			)
 	);
 };
+
+export const getOnSearchFromRadisByTransactionId = async (transactionId: string) => {
+	const on_search = await redisFetch("on_search", transactionId);
+	return on_search?.message?.catalog?.providers[0]?.items
+}

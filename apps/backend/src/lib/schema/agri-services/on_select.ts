@@ -131,6 +131,26 @@ export const onSelectSchema = {
                       type: "string",
                     },
                   },
+                  tags: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        descriptor: {
+                          type: "object",
+                          properties: {
+                            code: {
+                              type: "string",
+                            }
+                          }
+                        },
+                        list: {
+                          type: "array",
+                        }
+                      },
+                      required: ["descriptor","list"],
+                    },
+                  },
                   quantity: {
                     type: "object",
                     properties: {

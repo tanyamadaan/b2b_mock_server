@@ -17,7 +17,7 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 
 type InitiateRequestSectionProp = {
-	domain: "b2b" | "services" | "agri-services";
+	domain: "b2b" | "services" | "agri-services" | "healthcare-services";
 };
 
 type SELECT_OPTIONS =
@@ -26,6 +26,7 @@ type SELECT_OPTIONS =
 	| { b2b: string[]; services: string[]; agri_services: string[] }
 	| { services: string[] }
 	| { agri_services: string[] }
+	| { healthcare_services: string[] }
 	| object;
 
 type SELECT_FIELD = {
@@ -40,8 +41,6 @@ export const InitiateRequestSection = ({
 	domain,
 }: InitiateRequestSectionProp) => {
 
-	console.log("domain=>>>>>>>>>>>",domain)
-
 	const { handleMessageToggle, setMessageType, setCopy } = useMessage();
 	const [action, setAction] = useState<string>();
 	const [renderActionFields, setRenderActionFields] = useState(false);
@@ -52,8 +51,6 @@ export const InitiateRequestSection = ({
 		_event: React.SyntheticEvent | null,
 		newValue: string | null
 	) => {
-
-		console.log("newValue=>>>>>>>>>>>>>>",newValue)
 
 		setRenderActionFields(false);
 		setAction(newValue as string);
@@ -88,7 +85,6 @@ export const InitiateRequestSection = ({
 	}, [action, domain, formState]);
 
 	const handleSubmit = async () => {
-		console.log("Values", formState);
 		try {
 			const response = await axios.post(
 				`${
@@ -101,7 +97,6 @@ export const InitiateRequestSection = ({
 					},
 				}
 			);
-			// console.log("Response from initiate", response);
 			if (response.data.message.ack.status === "ACK") {
 				if (action === "search") {
 					handleMessageToggle(
@@ -121,14 +116,13 @@ export const InitiateRequestSection = ({
 				);
 				setMessageType("error");
 			}
-		} catch (error) {
+		} catch (error:any) {
 			setMessageType("error");
 			if (error instanceof AxiosError && error.response?.data?.error?.message)
 				handleMessageToggle(
-					`Error Occurred: ${error.response?.data?.error?.message}`
+					`Error Occurred while initiating request!`
 				);
 			else handleMessageToggle("Error Occurred while initiating request!");
-			console.log("Error occurred", error);
 		}
 	};
 	return (

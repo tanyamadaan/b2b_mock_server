@@ -133,26 +133,53 @@ export const selectSchema = {
                   parent_item_id: {
                     type: "string",
                   },
+                  fulfillment_ids: {
+                    type: "array",
+                    items: {
+                      type: "string",
+                    },
+                  },
                   location_ids: {
                     type: "array",
                     items: {
                       type: "string",
                     },
                   },
-                  quantity: {
-                    type: "object",
-                    properties:{
-                      selected: {
+                  tags: {
+                    type: "array",
+                    items: {
                       type: "object",
                       properties: {
-                        count: {
-                          type: "number",
+                        descriptor: {
+                          type: "object",
+                          properties: {
+                            code: {
+                              type: "string",
+                            }
+                          }
+                        },
+                        list: {
+                          type: "array",
                         }
-                    }}
+                      },
+                      required: ["descriptor","list"],
+                    },
+                  },
+                  quantity: {
+                    type: "object",
+                    properties: {
+                      selected: {
+                        type: "object",
+                        properties: {
+                          count: {
+                            type: "number",
+                          }
+                        }
+                      }
+                    }
                   }
-                }
                 },
-                required: ["id", "parent_item_id", "location_ids","quantity"],
+                required: ["id", "location_ids", "fulfillment_ids", "quantity"],
               },
             },
             fulfillments: {
@@ -209,7 +236,7 @@ export const selectSchema = {
                           required: ["label", "range"],
                         },
                       },
-                      required: ["type", "location","time"],
+                      required: ["type", "location", "time"],
                     },
                   },
                 },

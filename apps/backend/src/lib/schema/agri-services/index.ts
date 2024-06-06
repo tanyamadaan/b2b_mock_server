@@ -37,7 +37,6 @@ export const agriSrvSchemaValidator =
 			| "on_cancel"
 	) =>
 		(req: Request, res: Response, next: NextFunction) => {
-			console.log("searchSchema=>>>>>>>>>",searchSchema,schema)
 			const ajv = new Ajv({
 				allErrors: true,
 				strict: false,
@@ -53,6 +52,7 @@ export const agriSrvSchemaValidator =
 			}>,
 				isValid: boolean;
 
+			console.log("schemaaaaaaaa", schema)
 			switch (schema) {
 				case "search":
 					validate = ajv.compile(searchSchema);
@@ -111,8 +111,8 @@ export const agriSrvSchemaValidator =
 					return;
 			}
 
+			console.log("req.body=>>>>>>>>>>",JSON.stringify(req.body))
 			isValid = validate(req.body);
-			// console.log('isValid::::: ', isValid)
 			if (!isValid) {
 				res.status(400).json({
 					message: {
@@ -140,38 +140,3 @@ export const agriSrvSchemaValidator =
 			next();
 		};
 
-// export const masterSchemaValidator = (
-// 	_req: Request,
-// 	res: Response,
-// 	next: NextFunction
-// ) => {
-// 	const ajv = new Ajv({
-// 		allErrors: true,
-// 		strict: false,
-// 		strictRequired: false,
-// 		strictTypes: false,
-// 		$data: true,
-// 	});
-// 	addFormats(ajv);
-
-// 	require("ajv-errors")(ajv);
-// 	var validate = ajv
-// 		.addSchema(searchSchema)
-// 		.addSchema(onSearchSchema)
-// 		.addSchema(selectSchema)
-// 		.addSchema(onSelectSchema)
-// 		.addSchema(initSchema)
-// 		.addSchema(onInitSchema)
-// 		.addSchema(confirmSchema)
-// 		.addSchema(onConfirmSchema)
-// 		.addSchema(updateSchema)
-// 		.addSchema(onUpdateSchema)
-// 		.addSchema(statusSchema)
-// 		.addSchema(onStatusSchema)
-// 		.compile(masterSchema);
-
-// 	const transaction: TransactionType = res.locals.logs;
-// 	const isValid = validate(transaction.logs);
-// 	if (!isValid) console.log("[TRANSACTION ERROR]::", validate.errors);
-// 	next();
-// };

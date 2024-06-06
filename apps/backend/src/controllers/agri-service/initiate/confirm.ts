@@ -1,18 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import {
-	SERVICES_BAP_MOCKSERVER_URL,
+	AGRI_SERVICES_BAP_MOCKSERVER_URL,
 	MOCKSERVER_ID,
 	checkIfCustomized,
 	send_response,
 	send_nack,
-	createAuthHeader,
-	logger,
-	quoteCreatorService,
 	quoteCreatorServiceCustomized,
-	redis,
-	redisFetch
+	redisFetch,
+	AGRI_SERVICES_BPP_MOCKSERVER_URL,
+	quoteCreatorAgriService
 } from "../../../lib/utils";
-import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
 export const initiateConfirmController = async (
@@ -21,42 +18,24 @@ export const initiateConfirmController = async (
 	next: NextFunction
 ) => {
 	const { scenario, transactionId } = req.body;
-
-	// const transactionKeys = await redis.keys(`${transactionId}-*`);
-	// const ifTransactionExist = transactionKeys.filter((e) =>
-	// 	e.includes("on_init-to-server")
-	// );
-
-	// if (ifTransactionExist.length === 0) {
-	// 	return res.status(400).json({
-	// 		message: {
-	// 			ack: {
-	// 				status: "NACK",
-	// 			},
-	// 		},
-	// 		error: {
-	// 			message: "On Init doesn't exist",
-	// 		},
-	// 	});
-	// }
-	// const transaction = await redis.mget(ifTransactionExist);
-	// const parsedTransaction = transaction.map((ele) => {
-	// 	return JSON.parse(ele as string);
-	// });
+	const on_search = await redisFetch("on_search", transactionId);
+	const providersItems = on_search?.message?.catalog?.providers[0]?.items;
 	const on_init = await redisFetch("on_init", transactionId)
+
 	if(!on_init){
 		send_nack(res,"On Init doesn't exist")
 	}
 
-	// console.log("parsedTransaction:::: ", parsedTransaction[0]);
-	return intializeRequest(res, next, on_init, scenario);
+	on_init.context.bpp_uri = AGRI_SERVICES_BPP_MOCKSERVER_URL
+	return intializeRequest(res, next, on_init, scenario,providersItems);
 };
 
 const intializeRequest = async (
 	res: Response,
 	next: NextFunction,
 	transaction: any,
-	scenario: string
+	scenario: string,
+	providersItems:any
 ) => {
 	const {
 		context,
@@ -77,14 +56,13 @@ const intializeRequest = async (
 	const timestamp = new Date().toISOString();
 
 	const customized = checkIfCustomized(items);
-	// console.log("Xinput ::", xinput)
 	const confirm = {
 		context: {
 			...context,
 			timestamp: new Date().toISOString(),
 			action: "confirm",
 			bap_id: MOCKSERVER_ID,
-			bap_uri: SERVICES_BAP_MOCKSERVER_URL,
+			bap_uri: AGRI_SERVICES_BAP_MOCKSERVER_URL,
 			message_id: uuidv4()
 		},
 		message: {
@@ -119,7 +97,7 @@ const intializeRequest = async (
 				],
 				quote: customized
 					? quoteCreatorServiceCustomized(items)
-					: quoteCreatorService(items),
+					: quoteCreatorAgriService(items,providersItems),
 				payments: [
 					{
 						//hardcoded transaction_id
@@ -145,13 +123,13 @@ const intializeRequest = async (
 			},
 		},
 	};
-	confirm.message.order.quote.breakup.forEach((itm: any) => {
-		itm.item.quantity = {
-			selected: {
-				count: 3
-			}
-		}
-	})
+	// confirm.message.order.quote.breakup.forEach((itm: any) => {
+	// 	itm.item.quantity = {
+	// 		selected: {
+	// 			count: 3
+	// 		}
+	// 	}
+	// })
 	await send_response(res, next, confirm, transaction_id, "confirm",scenario=scenario);
 	// const header = await createAuthHeader(confirm);
 	// try {
