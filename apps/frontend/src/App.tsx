@@ -17,6 +17,9 @@ import { AgriServicesMock, B2BMock, HealthCareServicesMock, ServicesMock } from 
 import { B2BSandbox, ServicesSandbox } from "./pages/sandbox/domains";
 import { AgriServicesSandbox } from "./pages/sandbox/domains/agri-services";
 import { HealthCareServicesSandbox } from "./pages/sandbox/domains/healthcare-services";
+import Readme from "./pages/readme";
+
+// log
 
 const router = createBrowserRouter([
 	{
@@ -26,6 +29,10 @@ const router = createBrowserRouter([
 			{
 				path: "/",
 				Component: Landing,
+			},
+			{
+				path: "/user-guide",
+				Component: Readme,
 			},
 			{
 				path: "/sign-check",

@@ -15,6 +15,7 @@
     "turbo": "^1.12.4"
   },
   "dependencies": {
+    "@mui/styles": "^5.15.18",
     "date-fns": "^3.6.0",
     "lodash": "^4.17.21"
   }

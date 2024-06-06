@@ -31,7 +31,7 @@ export const initiateSelectController = async (
 	);
 
 	if (ifTransactionExist.length === 0) {
-		send_nack(res,"On Search doesn't exist")
+		return send_nack(res, "On Search doesn't exist");
 	}
 	const transaction = await redis.mget(ifTransactionExist);
 	const parsedTransaction = transaction.map((ele) => {
@@ -103,7 +103,14 @@ const intializeRequest = async (
 				},
 			},
 		};
-		await send_response(res, next, select, transaction_id, "select",scenario=scenario);
+		await send_response(
+			res,
+			next,
+			select,
+			transaction_id,
+			"select",
+			(scenario = scenario)
+		);
 		// const header = await createAuthHeader(select);
 		// try {
 		// 	await redis.set(

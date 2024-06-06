@@ -8,6 +8,8 @@ import {
 	quoteCreatorServiceCustomized,
 	checkIfCustomized,
 	redis,
+	Stop,
+	Time,
 } from "../../../lib/utils";
 import path from "path";
 import fs from "fs";
@@ -45,13 +47,13 @@ const selectConsultationConfirmController = (req: Request, res: Response, next: 
 				collected_by: "BAP",
 			})),
 			items: message.order.items.map(
-				({ ...remaining }: { location_ids: any; remaining: any }) => ({
+				({ ...remaining }: { location_ids: string[]; remaining: any }) => ({
 					...remaining,
 					fulfillment_ids: [uuidv4()],
 				})
 			),
 			fulfillments: message.order.fulfillments.map(
-				({ id, stops, ...each }: any) => ({
+				({ id, stops, ...each }: {id:string,stops:Stop[],each:any}) => ({
 					...each,
 					id,
 					tracking: false,
@@ -60,8 +62,10 @@ const selectConsultationConfirmController = (req: Request, res: Response, next: 
 							code: "Serviceable",
 						},
 					},
-					stops: stops.map((stop: any) => {
-						stop.time.label = "confirmed";
+					stops: stops.map((stop: Stop) => {
+						if (stop.time) {
+							stop.time.label = "confirmed";
+						};
 						stop.tags = {
 							descriptor: {
 								code: "schedule",
@@ -160,7 +164,7 @@ const selectServiceCustomizationConfirmedController = async (
 			items: [
 				{ id, parent_item_id, location_ids, quantity, fulfillment_ids: [uuidv4()] },
 				...message.order.items.slice(1).map(({ location_ids, ...remaining }:
-					{ location_ids: any; remaining: any; }) => ({ ...remaining, location_ids, fulfillment_ids: [uuidv4()] })
+					{ location_ids: string[]; remaining: any; }) => ({ ...remaining, location_ids, fulfillment_ids: [uuidv4()] })
 				)
 			],
 			fulfillments:
@@ -186,7 +190,7 @@ const selectServiceCustomizationConfirmedController = async (
 							code: "Serviceable",
 						},
 					},
-					stops: fulfillment.stops.map((e: { time: any; }) => ({ ...e, time: { ...e.time, label: "confirmed" } }))
+					stops: fulfillment.stops.map((e: { time: Time; }) => ({ ...e, time: { ...e.time, label: "confirmed" } }))
 				}],
 			quote: quoteCreatorServiceCustomized(message.order.items),
 		},

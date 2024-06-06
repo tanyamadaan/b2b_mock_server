@@ -3,12 +3,26 @@ import { NextFunction, Request, Response } from "express";
 // import path from "path";
 // import YAML from "yaml";
 
-import { responseBuilder, send_nack,B2B_EXAMPLES_PATH, redis } from "../../../lib/utils";
+import {
+	responseBuilder,
+	send_nack,
+	B2B_EXAMPLES_PATH,
+	redis,
+	Item,
+	Fulfillment,
+	Stop,
+	Payment,
+	SettlementDetails,
+} from "../../../lib/utils";
 // import { stringify } from "querystring";
 // import { AnyARecord } from "dns";
 
-export const statusController = async (req: Request, res: Response, next: NextFunction) => {
-	const { scenario } = req.query;
+export const statusController = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	const scenario: string = String(req.query.scenario) || "";
 	const { transaction_id } = req.body.context;
 
 	const transactionKeys = await redis.keys(`${transaction_id}-*`);
@@ -17,7 +31,7 @@ export const statusController = async (req: Request, res: Response, next: NextFu
 	);
 
 	if (ifTransactionExist.length === 0) {
-		send_nack(res,"On Confirm doesn't exist")
+		return send_nack(res, "On Confirm doesn't exist");
 	}
 	const transaction = await redis.mget(ifTransactionExist);
 	const parsedTransaction = transaction.map((ele) => {
@@ -32,7 +46,7 @@ const statusRequest = async (
 	res: Response,
 	next: NextFunction,
 	transaction: any,
-	scenario: any
+	scenario: string
 ) => {
 	const timestamp = new Date().toISOString();
 
@@ -48,15 +62,15 @@ const statusRequest = async (
 				...transaction.message.order.billing,
 				tax_id: undefined,
 			},
-			items: transaction.message.order.items.map((item: any) => ({
+			items: transaction.message.order.items.map((item: Item) => ({
 				id: item.id,
 				fulfillment_ids: item.fulfillment_ids,
 				quantity: item.quantity,
 			})),
 			fulfillments: transaction.message.order.fulfillments.map(
-				(fulfillment: any) => ({
+				(fulfillment: Fulfillment) => ({
 					...fulfillment,
-					stops: fulfillment.stops.map((stop: any) => {
+					stops: fulfillment.stops.map((stop: Stop) => {
 						// Add the instructions to both start and end stops
 						const instructions = {
 							name: "Proof of pickup",
@@ -103,7 +117,7 @@ const statusRequest = async (
 								location: {
 									...stop.location,
 									descriptor: {
-										...stop.location.descriptor,
+										...stop.location?.descriptor,
 										images: ["https://gf-integration/images/5.png"],
 									},
 								},
@@ -120,7 +134,7 @@ const statusRequest = async (
 				})
 			),
 			quote: transaction.message.order.quote,
-			payments: transaction.message.order.payments.map((payment: any) => ({
+			payments: transaction.message.order.payments.map((payment: Payment) => ({
 				...payment,
 				tl_method: "http/get",
 				params: {
@@ -129,7 +143,7 @@ const statusRequest = async (
 				},
 				"@ondc/org/settlement_details": payment[
 					"@ondc/org/settlement_details"
-				].map((itm: any) => ({
+				]?.map((itm: SettlementDetails) => ({
 					...itm,
 					settlement_counterparty: "seller-app",
 					settlement_reference: "XXXX",
@@ -144,7 +158,9 @@ const statusRequest = async (
 		},
 	};
 
-	responseMessage.order.payments.forEach((itm: any) => (itm.status = "PAID"));
+	responseMessage.order.payments.forEach(
+		(itm: Payment) => (itm.status = "PAID")
+	);
 
 	switch (scenario) {
 		case "delivered":
@@ -155,19 +171,19 @@ const statusRequest = async (
 				},
 			];
 			responseMessage.order.fulfillments.forEach(
-				(itm: any) => (itm.state.descriptor.code = "Order-delivered")
+				(itm: Fulfillment) => (itm.state.descriptor.code = "Order-delivered")
 			);
 			break;
 		case "out-for-delivery":
 			responseMessage.order.state = "In-progress";
 			responseMessage.order.fulfillments.forEach(
-				(itm: any) => (itm.state.descriptor.code = "Out-for-delivery")
+				(itm: Fulfillment) => (itm.state.descriptor.code = "Out-for-delivery")
 			);
 			break;
 		case "picked-up":
 			responseMessage.order.state = "In-progress";
 			responseMessage.order.fulfillments.forEach(
-				(itm: any) => (itm.state.descriptor.code = "Order-picked-up")
+				(itm: Fulfillment) => (itm.state.descriptor.code = "Order-picked-up")
 			);
 			break;
 		case "proforma-invoice":
@@ -178,18 +194,20 @@ const statusRequest = async (
 					label: "PROFORMA_INVOICE",
 				},
 			];
-			responseMessage.order.payments.forEach((itm: any) => {
+			responseMessage.order.payments.forEach((itm: Payment) => {
 				delete itm.tl_method;
 				delete itm.uri;
 			});
-			responseMessage.order.payments.forEach((itm: any) => {
+			responseMessage.order.payments.forEach((itm: Payment) => {
 				itm.status = "NOT-PAID";
 			});
-			responseMessage.order.payments.forEach((itm: any) =>
-				itm["@ondc/org/settlement_details"].forEach((itm: any) => {
-					delete itm.settlement_status;
-					delete itm.settlement_timestamp;
-				})
+			responseMessage.order.payments.forEach((itm: Payment) =>
+				itm["@ondc/org/settlement_details"]?.forEach(
+					(itm: SettlementDetails) => {
+						delete itm.settlement_status;
+						delete itm.settlement_timestamp;
+					}
+				)
 			);
 			break;
 		case "bpp-payment-error":
@@ -198,39 +216,43 @@ const statusRequest = async (
 				message: "Payment Failed",
 			};
 			responseMessage.order.payments.forEach(
-				(itm: any) => (itm.status = "NOT-PAID")
+				(itm: Payment) => (itm.status = "NOT-PAID")
 			);
 			responseMessage.order.fulfillments.forEach(
-				(itm: any) => (itm.state.descriptor.code = "Order-delivered")
+				(itm: Fulfillment) => (itm.state.descriptor.code = "Order-delivered")
 			);
-			responseMessage.order.payments.forEach((itm: any) =>
-				itm["@ondc/org/settlement_details"].forEach((itm: any) => {
-					delete itm.settlement_reference;
-					delete itm.settlement_status;
-					delete itm.settlement_timestamp;
-					itm.settlement_counterparty = "buyer-app";
-				})
+			responseMessage.order.payments.forEach((itm: Payment) =>
+				itm["@ondc/org/settlement_details"]?.forEach(
+					(itm: SettlementDetails) => {
+						delete itm.settlement_reference;
+						delete itm.settlement_status;
+						delete itm.settlement_timestamp;
+						itm.settlement_counterparty = "buyer-app";
+					}
+				)
 			);
 			responseMessage.order.fulfillments.forEach(
-				(itm: any) => (itm.state.descriptor.code = "Order-delivered")
+				(itm: Fulfillment) => (itm.state.descriptor.code = "Order-delivered")
 			);
 			break;
 		case "bpp-payment":
-			responseMessage.order.payments.forEach((itm: any) =>
-				itm["@ondc/org/settlement_details"].forEach((itm: any) => {
-					delete itm.settlement_reference;
-					delete itm.settlement_status;
-					delete itm.settlement_timestamp;
-					itm.settlement_counterparty = "buyer-app";
-				})
+			responseMessage.order.payments.forEach((itm: Payment) =>
+				itm["@ondc/org/settlement_details"]?.forEach(
+					(itm: SettlementDetails) => {
+						delete itm.settlement_reference;
+						delete itm.settlement_status;
+						delete itm.settlement_timestamp;
+						itm.settlement_counterparty = "buyer-app";
+					}
+				)
 			);
 			break;
 		case "self-picked-up":
 			responseMessage.order.fulfillments.forEach(
-				(itm: any) => (itm.state.descriptor.code = "order-picked-up")
+				(itm: Fulfillment) => (itm.state.descriptor.code = "order-picked-up")
 			);
 			responseMessage.order.fulfillments.forEach(
-				(itm: any) => (itm.type = "Self-Pickup")
+				(itm: Fulfillment) => (itm.type = "Self-Pickup")
 			);
 			break;
 		default:
@@ -241,7 +263,7 @@ const statusRequest = async (
 				},
 			];
 			responseMessage.order.fulfillments.forEach(
-				(itm: any) => (itm.state.descriptor.code = "Order-delivered")
+				(itm: Fulfillment) => (itm.state.descriptor.code = "Order-delivered")
 			);
 			break;
 	}
