@@ -5,8 +5,6 @@ import swaggerSpec from "openapi-specs/services.json";
 import { SwaggerDownloadButton } from "../../../../components";
 
 export const ServicesSwagger = () => {
-
-
 	return (
 		<>
 			<Toolbar

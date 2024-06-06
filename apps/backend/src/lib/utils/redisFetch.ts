@@ -4,11 +4,13 @@ async function redisFetch(action: string, transaction_id: string) {
     const ifTransactionExist = transactionKeys.filter((e) =>
         e.includes(`${action}-to-server`)
     );
-
     if (ifTransactionExist.length === 0) {
         return null
     }
+
     const transaction = await redis.mget(ifTransactionExist);
+
+    console.log("transactionnn",transaction)
     const parsedTransaction = transaction.map((ele: any) => {
         return JSON.parse(ele as string);
     });
