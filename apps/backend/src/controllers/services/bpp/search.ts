@@ -21,7 +21,6 @@ export const searchController = (req: Request, res: Response, next: NextFunction
     )
   );
 
-  console.log("file+>>>>>>>>>>>>",file)
   const response = YAML.parse(file.toString());
   return responseBuilder(
     res,

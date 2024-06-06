@@ -143,8 +143,6 @@ export const responseBuilder = async (
 					timestamp: new Date().toISOString(),
 					response: response.data,
 				};
-
-				console.log("respone data", response.data.context, uri)
 				await redis.set(
 					`${(async.context! as any).transaction_id}-${action}-from-server`,
 					JSON.stringify(log)
@@ -356,8 +354,6 @@ export const quoteCreatorService = (items: Item[]) => {
 			};
 		});
 	});
-
-	console.log("breakupwwwwwwww",breakup)
 	return {
 		breakup,
 		price: {
@@ -427,8 +423,6 @@ export const quoteCreatorAgriService = (items: Item[], providersItems?: any) => 
 		],
 	})
 
-	console.log("breakuppppppppppppppp", breakup)
-
 	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
 
 
@@ -440,8 +434,6 @@ export const quoteCreatorAgriService = (items: Item[], providersItems?: any) => 
 			totalPrice += priceValue;
 		}
 	});
-
-	console.log("totalPriceaaaaaaa", totalPrice)
 	const result = {
 		breakup,
 		price: {
@@ -455,31 +447,23 @@ export const quoteCreatorAgriService = (items: Item[], providersItems?: any) => 
 
 };
 
-export const quoteCreatorHealthCareService = (items: Item[], providersItems?: any,offers?:any) => {
+export const quoteCreatorHealthCareService = (items: Item[], providersItems?: any, offers?: any) => {
 
 	//GET PACKAGE ITEMS
-
-	console.log("offerssssssssss",JSON.stringify(offers))
-
-	console.log("providersItems", JSON.stringify(providersItems))
 	//get price from on_search
 	items.forEach(item => {
-		if(item.tags[0].list[0].value === "PACKAGE"){
+		if (item.tags[0].list[0].value === "PACKAGE") {
 			const getItems = item.tags[0].list[1].value.split(",")
-			console.log("getItemsssssssss",getItems)
 
 			getItems.forEach(pItem => {
-		// Find the corresponding item in the second array
-		const matchingItem = providersItems.find((secondItem: { id: string; }) => secondItem.id === pItem);
-		// If a matching item is found, update the price in the items array
-        items.push({...matchingItem,quantity:item.quantity});
-		console.log("matchingItemsssssssss",matchingItem)
-		
-	});
+				// Find the corresponding item in the second array
+				const matchingItem = providersItems.find((secondItem: { id: string; }) => secondItem.id === pItem);
+				// If a matching item is found, update the price in the items array
+				items.push({ ...matchingItem, quantity: item.quantity });
+			});
 		}
 	});
 
-	console.log("packageItems", items)
 	items.forEach(item => {
 		// Find the corresponding item in the second array
 		const matchingItem = providersItems.find((secondItem: { id: string; }) => secondItem.id === item.id);
@@ -511,8 +495,6 @@ export const quoteCreatorHealthCareService = (items: Item[], providersItems?: an
 			}
 		})
 
-		console.log("breakuppppppppppppp", JSON.stringify(breakup[0].tags))
-
 	});
 
 	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
@@ -521,35 +503,35 @@ export const quoteCreatorHealthCareService = (items: Item[], providersItems?: an
 	//ADD STATIC TAX FOR ITEM ONE
 
 	breakup.push(
-	{
-		title: "tax",
-		price: {
-			currency: "INR",
-			value: "10",
-		},
-		item:items[0],
-		tags: [
-			{
-				descriptor: {
-					code: "title",
-				},
-				list: [
-					{
-						descriptor: {
-							code: "type",
-						},
-						value: "tax",
-					},
-				],
+		{
+			title: "tax",
+			price: {
+				currency: "INR",
+				value: "10",
 			},
-		],
-	},
+			item: items[0],
+			tags: [
+				{
+					descriptor: {
+						code: "title",
+					},
+					list: [
+						{
+							descriptor: {
+								code: "type",
+							},
+							value: "tax",
+						},
+					],
+				},
+			],
+		},
 	)
 
 
-    //ADD OFFERS TAGS INTO BREAKUP
-    // if(offers){
-    // 	breakup.push(
+	//ADD OFFERS TAGS INTO BREAKUP
+	// if(offers){
+	// 	breakup.push(
 	// {
 	// 	title: "offers",
 	// 	price: {
@@ -574,7 +556,7 @@ export const quoteCreatorHealthCareService = (items: Item[], providersItems?: an
 	// 	],
 	// },
 	// )
-    // }
+	// }
 	let totalPrice = 0;
 
 	breakup.forEach(entry => {
@@ -628,9 +610,6 @@ export const quoteCreatorHealthCareForItemsService = (items: Item[], providersIt
 				quantity: item.quantity ? item.quantity : undefined,
 			}
 		})
-
-		console.log("breakuppppppppppppp", JSON.stringify(breakup[0].tags))
-
 	});
 
 	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
@@ -644,7 +623,7 @@ export const quoteCreatorHealthCareForItemsService = (items: Item[], providersIt
 			currency: "INR",
 			value: "10",
 		},
-		item:items[0],
+		item: items[0],
 		tags: [
 			{
 				descriptor: {
