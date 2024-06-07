@@ -3,12 +3,8 @@ import {
 	MOCKSERVER_ID,
 	SERVICES_BAP_MOCKSERVER_URL,
 	SERVICES_EXAMPLES_PATH,
-	send_response,
-	createAuthHeader,
-	logger,
-	redis,
+	send_response
 } from "../../../lib/utils";
-import axios from "axios";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
@@ -17,12 +13,18 @@ import { v4 as uuidv4 } from "uuid";
 export const initiateSearchController = async (req: Request, res: Response,  next: NextFunction) => {
 	const { bpp_uri, city, domain } = req.body;
 
+	console.log("bodydddddddddddddddd",req.body);
+
 	var file = fs.readFileSync(
 		path.join(SERVICES_EXAMPLES_PATH, "search/search_by_category.yaml")
 	);
+
+
 	var search = YAML.parse(file.toString());
 	search = search.value;
 	const transaction_id = uuidv4();
+
+	
 	search = {
 		...search,
 		context: {
@@ -44,6 +46,8 @@ export const initiateSearchController = async (req: Request, res: Response,  nex
 		},
 	};
 	search.bpp_uri=bpp_uri
+
+	console.log("transaction servicesssssssss",JSON.stringify(search))
 	await send_response(res, next, search,transaction_id, "search");
 	// const header = await createAuthHeader(search);
 	// try {

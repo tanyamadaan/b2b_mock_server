@@ -17,14 +17,16 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 
 type InitiateRequestSectionProp = {
-	domain: "b2b" | "services";
+	domain: "b2b" | "services" | "agri-services" | "healthcare-services";
 };
 
 type SELECT_OPTIONS =
 	| string[]
-	| { b2b: string[]; services: string[] }
-	| { b2b: string[]; services: string[] }
+	| { b2b: string[]; services: string[]; agri_services: string[] }
+	| { b2b: string[]; services: string[]; agri_services: string[] }
 	| { services: string[] }
+	| { agri_services: string[] }
+	| { healthcare_services: string[] }
 	| object;
 
 type SELECT_FIELD = {
@@ -38,6 +40,7 @@ type SELECT_FIELD = {
 export const InitiateRequestSection = ({
 	domain,
 }: InitiateRequestSectionProp) => {
+
 	const { handleMessageToggle, setMessageType, setCopy } = useMessage();
 	const [action, setAction] = useState<string>();
 	const [renderActionFields, setRenderActionFields] = useState(false);
@@ -48,6 +51,7 @@ export const InitiateRequestSection = ({
 		_event: React.SyntheticEvent | null,
 		newValue: string | null
 	) => {
+
 		setRenderActionFields(false);
 		setAction(newValue as string);
 		setFormState({});
@@ -81,7 +85,6 @@ export const InitiateRequestSection = ({
 	}, [action, domain, formState]);
 
 	const handleSubmit = async () => {
-		console.log("Values", formState);
 		try {
 			const response = await axios.post(
 				`${
@@ -94,7 +97,6 @@ export const InitiateRequestSection = ({
 					},
 				}
 			);
-			// console.log("Response from initiate", response);
 			if (response.data.message.ack.status === "ACK") {
 				if (action === "search") {
 					handleMessageToggle(
@@ -114,14 +116,13 @@ export const InitiateRequestSection = ({
 				);
 				setMessageType("error");
 			}
-		} catch (error) {
+		} catch (error:any) {
 			setMessageType("error");
 			if (error instanceof AxiosError && error.response?.data?.error?.message)
 				handleMessageToggle(
-					`Error Occurred: ${error.response?.data?.error?.message}`
+					`Error Occurred while initiating request!`
 				);
 			else handleMessageToggle("Error Occurred while initiating request!");
-			console.log("Error occurred", error);
 		}
 	};
 	return (
@@ -153,10 +154,12 @@ export const InitiateRequestSection = ({
 				</Box>
 				<Stack spacing={2} sx={{ my: 2 }}>
 					<Select placeholder="Select Action" onChange={handleActionSelection}>
+
 						{Object.keys(INITIATE_FIELDS).map((action, idx) => (
 							<Option value={action} key={"action-" + idx}>
 								{action}
 							</Option>
+
 						))}
 					</Select>
 					<Grow in={renderActionFields} timeout={500}>

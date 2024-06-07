@@ -55,6 +55,19 @@ const DOMAIN_NAVS = [
 		children: NAV_LINKS,
 	},
 	{
+		name: "Agriculture Services",
+		nested: true,
+		path: "/agri-services",
+		children: NAV_LINKS,
+	},
+
+	{
+		name: "Healthcare Services",
+		nested: true,
+		path: "/healthcare-services",
+		children: NAV_LINKS,
+	},
+	{
 		name: "Sign Check",
 		nested: false,
 		path: "/sign-check",

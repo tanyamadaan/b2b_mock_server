@@ -42,6 +42,7 @@ export const authValidatorMiddleware = async (
 			const auth_header = req.headers["authorization"] || "";
 			// console.log(req.body?.context?.transaction_id, "headers", auth_header);
 
+			console.log("auth header",auth_header)
 			var verified = await verifyHeader(auth_header, (req as any).rawBody.toString());
 
 			if (!verified) {
