@@ -526,8 +526,8 @@ export const quoteCreatorAgriService = (items: Item[], providersItems?: any) => 
 };
 
 export const quoteCreatorHealthCareService = (items: Item[], providersItems?: any, offers?: any) => {
-
 	//GET PACKAGE ITEMS
+	
 	//get price from on_search
 	items.forEach(item => {
 		if (item.tags[0].list[0].value === "PACKAGE") {

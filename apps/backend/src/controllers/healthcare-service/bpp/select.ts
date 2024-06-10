@@ -42,10 +42,11 @@ const selectConsultationConfirmController = (req: Request, res: Response, next: 
 	const { context, message, providersItems } = req.body;
 	const { locations, ...provider } = message.order.provider;
 
-	if(providersItems){
-		providersItems.offers = undefined;
-	}
-	
+	// console.log("providersItems",providersItems)
+	// if(providersItems && providersItems.offers){
+	// 	providersItems.offers = undefined;
+	// }
+
 	const responseMessage = {
 		order: {
 			provider,
