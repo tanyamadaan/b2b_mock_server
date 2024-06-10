@@ -137,7 +137,6 @@ const initServiceCustomizationController = (
 			},
 		},
 	});
-	// console.log("Customized ;:", stops)
 	const responseMessage = {
 		order: {
 			provider: remainingProvider,

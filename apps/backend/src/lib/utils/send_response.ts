@@ -35,8 +35,6 @@ async function send_response(
 			headers["X-Gateway-Authorization"] = header;
 		}
 		const uri = `${bpp_uri}/${action}${scenario ? `?scenario=${scenario}` : ""}`
-		console.log(`send_response URL - ${uri} \n - Payload - ${JSON.stringify(res_obj)}`)
-
 		const response = await axios.post(uri, res_obj, {
 			headers: { ...headers },
 		});
