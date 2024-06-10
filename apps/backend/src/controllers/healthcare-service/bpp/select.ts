@@ -42,8 +42,10 @@ const selectConsultationConfirmController = (req: Request, res: Response, next: 
 	const { context, message, providersItems } = req.body;
 	const { locations, ...provider } = message.order.provider;
 
-	providersItems.offers = undefined;
-
+	if(providersItems){
+		providersItems.offers = undefined;
+	}
+	
 	const responseMessage = {
 		order: {
 			provider,
@@ -84,8 +86,6 @@ const selectConsultationConfirmController = (req: Request, res: Response, next: 
 								},
 							],
 						};
-						// else
-						// stop.time.label = "rejected"
 						return stop;
 					}),
 				})

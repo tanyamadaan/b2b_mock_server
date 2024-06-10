@@ -69,6 +69,7 @@ export const responseBuilder = async (
 	let ts = new Date();
 	ts.setSeconds(ts.getSeconds() + 1);
 	const sandboxMode = res.getHeader("mode") === "sandbox";
+
 	var async: { message: object; context?: object; error?: object } = {
 		context: {},
 		message,
@@ -76,6 +77,7 @@ export const responseBuilder = async (
 	const bppURI = domain === "b2b"
 		? B2B_BPP_MOCKSERVER_URL : (domain === "agri-services" ? AGRI_SERVICES_BPP_MOCKSERVER_URL
 			: (domain === "healthcare-service" ? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL : SERVICES_BPP_MOCKSERVER_URL))
+
 	if (action.startsWith("on_")) {
 		// const { bap_uri, bap_id, ...remainingContext } = reqContext as any;
 		async = {
@@ -187,16 +189,92 @@ export const responseBuilder = async (
 			},
 		});
 	} else {
-		return res.json({
-			sync: {
-				message: {
-					ack: {
-						status: "ACK",
+		if (action.startsWith("on_")) {
+			var log: TransactionType = {
+				request: async,
+			};
+			if (action === "on_status") {
+				const transactionKeys = await redis.keys(
+					`${(async.context! as any).transaction_id}-*`
+				);
+				const logIndex = transactionKeys.filter((e) =>
+					e.includes("on_status-to-server")
+				).length;
+				await redis.set(
+					`${(async.context! as any).transaction_id
+					}-${logIndex}-${action}-from-server`,
+					JSON.stringify(log)
+				);
+			} else {
+				await redis.set(
+					`${(async.context! as any).transaction_id}-${action}-from-server`,
+					JSON.stringify(log)
+				);
+			}
+			try {
+				const response = await axios.post(uri, async, {
+					headers: {
+						authorization: header,
 					},
+				});
+
+				log.response = {
+					timestamp: new Date().toISOString(),
+					response: response.data,
+				};
+				await redis.set(
+					`${(async.context! as any).transaction_id}-${action}-from-server`,
+					JSON.stringify(log)
+				);
+			} catch (error) {
+				const response = error instanceof AxiosError
+					? error?.response?.data
+					: {
+						message: {
+							ack: {
+								status: "NACK",
+							},
+						},
+						error: {
+							message: error,
+						},
+					}
+				log.response = {
+					timestamp: new Date().toISOString(),
+					response: response,
+				};
+				await redis.set(
+					`${(async.context! as any).transaction_id}-${action}-from-server`,
+					JSON.stringify(log)
+				);
+
+				return next(error)
+			}
+		}
+
+		logger.info({
+			type: "response",
+			action: action,
+			transaction_id: (reqContext as any).transaction_id,
+			message: { sync: { message: { ack: { status: "ACK" } } } },
+		});
+		return res.json({
+			message: {
+				ack: {
+					status: "ACK",
 				},
 			},
-			async,
 		});
+		// return res.json({
+		// 	sync: {
+		// 		message: {
+		// 			ack: {
+		// 				status: "ACK",
+		// 			},
+		// 		},
+		// 	},
+		// 	async,
+		// });
 	}
 };
 
