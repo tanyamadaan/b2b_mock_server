@@ -21,6 +21,5 @@ authRouter.post("/signature", async (req: Request, res: Response) => {
 	);
 	const signature = await signMessage(signing_string, private_key || "");
 	const auth_header = `Signature keyId="${subscriber_id}|${unique_key_id}|ed25519",algorithm="ed25519",created="${created}",expires="${expires}",headers="(created) (expires) digest",signature="${signature}"`;
-	console.log("auth_header:::", auth_header)
 	return res.send(auth_header);
 });

@@ -130,8 +130,6 @@ const selectServiceCustomizationConfirmedController = async (
 	const { context, message } = req.body;
 	const { locations, ...provider } = message.order.provider;
 	const { id, parent_item_id, location_ids, quantity, ...item } = message.order.items[0];
-	// console.log("Items ::", message.order.items[0])
-
 	const transactionKeys = await redis.keys(`${context.transaction_id}-*`);
 	const ifTransactionToExist = transactionKeys.filter((e) =>
 		e.includes("on_search-to-server")

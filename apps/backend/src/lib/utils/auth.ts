@@ -51,7 +51,6 @@ export async function verifyHeader(
 				parts["created"],
 				parts["expires"]
 			);
-			// console.log("NP Public Key", public_key)
 			const verified = await verifyMessage(
 				parts["signature"],
 				signing_string,
@@ -61,7 +60,6 @@ export async function verifyHeader(
 		}
 		return false;
 	} catch (error) {
-		console.log("ERROR:", error);
 		return false;
 	}
 }
