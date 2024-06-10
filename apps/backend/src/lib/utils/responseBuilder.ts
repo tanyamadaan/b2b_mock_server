@@ -69,6 +69,7 @@ export const responseBuilder = async (
 	let ts = new Date();
 	ts.setSeconds(ts.getSeconds() + 1);
 	const sandboxMode = res.getHeader("mode") === "sandbox";
+
 	var async: { message: object; context?: object; error?: object } = {
 		context: {},
 		message,
@@ -76,6 +77,7 @@ export const responseBuilder = async (
 	const bppURI = domain === "b2b"
 		? B2B_BPP_MOCKSERVER_URL : (domain === "agri-services" ? AGRI_SERVICES_BPP_MOCKSERVER_URL
 			: (domain === "healthcare-service" ? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL : SERVICES_BPP_MOCKSERVER_URL))
+
 	if (action.startsWith("on_")) {
 		// const { bap_uri, bap_id, ...remainingContext } = reqContext as any;
 		async = {
@@ -143,8 +145,6 @@ export const responseBuilder = async (
 					timestamp: new Date().toISOString(),
 					response: response.data,
 				};
-
-				console.log("respone data", response.data.context, uri)
 				await redis.set(
 					`${(async.context! as any).transaction_id}-${action}-from-server`,
 					JSON.stringify(log)
@@ -189,16 +189,92 @@ export const responseBuilder = async (
 			},
 		});
 	} else {
-		return res.json({
-			sync: {
-				message: {
-					ack: {
-						status: "ACK",
+		if (action.startsWith("on_")) {
+			var log: TransactionType = {
+				request: async,
+			};
+			if (action === "on_status") {
+				const transactionKeys = await redis.keys(
+					`${(async.context! as any).transaction_id}-*`
+				);
+				const logIndex = transactionKeys.filter((e) =>
+					e.includes("on_status-to-server")
+				).length;
+				await redis.set(
+					`${(async.context! as any).transaction_id
+					}-${logIndex}-${action}-from-server`,
+					JSON.stringify(log)
+				);
+			} else {
+				await redis.set(
+					`${(async.context! as any).transaction_id}-${action}-from-server`,
+					JSON.stringify(log)
+				);
+			}
+			try {
+				const response = await axios.post(uri, async, {
+					headers: {
+						authorization: header,
 					},
+				});
+
+				log.response = {
+					timestamp: new Date().toISOString(),
+					response: response.data,
+				};
+				await redis.set(
+					`${(async.context! as any).transaction_id}-${action}-from-server`,
+					JSON.stringify(log)
+				);
+			} catch (error) {
+				const response = error instanceof AxiosError
+					? error?.response?.data
+					: {
+						message: {
+							ack: {
+								status: "NACK",
+							},
+						},
+						error: {
+							message: error,
+						},
+					}
+				log.response = {
+					timestamp: new Date().toISOString(),
+					response: response,
+				};
+				await redis.set(
+					`${(async.context! as any).transaction_id}-${action}-from-server`,
+					JSON.stringify(log)
+				);
+
+				return next(error)
+			}
+		}
+
+		logger.info({
+			type: "response",
+			action: action,
+			transaction_id: (reqContext as any).transaction_id,
+			message: { sync: { message: { ack: { status: "ACK" } } } },
+		});
+		return res.json({
+			message: {
+				ack: {
+					status: "ACK",
 				},
 			},
-			async,
 		});
+		// return res.json({
+		// 	sync: {
+		// 		message: {
+		// 			ack: {
+		// 				status: "ACK",
+		// 			},
+		// 		},
+		// 	},
+		// 	async,
+		// });
 	}
 };
 
@@ -356,8 +432,6 @@ export const quoteCreatorService = (items: Item[]) => {
 			};
 		});
 	});
-
-	console.log("breakupwwwwwwww",breakup)
 	return {
 		breakup,
 		price: {
@@ -427,8 +501,6 @@ export const quoteCreatorAgriService = (items: Item[], providersItems?: any) => 
 		],
 	})
 
-	console.log("breakuppppppppppppppp", breakup)
-
 	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
 
 
@@ -440,8 +512,6 @@ export const quoteCreatorAgriService = (items: Item[], providersItems?: any) => 
 			totalPrice += priceValue;
 		}
 	});
-
-	console.log("totalPriceaaaaaaa", totalPrice)
 	const result = {
 		breakup,
 		price: {
@@ -455,31 +525,23 @@ export const quoteCreatorAgriService = (items: Item[], providersItems?: any) => 
 
 };
 
-export const quoteCreatorHealthCareService = (items: Item[], providersItems?: any,offers?:any) => {
-
+export const quoteCreatorHealthCareService = (items: Item[], providersItems?: any, offers?: any) => {
 	//GET PACKAGE ITEMS
-
-	console.log("offerssssssssss",JSON.stringify(offers))
-
-	console.log("providersItems", JSON.stringify(providersItems))
+	
 	//get price from on_search
 	items.forEach(item => {
-		if(item.tags[0].list[0].value === "PACKAGE"){
+		if (item.tags[0].list[0].value === "PACKAGE") {
 			const getItems = item.tags[0].list[1].value.split(",")
-			console.log("getItemsssssssss",getItems)
 
 			getItems.forEach(pItem => {
-		// Find the corresponding item in the second array
-		const matchingItem = providersItems.find((secondItem: { id: string; }) => secondItem.id === pItem);
-		// If a matching item is found, update the price in the items array
-        items.push({...matchingItem,quantity:item.quantity});
-		console.log("matchingItemsssssssss",matchingItem)
-		
-	});
+				// Find the corresponding item in the second array
+				const matchingItem = providersItems.find((secondItem: { id: string; }) => secondItem.id === pItem);
+				// If a matching item is found, update the price in the items array
+				items.push({ ...matchingItem, quantity: item.quantity });
+			});
 		}
 	});
 
-	console.log("packageItems", items)
 	items.forEach(item => {
 		// Find the corresponding item in the second array
 		const matchingItem = providersItems.find((secondItem: { id: string; }) => secondItem.id === item.id);
@@ -511,8 +573,6 @@ export const quoteCreatorHealthCareService = (items: Item[], providersItems?: an
 			}
 		})
 
-		console.log("breakuppppppppppppp", JSON.stringify(breakup[0].tags))
-
 	});
 
 	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
@@ -521,35 +581,35 @@ export const quoteCreatorHealthCareService = (items: Item[], providersItems?: an
 	//ADD STATIC TAX FOR ITEM ONE
 
 	breakup.push(
-	{
-		title: "tax",
-		price: {
-			currency: "INR",
-			value: "10",
-		},
-		item:items[0],
-		tags: [
-			{
-				descriptor: {
-					code: "title",
-				},
-				list: [
-					{
-						descriptor: {
-							code: "type",
-						},
-						value: "tax",
-					},
-				],
+		{
+			title: "tax",
+			price: {
+				currency: "INR",
+				value: "10",
 			},
-		],
-	},
+			item: items[0],
+			tags: [
+				{
+					descriptor: {
+						code: "title",
+					},
+					list: [
+						{
+							descriptor: {
+								code: "type",
+							},
+							value: "tax",
+						},
+					],
+				},
+			],
+		},
 	)
 
 
-    //ADD OFFERS TAGS INTO BREAKUP
-    // if(offers){
-    // 	breakup.push(
+	//ADD OFFERS TAGS INTO BREAKUP
+	// if(offers){
+	// 	breakup.push(
 	// {
 	// 	title: "offers",
 	// 	price: {
@@ -574,7 +634,7 @@ export const quoteCreatorHealthCareService = (items: Item[], providersItems?: an
 	// 	],
 	// },
 	// )
-    // }
+	// }
 	let totalPrice = 0;
 
 	breakup.forEach(entry => {
@@ -628,9 +688,6 @@ export const quoteCreatorHealthCareForItemsService = (items: Item[], providersIt
 				quantity: item.quantity ? item.quantity : undefined,
 			}
 		})
-
-		console.log("breakuppppppppppppp", JSON.stringify(breakup[0].tags))
-
 	});
 
 	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
@@ -644,7 +701,7 @@ export const quoteCreatorHealthCareForItemsService = (items: Item[], providersIt
 			currency: "INR",
 			value: "10",
 		},
-		item:items[0],
+		item: items[0],
 		tags: [
 			{
 				descriptor: {

@@ -15,8 +15,6 @@ import {
 
 
 export const selectController = async (req: Request, res: Response, next: NextFunction) => {
-	console.log("bodycheck",req.body)
-
 	const on_search = await redisFetch("on_search", req.body.context.transaction_id);
 	const providersItems = on_search?.message?.catalog?.providers[0];
 	req.body.providersItems = providersItems
@@ -42,11 +40,12 @@ export const selectController = async (req: Request, res: Response, next: NextFu
 
 const selectConsultationConfirmController = (req: Request, res: Response, next: NextFunction) => {
 	const { context, message, providersItems } = req.body;
-
-	console.log("offerscheck",JSON.stringify(req.body.message.order.provider))
 	const { locations, ...provider } = message.order.provider;
 
-	providersItems.offers = undefined;
+	// console.log("providersItems",providersItems)
+	// if(providersItems && providersItems.offers){
+	// 	providersItems.offers = undefined;
+	// }
 
 	const responseMessage = {
 		order: {
@@ -88,8 +87,6 @@ const selectConsultationConfirmController = (req: Request, res: Response, next: 
 								},
 							],
 						};
-						// else
-						// stop.time.label = "rejected"
 						return stop;
 					}),
 				})

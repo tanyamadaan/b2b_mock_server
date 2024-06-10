@@ -9,8 +9,6 @@ async function redisFetch(action: string, transaction_id: string) {
     }
 
     const transaction = await redis.mget(ifTransactionExist);
-
-    console.log("transactionnn",transaction)
     const parsedTransaction = transaction.map((ele: any) => {
         return JSON.parse(ele as string);
     });
