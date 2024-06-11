@@ -6,14 +6,14 @@ import {
 	send_response,
 	send_nack,
 	logger,
-	redisFetch,
+	redisFetchToServer,
 	HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL,
 	HEALTHCARE_SERVICES_BAP_MOCKSERVER_URL
 } from "../../../lib/utils";
 
 export const initiateInitController = async (req: Request, res: Response, next: NextFunction) => {
 	const { scenario, transactionId } = req.body;
-	const on_select = await redisFetch("on_select", transactionId)
+	const on_select = await redisFetchToServer("on_select", transactionId)
 	if (!on_select) {
 		send_nack(res, "On Select doesn't exist")
 	}

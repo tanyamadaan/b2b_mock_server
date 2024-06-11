@@ -19,7 +19,7 @@ import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 import { AxiosError } from "axios";
-import { redisFetch } from "./redisFetch";
+import { redisFetchFromServer } from "./redisFetch";
 
 interface TagDescriptor {
 	code: string;
@@ -1183,6 +1183,6 @@ export const checkIfCustomized = (items: Item[]) => {
 };
 
 export const getOnSearchFromRadisByTransactionId = async (transactionId: string) => {
-	const on_search = await redisFetch("on_search", transactionId);
+	const on_search = await redisFetchFromServer("on_search", transactionId);
 	return on_search?.message?.catalog?.providers[0]?.items
 }

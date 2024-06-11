@@ -6,14 +6,14 @@ import {
 	checkIfCustomized,
 	send_response,
 	send_nack,
-	redisFetch,
+	redisFetchToServer,
 	AGRI_SERVICES_BPP_MOCKSERVER_URL,
 	AGRI_SERVICES_BAP_MOCKSERVER_URL
 } from "../../../lib/utils";
 
 export const initiateInitController = async (req: Request, res: Response, next: NextFunction) => {
 	const { scenario, transactionId } = req.body;
-	const on_select = await redisFetch("on_select", transactionId)
+	const on_select = await redisFetchToServer("on_select", transactionId)
 
 
 	if (Object.keys(on_select).includes("error")) {

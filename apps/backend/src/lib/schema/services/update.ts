@@ -9,7 +9,7 @@ export const updateSchema = {
       properties: {
         domain: {
           type: "string",
-          enum: DOMAIN
+          enum: DOMAIN,
         },
         location: {
           type: "object",
@@ -41,7 +41,7 @@ export const updateSchema = {
         },
         version: {
           type: "string",
-          const: VERSION
+          const: VERSION,
         },
         bap_id: {
           type: "string",
@@ -76,7 +76,7 @@ export const updateSchema = {
         },
         ttl: {
           type: "string",
-          const: "PT30S"
+          const: "PT30S",
         },
       },
       required: [
@@ -99,7 +99,7 @@ export const updateSchema = {
       properties: {
         update_target: {
           type: "string",
-          enum: ["payments","fulfillments"]
+          enum: ["payments", "fulfillments"],
         },
         order: {
           type: "object",
@@ -129,7 +129,8 @@ export const updateSchema = {
                   },
                 },
               },
-              required: ["id", "locations"],
+              // required: ["id", "locations"],
+              required: ["id"],
             },
             items: {
               type: "array",
@@ -155,12 +156,13 @@ export const updateSchema = {
                     },
                   },
                 },
-                required: [
-                  "id",
-                  "parent_item_id",
-                  "fulfillment_ids",
-                  "location_ids",
-                ],
+                // required: [
+                //   "id",
+                //   "parent_item_id",
+                //   "fulfillment_ids",
+                //   "location_ids",
+                // ],
+                required: ["id", "parent_item_id", "fulfillment_ids"],
               },
             },
             payments: {
@@ -193,10 +195,7 @@ export const updateSchema = {
                         type: "string",
                       },
                     },
-                    required: [
-                      "amount",
-                      "currency",
-                    ],
+                    required: ["amount", "currency"],
                   },
                   status: {
                     type: "string",

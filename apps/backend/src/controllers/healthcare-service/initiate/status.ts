@@ -4,7 +4,7 @@ import {
 	MOCKSERVER_ID,
 	send_response,
 	send_nack,
-	redisFetch,
+	redisFetchToServer,
 	HEALTHCARE_SERVICES_BAP_MOCKSERVER_URL,
 	HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL,
 } from "../../../lib/utils";
@@ -16,7 +16,7 @@ export const initiateStatusController = async (
 	next: NextFunction
 ) => {
 	const { transactionId } = req.body;
-	const on_confirm = await redisFetch("on_confirm", transactionId);
+	const on_confirm = await redisFetchToServer("on_confirm", transactionId);
 	if (!on_confirm) {
 		send_nack(res, "On Confirm doesn't exist")
 	}

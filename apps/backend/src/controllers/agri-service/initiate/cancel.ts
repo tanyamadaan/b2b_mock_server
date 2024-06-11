@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import {
 	send_response,
 	send_nack,
-	redisFetch,
+	redisFetchToServer,
 	AGRI_SERVICES_BPP_MOCKSERVER_URL,
 } from "../../../lib/utils";
 import { v4 as uuidv4 } from "uuid";
@@ -13,7 +13,7 @@ export const initiateCancelController = async (
 	next: NextFunction
 ) => {
 	const { transactionId, orderId, cancellationReasonId } = req.body;
-	const on_confirm = await redisFetch("on_confirm", transactionId);
+	const on_confirm = await redisFetchToServer("on_confirm", transactionId);
 
 	if (!on_confirm) {
 		send_nack(res,"On Confirm doesn't exist")
