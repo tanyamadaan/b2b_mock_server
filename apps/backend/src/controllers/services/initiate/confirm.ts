@@ -47,7 +47,7 @@ export const initiateConfirmController = async (
   // });
   const on_init = await redisFetchToServer("on_init", transactionId);
   if (!on_init) {
-    send_nack(res, "On Init doesn't exist");
+    return send_nack(res, "On Init doesn't exist");
   }
 
   // console.log("parsedTransaction:::: ", parsedTransaction[0]);

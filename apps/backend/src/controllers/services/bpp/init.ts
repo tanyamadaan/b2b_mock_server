@@ -24,7 +24,7 @@ export const initController = async (
 
   const exit = await redisExistFromServer("on_select", transaction_id);
   if (!exit) {
-    send_nack(res, "On Select doesn't exist");
+    return send_nack(res, "On Select doesn't exist");
   }
 
   if (checkIfCustomized(req.body.message.order.items)) {

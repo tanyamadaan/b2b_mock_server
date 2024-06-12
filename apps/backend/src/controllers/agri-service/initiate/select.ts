@@ -23,7 +23,7 @@ export const initiateSelectController = async (
   const on_search = await redisFetchToServer("on_search", transactionId);
 
   if (!on_search) {
-    send_nack(res,"On Search doesn't exist")
+    return send_nack(res,"On Search doesn't exist")
   }
   
   on_search.context.bpp_uri = AGRI_SERVICES_BPP_MOCKSERVER_URL

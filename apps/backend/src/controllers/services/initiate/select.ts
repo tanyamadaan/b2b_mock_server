@@ -29,7 +29,7 @@ export const initiateSelectController = async (
 
   const on_search = await redisFetchToServer("on_search", transactionId);
   if (!on_search) {
-    send_nack(res, "On Search doesn't exist");
+    return send_nack(res, "On Search doesn't exist");
   }
   // selecting the senarios
   let scenario = "selection";

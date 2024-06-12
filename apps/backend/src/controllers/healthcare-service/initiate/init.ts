@@ -15,10 +15,10 @@ export const initiateInitController = async (req: Request, res: Response, next: 
 	const { scenario, transactionId } = req.body;
 	const on_select = await redisFetchToServer("on_select", transactionId)
 	if (!on_select) {
-		send_nack(res, "On Select doesn't exist")
+		return send_nack(res, "On Select doesn't exist")
 	}
 	if (Object.keys(on_select).includes("error")) {
-		send_nack(res, "On Select had errors")
+		return send_nack(res, "On Select had errors")
 	}
 	on_select.context.bpp_uri = HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
 	return intializeRequest(res, next, on_select, scenario);

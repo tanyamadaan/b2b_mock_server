@@ -17,11 +17,11 @@ export const initiateInitController = async (req: Request, res: Response, next: 
 
 
 	if (Object.keys(on_select).includes("error")) {
-		send_nack(res,"On Select had errors")
+		return send_nack(res,"On Select had errors")
 	}
 	
 	if (!on_select) {
-		send_nack(res,"On Select doesn't exist")
+		return send_nack(res,"On Select doesn't exist")
 	}
 	on_select.context.bpp_uri = AGRI_SERVICES_BPP_MOCKSERVER_URL
 

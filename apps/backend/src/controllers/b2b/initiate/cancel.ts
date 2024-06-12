@@ -30,7 +30,7 @@ export const initiateCancelController = async (
   // });
   const on_confirm = await redisFetchToServer("on_confirm", transactionId);
 	if (!on_confirm) {
-		send_nack(res,"On Confirm doesn't exist")
+		return send_nack(res,"On Confirm doesn't exist")
 	}
   // console.log("parsedTransaction:::: ", parsedTransaction[0]);
   return intializeRequest(

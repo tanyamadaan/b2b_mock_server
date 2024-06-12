@@ -27,7 +27,7 @@ export const statusController = async (
     transaction_id
   ); //from
   if (!on_confirm_data) {
-    send_nack(res, "on confirm doesn't exist");
+    return send_nack(res, "on confirm doesn't exist");
   }
 
   const on_cancel_exist = await redisExistFromServer(

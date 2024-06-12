@@ -33,7 +33,7 @@ export const initiateUpdateController = async (
 
   const onConfirm = await redisFetchToServer("on_confirm", transactionId);
   if (!onConfirm) {
-    send_nack(res, "On Confirm doesn't exist");
+    return send_nack(res, "On Confirm doesn't exist");
   }
 
   // const onConfirm = parsedTransaction[0].request;

@@ -172,7 +172,7 @@ const updateFulfillment = async (res: Response, on_update: any) => {
   // });
   const on_confirm = await redisFetchFromServer("on_confirm", transaction_id);
   if (!on_confirm) {
-    send_nack(res, "On Confirm doesn't exist");
+    return send_nack(res, "On Confirm doesn't exist");
   }
   //getting fullfiillments for on_update_fulfillments
   const { fulfillments, items } = on_confirm.message.order;
