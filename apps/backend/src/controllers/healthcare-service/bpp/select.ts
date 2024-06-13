@@ -10,12 +10,12 @@ import {
 	quoteCreatorServiceCustomized,
 	checkIfCustomized,
 	redis,
-	redisFetch,
+	redisFetchFromServer,
 } from "../../../lib/utils";
 
 
 export const selectController = async (req: Request, res: Response, next: NextFunction) => {
-	const on_search = await redisFetch("on_search", req.body.context.transaction_id);
+	const on_search = await redisFetchFromServer("on_search", req.body.context.transaction_id);
 	const providersItems = on_search?.message?.catalog?.providers[0];
 	req.body.providersItems = providersItems
 	const { scenario } = req.query;

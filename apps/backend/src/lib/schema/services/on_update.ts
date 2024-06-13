@@ -9,7 +9,7 @@ export const onUpdateSchema = {
       properties: {
         domain: {
           type: "string",
-          enum: DOMAIN
+          enum: DOMAIN,
         },
         location: {
           type: "object",
@@ -41,7 +41,7 @@ export const onUpdateSchema = {
         },
         version: {
           type: "string",
-          const: VERSION
+          const: VERSION,
         },
         bap_id: {
           type: "string",
@@ -124,7 +124,8 @@ export const onUpdateSchema = {
                   },
                 },
               },
-              required: ["id", "locations"],
+              // required: ["id", "locations"],
+              required: ["id"],
             },
             items: {
               type: "array",
@@ -150,12 +151,7 @@ export const onUpdateSchema = {
                     },
                   },
                 },
-                required: [
-                  "id",
-                  "parent_item_id",
-                  "fulfillment_ids",
-                  "location_ids",
-                ],
+                required: ["id", "parent_item_id", "fulfillment_ids"],
               },
             },
             payments: {
@@ -191,9 +187,6 @@ export const onUpdateSchema = {
                     required: [
                       "amount",
                       "currency",
-                      "transaction_id",
-                      "bank_account_number",
-                      "virtual_payment_address",
                     ],
                   },
                   status: {
@@ -307,8 +300,41 @@ export const onUpdateSchema = {
                             gps: {
                               type: "string",
                             },
+                            address: {
+                              type: "string",
+                            },
+                            city: {
+                              type: "object",
+                              properties: {
+                                name: {
+                                  type: "string",
+                                },
+                              },
+                              required: ["name"],
+                            },
+                            country: {
+                              type: "object",
+                              properties: {
+                                code: {
+                                  type: "string",
+                                },
+                              },
+                              required: ["code"],
+                            },
+                            area_code: {
+                              type: "string",
+                            },
+                            state: {
+                              type: "object",
+                              properties: {
+                                name: {
+                                  type: "string",
+                                },
+                              },
+                              required: ["name"],
+                            },
                           },
-                          required: ["id", "descriptor", "gps"],
+                          required: ["gps"],
                         },
                         time: {
                           type: "object",

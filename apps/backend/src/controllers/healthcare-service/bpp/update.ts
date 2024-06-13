@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
-import { quoteCreatorHealthCareService, redisFetch, responseBuilder, send_nack } from "../../../lib/utils";
+import { quoteCreatorHealthCareService, redisFetchToServer, responseBuilder, send_nack } from "../../../lib/utils";
 import { ON_ACTTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 
@@ -8,12 +8,12 @@ import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 export const updateController = async (req: Request, res: Response, next: NextFunction) => {
 	const { scenario } = req.query;
 
-		const on_confirm = await redisFetch(ON_ACTTION_KEY.ON_CONFIRM, req.body.context.transaction_id);
+		const on_confirm = await redisFetchToServer(ON_ACTTION_KEY.ON_CONFIRM, req.body.context.transaction_id);
 		if (!on_confirm) {
 			return send_nack(res, ERROR_MESSAGES.ON_CONFIRM_DOES_NOT_EXISTED)
 		}
 
-		const on_search = await redisFetch(ON_ACTTION_KEY.ON_SEARCH, req.body.context.transaction_id);
+		const on_search = await redisFetchToServer(ON_ACTTION_KEY.ON_SEARCH, req.body.context.transaction_id);
 		if (!on_search) {
 			return send_nack(res, ERROR_MESSAGES.ON_SEARCH_DOES_NOT_EXISTED)
 		}

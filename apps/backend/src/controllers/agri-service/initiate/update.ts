@@ -3,7 +3,7 @@ import {
   send_nack,
   createAuthHeader,
   redis,
-  redisFetch,
+  redisFetchToServer,
   AGRI_SERVICES_BPP_MOCKSERVER_URL,
 } from "../../../lib/utils";
 import axios from "axios";
@@ -14,10 +14,10 @@ export const initiateUpdateController = async (
   next: NextFunction
 ) => {
   const { scenario, transactionId } = req.body;
-  const on_confirm = await redisFetch("on_confirm", transactionId);
+  const on_confirm = await redisFetchToServer("on_confirm", transactionId);
 
   if (!on_confirm) {
-    send_nack(res, "On Confirm doesn't exist");
+    return send_nack(res, "On Confirm doesn't exist");
   }
 
   on_confirm.context.bpp_uri = AGRI_SERVICES_BPP_MOCKSERVER_URL

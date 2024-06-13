@@ -8,7 +8,7 @@ import {
 	createAuthHeader,
 	logger,
 	redis,
-	redisFetch,
+	redisFetchToServer
 } from "../../../lib/utils";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
@@ -20,7 +20,7 @@ export const initiateInitController = async (
 ) => {
 	const { scenario, transactionId } = req.body;
 
-	const on_select = await redisFetch("on_select", transactionId);
+	const on_select = await redisFetchToServer("on_select", transactionId)
 	if (Object.keys(on_select).includes("error")) {
 		return send_nack(res, "On Select had errors");
 	}

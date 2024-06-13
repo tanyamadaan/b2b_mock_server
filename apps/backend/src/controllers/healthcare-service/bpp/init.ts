@@ -11,21 +11,21 @@ import {
 	responseBuilder,
 	send_nack,
 	redis,
-	redisExist,
+	redisExistFromServer,
 	HEALTHCARE_SERVICES_EXAMPLES_PATH,
-	redisFetch,
+	redisFetchFromServer,
 	AGRI_SERVICES_EXAMPLES_PATH
 } from "../../../lib/utils";
 
 
 export const initController = async (req: Request, res: Response, next: NextFunction) => {
 	const { transaction_id } = req.body.context;
-	const on_search = await redisFetch("on_search", transaction_id);
+	const on_search = await redisFetchFromServer("on_search", transaction_id);
 	const providersItems = on_search?.message?.catalog?.providers[0]?.items;
 	req.body.providersItems = providersItems
-	const exit = await redisExist("on_select", transaction_id)
+	const exit = await redisExistFromServer("on_select", transaction_id)
 	if (!exit) {
-		send_nack(res, "On Select doesn't exist")
+		return send_nack(res, "On Select doesn't exist")
 	}
 	if (checkIfCustomized(req.body.message.order.items)) {
 		return initServiceCustomizationController(req, res, next);

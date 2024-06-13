@@ -3,11 +3,11 @@ import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 import { v4 as uuidv4 } from "uuid";
-import { HEALTHCARE_SERVICES_EXAMPLES_PATH, SERVICES_EXAMPLES_PATH, checkIfCustomized, quoteCreatorHealthCareService, redisFetch, responseBuilder } from "../../../lib/utils";
+import { HEALTHCARE_SERVICES_EXAMPLES_PATH, SERVICES_EXAMPLES_PATH, checkIfCustomized, quoteCreatorHealthCareService, redisFetchFromServer, responseBuilder } from "../../../lib/utils";
 
 
 export const onInitController = async (req: Request, res: Response, next: NextFunction) => {
-	const on_search = await redisFetch("on_search", req.body.context.transaction_id);
+	const on_search = await redisFetchFromServer("on_search", req.body.context.transaction_id);
 	const providersItems = on_search?.message?.catalog?.providers[0]?.items;
 	req.body.providersItems = providersItems
 	if (checkIfCustomized(req.body.message.order.items)) {

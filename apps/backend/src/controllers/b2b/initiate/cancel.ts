@@ -1,10 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import {
-	send_response,
-	redis,
-	send_nack,
-	createAuthHeader,
-	logger,
+  send_response,
+  redis,
+  send_nack,
+  createAuthHeader,
+  logger,
+  redisFetchToServer,
 } from "../../../lib/utils";
 import axios, { AxiosError } from "axios";
 import { v4 as uuidv4 } from "uuid";
@@ -14,28 +15,31 @@ export const initiateCancelController = async (
 	res: Response,
 	next: NextFunction
 ) => {
-	const { transactionId, orderId, cancellationReasonId } = req.body;
-	const transactionKeys = await redis.keys(`${transactionId}-*`);
-	const ifTransactionExist = transactionKeys.filter((e) =>
-		e.includes("on_confirm-to-server")
-	);
+  const { transactionId, orderId, cancellationReasonId } = req.body;
+  // const transactionKeys = await redis.keys(`${transactionId}-*`);
+  // const ifTransactionExist = transactionKeys.filter((e) =>
+  //   e.includes("on_confirm-to-server")
+  // );
 
-	if (ifTransactionExist.length === 0) {
-		return send_nack(res, "On Confirm doesn't exist");
+  // if (ifTransactionExist.length === 0) {
+  //   send_nack(res,"On Confirm doesn't exist")
+  // }
+  // const transaction = await redis.mget(ifTransactionExist);
+  // const parsedTransaction = transaction.map((ele) => {
+  //   return JSON.parse(ele as string);
+  // });
+  const on_confirm = await redisFetchToServer("on_confirm", transactionId);
+	if (!on_confirm) {
+		return send_nack(res,"On Confirm doesn't exist")
 	}
-	const transaction = await redis.mget(ifTransactionExist);
-	const parsedTransaction = transaction.map((ele) => {
-		return JSON.parse(ele as string);
-	});
-
-	// console.log("parsedTransaction:::: ", parsedTransaction[0]);
-	return intializeRequest(
-		res,
-		next,
-		parsedTransaction[0].request,
-		orderId,
-		cancellationReasonId
-	);
+  // console.log("parsedTransaction:::: ", parsedTransaction[0]);
+  return intializeRequest(
+    res,
+    next,
+    on_confirm,
+    orderId,
+    cancellationReasonId
+  );
 };
 
 const intializeRequest = async (

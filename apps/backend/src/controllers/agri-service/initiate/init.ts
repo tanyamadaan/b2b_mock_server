@@ -6,22 +6,22 @@ import {
 	checkIfCustomized,
 	send_response,
 	send_nack,
-	redisFetch,
+	redisFetchToServer,
 	AGRI_SERVICES_BPP_MOCKSERVER_URL,
 	AGRI_SERVICES_BAP_MOCKSERVER_URL
 } from "../../../lib/utils";
 
 export const initiateInitController = async (req: Request, res: Response, next: NextFunction) => {
 	const { scenario, transactionId } = req.body;
-	const on_select = await redisFetch("on_select", transactionId)
+	const on_select = await redisFetchToServer("on_select", transactionId)
 
 
 	if (Object.keys(on_select).includes("error")) {
-		send_nack(res,"On Select had errors")
+		return send_nack(res,"On Select had errors")
 	}
 	
 	if (!on_select) {
-		send_nack(res,"On Select doesn't exist")
+		return send_nack(res,"On Select doesn't exist")
 	}
 	on_select.context.bpp_uri = AGRI_SERVICES_BPP_MOCKSERVER_URL
 

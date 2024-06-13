@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import {
 	send_response,
 	send_nack,
-	redisFetch,
+	redisFetchToServer,
 } from "../../../lib/utils";
 import { ACTTION_KEY, ON_ACTTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
@@ -15,7 +15,7 @@ export const initiateCancelController = async (
 	next: NextFunction
 ) => {
 	const { transactionId, orderId, cancellationReasonId } = req.body;
-	const on_confirm = await redisFetch(ON_ACTTION_KEY.ON_CONFIRM, transactionId);
+	const on_confirm = await redisFetchToServer(ON_ACTTION_KEY.ON_CONFIRM, transactionId);
 	if (!on_confirm) {
 		return send_nack(res, ERROR_MESSAGES.ON_CONFIRM_DOES_NOT_EXISTED)
 	}

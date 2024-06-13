@@ -3,14 +3,10 @@ import { v4 as uuidv4 } from "uuid";
 import {
 	HEALTHCARE_SERVICES_BAP_MOCKSERVER_URL,
 	MOCKSERVER_ID,
-	checkIfCustomized,
 	send_response,
 	send_nack,
-	logger,
-	quoteCreatorServiceCustomized,
-	redisFetch,
+	redisFetchToServer,
 	HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL,
-	quoteCreatorHealthCareService
 } from "../../../lib/utils";
 
 export const initiateConfirmController = async (
@@ -19,14 +15,12 @@ export const initiateConfirmController = async (
 	next: NextFunction
 ) => {
 	const { scenario, transactionId } = req.body;
-	const on_search = await redisFetch("on_search", transactionId);
+	const on_search = await redisFetchToServer("on_search", transactionId);
 	const providersItems = on_search?.message?.catalog?.providers[0]?.items;
 	// req.body.providersItems = providersItems
-	const on_init = await redisFetch("on_init", transactionId)
-
-	console.log("on_inittttttttttttt",JSON.stringify(on_init.message.order.items))
+	const on_init = await redisFetchToServer("on_init", transactionId)
 	if (!on_init) {
-		send_nack(res, "On Init doesn't exist")
+		return send_nack(res, "On Init doesn't exist")
 	}
 	on_init.context.bpp_uri = HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
 	return intializeRequest(res, next, on_init, scenario, providersItems);
@@ -117,6 +111,5 @@ const intializeRequest = async (
 			},
 		},
 	};
-	console.log("itemsssssssssss",JSON.stringify(items))
 	await send_response(res, next, confirm, transaction_id, "confirm", scenario = scenario);
 };

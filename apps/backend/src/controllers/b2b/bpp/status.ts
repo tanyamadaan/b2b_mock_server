@@ -3,17 +3,7 @@ import { NextFunction, Request, Response } from "express";
 // import path from "path";
 // import YAML from "yaml";
 
-import {
-	responseBuilder,
-	send_nack,
-	B2B_EXAMPLES_PATH,
-	redis,
-	Item,
-	Fulfillment,
-	Stop,
-	Payment,
-	SettlementDetails,
-} from "../../../lib/utils";
+import { responseBuilder, send_nack,B2B_EXAMPLES_PATH, redis, Item, Fulfillment, Stop, Payment, SettlementDetails, redisFetchFromServer } from "../../../lib/utils";
 // import { stringify } from "querystring";
 // import { AnyARecord } from "dns";
 
@@ -25,20 +15,24 @@ export const statusController = async (
 	const scenario: string = String(req.query.scenario) || "";
 	const { transaction_id } = req.body.context;
 
-	const transactionKeys = await redis.keys(`${transaction_id}-*`);
-	const ifTransactionExist = transactionKeys.filter((e) =>
-		e.includes("on_confirm-from-server")
-	);
+	// const transactionKeys = await redis.keys(`${transaction_id}-*`);
+	// const ifTransactionExist = transactionKeys.filter((e) =>
+	// 	e.includes("on_confirm-from-server")
+	// );
 
-	if (ifTransactionExist.length === 0) {
-		return send_nack(res, "On Confirm doesn't exist");
+	// if (ifTransactionExist.length === 0) {
+	// 	send_nack(res,"On Confirm doesn't exist")
+	// }
+	// const transaction = await redis.mget(ifTransactionExist);
+	// const parsedTransaction = transaction.map((ele) => {
+	// 	return JSON.parse(ele as string);
+	// });
+	const on_confirm = await redisFetchFromServer("on_confirm", transaction_id);
+	if (!on_confirm) {
+		return send_nack(res,"On Confirm doesn't exist")
 	}
-	const transaction = await redis.mget(ifTransactionExist);
-	const parsedTransaction = transaction.map((ele) => {
-		return JSON.parse(ele as string);
-	});
 
-	return statusRequest(req, res, next, parsedTransaction[0].request, scenario);
+	return statusRequest(req, res, next, on_confirm, scenario);
 };
 
 const statusRequest = async (
