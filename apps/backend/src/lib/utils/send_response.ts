@@ -1,5 +1,5 @@
-import { NextFunction, Response, Request } from "express";
-import axios, { AxiosError } from "axios";
+import { NextFunction, Response } from "express";
+import axios from "axios";
 import { createAuthHeader, redis } from "./index";
 
 interface headers {
@@ -31,9 +31,11 @@ async function send_response(
 		const headers: headers = {
 			authorization: header,
 		};
+
 		if (action === "search") {
 			headers["X-Gateway-Authorization"] = header;
 		}
+
 		const uri = `${bpp_uri}/${action}${scenario ? `?scenario=${scenario}` : ""}`
 		const response = await axios.post(uri, res_obj, {
 			headers: { ...headers },
@@ -49,6 +51,7 @@ async function send_response(
 				},
 			})
 		);
+
 		return res.status(200).json({
 			message: {
 				ack: {
@@ -57,10 +60,12 @@ async function send_response(
 			},
 			transaction_id,
 		});
+
 	} catch (error) {
 		return next(error);
 	}
 }
+
 function send_nack(res: Response, message: string) {
 	return res.status(400).json({
 		message: {
@@ -73,4 +78,5 @@ function send_nack(res: Response, message: string) {
 		},
 	});
 }
+
 export { send_response, send_nack };

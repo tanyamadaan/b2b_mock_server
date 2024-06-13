@@ -23,6 +23,8 @@ export const initiateConfirmController = async (
 	const providersItems = on_search?.message?.catalog?.providers[0]?.items;
 	// req.body.providersItems = providersItems
 	const on_init = await redisFetch("on_init", transactionId)
+
+	console.log("on_inittttttttttttt",JSON.stringify(on_init.message.order.items))
 	if (!on_init) {
 		send_nack(res, "On Init doesn't exist")
 	}
@@ -54,7 +56,6 @@ const intializeRequest = async (
 	const { stops, ...remainingfulfillments } = fulfillments[0];
 
 	const timestamp = new Date().toISOString();
-	const customized = checkIfCustomized(items);
 	const confirm = {
 		context: {
 			...context,
@@ -73,7 +74,6 @@ const intializeRequest = async (
 					...provider,
 					locations,
 				},
-				items,
 				fulfillments: [
 					{
 						...remainingfulfillments,
@@ -94,9 +94,6 @@ const intializeRequest = async (
 						}),
 					},
 				],
-				quote: customized
-					? quoteCreatorServiceCustomized(items)
-					: quoteCreatorHealthCareService(items, providersItems),
 				payments: [
 					{
 						...payments[0],
@@ -120,5 +117,6 @@ const intializeRequest = async (
 			},
 		},
 	};
+	console.log("itemsssssssssss",JSON.stringify(items))
 	await send_response(res, next, confirm, transaction_id, "confirm", scenario = scenario);
 };

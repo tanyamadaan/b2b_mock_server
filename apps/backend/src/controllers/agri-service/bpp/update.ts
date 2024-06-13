@@ -56,8 +56,7 @@ export const updateRescheduleController = (req: Request, res: Response, next: Ne
 		next,
 		context,
 		responseMessage,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_update" : "/on_update"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_update" : "/on_update"
 		}`,
 		`on_update`,
 		"agri-services"

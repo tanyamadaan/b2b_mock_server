@@ -3,10 +3,10 @@ import { v4 as uuidv4 } from "uuid";
 import {
 	send_response,
 	send_nack,
-	logger,
 	redisFetch,
-	HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL,
 } from "../../../lib/utils";
+import { ACTTION_KEY, ON_ACTTION_KEY } from "../../../lib/utils/actionOnActionKeys";
+import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 
 
 export const initiateCancelController = async (
@@ -15,11 +15,10 @@ export const initiateCancelController = async (
 	next: NextFunction
 ) => {
 	const { transactionId, orderId, cancellationReasonId } = req.body;
-	const on_confirm = await redisFetch("on_confirm", transactionId);
+	const on_confirm = await redisFetch(ON_ACTTION_KEY.ON_CONFIRM, transactionId);
 	if (!on_confirm) {
-		send_nack(res, "On Confirm doesn't exist")
+		return send_nack(res, ERROR_MESSAGES.ON_CONFIRM_DOES_NOT_EXISTED)
 	}
-	on_confirm.context.bpp_uri = HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
 	return intializeRequest(res, next, on_confirm, orderId, cancellationReasonId);
 };
 
@@ -35,7 +34,7 @@ const intializeRequest = async (
 	const cancel = {
 		context: {
 			...context,
-			action: "cancel",
+			action: ACTTION_KEY.CANCEL,
 			message_id: uuidv4(),
 		},
 		message: {
@@ -43,5 +42,5 @@ const intializeRequest = async (
 			cancellation_reason_id,
 		},
 	};
-	await send_response(res, next, cancel, context.transaction_id, "cancel", scenario = scenario);
+	await send_response(res, next, cancel, context.transaction_id, ACTTION_KEY.CANCEL, scenario = scenario);
 };

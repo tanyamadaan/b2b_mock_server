@@ -16,6 +16,9 @@ export const searchController = (req: Request, res: Response, next: NextFunction
   ); 
 
   const response = YAML.parse(file.toString());
+
+  console.log("bap uri",req.body.context.bap_uri)
+  
   return responseBuilder(
     res,
     next,

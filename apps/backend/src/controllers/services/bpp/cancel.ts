@@ -30,8 +30,7 @@ export const cancelController = async (
 	}
 
 	const on_search_data = await redisFetch("on_search", transaction_id);
-	const provider_id = on_confirm_data.message.order.provider.id;
-
+	
 	const item_measure_ids =
 		on_search_data.message.catalog.providers[0].items.reduce(
 			(accumulator: Accumulator, currentItem: any) => {

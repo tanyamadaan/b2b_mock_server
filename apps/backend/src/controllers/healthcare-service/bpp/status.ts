@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
-import { HEALTHCARE_SERVICES_BAP_MOCKSERVER_URL, HEALTHCARE_SERVICES_EXAMPLES_PATH, MOCKSERVER_ID, checkIfCustomized, quoteCreatorHealthCareService, quoteCreatorServiceCustomized, redisFetch, responseBuilder, send_nack } from "../../../lib/utils";
+import { HEALTHCARE_SERVICES_BAP_MOCKSERVER_URL, HEALTHCARE_SERVICES_EXAMPLES_PATH, MOCKSERVER_ID, redisFetch, responseBuilder, send_nack } from "../../../lib/utils";
 
 
 export const statusController = async (req: Request, res: Response, next: NextFunction) => {
@@ -34,6 +34,7 @@ export const statusController = async (req: Request, res: Response, next: NextFu
 			break;
 		default:
 			statusCompletedController(req, res, next)//default senario : completed
+			// await automatTrigStatusWith30SecInterval(req, res, next);
 			break;
 	}
 }
@@ -92,6 +93,7 @@ const statusCompletedController = (req: Request, res: Response, next: NextFuncti
 		"healthcare-service"
 	);
 };
+
 
 const statusInTransitController = (req: Request, res: Response, next: NextFunction) => {
 	const { context } = req.body;
@@ -174,5 +176,100 @@ const statusServiceStartedController = (
 	);
 };
 
+let statusQueue: string[] = []; // Queue to hold URLs
 
+// Function to check the status of a single API
+async function checkStatus(data: any, url: any) {
+	try {
+		const { context, message, on_confirm } = data;
+		const file = fs.readFileSync(
+			path.join(HEALTHCARE_SERVICES_EXAMPLES_PATH, url)
+		);
+		const response = YAML.parse(file.toString());
+		const timestamp = new Date().toISOString();
+
+		const constYamlStatus = response.value.message.order.status;
+		const status = {
+			context: {
+				...context,
+				timestamp: new Date().toISOString(),
+				action: "on_status",
+				bap_id: MOCKSERVER_ID,
+				bap_uri: HEALTHCARE_SERVICES_BAP_MOCKSERVER_URL,
+				message_id: uuidv4()
+			},
+			message: {
+				order: {
+					...response.value.message.order,
+					id: on_confirm.message.order.id,
+					status: response.value.message.order.status,
+					provider: on_confirm.message.order.provider,
+					items: on_confirm.message.order.items,
+					fulfillments: response.value.message.order.fulfillments,
+					quote: on_confirm.message.order.quote,
+					payments: [
+						{
+							...on_confirm.message.order.payments[0],
+							params: {
+								...on_confirm.message.order.payments[0].params,
+								transaction_id: uuidv4(),
+							},
+							status: "PAID",
+						},
+					],
+					document: response.value.message.order.document,
+					created_at: timestamp,
+					updated_at: timestamp,
+				},
+			},
+		};
+		console.log("urllllllllll",url,)
+		return status;
+	} catch (error) {
+		console.error(`Error fetching constYamlStatus from:`, error);
+		throw error;
+	}
+}
+
+// Function to process the next URL in the queue
+async function processNextUrl(req: Request, res: Response, next: NextFunction) {
+	const url = statusQueue.shift(); // Get the next URL from the queue
+	if (!url) {
+		// If there are no more URLs in the queue, call next() to move to the next middleware
+		next();
+		return;
+	}
+
+	try {
+		const status = await checkStatus(req.body, url);
+		res.json(status); // Send the response for this URL
+	} catch (error) {
+		console.error("Error processing URL:", url, error);
+		res.status(500).json({ error: "An error occurred while processing the request" });
+	}
+}
+
+// Automatically triggered status with 30 seconds gap
+const automatTrigStatusWith30SecInterval = async (req: Request, res: Response, next: NextFunction) => {
+	const { context, message, on_confirm } = req.body;
+
+	// List of status API URLs
+	const statusApiUrls = [
+		"on_status/on_status_transit.yaml",
+		"on_status/on_status_at_location.yaml",
+		"on_status/on_status_collected_by_agent.yaml",
+		"on_status/on_status_received_at_lab.yaml",
+		"on_status/on_status_test_completed.yaml",
+		"on_status/on_status_report_generated.yaml",
+		"on_status/on_status_report_shared.yaml"
+	];
+
+	// Add URLs to the queue
+	statusApiUrls.forEach((url) => {
+		statusQueue.push(url);
+	});
+
+	// Process the queue
+	processNextUrl(req, res, next);
+};
 

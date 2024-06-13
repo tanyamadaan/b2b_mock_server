@@ -162,7 +162,7 @@ export const INITIATE_FIELDS = {
 			placeholder: "Update Target",
 			type: "select",
 			domainDepended: false,
-			options: ["payments"],
+			options: ["payments","fulfillments","items"],
 		},
 	],
 	cancel: [

@@ -51,8 +51,6 @@ export const healthcareSrvSchemaValidator =
 				[x: string]: {};
 			}>,
 				isValid: boolean;
-
-			console.log("schemaaaaaaaa", schema)
 			switch (schema) {
 				case "search":
 					validate = ajv.compile(searchSchema);
@@ -110,8 +108,7 @@ export const healthcareSrvSchemaValidator =
 					});
 					return;
 			}
-
-			console.log("req.body=>>>>>>>>>>",JSON.stringify(req.body))
+			console.log("schemabodyyyyyyyyyyy",JSON.stringify(req.body))
 			isValid = validate(req.body);
 			if (!isValid) {
 				res.status(400).json({

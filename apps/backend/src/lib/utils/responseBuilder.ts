@@ -2,13 +2,10 @@ import axios from "axios";
 import { NextFunction, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import {
-	AGRI_SERVICES_BAP_MOCKSERVER_URL,
 	AGRI_SERVICES_BPP_MOCKSERVER_URL,
-	B2B_BAP_MOCKSERVER_URL,
 	B2B_BPP_MOCKSERVER_URL,
 	HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL,
 	MOCKSERVER_ID,
-	SERVICES_BAP_MOCKSERVER_URL,
 	SERVICES_BPP_MOCKSERVER_URL,
 	SERVICES_EXAMPLES_PATH,
 } from "./constants";
@@ -70,20 +67,20 @@ export const responseBuilder = async (
 	ts.setSeconds(ts.getSeconds() + 1);
 	const sandboxMode = res.getHeader("mode") === "sandbox";
 
+	console.log("action status", action)
 	var async: { message: object; context?: object; error?: object } = {
 		context: {},
 		message,
 	};
+
 	const bppURI = domain === "b2b"
 		? B2B_BPP_MOCKSERVER_URL : (domain === "agri-services" ? AGRI_SERVICES_BPP_MOCKSERVER_URL
 			: (domain === "healthcare-service" ? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL : SERVICES_BPP_MOCKSERVER_URL))
 
 	if (action.startsWith("on_")) {
-		// const { bap_uri, bap_id, ...remainingContext } = reqContext as any;
 		async = {
 			...async,
 			context: {
-				// ...remainingContext,
 				...reqContext,
 				bpp_id: MOCKSERVER_ID,
 				bpp_uri: bppURI,
@@ -123,6 +120,7 @@ export const responseBuilder = async (
 				const logIndex = transactionKeys.filter((e) =>
 					e.includes("on_status-to-server")
 				).length;
+
 				await redis.set(
 					`${(async.context! as any).transaction_id
 					}-${logIndex}-${action}-from-server`,
@@ -247,11 +245,9 @@ export const responseBuilder = async (
 					`${(async.context! as any).transaction_id}-${action}-from-server`,
 					JSON.stringify(log)
 				);
-
 				return next(error)
 			}
 		}
-
 		logger.info({
 			type: "response",
 			action: action,
@@ -265,18 +261,9 @@ export const responseBuilder = async (
 				},
 			},
 		});
-		// return res.json({
-		// 	sync: {
-		// 		message: {
-		// 			ack: {
-		// 				status: "ACK",
-		// 			},
-		// 		},
-		// 	},
-		// 	async,
-		// });
 	}
 };
+
 
 export const quoteCreator = (items: Item[]) => {
 	var breakup: any[] = [];
@@ -502,16 +489,14 @@ export const quoteCreatorAgriService = (items: Item[], providersItems?: any) => 
 	})
 
 	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
-
-
 	let totalPrice = 0;
-
 	breakup.forEach(entry => {
 		const priceValue = parseFloat(entry.price.value);
 		if (!isNaN(priceValue)) {
 			totalPrice += priceValue;
 		}
 	});
+
 	const result = {
 		breakup,
 		price: {
@@ -527,12 +512,11 @@ export const quoteCreatorAgriService = (items: Item[], providersItems?: any) => 
 
 export const quoteCreatorHealthCareService = (items: Item[], providersItems?: any, offers?: any) => {
 	//GET PACKAGE ITEMS
-	
+
 	//get price from on_search
 	items.forEach(item => {
-		if (item.tags[0].list[0].value === "PACKAGE") {
+		if (item && item.tags && item.tags[0] && item.tags[0].list[0].value === "PACKAGE") {
 			const getItems = item.tags[0].list[1].value.split(",")
-
 			getItems.forEach(pItem => {
 				// Find the corresponding item in the second array
 				const matchingItem = providersItems.find((secondItem: { id: string; }) => secondItem.id === pItem);
@@ -572,14 +556,11 @@ export const quoteCreatorHealthCareService = (items: Item[], providersItems?: an
 				quantity: item.quantity ? item.quantity : undefined,
 			}
 		})
-
 	});
 
 	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
 
-
 	//ADD STATIC TAX FOR ITEM ONE
-
 	breakup.push(
 		{
 			title: "tax",
@@ -605,8 +586,6 @@ export const quoteCreatorHealthCareService = (items: Item[], providersItems?: an
 			],
 		},
 	)
-
-
 	//ADD OFFERS TAGS INTO BREAKUP
 	// if(offers){
 	// 	breakup.push(
@@ -741,7 +720,6 @@ export const quoteCreatorHealthCareForItemsService = (items: Item[], providersIt
 	return result;
 
 };
-
 
 export const quoteCreatorServiceCustomized = (items: Item[]) => {
 	// var breakup: any[] = [

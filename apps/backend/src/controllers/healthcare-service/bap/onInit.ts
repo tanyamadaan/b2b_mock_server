@@ -23,8 +23,10 @@ const onInitConsultationController = (req: Request, res: Response, next: NextFun
 	const file = fs.readFileSync(
 		path.join(HEALTHCARE_SERVICES_EXAMPLES_PATH, "confirm/confirm.yaml")
 	);
+	
 	const response = YAML.parse(file.toString());
-	const timestamp = new Date().toISOString()
+	const timestamp = new Date().toISOString();
+
 	const responseMessage = {
 		order: {
 			id: uuidv4(),
@@ -57,6 +59,7 @@ const onInitConsultationController = (req: Request, res: Response, next: NextFun
 			updated_at: timestamp,
 		}
 	}
+
 	return responseBuilder(
 		res,
 		next,

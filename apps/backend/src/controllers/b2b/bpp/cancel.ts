@@ -30,13 +30,12 @@ export const cancelController = async (
 	const parsedTransaction = transaction.map((ele: any) => {
 		return JSON.parse(ele as string);
 	});
+	
 	// getting on_search data for payment_ids
 	const search = await redis.mget(`${transaction_id}-on_search-from-server`);
 	const parsedSearch = search.map((ele: any) => {
 		return JSON.parse(ele as string);
 	});
-	// console.log("Search ::", parsedSearch[0].request.message.catalog.providers)
-
 	const provider_id = parsedTransaction[0].request.message.order.provider.id;
 
 	const item_payment_ids =
