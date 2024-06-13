@@ -24,7 +24,7 @@ export const initiateConfirmController = async (
 	// req.body.providersItems = providersItems
 	const on_init = await redisFetchToServer("on_init", transactionId)
 	if (!on_init) {
-		send_nack(res, "On Init doesn't exist")
+		return send_nack(res, "On Init doesn't exist")
 	}
 	on_init.context.bpp_uri = HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
 	return intializeRequest(res, next, on_init, scenario, providersItems);

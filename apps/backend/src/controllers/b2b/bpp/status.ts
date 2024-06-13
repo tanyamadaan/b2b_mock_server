@@ -29,7 +29,7 @@ export const statusController = async (
 	// });
 	const on_confirm = await redisFetchFromServer("on_confirm", transaction_id);
 	if (!on_confirm) {
-		send_nack(res,"On Confirm doesn't exist")
+		return send_nack(res,"On Confirm doesn't exist")
 	}
 
 	return statusRequest(req, res, next, on_confirm, scenario);

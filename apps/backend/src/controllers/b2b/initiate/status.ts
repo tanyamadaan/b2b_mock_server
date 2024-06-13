@@ -4,9 +4,9 @@ import {
   MOCKSERVER_ID,
   send_response,
   send_nack,
+  redis,
   createAuthHeader,
   logger,
-  redis,
 } from "../../../lib/utils";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
@@ -24,7 +24,7 @@ export const initiateStatusController = async (
   );
 
 	if (ifTransactionExist.length === 0) {
-		send_nack(res,"On Confirm doesn't exist")
+		return send_nack(res,"On Confirm doesn't exist")
 	}
 	const statusIndex = transactionKeys.filter((e) =>
 		e.includes("-status-to-server")

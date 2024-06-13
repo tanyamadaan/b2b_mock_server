@@ -7,10 +7,10 @@ export const cancelController = async (req: Request, res: Response, next: NextFu
 
 	const on_confirm_data = await redisFetchFromServer("on_confirm", transaction_id)
 	if (!on_confirm_data) {
-		send_nack(res, "on confirm doesn't exist")
+		return send_nack(res, "on confirm doesn't exist")
 	}
 	if (on_confirm_data.message.order.id != req.body.message.order_id) {
-		send_nack(res, "Order id does not exist")
+		return send_nack(res, "Order id does not exist")
 	}
 	const on_search_data = await redisFetchFromServer("on_search", transaction_id)
 	const provider_id = on_confirm_data.message.order.provider.id

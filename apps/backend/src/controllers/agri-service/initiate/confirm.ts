@@ -23,7 +23,7 @@ export const initiateConfirmController = async (
 	const on_init = await redisFetchToServer("on_init", transactionId)
 
 	if(!on_init){
-		send_nack(res,"On Init doesn't exist")
+		return send_nack(res,"On Init doesn't exist")
 	}
 
 	on_init.context.bpp_uri = AGRI_SERVICES_BPP_MOCKSERVER_URL

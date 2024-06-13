@@ -10,7 +10,7 @@ export const statusController = async (req: Request, res: Response, next: NextFu
 	const { scenario } = req.query;
 	const on_confirm = await redisFetchFromServer("on_confirm", req.body.context.transaction_id);
 	if (!on_confirm) {
-		send_nack(res, "On Confirm doesn't exist")
+		return send_nack(res, "On Confirm doesn't exist")
 	}
 	req.body.on_confirm = on_confirm;
 	switch (scenario) {

@@ -73,4 +73,14 @@ function send_nack(res: Response, message: string) {
 		},
 	});
 }
-export { send_response, send_nack };
+
+function send_ack(res:Response){
+	return res.json({
+		message: {
+			ack: {
+				status: "ACK",
+			},
+		},
+	});
+}
+export { send_response, send_nack ,send_ack};

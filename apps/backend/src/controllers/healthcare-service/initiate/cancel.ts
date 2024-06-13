@@ -17,7 +17,7 @@ export const initiateCancelController = async (
 	const { transactionId, orderId, cancellationReasonId } = req.body;
 	const on_confirm = await redisFetchToServer("on_confirm", transactionId);
 	if (!on_confirm) {
-		send_nack(res, "On Confirm doesn't exist")
+		return send_nack(res, "On Confirm doesn't exist")
 	}
 	on_confirm.context.bpp_uri = HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
 	return intializeRequest(res, next, on_confirm, orderId, cancellationReasonId);
