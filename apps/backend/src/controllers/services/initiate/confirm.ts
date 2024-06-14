@@ -7,8 +7,8 @@ import {
   send_nack,
   createAuthHeader,
   logger,
-  quoteCreatorService,
-  quoteCreatorServiceCustomized,
+  // quoteCreatorService,
+  // quoteCreatorServiceCustomized,
   redis,
   redisFetchToServer,
   Stop,
@@ -63,7 +63,7 @@ const intializeRequest = async (
   const {
     context,
     message: {
-      order: { provider, locations, payments, fulfillments, xinput, items },
+      order: { provider, locations, payments, fulfillments, xinput, items, quote},
     },
   } = transaction;
   const { transaction_id } = context;
@@ -115,9 +115,7 @@ const intializeRequest = async (
             }),
           },
         ],
-        quote: customized
-          ? quoteCreatorServiceCustomized(items)
-          : quoteCreatorService(items),
+        quote:quote,
         payments: [
           {
             //hardcoded transaction_id

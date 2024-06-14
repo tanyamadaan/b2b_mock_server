@@ -2,13 +2,13 @@ import { NextFunction, Request, Response } from "express";
 import {
   SERVICES_EXAMPLES_PATH,
   checkIfCustomized,
-  quoteCreatorService,
-  quoteCreatorServiceCustomized,
+  // quoteCreatorService,
+  // quoteCreatorServiceCustomized,
   responseBuilder,
   send_nack,
   redis,
   Stop,
-  redisExistFromServer,
+  redisFetchFromServer,
 } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
@@ -22,8 +22,9 @@ export const initController = async (
 ) => {
   const { transaction_id } = req.body.context;
 
-  const exit = await redisExistFromServer("on_select", transaction_id);
-  if (!exit) {
+  const on_select = await redisFetchFromServer("on_select", transaction_id);
+  req.body.message.order.quote=on_select?.message?.order?.quote;
+  if (!on_select) {
     return send_nack(res, "On Select doesn't exist");
   }
 
@@ -40,7 +41,7 @@ const initConsultationController = (
   const {
     context,
     message: {
-      order: { provider, items, billing, fulfillments, payments },
+      order: { provider, items, billing, fulfillments, payments ,quote},
     },
   } = req.body;
 
@@ -81,7 +82,8 @@ const initConsultationController = (
           }),
         },
       ],
-      quote: quoteCreatorService(items),
+      // quote: quoteCreatorService(items),
+      quote: quote,
       payments: [
         {
           id: payments[0].id,
@@ -113,7 +115,7 @@ const initServiceCustomizationController = (
   const {
     context,
     message: {
-      order: { provider, items, billing, fulfillments, payments },
+      order: { provider, items, billing, fulfillments, payments,quote },
     },
   } = req.body;
 
@@ -151,7 +153,7 @@ const initServiceCustomizationController = (
           stops,
         },
       ],
-      quote: quoteCreatorServiceCustomized(items),
+      quote: quote,
       payments: [
         {
           id: payments[0].id,

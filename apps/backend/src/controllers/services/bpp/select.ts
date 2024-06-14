@@ -10,17 +10,25 @@ import {
   redis,
   Stop,
   Time,
+  redisFetchFromServer,
+  send_nack
 } from "../../../lib/utils";
 import path from "path";
 import fs from "fs";
 import YAML from "yaml";
 
-export const selectController = (
+export const selectController = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   const { scenario } = req.query;
+  const on_search = await redisFetchFromServer("on_search", req.body.context.transaction_id);
+  if (!on_search) {
+    return send_nack(res,"On Search doesn't exist")
+  }
+	const providersItems = on_search?.message?.catalog?.providers[0]?.items;
+  req.body.providersItems=providersItems
   switch (scenario) {
     // schedule_confirmed, schedule_rejected
     case "schedule_confirmed":
@@ -93,7 +101,7 @@ const selectConsultationConfirmController = (
           }),
         })
       ),
-      quote: quoteCreatorService(message.order.items),
+      quote: quoteCreatorService(message.order.items,req.body?.providersItems),
     },
   };
 
@@ -223,7 +231,7 @@ const selectServiceCustomizationConfirmedController = async (
             })),
           },
         ],
-      quote: quoteCreatorServiceCustomized(message.order.items),
+      quote: quoteCreatorServiceCustomized(message.order.items,req.body?.providersItems),
     },
   };
 
