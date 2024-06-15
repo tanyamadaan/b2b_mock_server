@@ -9,10 +9,12 @@ import {
 	InfoPanel,
 	StyledBox,
 } from "./styles";
+import { useNavigate } from "react-router-dom";
 
 export const Landing = () => {
+	const navigate = useNavigate();
 	const openReadme = () => {
-		window.location.href = "/user-guide";
+		navigate("/user-guide");
 	};
 
 	return (
@@ -27,8 +29,8 @@ export const Landing = () => {
 					maxWidth="xl"
 				>
 					<img
-						src={ONDC_logo} 
-						style={{ marginRight: "16px", height: "55px" }} 
+						src={ONDC_logo}
+						style={{ marginRight: "16px", height: "55px" }}
 					/>
 					<CustomButton
 						onClick={openReadme}
