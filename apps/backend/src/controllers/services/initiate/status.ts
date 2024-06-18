@@ -55,7 +55,7 @@ const intializeRequest = async (
       bap_uri: SERVICES_BAP_MOCKSERVER_URL,
     },
     message: {
-      order_id: transaction.message.order.id,
+      order_id: transaction?.message?.order?.id,
     },
   };
   // satus index is always witin boundary of senarios array

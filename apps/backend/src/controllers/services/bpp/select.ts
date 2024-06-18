@@ -10,21 +10,29 @@ import {
   redis,
   Stop,
   Time,
+  redisFetchFromServer,
+  send_nack
 } from "../../../lib/utils";
 import path from "path";
 import fs from "fs";
 import YAML from "yaml";
 
-export const selectController = (
+export const selectController = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   const { scenario } = req.query;
+  const on_search = await redisFetchFromServer("on_search", req.body.context?.transaction_id);
+  if (!on_search) {
+    return send_nack(res,"On Search doesn't exist")
+  }
+	const providersItems = on_search?.message?.catalog?.providers[0]?.items;
+  req.body.providersItems=providersItems
   switch (scenario) {
     // schedule_confirmed, schedule_rejected
     case "schedule_confirmed":
-      if (checkIfCustomized(req.body.message.order.items)) {
+      if (checkIfCustomized(req.body.message?.order?.items)) {
         return selectServiceCustomizationConfirmedController(req, res, next);
       }
       selectConsultationConfirmController(req, res, next);
@@ -33,7 +41,7 @@ export const selectController = (
       selectConsultationRejectController(req, res, next);
       break;
     default:
-      if (checkIfCustomized(req.body.message.order.items)) {
+      if (checkIfCustomized(req.body.message?.order?.items)) {
         return selectServiceCustomizationConfirmedController(req, res, next);
       }
       return selectConsultationConfirmController(req, res, next);
@@ -46,21 +54,21 @@ const selectConsultationConfirmController = (
   next: NextFunction
 ) => {
   const { context, message } = req.body;
-  const { locations, ...provider } = message.order.provider;
+  const { locations, ...provider } = message?.order?.provider;
   var responseMessage = {
     order: {
       provider,
-      payments: message.order.payments.map(({ type }: { type: string }) => ({
+      payments: message?.order?.payments?.map(({ type }: { type: string }) => ({
         type,
         collected_by: "BAP",
       })),
-      items: message.order.items.map(
+      items: message?.order?.items.map(
         ({ ...remaining }: { location_ids: string[]; remaining: any }) => ({
           ...remaining,
           fulfillment_ids: [uuidv4()],
         })
       ),
-      fulfillments: message.order.fulfillments.map(
+      fulfillments: message?.order?.fulfillments?.map(
         ({ id, stops, ...each }: { id: string; stops: Stop[]; each: any }) => ({
           ...each,
           id,
@@ -93,7 +101,7 @@ const selectConsultationConfirmController = (
           }),
         })
       ),
-      quote: quoteCreatorService(message.order.items),
+      quote: quoteCreatorService(message.order.items,req.body?.providersItems),
     },
   };
 
@@ -143,7 +151,7 @@ const selectServiceCustomizationConfirmedController = async (
   const { context, message } = req.body;
   const { locations, ...provider } = message.order.provider;
   const { id, parent_item_id, location_ids, quantity, ...item } =
-    message.order.items[0];
+  message?.order?.items[0];
   const transactionKeys = await redis.keys(`${context.transaction_id}-*`);
   const ifTransactionToExist = transactionKeys.filter((e) =>
     e.includes("on_search-to-server")
@@ -160,16 +168,16 @@ const selectServiceCustomizationConfirmedController = async (
     return JSON.parse(ele as string);
   })[0].request;
 
-  const fulfillment = message.order.fulfillments[0];
+  const fulfillment = message?.order?.fulfillments[0];
 
-  const fulfillment_id = onSearchHistory.message.catalog.fulfillments.filter(
-    (e: { type: string }) => e.type === fulfillment.type
-  )[0].id;
+  const fulfillment_id = onSearchHistory.message?.catalog?.fulfillments.filter(
+    (e: { type: string }) => e.type === fulfillment?.type
+  )[0]?.id;
 
   const responseMessage = {
     order: {
       provider,
-      payments: message.order.payments.map(({ type }: { type: string }) => ({
+      payments: message?.order?.payments?.map(({ type }: { type: string }) => ({
         type,
         collected_by: "BAP",
       })),
@@ -181,8 +189,8 @@ const selectServiceCustomizationConfirmedController = async (
           quantity,
           fulfillment_ids: [uuidv4()],
         },
-        ...message.order.items
-          .slice(1)
+        ...message?.order?.items
+          ?.slice(1)
           .map(
             ({
               location_ids,
@@ -217,13 +225,13 @@ const selectServiceCustomizationConfirmedController = async (
                 code: "Serviceable",
               },
             },
-            stops: fulfillment.stops.map((e: { time: Time }) => ({
+            stops: fulfillment?.stops?.map((e: { time: Time }) => ({
               ...e,
               time: { ...e.time, label: "confirmed" },
             })),
           },
         ],
-      quote: quoteCreatorServiceCustomized(message.order.items),
+      quote: quoteCreatorServiceCustomized(message.order.items,req.body?.providersItems),
     },
   };
 

@@ -7,8 +7,8 @@ import {
   send_nack,
   createAuthHeader,
   logger,
-  quoteCreatorService,
-  quoteCreatorServiceCustomized,
+  // quoteCreatorService,
+  // quoteCreatorServiceCustomized,
   redis,
   redisFetchToServer,
   Stop,
@@ -63,7 +63,7 @@ const intializeRequest = async (
   const {
     context,
     message: {
-      order: { provider, locations, payments, fulfillments, xinput, items },
+      order: { provider, locations, payments, fulfillments, xinput, items, quote},
     },
   } = transaction;
   const { transaction_id } = context;
@@ -95,11 +95,11 @@ const intializeRequest = async (
         fulfillments: [
           {
             ...remainingfulfillments,
-            stops: stops.map((stop: Stop) => {
+            stops: stops?.map((stop: Stop) => {
               return {
                 ...stop,
                 contact: {
-                  ...stop.contact,
+                  ...stop?.contact,
                   email:
                     stop.contact && stop.contact.email
                       ? stop.contact.email
@@ -115,9 +115,7 @@ const intializeRequest = async (
             }),
           },
         ],
-        quote: customized
-          ? quoteCreatorServiceCustomized(items)
-          : quoteCreatorService(items),
+        quote:quote,
         payments: [
           {
             //hardcoded transaction_id
@@ -134,7 +132,7 @@ const intializeRequest = async (
         xinput: {
           ...xinput,
           form: {
-            ...xinput.form,
+            ...xinput?.form,
             submission_id: "xxxxxxxxxx",
             status: "SUCCESS",
           },
@@ -142,7 +140,7 @@ const intializeRequest = async (
       },
     },
   };
-  confirm.message.order.quote.breakup.forEach((itm: any) => {
+  confirm.message.order.quote.breakup?.forEach((itm: any) => {
     itm.item.quantity = {
       selected: {
         count: 3,

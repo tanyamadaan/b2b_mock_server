@@ -62,7 +62,7 @@ export const initiateUpdateController = async (
     case "reschedule":
       responseMessage = rescheduleRequest(
         message,
-        on_select.message.order.items
+        on_select?.message?.order?.items?? []
       );
       break;
     default:
@@ -107,7 +107,7 @@ export const initiateUpdateController = async (
       transactionId,
     });
   } catch (error) {
-    console.log("ERROR", (error as any)?.response.data.error);
+    // console.log("ERROR", (error as any)?.response.data.error);
     return next(error);
   }
 };
@@ -137,16 +137,16 @@ function requoteRequest(message: any) {
   const responseMessage = {
     update_target: "payments",
     order: {
-      id: message.order.id,
-      status: message.order.status,
+      id: message?.order?.id,
+      status: message?.order?.status,
       provider: {
-        id: message.order.provider.id,
+        id: message?.order?.provider?.id,
       },
       items,
       payments,
-      fulfillments: fulfillments.map((itm: Fulfillment) => ({
+      fulfillments: fulfillments?.map((itm: Fulfillment) => ({
         ...itm,
-        stops: itm.stops.map((stop: Stop) => ({
+        stops: itm.stops?.map((stop: Stop) => ({
           ...stop,
         })),
       })),
@@ -164,11 +164,11 @@ function rescheduleRequest(message: any, items: Item[]) {
   const responseMessage = {
     update_target: "fulfillments",
     order: {
-      id: message.order.id,
-      status: message.order.status,
+      id: message?.order?.id,
+      status: message?.order?.status,
       provider: {
-        id: message.order.provider.id,
-        locations: message.order.provider?.locations,
+        id: message.order?.provider?.id,
+        locations: message.order?.provider?.locations,
       },
       items,
       payments,
@@ -179,7 +179,7 @@ function rescheduleRequest(message: any, items: Item[]) {
             ...stop,
             time: {
               label: stop.time?.label ? "selected" : undefined,
-              ...stop.time,
+              ...stop?.time,
             },
           })),
         })
