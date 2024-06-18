@@ -62,7 +62,7 @@ const initConsultationController = (
         {
           ...remainingfulfillments,
           tracking: false,
-          stops: stops.map((stop: Stop) => {
+          stops: stops?.map((stop: Stop) => {
             return {
               ...stop,
               tags: {
@@ -86,8 +86,8 @@ const initConsultationController = (
       quote: quote,
       payments: [
         {
-          id: payments[0].id,
-          type: payments[0].type,
+          id: payments[0]?.id,
+          type: payments[0]?.type,
           ...response.value.message.order.payments[0],
         },
       ],
@@ -156,9 +156,9 @@ const initServiceCustomizationController = (
       quote: quote,
       payments: [
         {
-          id: payments[0].id,
-          type: payments[0].type,
-          ...response.value.message.order.payments[0],
+          id: payments[0]?.id,
+          type: payments[0]?.type,
+          ...response.value?.message?.order?.payments[0],
         },
       ],
       xinput: response.value.message.order.xinput,

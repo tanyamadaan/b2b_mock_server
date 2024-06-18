@@ -95,11 +95,11 @@ const intializeRequest = async (
         fulfillments: [
           {
             ...remainingfulfillments,
-            stops: stops.map((stop: Stop) => {
+            stops: stops?.map((stop: Stop) => {
               return {
                 ...stop,
                 contact: {
-                  ...stop.contact,
+                  ...stop?.contact,
                   email:
                     stop.contact && stop.contact.email
                       ? stop.contact.email
@@ -132,7 +132,7 @@ const intializeRequest = async (
         xinput: {
           ...xinput,
           form: {
-            ...xinput.form,
+            ...xinput?.form,
             submission_id: "xxxxxxxxxx",
             status: "SUCCESS",
           },
@@ -140,7 +140,7 @@ const intializeRequest = async (
       },
     },
   };
-  confirm.message.order.quote.breakup.forEach((itm: any) => {
+  confirm.message.order.quote.breakup?.forEach((itm: any) => {
     itm.item.quantity = {
       selected: {
         count: 3,

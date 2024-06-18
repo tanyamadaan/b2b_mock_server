@@ -83,7 +83,7 @@ const intializeRequest = async (
 
     // getting the required categories ids to look  for
     const { cat_ids, child_selected } = processCategories(
-      providers[0].categories
+      providers[0]?.categories
     );
     const required_categories = cat_ids;
     //Start Date for items
@@ -96,10 +96,10 @@ const intializeRequest = async (
         }
       );
       const startSchedule = startCategory?.tags?.find(
-        (ele: Tag) => ele.descriptor.code === "schedule"
+        (ele: Tag) => ele.descriptor?.code === "schedule"
       );
       startTime = startSchedule?.list?.find(
-        (ele: TagItem) => ele.descriptor.code === "start_time"
+        (ele: TagItem) => ele.descriptor?.code === "start_time"
       ).value;
     }
 
@@ -202,18 +202,18 @@ const intializeRequest = async (
       ...items.map((item: Item) => {
         return {
           // ...item,
-          id: item.id,
-          parent_item_id: item.parent_item_id,
+          id: item?.id,
+          parent_item_id: item?.parent_item_id,
           quantity: {
             selected: {
               count: 1,
             },
           },
-          category_ids: item.category_ids,
+          category_ids: item?.category_ids,
           location_ids: location_ids,
           tags: item.tags?.map((tag: Tag) => ({
             ...tag,
-            list: tag.list.map((itm2: TagItem, index: Number) => {
+            list: tag?.list?.map((itm2: TagItem, index: Number) => {
               if (index === 0) {
                 return {
                   descriptor: {
@@ -268,7 +268,7 @@ const intializeRequest = async (
         items: items.map((itm: Item) => ({
           ...itm,
           location_ids: itm.location_ids
-            ? itm.location_ids.map((id: string) => String(id))
+            ? itm.location_ids?.map((id: string) => String(id))
             : undefined,
           quantity: {
             selected: {
@@ -360,14 +360,14 @@ const intializeRequest = async (
 
 function processCategories(categories: Category[]) {
   // sort the mandatory parent_ids
-  const cat_ids: string[] = categories.reduce(
+  const cat_ids: string[] = categories?.reduce(
     (acc: string[], itm: Category) => {
       if (!("parent_category_id" in itm)) {
         const lis_selection = itm.tags?.find(
           (tag: Tag) => tag.descriptor?.code.toLowerCase() === "selection"
         );
         const mandatory = lis_selection?.list?.find(
-          (ele: TagItem) => ele.descriptor.code === "mandatory_selection"
+          (ele: TagItem) => ele.descriptor?.code === "mandatory_selection"
         )?.value;
         if (mandatory) {
           acc.push(itm.id);

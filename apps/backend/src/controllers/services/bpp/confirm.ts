@@ -11,7 +11,7 @@ export const confirmController = (
   res: Response,
   next: NextFunction
 ) => {
-  if (checkIfCustomized(req.body.message.order.items)) {
+  if (checkIfCustomized(req.body.message.order?.items)) {
     return confirmServiceCustomizationController(req, res, next);
   }
   confirmConsultationController(req, res, next);
@@ -65,7 +65,7 @@ export const confirmConsultationController = (
               code: "Pending",
             },
           },
-          stops: fulfillments[0].stops.map((itm: Stop) => {
+          stops: fulfillments[0]?.stops?.map((itm: Stop) => {
             let person;
             if (itm.person) {
               person = itm.person;
@@ -84,7 +84,7 @@ export const confirmConsultationController = (
         },
       ],
       provider: {
-        ...order.provider,
+        ...order?.provider,
         rateable: true,
       },
     },
@@ -120,7 +120,7 @@ export const confirmServiceCustomizationController = (
   // const fulfillments = response.value.message.order.fulfillments
 
   context.action = "on_confirm";
-  fulfillments[0].stops.splice(0, 0, {
+  fulfillments[0].stops?.splice(0, 0, {
     id: "L1",
     type: "start",
     location: {
@@ -154,7 +154,7 @@ export const confirmServiceCustomizationController = (
         valid_to: "2023-11-16T09:35:00.000Z",
         status: "valid",
       };
-      itm.person = { name: itm?.customer?.person.name || "" };
+      itm.person = { name: itm?.customer?.person?.name || "" };
       itm.customer = undefined;
     }
   });
@@ -163,7 +163,7 @@ export const confirmServiceCustomizationController = (
       ...order,
       status: "Accepted",
       provider: {
-        ...order.provider,
+        ...order?.provider,
         rateable: true,
       },
       fulfillments: [

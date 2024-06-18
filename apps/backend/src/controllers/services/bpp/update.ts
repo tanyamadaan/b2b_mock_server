@@ -61,29 +61,29 @@ export const updateRequoteController = (
   //   const { fulfillments } = order;
   const responseMessage = {
     order: {
-      id: order.id,
+      id: order?.id,
       status: "Pending",
-      provider: order.provider,
-      items: order.items.map((itm: Item) => ({
+      provider: order?.provider,
+      items: order?.items?.map((itm: Item) => ({
         ...itm,
         quantity: {
           selected: {
-            count: (itm.quantity as Quantity)?.unitized?.measure.value|| (itm.quantity as Select)?.selected.count,
+            count: (itm.quantity as Quantity)?.unitized?.measure?.value|| (itm.quantity as Select)?.selected?.count,
             measure: {
-              unit: (itm.quantity as Quantity)?.unitized?.measure.unit,
+              unit: (itm.quantity as Quantity)?.unitized?.measure?.unit,
             },
           },
         },
       })),
-      payments: order.payments.map((pay: Payment) => ({
+      payments: order?.payments?.map((pay: Payment) => ({
         ...pay,
         params: {
           ...pay.params,
           transaction_id: undefined,
         },
       })),
-      fulfillments: order.fulfillments,
-      quote: order.quote,
+      fulfillments: order?.fulfillments,
+      quote: order?.quote,
     },
   };
   context.action = "on_update";
@@ -118,7 +118,7 @@ export const updateRescheduleController = (
     fulfillments: [
       {
         ...order.fulfillments[0],
-        stops: order.fulfillments[0].stops.map((stop: Stop) => ({
+        stops: order.fulfillments[0]?.stops?.map((stop: Stop) => ({
           ...stop,
           time:
             stop.type === "end"
@@ -127,10 +127,10 @@ export const updateRescheduleController = (
         })),
       },
     ],
-    payments:order.payments.map((pay:Payment)=>({
+    payments:order?.payments?.map((pay:Payment)=>({
       ...pay,
       params:{
-        ...pay.params,
+        ...pay?.params,
         transaction_id:undefined
       }
     }))
