@@ -156,20 +156,8 @@ export const onStatusSchema = {
                         },
                         required: ["count"],
                       },
-                      measure: {
-                        type: "object",
-                        properties: {
-                          unit: {
-                            type: "string",
-                          },
-                          value: {
-                            type: "string",
-                          },
-                        },
-                        required: ["unit", "value"],
-                      },
                     },
-                    required: ["selected", "measure"],
+                    required: ["selected"],
                   },
                 },
                 required: [

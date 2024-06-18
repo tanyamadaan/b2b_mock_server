@@ -61,11 +61,16 @@ interface QuantityDetail {
   count?: number;
 }
 
-export interface Quantity {
-  unitized: Measure;
+export type Quantity= {
+  unitized: {measure:Measure};
   available: QuantityDetail;
   maximum: QuantityDetail;
   minimum: QuantityDetail;
+}
+export type Select={
+  selected: {
+    count: number;
+  }
 }
 
 interface ItemDescriptor {
@@ -80,11 +85,7 @@ export interface Item {
   id: string;
   location_ids: string[];
   fulfillment_ids: string[];
-  quantity: {
-    selected: {
-      count: number;
-    }
-  }|Quantity;
+  quantity: Select|Quantity;
   add_ons?: AddOn[]; // Optional because not all items have add_ons
   parent_item_id?: string; // Optional because not all items have a parent_item_id
   category_ids?: string[]; // Optional because not all items have category_ids

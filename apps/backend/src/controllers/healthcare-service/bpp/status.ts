@@ -3,14 +3,14 @@ import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
-import { HEALTHCARE_SERVICES_BAP_MOCKSERVER_URL, HEALTHCARE_SERVICES_EXAMPLES_PATH, MOCKSERVER_ID, checkIfCustomized, quoteCreatorHealthCareService, quoteCreatorServiceCustomized, redisFetch, responseBuilder, send_nack } from "../../../lib/utils";
+import { HEALTHCARE_SERVICES_BAP_MOCKSERVER_URL, HEALTHCARE_SERVICES_EXAMPLES_PATH, MOCKSERVER_ID, checkIfCustomized, quoteCreatorHealthCareService, quoteCreatorServiceCustomized, redisFetchFromServer, responseBuilder, send_nack } from "../../../lib/utils";
 
 
 export const statusController = async (req: Request, res: Response, next: NextFunction) => {
 	const { scenario } = req.query;
-	const on_confirm = await redisFetch("on_confirm", req.body.context.transaction_id);
+	const on_confirm = await redisFetchFromServer("on_confirm", req.body.context.transaction_id);
 	if (!on_confirm) {
-		send_nack(res, "On Confirm doesn't exist")
+		return send_nack(res, "On Confirm doesn't exist")
 	}
 	req.body.on_confirm = on_confirm;
 	switch (scenario) {

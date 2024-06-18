@@ -6,7 +6,7 @@ import {
 	send_response,
 	send_nack,
 	quoteCreatorServiceCustomized,
-	redisFetch,
+	redisFetchToServer,
 	AGRI_SERVICES_BPP_MOCKSERVER_URL,
 	quoteCreatorAgriService
 } from "../../../lib/utils";
@@ -18,12 +18,12 @@ export const initiateConfirmController = async (
 	next: NextFunction
 ) => {
 	const { scenario, transactionId } = req.body;
-	const on_search = await redisFetch("on_search", transactionId);
+	const on_search = await redisFetchToServer("on_search", transactionId);
 	const providersItems = on_search?.message?.catalog?.providers[0]?.items;
-	const on_init = await redisFetch("on_init", transactionId)
+	const on_init = await redisFetchToServer("on_init", transactionId)
 
 	if(!on_init){
-		send_nack(res,"On Init doesn't exist")
+		return send_nack(res,"On Init doesn't exist")
 	}
 
 	on_init.context.bpp_uri = AGRI_SERVICES_BPP_MOCKSERVER_URL

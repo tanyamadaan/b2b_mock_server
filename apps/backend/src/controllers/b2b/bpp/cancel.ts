@@ -1,13 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import {
-	responseBuilder,
-	send_nack,
-	B2B_EXAMPLES_PATH,
-	redis,
-	Stop,
-	Fulfillment,
-	Item,
-} from "../../../lib/utils";
+import { responseBuilder,send_nack, B2B_EXAMPLES_PATH, redis, Stop, Fulfillment, Item, redisFetchFromServer } from "../../../lib/utils";
 
 interface Item_payment_id {
 	[key: string]: string[];
@@ -18,18 +10,23 @@ export const cancelController = async (
 	next: NextFunction
 ) => {
 	const { transaction_id } = req.body.context;
-	const transactionKeys = await redis.keys(`${transaction_id}-*`);
-	const ifTransactionExist = transactionKeys.filter((e) =>
-		e.includes("on_confirm-from-server")
-	);
 
-	if (ifTransactionExist.length === 0) {
-		return send_nack(res, "On Confirm doesn't exist");
+	// const transactionKeys = await redis.keys(`${transaction_id}-*`);
+	// const ifTransactionExist = transactionKeys.filter((e) =>
+	// 	e.includes("on_confirm-from-server")
+	// );
+
+	// if (ifTransactionExist.length === 0) {
+	// 	send_nack(res,"On Confirm doesn't exist")
+	// }
+	// const transaction = await redis.mget(ifTransactionExist);
+	// const parsedTransaction = transaction.map((ele: any) => {
+	// 	return JSON.parse(ele as string);
+	// });
+	const on_confirm=await redisFetchFromServer("on_confirm",transaction_id)
+	if (!on_confirm) {
+		return send_nack(res,"On Confirm doesn't exist")
 	}
-	const transaction = await redis.mget(ifTransactionExist);
-	const parsedTransaction = transaction.map((ele: any) => {
-		return JSON.parse(ele as string);
-	});
 	// getting on_search data for payment_ids
 	const search = await redis.mget(`${transaction_id}-on_search-from-server`);
 	const parsedSearch = search.map((ele: any) => {
@@ -37,7 +34,7 @@ export const cancelController = async (
 	});
 	// console.log("Search ::", parsedSearch[0].request.message.catalog.providers)
 
-	const provider_id = parsedTransaction[0].request.message.order.provider.id;
+	const provider_id = on_confirm.message.order.provider.id;
 
 	const item_payment_ids =
 		parsedSearch[0].request.message.catalog.providers.map((itm: any) => {
@@ -58,7 +55,7 @@ export const cancelController = async (
 	}
 
 	if (
-		parsedTransaction[0].request.message.order.id != req.body.message.order_id
+		on_confirm.message.order.id != req.body.message.order_id
 	) {
 		return send_nack(res, "Order id does not exist");
 	}
@@ -68,8 +65,8 @@ export const cancelController = async (
 		req,
 		res,
 		next,
-		parsedTransaction[0].request,
-		item_payment_ids[0]
+		on_confirm,
+		item_payment_ids[0],
 	);
 };
 

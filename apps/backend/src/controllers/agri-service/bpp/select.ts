@@ -8,7 +8,7 @@ import {
 	quoteCreatorServiceCustomized,
 	checkIfCustomized,
 	redis,
-	redisFetch,
+	redisFetchFromServer,
 } from "../../../lib/utils";
 import path from "path";
 import fs from "fs";
@@ -16,7 +16,7 @@ import YAML from "yaml";
 
 export const selectController = async (req: Request, res: Response, next: NextFunction) => {
 
-	const on_search = await redisFetch("on_search", req.body.context.transaction_id);
+	const on_search = await redisFetchFromServer("on_search", req.body.context.transaction_id);
 	const providersItems = on_search?.message?.catalog?.providers[0]?.items;
 
 	req.body.providersItems = providersItems
