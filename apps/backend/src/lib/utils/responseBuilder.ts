@@ -871,7 +871,6 @@ export const quoteCreatorServiceCustomized = (
   });
   return result;
 };
-
 export const checkIfCustomized = (items: Item[]) => {
 	return items.some(
 		(item) =>

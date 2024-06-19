@@ -28,7 +28,7 @@ export const cancelController = async (
   if (!on_confirm_data) {
     return send_nack(res, "on confirm doesn't exist");
   }
-  if (on_confirm_data.message.order.id != req.body.message.order_id) {
+  if (on_confirm_data.message.order?.id != req.body.message?.order_id) {
     return send_nack(res, "Order id does not exist");
   }
 
@@ -38,13 +38,13 @@ export const cancelController = async (
   );
 
   // console.log("Search ::", parsedSearch[0].request.message.catalog.providers[0].items)
-  const provider_id = on_confirm_data.message.order.provider.id;
+  const provider_id = on_confirm_data.message.order.provider?.id;
 
   const item_measure_ids =
-    on_search_data.message.catalog.providers[0].items.reduce(
+    on_search_data.message.catalog?.providers[0]?.items?.reduce(
       (accumulator: Accumulator, currentItem: any) => {
         accumulator[currentItem.id] = currentItem.quantity
-          ? currentItem.quantity.unitized.measure
+          ? currentItem.quantity.unitized?.measure
           : undefined;
         return accumulator;
       },
@@ -88,7 +88,7 @@ const cancelRequest = async (
         },
       })),
       quote: transaction.message.order.quote,
-      fulfillments: transaction.message.order.fulfillments.map(
+      fulfillments: transaction.message.order.fulfillments?.map(
         (fulfillment: Fulfillment) => ({
           ...fulfillment,
           state: {
@@ -101,7 +101,7 @@ const cancelRequest = async (
         })
       ),
       billing: transaction.message.order.billing,
-      payments: transaction.message.order.payments.map((itm: Payment) => ({
+      payments: transaction.message.order.payments?.map((itm: Payment) => ({
         ...itm,
         tags: itm.tags.filter(
           (tag: Tag) => tag.descriptor.code !== "Settlement_Counterparty"
