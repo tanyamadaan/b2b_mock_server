@@ -17,7 +17,7 @@ const onSearchSelectionController = (req: Request, res: Response, next: NextFunc
 	const { context, message } = req.body;
 	const { fulfillments, payments, providers } = message.catalog
 	const { id, locations, ...remainingProviders } = providers[0]
-	const resposneMessage = {}
+	const resposneMessage = message
 
 	return responseBuilder(
 		res,

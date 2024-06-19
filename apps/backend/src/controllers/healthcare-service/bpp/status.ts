@@ -1,14 +1,19 @@
 
 import { NextFunction, Request, Response } from "express";
+import { AGRI_HEALTHCARE_STATUS } from "../../../lib/utils/apiConstants";
 
 import {
   Fulfillment,
   Stop,
+  findIncompleteOnConfirmCalls,
+  redis,
   redisExistFromServer,
   redisFetchFromServer,
   responseBuilder,
+  sendStatusAxiosCall,
   send_nack,
 } from "../../../lib/utils";
+
 export const statusController = async (
   req: Request,
   res: Response,
@@ -36,6 +41,7 @@ export const statusController = async (
 
   return statusRequest(req, res, next, on_confirm_data, scenario);
 };
+
 const statusRequest = async (
   req: Request,
   res: Response,
@@ -43,9 +49,30 @@ const statusRequest = async (
   transaction: any,
   scenario: string
 ) => {
+
   const { context, message } = transaction;
-  // modifying context
   context.action = "on_status";
+
+  const on_status = await redisFetchFromServer("on_status", req.body.context.transaction_id);
+  if (on_status) {
+    //UPDATE SCENARIO TO NEXT STATUS
+    const lastStatus = on_status?.message?.order?.fulfillments[0]?.state?.descriptor?.code
+    //FIND NEXT STATUS
+    const lastStatusIndex = AGRI_HEALTHCARE_STATUS.indexOf(lastStatus);
+
+    if(lastStatus === 6){
+      scenario = lastStatus
+    }
+    console.log("lastStatusIndex",lastStatusIndex)
+    if (lastStatusIndex !== -1 && lastStatusIndex < AGRI_HEALTHCARE_STATUS.length - 1) {
+      const nextStatusIndex = lastStatusIndex + 1;
+      scenario = AGRI_HEALTHCARE_STATUS[nextStatusIndex]
+      console.log("current index status", scenario)
+    }
+    console.log("next status=>>>>>>>>>>", scenario)
+    console.log("current status=>>>>>>>>>>", on_status.message.order.fulfillments[0].state.descriptor.code)
+  }
+
   const responseMessage: any = {
     order: {
       id: message.order.id,
@@ -56,15 +83,17 @@ const statusRequest = async (
       },
       items: message.order.items,
       billing: { ...message.order.billing, tax_id: undefined },
+
       fulfillments: message.order.fulfillments.map(
         (fulfillment: Fulfillment) => ({
           ...fulfillment,
           id: fulfillment.id,
           state: {
             descriptor: {
-              code: "At-Location",
+              code: "AT_LOCATION",
             },
           },
+
           stops: fulfillment.stops.map((stop: Stop) => {
             const demoObj = {
               ...stop,
@@ -103,16 +132,19 @@ const statusRequest = async (
       updated_at: message.order.updated_at,
     },
   };
+
+  console.log("status=>>>>>>>>>>", scenario)
+
   switch (scenario) {
-    case "in-transit":
+    case "IN_TRANSIT":
       responseMessage.order.fulfillments.forEach((fulfillment: Fulfillment) => {
-        fulfillment.state.descriptor.code = "In-Transit";
+        fulfillment.state.descriptor.code = "IN_TRANSIT";
         fulfillment.stops.forEach((stop: Stop) =>
           stop?.authorization ? (stop.authorization = undefined) : undefined
         );
       });
       break;
-    case "reached":
+    case "AT_LOCATION":
       responseMessage.order.fulfillments.forEach((fulfillment: Fulfillment) => {
         fulfillment.stops.forEach((stop: Stop) =>
           stop?.authorization
@@ -121,14 +153,33 @@ const statusRequest = async (
         );
       });
       break;
-    case "completed":
-      console.log("come in completed")
-      responseMessage.order.status = "Completed";
+    case "COLLECTED_BY_AGENT":
       responseMessage.order.fulfillments.forEach((fulfillment: Fulfillment) => {
-        fulfillment.state.descriptor.code = "Completed";
+        fulfillment.state.descriptor.code = "COLLECTED_BY_AGENT";
+      });
+      break;
+    case "RECEIVED_AT_LAB":
+      responseMessage.order.fulfillments.forEach((fulfillment: Fulfillment) => {
+        fulfillment.state.descriptor.code = "RECEIVED_AT_LAB";
+      });
+      break;
+    case "TEST_COMPLETED":
+      responseMessage.order.fulfillments.forEach((fulfillment: Fulfillment) => {
+        fulfillment.state.descriptor.code = "TEST_COMPLETED";
         fulfillment.stops.forEach((stop: Stop) =>
           stop?.authorization ? (stop.authorization = undefined) : undefined
         );
+      });
+      break;
+    case "REPORT_GENERATED":
+      responseMessage.order.fulfillments.forEach((fulfillment: Fulfillment) => {
+        fulfillment.state.descriptor.code = "REPORT_GENERATED";
+      });
+      break;
+    case "REPORT_SHARED":
+      responseMessage.order.status = "Completed"
+      responseMessage.order.fulfillments.forEach((fulfillment: Fulfillment) => {
+        fulfillment.state.descriptor.code = "REPORT_SHARED";
       });
       break;
     case "cancel":
@@ -143,108 +194,16 @@ const statusRequest = async (
     next,
     req.body.context,
     responseMessage,
-    `${req.body.context.bap_uri}${
-      req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+    `${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
     }`,
     `on_status`,
     "healthcare-service"
   );
 };
 
-// let statusQueue: string[] = []; // Queue to hold URLs
 
-// // Function to check the status of a single API
-// async function checkStatus(data: any, url: any) {
-// 	try {
-// 		const { context, message, on_confirm } = data;
-// 		const file = fs.readFileSync(
-// 			path.join(HEALTHCARE_SERVICES_EXAMPLES_PATH, url)
-// 		);
-// 		const response = YAML.parse(file.toString());
-// 		const timestamp = new Date().toISOString();
 
-// 		const constYamlStatus = response.value.message.order.status;
-// 		const status = {
-// 			context: {
-// 				...context,
-// 				timestamp: new Date().toISOString(),
-// 				action: "on_status",
-// 				bap_id: MOCKSERVER_ID,
-// 				bap_uri: HEALTHCARE_SERVICES_BAP_MOCKSERVER_URL,
-// 				message_id: uuidv4()
-// 			},
-// 			message: {
-// 				order: {
-// 					...response.value.message.order,
-// 					id: on_confirm.message.order.id,
-// 					status: response.value.message.order.status,
-// 					provider: on_confirm.message.order.provider,
-// 					items: on_confirm.message.order.items,
-// 					fulfillments: response.value.message.order.fulfillments,
-// 					quote: on_confirm.message.order.quote,
-// 					payments: [
-// 						{
-// 							...on_confirm.message.order.payments[0],
-// 							params: {
-// 								...on_confirm.message.order.payments[0].params,
-// 								transaction_id: uuidv4(),
-// 							},
-// 							status: "PAID",
-// 						},
-// 					],
-// 					document: response.value.message.order.document,
-// 					created_at: timestamp,
-// 					updated_at: timestamp,
-// 				},
-// 			},
-// 		};
-// 		console.log("urllllllllll",url,)
-// 		return status;
-// 	} catch (error) {
-// 		console.error(`Error fetching constYamlStatus from:`, error);
-// 		throw error;
-// 	}
-// }
 
-// // Function to process the next URL in the queue
-// async function processNextUrl(req: Request, res: Response, next: NextFunction) {
-// 	const url = statusQueue.shift(); // Get the next URL from the queue
-// 	if (!url) {
-// 		// If there are no more URLs in the queue, call next() to move to the next middleware
-// 		next();
-// 		return;
-// 	}
 
-// 	try {
-// 		const status = await checkStatus(req.body, url);
-// 		res.json(status); // Send the response for this URL
-// 	} catch (error) {
-// 		console.error("Error processing URL:", url, error);
-// 		res.status(500).json({ error: "An error occurred while processing the request" });
-// 	}
-// }
 
-// // Automatically triggered status with 30 seconds gap
-// const automatTrigStatusWith30SecInterval = async (req: Request, res: Response, next: NextFunction) => {
-// 	const { context, message, on_confirm } = req.body;
-
-// 	// List of status API URLs
-// 	const statusApiUrls = [
-// 		"on_status/on_status_transit.yaml",
-// 		"on_status/on_status_at_location.yaml",
-// 		"on_status/on_status_collected_by_agent.yaml",
-// 		"on_status/on_status_received_at_lab.yaml",
-// 		"on_status/on_status_test_completed.yaml",
-// 		"on_status/on_status_report_generated.yaml",
-// 		"on_status/on_status_report_shared.yaml"
-// 	];
-
-// 	// Add URLs to the queue
-// 	statusApiUrls.forEach((url) => {
-// 		statusQueue.push(url);
-// 	});
-
-// 	// Process the queue
-// 	processNextUrl(req, res, next);
-// };
 

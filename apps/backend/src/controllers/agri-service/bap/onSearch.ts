@@ -6,7 +6,7 @@ export const onSearchController = (req: Request, res: Response, next: NextFuncti
 };
 
 const onSearchSelectionController = (req: Request, res: Response, next: NextFunction) => {
-	const { context } = req.body;
+	const { context, message} = req.body;
 	const resposneMessage = {}
 	return responseBuilder(
 		res,

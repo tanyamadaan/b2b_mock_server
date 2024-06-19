@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { logger } from "../../../lib/utils";
+import { logger, send_ack } from "../../../lib/utils";
 
 export const  onCancelController = (req: Request, res: Response) => {
   logger.info({
@@ -8,12 +8,6 @@ export const  onCancelController = (req: Request, res: Response) => {
 		transaction_id: req.body.context.transaction_id,
 		message: { sync: { message: { ack: { status: "ACK" } } } },
 	});
-	return res.json({
-		message: {
-			ack: {
-				status: "ACK",
-			},
-		}
-	})
+	return send_ack(res)
 
 }

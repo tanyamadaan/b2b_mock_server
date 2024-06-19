@@ -17,7 +17,7 @@ export const onInitController = async (req: Request, res: Response, next: NextFu
 };
 
 const onInitConsultationController = (req: Request, res: Response, next: NextFunction) => {
-	const { context, providersItems, message: { order: { provider, locations, items, billing, fulfillments, payments } } } = req.body;
+	const { context, providersItems, message: { order: { provider, locations, items, billing, fulfillments, payments,quote } } } = req.body;
 	const { stops, ...remainingfulfillments } = fulfillments[0]
 
 	const file = fs.readFileSync(
@@ -50,7 +50,7 @@ const onInitConsultationController = (req: Request, res: Response, next: NextFun
 					}
 				})
 			}],
-			quote: quoteCreatorHealthCareService(items, providersItems),
+			quote: quote,
 			payments: [{
 				...payments[0],
 				status: "PAID"

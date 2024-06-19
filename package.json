@@ -12,6 +12,7 @@
     "packages/*"
   ],
   "devDependencies": {
+    "@types/node-cron": "^3.0.11",
     "turbo": "^1.12.4"
   },
   "dependencies": {

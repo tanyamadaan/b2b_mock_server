@@ -20,7 +20,7 @@ export const initiateInitController = async (req: Request, res: Response, next: 
 	if (Object.keys(on_select).includes("error")) {
 		return send_nack(res, "On Select had errors")
 	}
-	on_select.context.bpp_uri = HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
+	
 	return intializeRequest(res, next, on_select, scenario);
 };
 

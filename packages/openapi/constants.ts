@@ -184,9 +184,88 @@ export const SERVICES_SCENARIOS = {
 	],
 };
 
+export const HEALTHCARE_SERVICES_SCENARIOS = {
+	// select: [
+	// 	{
+	// 		name: "Selections",
+	// 		scenario: "selection",
+	// 	},
+	// 	{
+	// 		name: "Customization",
+	// 		scenario: "customization",
+	// 	},
+	// ],
+	on_select: [
+	],
+	// init: [
+	// 	{
+	// 		name: "Service",
+	// 		scenario: "service",
+	// 	},
+	// ],
+	on_init: [
+	],
+	// confirm: [
+	// 	{
+	// 		name: "Service",
+	// 		scenario: "service",
+	// 	},
+	// ],
+	on_confirm: [
+		// {
+		// 	name: "Service",
+		// 	scenario: "service",
+		// },
+	],
+	on_status: [
+		// {
+		// 	name: "Completed",
+		// 	scenario: "completed",
+		// },
+		// {
+		// 	name: "In Transit",
+		// 	scenario: "in-transit",
+		// },
+		// {
+		// 	name: "Reached Re-OTP",
+		// 	scenario: "reached-re-otp",
+		// },
+		// {
+		// 	name: "Reached",
+		// 	scenario: "reached",
+		// },
+		// {
+		// 	name: "Service Started",
+		// 	scenario: "service-started",
+		// },
+	],
+	on_update: [
+		// {
+		// 	name: "Requote",
+		// 	scenario: "requote",
+		// },
+		// {
+		// 	name: "Reschedule",
+		// 	scenario: "reschedule",
+		// },
+	],
+	on_cancel: [
+		// {
+		// 	name: "ACK",
+		// 	scenario: "ack",
+		// },
+		// {
+		// 	name: "Merchant",
+		// 	scenario: "merchant",
+		// },
+	],
+};
+
 export const DOMAINS = {
 	b2b: "B2B",
 	services: "Services - Home Services",
+	agriServices: "Agri Services",
+	healthcareServices: "HealthCare Services",
 };
 
 export const NEXT_ACTION = {

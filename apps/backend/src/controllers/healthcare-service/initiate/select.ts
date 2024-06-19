@@ -24,7 +24,9 @@ export const initiateSelectController = async (
   if (!on_search) {
     return send_nack(res, "On Search doesn't exist")
   }
-  on_search.context.bpp_uri = HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
+
+  console.log("on_search=>>>>>>", on_search)
+  // on_search.context.bpp_uri = HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
   let scenario = "selection";
   if (checkIfCustomized(on_search.message.catalog.providers[0].items)) {
     scenario = "customization";

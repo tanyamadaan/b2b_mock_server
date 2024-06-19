@@ -108,7 +108,6 @@ export const healthcareSrvSchemaValidator =
 					});
 					return;
 			}
-			console.log("schemabodyyyyyyyyyyy",JSON.stringify(req.body))
 			isValid = validate(req.body);
 			if (!isValid) {
 				res.status(400).json({

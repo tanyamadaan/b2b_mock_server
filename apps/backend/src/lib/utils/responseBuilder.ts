@@ -67,7 +67,7 @@ export const responseBuilder = async (
 	ts.setSeconds(ts.getSeconds() + 1);
 	const sandboxMode = res.getHeader("mode") === "sandbox";
 
-	console.log("action status", action)
+	console.log("actionstatus", action)
 	var async: { message: object; context?: object; error?: object } = {
 		context: {},
 		message,
@@ -103,9 +103,11 @@ export const responseBuilder = async (
 			},
 		};
 	}
+
 	if (error) {
 		async = { ...async, error };
 	}
+
 	const header = await createAuthHeader(async);
 
 	if (sandboxMode) {
@@ -143,6 +145,8 @@ export const responseBuilder = async (
 					timestamp: new Date().toISOString(),
 					response: response.data,
 				};
+
+				console.log("loggggggggg",JSON.stringify(log))
 				await redis.set(
 					`${(async.context! as any).transaction_id}-${action}-from-server`,
 					JSON.stringify(log)
@@ -210,6 +214,8 @@ export const responseBuilder = async (
 				);
 			}
 			try {
+				console.log("asyncccccc",async)
+
 				const response = await axios.post(uri, async, {
 					headers: {
 						authorization: header,
@@ -248,6 +254,7 @@ export const responseBuilder = async (
 				return next(error)
 			}
 		}
+
 		logger.info({
 			type: "response",
 			action: action,
@@ -264,6 +271,112 @@ export const responseBuilder = async (
 	}
 };
 
+export const sendStatusAxiosCall = async (
+	reqContext: object,
+	message: object,
+	uri: string,
+	action: string,
+	domain: "b2b" | "services" | "agri-services" | "healthcare-service",
+	error?: object | undefined,
+) => {
+	let ts = new Date();
+	ts.setSeconds(ts.getSeconds() + 1);
+
+	let async: { message: object; context?: object; error?: object } = {
+		context: {},
+		message,
+	};
+
+	const bppURI = domain === "b2b"
+		? B2B_BPP_MOCKSERVER_URL : (domain === "agri-services" ? AGRI_SERVICES_BPP_MOCKSERVER_URL
+			: (domain === "healthcare-service" ? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL : SERVICES_BPP_MOCKSERVER_URL))
+
+	async = {
+		...async,
+		context: {
+			...reqContext,
+			bpp_id: MOCKSERVER_ID,
+			bpp_uri: bppURI,
+			timestamp: ts.toISOString(),
+			action,
+		},
+	};
+
+	if (error) {
+		async = { ...async, error };
+	}
+
+	const header = await createAuthHeader(async);
+
+	if (action.startsWith("on_")) {
+		var log: TransactionType = {
+			request: async,
+		};
+
+		// const transactionKeys = await redis.keys(
+		// 	`${(async.context! as any).transaction_id}-*`
+		// );
+
+		// const logIndex = transactionKeys.filter((e) =>
+		// 	e.includes("on_status-to-server")
+		// ).length;
+
+		// await redis.set(
+		// 	`${(async.context! as any).transaction_id
+		// 	}-${action}-from-server`,
+		// 	JSON.stringify(log)
+		// );
+
+		try {
+			const response = await axios.post(uri, async, {
+				headers: {
+					authorization: header,
+				},
+			});
+			log.response = {
+				timestamp: new Date().toISOString(),
+				response: response.data,
+			};
+
+			console.log("async=>>>>>>>>>>>>",JSON.stringify(async))
+			await redis.set(
+				`${(async.context! as any).transaction_id}-${action}-from-server`,
+				JSON.stringify(log)
+			);
+
+		} catch (error) {
+			const response = error instanceof AxiosError
+				? error?.response?.data
+				: {
+					message: {
+						ack: {
+							status: "NACK",
+						},
+					},
+					error: {
+						message: error,
+					},
+				}
+			log.response = {
+				timestamp: new Date().toISOString(),
+				response: response,
+			};
+			await redis.set(
+				`${(async.context! as any).transaction_id}-${action}-from-server`,
+				JSON.stringify(log)
+			);
+			console.log("errorrrrrrrrrr",error)
+		}
+	}
+
+	logger.info({
+		type: "response",
+		action: action,
+		transaction_id: (reqContext as any).transaction_id,
+		message: { sync: { message: { ack: { status: "ACK" } } } },
+	});
+
+};
 
 export const quoteCreator = (items: Item[]) => {
 	var breakup: any[] = [];
@@ -512,7 +625,6 @@ export const quoteCreatorAgriService = (items: Item[], providersItems?: any) => 
 
 export const quoteCreatorHealthCareService = (items: Item[], providersItems?: any, offers?: any) => {
 	//GET PACKAGE ITEMS
-
 	//get price from on_search
 	items.forEach(item => {
 		if (item && item.tags && item.tags[0] && item.tags[0].list[0].value === "PACKAGE") {
