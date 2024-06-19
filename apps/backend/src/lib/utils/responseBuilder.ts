@@ -472,76 +472,6 @@ export const quoteCreator = (items: Item[]) => {
 	};
 };
 
-export const quoteCreatorService = (items: Item[]) => {
-	var breakup: any[] = [
-		{
-			title: "Service/Consultation",
-			price: {
-				currency: "INR",
-				value: "99",
-			},
-			tags: [
-				{
-					descriptor: {
-						code: "title",
-					},
-					list: [
-						{
-							descriptor: {
-								code: "type",
-							},
-							value: "item",
-						},
-					],
-				},
-			],
-		},
-		{
-			title: "tax",
-			price: {
-				currency: "INR",
-				value: "0",
-			},
-			tags: [
-				{
-					descriptor: {
-						code: "title",
-					},
-					list: [
-						{
-							descriptor: {
-								code: "type",
-							},
-							value: "tax",
-						},
-					],
-				},
-			],
-		},
-	];
-
-	items.forEach((item) => {
-		breakup.forEach((each) => {
-			each.item = {
-				id: item.id,
-				price: {
-					currency: "INR",
-					value: "99",
-				},
-				quantity: item.quantity ? item.quantity : undefined,
-			};
-		});
-	});
-	return {
-		breakup,
-		price: {
-			currency: "INR",
-			value: (99 * items.length).toString(),
-		},
-		ttl: "P1D",
-	};
-};
-
 export const quoteCreatorAgriService = (items: Item[], providersItems?: any) => {
 	//get price from on_search
 	items.forEach(item => {
@@ -748,512 +678,198 @@ export const quoteCreatorHealthCareService = (items: Item[], providersItems?: an
 
 };
 
-export const quoteCreatorHealthCareForItemsService = (items: Item[], providersItems?: any) => {
-	//get price from on_search
-	items.forEach(item => {
-		// Find the corresponding item in the second array
-		const matchingItem = providersItems.find((secondItem: { id: string; }) => secondItem.id === item.id);
-		// If a matching item is found, update the price in the items array
-		if (matchingItem) {
-			item.title = matchingItem.descriptor.name
-			item.price = matchingItem.price
-			item.tags = matchingItem.tags
-		};
-	});
+export const quoteCommon = (items: Item[], providersItems?: any) => {
+  //get price from on_search
+  items.forEach((item) => {
+    // Find the corresponding item in the second array
+    const matchingItem = providersItems.find(
+      (secondItem: { id: string }) => secondItem.id === item.id
+    );
+    // If a matching item is found, update the price in the items array
+    if (matchingItem) {
+      item.title = matchingItem?.descriptor?.name;
+      item.price = matchingItem?.price;
+      item.tags = matchingItem?.tags;
+    }
+  });
 
-	let breakup: any[] = [];
+  let breakup: any[] = [];
 
-	items.forEach((item) => {
-		breakup.push({
-			title: item.title,
-			price: {
-				currency: "INR",
-				value: (Number(item.price.value) * item.quantity.selected.count).toString()
-			},
-			tags: item.tags,
-			item: item.title === "tax" ? {
-				id: item.id,
-			} : {
-				id: item.id,
-				price: item.price,
-				quantity: item.quantity ? item.quantity : undefined,
-			}
-		})
-	});
+  items.forEach((item) => {
+    breakup.push({
+      title: item.title,
+      price: {
+        currency: "INR",
+        value: (
+          Number(item.price.value) * item.quantity.selected.count
+        ).toString(),
+      },
+      tags: item.tags,
+      item: {
+        id: item.id,
+        price: item.price,
+        quantity: item.quantity ? item.quantity : undefined,
+      },
+    });
+  });
 
-	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
+  //ADD STATIC TAX IN BREAKUP QUOTE
+  breakup.push({
+    title: "tax",
+    price: {
+      currency: "INR",
+      value: "10",
+    },
+    item: items[0],
+    tags: [
+      {
+        descriptor: {
+          code: "title",
+        },
+        list: [
+          {
+            descriptor: {
+              code: "type",
+            },
+            value: "tax",
+          },
+        ],
+      },
+    ],
+  });
 
+  //MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
 
-	//ADD STATIC TAX FOR ITEM ONE
+  let totalPrice = 0;
 
-	breakup.push({
-		title: "tax",
-		price: {
-			currency: "INR",
-			value: "10",
-		},
-		item: items[0],
-		tags: [
-			{
-				descriptor: {
-					code: "title",
-				},
-				list: [
-					{
-						descriptor: {
-							code: "type",
-						},
-						value: "tax",
-					},
-				],
-			},
-		],
-	})
+  breakup.forEach((entry) => {
+    const priceValue = parseFloat(entry.price.value);
+    if (!isNaN(priceValue)) {
+      totalPrice += priceValue;
+    }
+  });
+  const result = {
+    breakup,
+    price: {
+      currency: "INR",
+      value: totalPrice.toFixed(2),
+    },
+    ttl: "P1D",
+  };
 
-
-	let totalPrice = 0;
-
-	breakup.forEach(entry => {
-		const priceValue = parseFloat(entry.price.value);
-		if (!isNaN(priceValue)) {
-			totalPrice += priceValue;
-		}
-	});
-
-	const result = {
-		breakup,
-		price: {
-			currency: "INR",
-			value: totalPrice.toFixed(2)
-		},
-		ttl: "P1D"
-	};
-
-	return result;
-
+  return result;
 };
 
-export const quoteCreatorServiceCustomized = (items: Item[]) => {
-	// var breakup: any[] = [
-	// 	{
-	// 		title: "Service/Consultation",
-	// 		price: {
-	// 			currency: "INR",
-	// 			value: "99",
-	// 		},
-	// 		tags: [
-	// 			{
-	// 				"descriptor": {
-	// 					"code": "title"
-	// 				},
-	// 				"list": [
-	// 					{
-	// 						"descriptor": {
-	// 							"code": "type"
-	// 						},
-	// 						"value": "item"
-	// 					}
-	// 				]
-	// 			}
-	// 		]
-	// 	}, {
-	// 		title: "tax",
-	// 		price: {
-	// 			currency: "INR",
-	// 			value: "0",
-	// 		},
-	// 		tags: [
-	// 			{
-	// 				"descriptor": {
-	// 					"code": "title"
-	// 				},
-	// 				"list": [
-	// 					{
-	// 						"descriptor": {
-	// 							"code": "type"
-	// 						},
-	// 						"value": "tax"
-	// 					}
-	// 				]
-	// 			}
-	// 		]
-	// 	}
-	// ];
-
-	const file = fs.readFileSync(
-		path.join(
-			SERVICES_EXAMPLES_PATH,
-			"on_select/on_select_service_customization_confirmed.yaml"
-		)
-	);
-	const response = YAML.parse(file.toString());
-
-	const { price, ttl, breakup } = response.value.message.order.quote;
-
-	// const breakup = [
-	// 	{
-	// 		"title": "Cook - On Demand",
-	// 		"price": {
-	// 			"currency": "INR",
-	// 			"value": "00.00"
-	// 		},
-	// 		"item": {
-	// 			"id": "I1",
-	// 			"price": {
-	// 				"currency": "INR",
-	// 				"value": "00.00"
-	// 			}
-	// 		},
-	// 		"tags": [
-	// 			{
-	// 				"descriptor": {
-	// 					"code": "title"
-	// 				},
-	// 				"list": [
-	// 					{
-	// 						"descriptor": {
-	// 							"code": "type"
-	// 						},
-	// 						"value": "item"
-	// 					}
-	// 				]
-	// 			}
-	// 		]
-	// 	},
-	// 	{
-	// 		"title": "People",
-	// 		"price": {
-	// 			"currency": "INR",
-	// 			"value": "299.00"
-	// 		},
-	// 		"item": {
-	// 			"id": "IC1",
-	// 			"quantity": {
-	// 				"selected": {
-	// 					"count": 3
-	// 				}
-	// 			},
-	// 			"price": {
-	// 				"currency": "INR",
-	// 				"value": "199.00"
-	// 			}
-	// 		},
-	// 		"tags": [
-	// 			{
-	// 				"descriptor": {
-	// 					"code": "title"
-	// 				},
-	// 				"list": [
-	// 					{
-	// 						"descriptor": {
-	// 							"code": "type"
-	// 						},
-	// 						"value": "customization"
-	// 					}
-	// 				]
-	// 			}
-	// 		]
-	// 	},
-	// 	{
-	// 		"title": "Sandwich",
-	// 		"price": {
-	// 			"currency": "INR",
-	// 			"value": "199.00"
-	// 		},
-	// 		"item": {
-	// 			"id": "IC2",
-	// 			"quantity": {
-	// 				"selected": {
-	// 					"count": 1
-	// 				}
-	// 			},
-	// 			"price": {
-	// 				"currency": "INR",
-	// 				"value": "199.00"
-	// 			}
-	// 		},
-	// 		"tags": [
-	// 			{
-	// 				"descriptor": {
-	// 					"code": "title"
-	// 				},
-	// 				"list": [
-	// 					{
-	// 						"descriptor": {
-	// 							"code": "type"
-	// 						},
-	// 						"value": "customization"
-	// 					}
-	// 				]
-	// 			}
-	// 		]
-	// 	},
-	// 	{
-	// 		"title": "Dahi Ke Kebab",
-	// 		"price": {
-	// 			"currency": "INR",
-	// 			"value": "199.00"
-	// 		},
-	// 		"item": {
-	// 			"id": "IC3",
-	// 			"quantity": {
-	// 				"selected": {
-	// 					"count": 1
-	// 				}
-	// 			},
-	// 			"price": {
-	// 				"currency": "INR",
-	// 				"value": "199.00"
-	// 			}
-	// 		},
-	// 		"tags": [
-	// 			{
-	// 				"descriptor": {
-	// 					"code": "title"
-	// 				},
-	// 				"list": [
-	// 					{
-	// 						"descriptor": {
-	// 							"code": "type"
-	// 						},
-	// 						"value": "customization"
-	// 					}
-	// 				]
-	// 			}
-	// 		]
-	// 	},
-	// 	{
-	// 		"title": "Dal Makhni",
-	// 		"price": {
-	// 			"currency": "INR",
-	// 			"value": "199.00"
-	// 		},
-	// 		"item": {
-	// 			"id": "IC4",
-	// 			"quantity": {
-	// 				"selected": {
-	// 					"count": 1
-	// 				}
-	// 			},
-	// 			"price": {
-	// 				"currency": "INR",
-	// 				"value": "199.00"
-	// 			}
-	// 		},
-	// 		"tags": [
-	// 			{
-	// 				"descriptor": {
-	// 					"code": "title"
-	// 				},
-	// 				"list": [
-	// 					{
-	// 						"descriptor": {
-	// 							"code": "type"
-	// 						},
-	// 						"value": "customization"
-	// 					}
-	// 				]
-	// 			}
-	// 		]
-	// 	},
-	// 	{
-	// 		"title": "tax",
-	// 		"price": {
-	// 			"currency": "INR",
-	// 			"value": "25"
-	// 		},
-	// 		"item": {
-	// 			"id": "I1"
-	// 		},
-	// 		"tags": [
-	// 			{
-	// 				"descriptor": {
-	// 					"code": "title"
-	// 				},
-	// 				"list": [
-	// 					{
-	// 						"descriptor": {
-	// 							"code": "type"
-	// 						},
-	// 						"value": "tax"
-	// 					}
-	// 				]
-	// 			}
-	// 		]
-	// 	},
-	// 	{
-	// 		"title": "tax",
-	// 		"price": {
-	// 			"currency": "INR",
-	// 			"value": "25"
-	// 		},
-	// 		"item": {
-	// 			"id": "IC1"
-	// 		},
-	// 		"tags": [
-	// 			{
-	// 				"descriptor": {
-	// 					"code": "title"
-	// 				},
-	// 				"list": [
-	// 					{
-	// 						"descriptor": {
-	// 							"code": "type"
-	// 						},
-	// 						"value": "tax"
-	// 					}
-	// 				]
-	// 			}
-	// 		]
-	// 	},
-	// 	{
-	// 		"title": "tax",
-	// 		"price": {
-	// 			"currency": "INR",
-	// 			"value": "25"
-	// 		},
-	// 		"item": {
-	// 			"id": "IC2"
-	// 		},
-	// 		"tags": [
-	// 			{
-	// 				"descriptor": {
-	// 					"code": "title"
-	// 				},
-	// 				"list": [
-	// 					{
-	// 						"descriptor": {
-	// 							"code": "type"
-	// 						},
-	// 						"value": "tax"
-	// 					}
-	// 				]
-	// 			}
-	// 		]
-	// 	},
-	// 	{
-	// 		"title": "tax",
-	// 		"price": {
-	// 			"currency": "INR",
-	// 			"value": "25"
-	// 		},
-	// 		"item": {
-	// 			"id": "IC3"
-	// 		},
-	// 		"tags": [
-	// 			{
-	// 				"descriptor": {
-	// 					"code": "title"
-	// 				},
-	// 				"list": [
-	// 					{
-	// 						"descriptor": {
-	// 							"code": "type"
-	// 						},
-	// 						"value": "tax"
-	// 					}
-	// 				]
-	// 			}
-	// 		]
-	// 	},
-	// 	{
-	// 		"title": "tax",
-	// 		"price": {
-	// 			"currency": "INR",
-	// 			"value": "25"
-	// 		},
-	// 		"item": {
-	// 			"id": "IC4"
-	// 		},
-	// 		"tags": [
-	// 			{
-	// 				"descriptor": {
-	// 					"code": "title"
-	// 				},
-	// 				"list": [
-	// 					{
-	// 						"descriptor": {
-	// 							"code": "type"
-	// 						},
-	// 						"value": "tax"
-	// 					}
-	// 				]
-	// 			}
-	// 		]
-	// 	},
-	// 	{
-	// 		"title": "discount",
-	// 		"price": {
-	// 			"currency": "INR",
-	// 			"value": "0"
-	// 		},
-	// 		"item": {
-	// 			"id": "I1"
-	// 		},
-	// 		"tags": [
-	// 			{
-	// 				"descriptor": {
-	// 					"code": "title"
-	// 				},
-	// 				"list": [
-	// 					{
-	// 						"descriptor": {
-	// 							"code": "type"
-	// 						},
-	// 						"value": "discount"
-	// 					}
-	// 				]
-	// 			}
-	// 		]
-	// 	},
-	// 	{
-	// 		"title": "convenience_fee",
-	// 		"price": {
-	// 			"currency": "INR",
-	// 			"value": "0"
-	// 		},
-	// 		"item": {
-	// 			"id": "I1"
-	// 		},
-	// 		"tags": [
-	// 			{
-	// 				"descriptor": {
-	// 					"code": "title"
-	// 				},
-	// 				"list": [
-	// 					{
-	// 						"descriptor": {
-	// 							"code": "type"
-	// 						},
-	// 						"value": "misc"
-	// 					}
-	// 				]
-	// 			}
-	// 		]
-	// 	}
-	// ]
-
-	items.forEach((item) => {
-		breakup.forEach((each: any) => {
-			each.item = {
-				id: item.id,
-				price: {
-					currency: "INR",
-					value: "99",
-				},
-				quantity: item.quantity ? item.quantity : undefined,
-			};
-		});
-	});
-
-	return {
-		breakup,
-		price: {
-			currency: "INR",
-			value: (99 * items.length).toString(),
+export const quoteCreatorService = (items: Item[], providersItems?: any) => {
+  let result;
+  if (providersItems) {
+    result = quoteCommon(items, providersItems);
+  }
+  result?.breakup?.push(          {
+	title: "discount",
+	price: {
+	  currency: "INR",
+	  value: "0"
+	},
+	item: {
+	  id: "I1",
+	  quantity: {
+		allocated: {
+		  count: "1"
+		}
+	  },
+	  price: {
+		currency: "INR",
+		value: "474"
+	  }
+	},
+	tags: [
+	  {
+		descriptor: {
+		  code: "title"
 		},
-		ttl,
-	};
+		list: [
+		  {
+			descriptor: {
+			  code: "type"
+			},
+			value: "discount"
+		  }
+		]
+	  }
+	]
+  });
+  result?.breakup?.push({
+    title: "convenience_fee",
+    price: {
+      currency: "INR",
+      value: "0",
+    },
+    item: {
+      id: "I1",
+      quantity: {
+        allocated: {
+          count: "1",
+        },
+      },
+      price: {
+        currency: "INR",
+        value: "474",
+      },
+    },
+    tags: [
+      {
+        descriptor: {
+          code: "title",
+        },
+        list: [
+          {
+            descriptor: {
+              code: "type",
+            },
+            value: "misc",
+          },
+        ],
+      },
+    ],
+  });
+  return result;
+};
+
+export const quoteCreatorServiceCustomized = (
+  items: Item[],
+  providersItems?: any
+) => {
+	let result;
+	if (providersItems) {
+	  result = quoteCommon(items, providersItems);
+	}
+  result?.breakup?.push({
+    title: "convenience_fee",
+    price: {
+      currency: "INR",
+      value: "0",
+    },
+    item: {
+      id: "I1",
+    },
+    tags: [
+      {
+        descriptor: {
+          code: "title",
+        },
+        list: [
+          {
+            descriptor: {
+              code: "type",
+            },
+            value: "misc",
+          },
+        ],
+      },
+    ],
+  });
+  return result;
 };
 
 export const checkIfCustomized = (items: Item[]) => {
