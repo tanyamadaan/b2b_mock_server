@@ -45,7 +45,7 @@ const onInitConsultationController = (req: Request, res: Response, next: NextFun
 	const responseMessage = {
 		order: {
 			id: uuidv4(),
-			status: response.value.message.order.status,
+			status: response?.value?.message?.order?.status ?? "Created",
 			provider: {
 				...provider,
 				...locations
@@ -99,7 +99,7 @@ const onInitServiceCustomizedController = (req: Request, res: Response, next: Ne
 	const responseMessage = {
 		order: {
 			id: uuidv4(),
-			status: response.value.message.order.status,
+			status: response?.value?.message?.order?.status ?? "Created",
 			provider: {
 				...provider,
 				locations: [locations[0]]
@@ -121,7 +121,7 @@ const onInitServiceCustomizedController = (req: Request, res: Response, next: Ne
 			}],
 			quote: quoteCreatorService(items),
 			payments: [{
-				...payments[0],
+				...payments?.[0],
 				status: "PAID"
 			}],
 			"created_at": "2023-02-03T09:30:00.000Z",

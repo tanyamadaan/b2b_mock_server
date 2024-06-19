@@ -32,7 +32,7 @@ export const statusController = async (
   if (on_cancel_exist) {
     scenario = "cancel";
   }
-  console.log("Senario ---", scenario);
+  // console.log("Senario ---", scenario);
 
   return statusRequest(req, res, next, on_confirm_data, scenario);
 };
@@ -50,15 +50,15 @@ const statusRequest = async (
   const timestamp = new Date().toISOString();
   const responseMessage: any = {
     order: {
-      id: message.order.id,
+      id: message?.order?.id,
       status: "In-progress",
       provider: {
-        ...message.order.provider,
+        ...message?.order?.provider,
         rateable: undefined,
       },
-      items: message.order.items,
-      billing: { ...message.order.billing, tax_id: undefined },
-      fulfillments: message.order.fulfillments.map(
+      items: message?.order?.items,
+      billing: { ...message.order?.billing, tax_id: undefined },
+      fulfillments: message.order?.fulfillments?.map(
         (fulfillment: Fulfillment) => ({
           ...fulfillment,
           id: fulfillment.id,
@@ -93,21 +93,21 @@ const statusRequest = async (
           rateable: undefined,
         })
       ),
-      quote: message.order.quote,
-      payments: message.order.payments,
+      quote: message?.order?.quote,
+      payments: message?.order?.payments,
       documents: [
         {
           url: "https://invoice_url",
           label: "INVOICE",
         },
       ],
-      created_at: message.order.created_at,
-      updated_at: message.order.updated_at,
+      created_at: message?.order?.created_at,
+      updated_at: message?.order?.updated_at,
     },
   };
   switch (scenario) {
     case "in-transit":
-      responseMessage.order.fulfillments.forEach((fulfillment: Fulfillment) => {
+      responseMessage.order.fulfillments?.forEach((fulfillment: Fulfillment) => {
         fulfillment.state.descriptor.code = "In-Transit";
         fulfillment.stops.forEach((stop: Stop) =>
           stop?.authorization ? (stop.authorization = undefined) : undefined
@@ -115,7 +115,7 @@ const statusRequest = async (
       });
       break;
     case "reached":
-      responseMessage.order.fulfillments.forEach((fulfillment: Fulfillment) => {
+      responseMessage.order.fulfillments?.forEach((fulfillment: Fulfillment) => {
         fulfillment.stops.forEach((stop: Stop) =>
           stop?.authorization
             ? (stop.authorization = { ...stop.authorization, status: "valid" })
@@ -126,7 +126,7 @@ const statusRequest = async (
     case "completed":
       console.log("come in completed")
       responseMessage.order.status = "Completed";
-      responseMessage.order.fulfillments.forEach((fulfillment: Fulfillment) => {
+      responseMessage.order.fulfillments?.forEach((fulfillment: Fulfillment) => {
         fulfillment.state.descriptor.code = "Completed";
         fulfillment.stops.forEach((stop: Stop) =>
           stop?.authorization ? (stop.authorization = undefined) : undefined

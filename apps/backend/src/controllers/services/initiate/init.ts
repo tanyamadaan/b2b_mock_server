@@ -62,7 +62,7 @@ const intializeRequest = async (
 		// 		value: "1",
 		// 	},}}: e))
 	} else {
-		items = items.map(
+		items = items?.map(
 			({ location_ids, ...items }: { location_ids: string[] }) => items
 		);
 	}
@@ -124,7 +124,7 @@ const intializeRequest = async (
 								contact: {
 									phone: "9886098860",
 								},
-								time: stops[0].time,
+								time: stops[0]?.time,
 							},
 						],
 					},
