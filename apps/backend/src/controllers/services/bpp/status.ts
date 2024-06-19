@@ -19,27 +19,31 @@ export const statusController = async (
   res: Response,
   next: NextFunction
 ) => {
-  let scenario: string = String(req.query.scenario) || "";
-  const { transaction_id } = req.body.context;
+  try {
+    let scenario: string = String(req.query.scenario) || "";
+    const { transaction_id } = req.body.context;
 
-  const on_confirm_data = await redisFetchFromServer(
-    "on_confirm",
-    transaction_id
-  ); //from
-  if (!on_confirm_data) {
-    return send_nack(res, "on confirm doesn't exist");
+    const on_confirm_data = await redisFetchFromServer(
+      "on_confirm",
+      transaction_id
+    ); //from
+    if (!on_confirm_data) {
+      return send_nack(res, "on confirm doesn't exist");
+    }
+
+    const on_cancel_exist = await redisExistFromServer(
+      "on_cancel",
+      transaction_id
+    );
+    if (on_cancel_exist) {
+      scenario = "cancel";
+    }
+    // console.log("Senario ---", scenario);
+
+    return statusRequest(req, res, next, on_confirm_data, scenario);
+  } catch (error) {
+    return next(error);
   }
-
-  const on_cancel_exist = await redisExistFromServer(
-    "on_cancel",
-    transaction_id
-  );
-  if (on_cancel_exist) {
-    scenario = "cancel";
-  }
-  // console.log("Senario ---", scenario);
-
-  return statusRequest(req, res, next, on_confirm_data, scenario);
 };
 const statusRequest = async (
   req: Request,
@@ -48,6 +52,7 @@ const statusRequest = async (
   transaction: any,
   scenario: string
 ) => {
+  try{
   const { context, message } = transaction;
   // modifying context
   context.action = "on_status";
@@ -112,30 +117,39 @@ const statusRequest = async (
   };
   switch (scenario) {
     case "in-transit":
-      responseMessage.order.fulfillments?.forEach((fulfillment: Fulfillment) => {
-        fulfillment.state.descriptor.code = "In-Transit";
-        fulfillment.stops.forEach((stop: Stop) =>
-          stop?.authorization ? (stop.authorization = undefined) : undefined
-        );
-      });
+      responseMessage.order.fulfillments?.forEach(
+        (fulfillment: Fulfillment) => {
+          fulfillment.state.descriptor.code = "In-Transit";
+          fulfillment.stops.forEach((stop: Stop) =>
+            stop?.authorization ? (stop.authorization = undefined) : undefined
+          );
+        }
+      );
       break;
     case "reached":
-      responseMessage.order.fulfillments?.forEach((fulfillment: Fulfillment) => {
-        fulfillment.stops.forEach((stop: Stop) =>
-          stop?.authorization
-            ? (stop.authorization = { ...stop.authorization, status: "valid" })
-            : undefined
-        );
-      });
+      responseMessage.order.fulfillments?.forEach(
+        (fulfillment: Fulfillment) => {
+          fulfillment.stops.forEach((stop: Stop) =>
+            stop?.authorization
+              ? (stop.authorization = {
+                  ...stop.authorization,
+                  status: "valid",
+                })
+              : undefined
+          );
+        }
+      );
       break;
     case "completed":
       responseMessage.order.status = "Completed";
-      responseMessage.order.fulfillments?.forEach((fulfillment: Fulfillment) => {
-        fulfillment.state.descriptor.code = "Completed";
-        fulfillment.stops.forEach((stop: Stop) =>
-          stop?.authorization ? (stop.authorization = undefined) : undefined
-        );
-      });
+      responseMessage.order.fulfillments?.forEach(
+        (fulfillment: Fulfillment) => {
+          fulfillment.state.descriptor.code = "Completed";
+          fulfillment.stops.forEach((stop: Stop) =>
+            stop?.authorization ? (stop.authorization = undefined) : undefined
+          );
+        }
+      );
       break;
     case "cancel":
       responseMessage.order.status = "Cancelled";
@@ -154,7 +168,9 @@ const statusRequest = async (
     `on_status`,
     "services"
   );
-};
+}catch (error) {
+   next(error)
+}}
 // export const statusController = (req: Request, res: Response, next: NextFunction) => {
 // // 	const { scenario } = req.query
 // 	switch (scenario) {
