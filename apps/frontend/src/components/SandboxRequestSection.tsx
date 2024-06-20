@@ -145,7 +145,7 @@ export const SandboxRequestSection = ({
 										</Typography>
 									</Box>
 								</Grid>
-							{domain !== "healthcare-services" || action === "update" && (
+							{domain !== "healthcare-services" || action === "update" || action === "status" && (
 								<Grid item xs={12} md={6}>
 									<Select
 										placeholder="Select a scenario"
@@ -159,7 +159,6 @@ export const SandboxRequestSection = ({
 												},
 											},
 										}}
-
 										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 										// @ts-ignore
 										onChange={(
