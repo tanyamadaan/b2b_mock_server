@@ -11,16 +11,21 @@ import {
 	checkIfCustomized,
 	redis,
 	redisFetchFromServer,
+	send_nack,
 } from "../../../lib/utils";
+import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 
 
 export const selectController = async (req: Request, res: Response, next: NextFunction) => {
 	try{
-
 		const on_search = await redisFetchFromServer("on_search", req.body.context.transaction_id);
+		if (!on_search) {
+			return send_nack(res, ERROR_MESSAGES.ON_SEARCH_DOES_NOT_EXISTED)
+		}
 		const providersItems = on_search?.message?.catalog?.providers[0];
 		req.body.providersItems = providersItems
 		const { scenario } = req.query;
+
 		switch (scenario) {
 			case "schedule_confirmed":
 				if (checkIfCustomized(req.body.message.order.items)) {
@@ -58,7 +63,6 @@ const selectConsultationConfirmController = (req: Request, res: Response, next: 
 				items: message.order.items.map(
 					({ ...remaining }: { location_ids: any; remaining: any }) => ({
 						...remaining,
-						// fulfillment_ids: [uuidv4()],
 					})
 				),
 	

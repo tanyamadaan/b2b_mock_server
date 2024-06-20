@@ -145,6 +145,7 @@ export const SandboxRequestSection = ({
 										</Typography>
 									</Box>
 								</Grid>
+							{domain !== "healthcare-services" && (
 								<Grid item xs={12} md={6}>
 									<Select
 										placeholder="Select a scenario"
@@ -179,6 +180,7 @@ export const SandboxRequestSection = ({
 										))}
 									</Select>
 								</Grid>
+							)}	
 							</Grid>
 						)}
 
