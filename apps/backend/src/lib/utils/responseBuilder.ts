@@ -304,21 +304,6 @@ export const sendStatusAxiosCall = async (
 		var log: TransactionType = {
 			request: async,
 		};
-
-		// const transactionKeys = await redis.keys(
-		// 	`${(async.context! as any).transaction_id}-*`
-		// );
-
-		// const logIndex = transactionKeys.filter((e) =>
-		// 	e.includes("on_status-to-server")
-		// ).length;
-
-		// await redis.set(
-		// 	`${(async.context! as any).transaction_id
-		// 	}-${action}-from-server`,
-		// 	JSON.stringify(log)
-		// );
-
 		try {
 			const response = await axios.post(uri, async, {
 				headers: {
@@ -550,7 +535,7 @@ export const quoteCreatorHealthCareService = (items: Item[], providersItems?: an
     //GET PACKAGE ITEMS
     //get price from on_search
     items.forEach(item => {
-      if (item && item?.tags && item?.tags[0] && item?.tags[0].list[0].value === "PACKAGE") {
+      if (item && item?.tags && item?.tags[0] && item?.tags[0]?.list[0]?.value === "PACKAGE") {
         const getItems = item.tags[0].list[1].value.split(",")
         getItems.forEach(pItem => {
           // Find the corresponding item in the second array
@@ -858,7 +843,3 @@ export const checkIfCustomized = (items: Item[]) => {
 	);
 };
 
-export const getOnSearchFromRadisByTransactionId = async (transactionId: string) => {
-	const on_search = await redisFetchFromServer("on_search", transactionId);
-	return on_search?.message?.catalog?.providers[0]?.items
-}

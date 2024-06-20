@@ -24,26 +24,30 @@ export const initiateSelectController = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { scenario, transactionId } = req.body;
+  try {
+    const { scenario, transactionId } = req.body;
 
-  // const transactionKeys = await redis.keys(`${transactionId}-*`);
-  // const ifTransactionExist = transactionKeys.filter((e) =>
-  // 	e.includes("on_search-to-server")
-  // );
+    // const transactionKeys = await redis.keys(`${transactionId}-*`);
+    // const ifTransactionExist = transactionKeys.filter((e) =>
+    // 	e.includes("on_search-to-server")
+    // );
 
-  // if (ifTransactionExist.length === 0) {
-  // 	send_nack(res,"On Search doesn't exist")
-  // }
-  // const transaction = await redis.mget(ifTransactionExist);
-  // const parsedTransaction = transaction.map((ele) => {
-  // 	return JSON.parse(ele as string);
-  // });
+    // if (ifTransactionExist.length === 0) {
+    // 	send_nack(res,"On Search doesn't exist")
+    // }
+    // const transaction = await redis.mget(ifTransactionExist);
+    // const parsedTransaction = transaction.map((ele) => {
+    // 	return JSON.parse(ele as string);
+    // });
 
-  const on_search = await redisFetchToServer("on_search", transactionId);
-  if (!on_search) {
-    return send_nack(res, "On Search doesn't exist");
+    const on_search = await redisFetchToServer("on_search", transactionId);
+    if (!on_search) {
+      return send_nack(res, "On Search doesn't exist");
+    }
+    return intializeRequest(res, next, on_search, scenario);
+  } catch (error) {
+    return next(error);
   }
-  return intializeRequest(res, next, on_search, scenario);
 };
 
 const intializeRequest = async (
@@ -167,6 +171,6 @@ const intializeRequest = async (
     // 	return next(error);
     // }
   } catch (err) {
-    return next(err);
+    next(err);
   }
 };

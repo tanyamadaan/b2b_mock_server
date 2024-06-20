@@ -65,7 +65,6 @@ app.use(globalErrorHandler);
 //Schedule the function to run every 30 seconds using node-cron
 cron.schedule('*/30 * * * * *', async () => {
     try {
-        console.log("automatic status update cron=>>>>>>>>")
         await sendUpsolicieatedOnStatus();
     }catch(error){
         console.log("error occured in cron")
