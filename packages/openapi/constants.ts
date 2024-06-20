@@ -140,6 +140,7 @@ export const SERVICES_SCENARIOS = {
 			scenario: "service",
 		},
 	],
+
 	on_status: [
 		{
 			name: "Completed",
@@ -162,6 +163,7 @@ export const SERVICES_SCENARIOS = {
 			scenario: "service-started",
 		},
 	],
+
 	on_update: [
 		{
 			name: "Requote",
@@ -172,6 +174,7 @@ export const SERVICES_SCENARIOS = {
 			scenario: "reschedule",
 		},
 	],
+	
 	on_cancel: [
 		{
 			name: "ACK",
@@ -240,14 +243,18 @@ export const HEALTHCARE_SERVICES_SCENARIOS = {
 		// },
 	],
 	on_update: [
-		// {
-		// 	name: "Requote",
-		// 	scenario: "requote",
-		// },
-		// {
-		// 	name: "Reschedule",
-		// 	scenario: "reschedule",
-		// },
+		{
+			name: "Update Items",
+			scenario: "items",
+		},
+		{
+			name: "Reschedule",
+			scenario: "fulfillments",
+		},
+		{
+			name: "Requote(Payments)",
+			scenario: "payments",
+		},
 	],
 	on_cancel: [
 		// {
