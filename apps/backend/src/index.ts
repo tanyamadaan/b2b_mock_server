@@ -24,7 +24,6 @@ import {
 } from "./middlewares";
 import { sendUpsolicieatedOnStatus } from "./lib/utils/sendUpsolicieatedOnStatus";
 
-
 const app: Express = express();
 const port = process.env.PORT || 3000;
 
