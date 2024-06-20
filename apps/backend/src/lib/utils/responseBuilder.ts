@@ -6,15 +6,11 @@ import {
 	B2B_BPP_MOCKSERVER_URL,
 	HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL,
 	MOCKSERVER_ID,
-	SERVICES_BPP_MOCKSERVER_URL,
-	SERVICES_EXAMPLES_PATH,
+	SERVICES_BPP_MOCKSERVER_URL
 } from "./constants";
 import { createAuthHeader } from "./responseAuth";
 import { logger } from "./logger";
 import { TransactionType, redis } from "./redis";
-import fs from "fs";
-import path from "path";
-import YAML from "yaml";
 import { AxiosError } from "axios";
 import { redisFetchFromServer } from "./redisFetch";
 
@@ -67,7 +63,6 @@ export const responseBuilder = async (
 	ts.setSeconds(ts.getSeconds() + 1);
 	const sandboxMode = res.getHeader("mode") === "sandbox";
 
-	console.log("actionstatus", action)
 	var async: { message: object; context?: object; error?: object } = {
 		context: {},
 		message,
@@ -146,7 +141,6 @@ export const responseBuilder = async (
 					response: response.data,
 				};
 
-				console.log("loggggggggg",JSON.stringify(log))
 				await redis.set(
 					`${(async.context! as any).transaction_id}-${action}-from-server`,
 					JSON.stringify(log)
@@ -214,8 +208,6 @@ export const responseBuilder = async (
 				);
 			}
 			try {
-				console.log("asyncccccc",async)
-
 				const response = await axios.post(uri, async, {
 					headers: {
 						authorization: header,
@@ -364,7 +356,6 @@ export const sendStatusAxiosCall = async (
 				`${(async.context! as any).transaction_id}-${action}-from-server`,
 				JSON.stringify(log)
 			);
-			console.log("errorrrrrrrrrr",error)
 		}
 	}
 
