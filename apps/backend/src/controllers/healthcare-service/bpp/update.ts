@@ -201,6 +201,5 @@ function updatePaymentObject(payments: any, quotePrice: any) {
 		status: "NOT-PAID"
 	})
 
-	console.log("paymenttttttttttt",payments)
 	return payments;
 }
