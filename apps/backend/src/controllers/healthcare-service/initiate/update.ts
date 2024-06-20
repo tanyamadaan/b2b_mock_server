@@ -39,7 +39,6 @@ export const initiateUpdateController = async (
 
     scenario = scenario ? scenario : update_target === "fulfillments" ? "reschedule" : update_target === "items" ? "modifyItems" : "payments"
 
-
     if (scenario === "payments") {
       //FETCH ON UPDATE IF UPDATE PAYMENT FLOW COME
       const on_update = await redisFetchToServer(ON_ACTTION_KEY.ON_UPDATE, transactionId);

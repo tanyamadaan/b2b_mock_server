@@ -7,7 +7,8 @@ import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 
 export const updateController = async (req: Request, res: Response, next: NextFunction) => {
 	try{
-		const { scenario } = req.query;
+		let { scenario } = req.query;
+		scenario = scenario === "fulfillments" ? "reschedule" : scenario === "items" ? "modifyItems" : "payments"
 		const on_confirm = await redisFetchToServer(ON_ACTTION_KEY.ON_CONFIRM, req.body.context.transaction_id);
 		if (!on_confirm) {
 			return send_nack(res, ERROR_MESSAGES.ON_CONFIRM_DOES_NOT_EXISTED)
@@ -140,12 +141,11 @@ export const updateRescheduleAndItemsController = (req: Request, res: Response, 
 			on_confirm,
 			providersItems
 		} = req.body;
-	
 		//UPDATE PAYMENT OBJECT AND QUOTE ACCORDING TO ITEMS AND PERSONS
-		const quote = quoteCreatorHealthCareService(order.items, providersItems?.items, providersItems?.offers)
+		const quote = quoteCreatorHealthCareService(order?.items, providersItems?.items, providersItems?.offers)
 	
 		//UPDATE PAYMENT OBJECT ACCORDING TO QUANTITY 
-		const updatedPaymentObj = updatePaymentObject(order.payments, quote?.price?.value);
+		const updatedPaymentObj = updatePaymentObject(order?.payments, quote?.price?.value);
 	
 		const responseMessage = {
 			order: {
@@ -187,7 +187,7 @@ export const updateRescheduleAndItemsController = (req: Request, res: Response, 
 
 //UPDATE PAYMENT OBJECT FUNCTION HANDLE HERE
 function updatePaymentObject(payments: any, quotePrice: any) {
-
+	console.log("update payment object")
 	//UPDATE OBJECT WITH UNPAID AMOUNT
 	const unPaidAmount = (parseFloat(quotePrice) - parseFloat(payments[0]?.params?.amount)).toString()
 	payments.push({
@@ -201,5 +201,6 @@ function updatePaymentObject(payments: any, quotePrice: any) {
 		status: "NOT-PAID"
 	})
 
+	console.log("paymenttttttttttt",payments)
 	return payments;
 }
