@@ -174,7 +174,7 @@ export const SERVICES_SCENARIOS = {
 			scenario: "reschedule",
 		},
 	],
-	
+
 	on_cancel: [
 		{
 			name: "ACK",
@@ -221,27 +221,36 @@ export const HEALTHCARE_SERVICES_SCENARIOS = {
 		// },
 	],
 	on_status: [
-		// {
-		// 	name: "Completed",
-		// 	scenario: "completed",
-		// },
-		// {
-		// 	name: "In Transit",
-		// 	scenario: "in-transit",
-		// },
-		// {
-		// 	name: "Reached Re-OTP",
-		// 	scenario: "reached-re-otp",
-		// },
-		// {
-		// 	name: "Reached",
-		// 	scenario: "reached",
-		// },
-		// {
-		// 	name: "Service Started",
-		// 	scenario: "service-started",
-		// },
+		{
+			name: "In Transit",
+			scenario: "IN_TRANSIT",
+		},
+		{
+			name: "Reached",
+			scenario: "AT_LOCATION",
+		},
+		{
+			name: "Collected By Agent",
+			scenario: "COLLECTED_BY_AGENT",
+		},
+		{
+			name: "Received At Lab",
+			scenario: "RECEIVED_AT_LAB",
+		},
+		{
+			name: "Test Completed",
+			scenario: "TEST_COMPLETED",
+		},
+		{
+			name: "Report Generated",
+			scenario: "REPORT_GENERATED",
+		},
+		{
+			name: "Report Shared",
+			scenario: "REPORT_SHARED",
+		},
 	],
+
 	on_update: [
 		{
 			name: "Update Items",

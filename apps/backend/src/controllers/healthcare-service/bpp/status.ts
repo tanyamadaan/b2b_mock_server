@@ -21,6 +21,7 @@ export const statusController = async (
 ) => {
   try{
     let scenario: string = String(req.query.scenario) || "";
+
     const { transaction_id } = req.body.context;
   
     const on_confirm_data = await redisFetchFromServer(
