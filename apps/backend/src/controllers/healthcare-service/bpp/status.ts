@@ -68,14 +68,10 @@ const statusRequest = async (
       if(lastStatus === 6){
         scenario = lastStatus
       }
-      console.log("lastStatusIndex",lastStatusIndex)
       if (lastStatusIndex !== -1 && lastStatusIndex < AGRI_HEALTHCARE_STATUS.length - 1) {
         const nextStatusIndex = lastStatusIndex + 1;
         scenario = AGRI_HEALTHCARE_STATUS[nextStatusIndex]
-        console.log("current index status", scenario)
       }
-      console.log("next status=>>>>>>>>>>", scenario)
-      console.log("current status=>>>>>>>>>>", on_status.message.order.fulfillments[0].state.descriptor.code)
     }
   
     const responseMessage: any = {
