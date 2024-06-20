@@ -3,10 +3,10 @@ import { v4 as uuidv4 } from "uuid";
 import {
 	send_response,
 	send_nack,
-	logger,
 	redisFetchToServer,
-	HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL,
 } from "../../../lib/utils";
+import { ACTTION_KEY, ON_ACTTION_KEY } from "../../../lib/utils/actionOnActionKeys";
+import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 
 
 export const initiateCancelController = async (
@@ -14,13 +14,17 @@ export const initiateCancelController = async (
 	res: Response,
 	next: NextFunction
 ) => {
-	const { transactionId, orderId, cancellationReasonId } = req.body;
-	const on_confirm = await redisFetchToServer("on_confirm", transactionId);
-	if (!on_confirm) {
-		return send_nack(res, "On Confirm doesn't exist")
+	try{
+		const { transactionId, orderId, cancellationReasonId } = req.body;
+		const on_confirm = await redisFetchToServer(ON_ACTTION_KEY.ON_CONFIRM, transactionId);
+		if (!on_confirm) {
+			return send_nack(res, ERROR_MESSAGES.ON_CONFIRM_DOES_NOT_EXISTED)
+		}
+		return intializeRequest(res, next, on_confirm, orderId, cancellationReasonId);
+	}catch(error){
+		return next(error)
 	}
-	on_confirm.context.bpp_uri = HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
-	return intializeRequest(res, next, on_confirm, orderId, cancellationReasonId);
+	
 };
 
 const intializeRequest = async (
@@ -30,18 +34,23 @@ const intializeRequest = async (
 	order_id: string,
 	cancellation_reason_id: string
 ) => {
-	const { context } = transaction;
-	let scenario = "ack"
-	const cancel = {
-		context: {
-			...context,
-			action: "cancel",
-			message_id: uuidv4(),
-		},
-		message: {
-			order_id,
-			cancellation_reason_id,
-		},
-	};
-	await send_response(res, next, cancel, context.transaction_id, "cancel", scenario = scenario);
+	try{
+		const { context } = transaction;
+		let scenario = "ack"
+		const cancel = {
+			context: {
+				...context,
+				action: ACTTION_KEY.CANCEL,
+				message_id: uuidv4(),
+			},
+			message: {
+				order_id,
+				cancellation_reason_id,
+			},
+		};
+		await send_response(res, next, cancel, context.transaction_id, ACTTION_KEY.CANCEL, scenario = scenario);
+	}catch(error){
+		next(error)
+	}
+
 };

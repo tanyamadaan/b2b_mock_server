@@ -2,18 +2,21 @@ import { NextFunction, Request, Response } from "express";
 import { responseBuilder } from "../../../lib/utils";
 
 export const updateController = (req: Request, res: Response, next: NextFunction) => {
-	const { scenario } = req.query;
-
-	switch (scenario) {
-		case "requote":
-			updateRequoteController(req, res, next);
-			break;
-		case "reschedule":
-			updateRescheduleController(req, res, next);
-			break;
-		default:
-			updateRequoteController(req, res, next);
-			break;
+	try{
+		const { scenario } = req.query;
+		switch (scenario) {
+			case "requote":
+				updateRequoteController(req, res, next);
+				break;
+			case "reschedule":
+				updateRescheduleController(req, res, next);
+				break;
+			default:
+				updateRequoteController(req, res, next);
+				break;
+		}
+	}catch(error){
+		return next(error)
 	}
 };
 
@@ -56,8 +59,7 @@ export const updateRescheduleController = (req: Request, res: Response, next: Ne
 		next,
 		context,
 		responseMessage,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_update" : "/on_update"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_update" : "/on_update"
 		}`,
 		`on_update`,
 		"agri-services"

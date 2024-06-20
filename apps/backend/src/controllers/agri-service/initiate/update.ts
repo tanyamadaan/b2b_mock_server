@@ -13,52 +13,49 @@ export const initiateUpdateController = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { scenario, transactionId } = req.body;
-  const on_confirm = await redisFetchToServer("on_confirm", transactionId);
+  try {
+    const { scenario, transactionId } = req.body;
+    const on_confirm = await redisFetchToServer("on_confirm", transactionId);
+    if (!on_confirm) {
+      return send_nack(res, "On Confirm doesn't exist");
+    }
+    on_confirm.context.bpp_uri = AGRI_SERVICES_BPP_MOCKSERVER_URL
+    const { context, message } = on_confirm;
 
-  if (!on_confirm) {
-    return send_nack(res, "On Confirm doesn't exist");
-  }
+    const timestamp = new Date().toISOString();
+    context.action = "update";
+    context.timestamp = timestamp;
 
-  on_confirm.context.bpp_uri = AGRI_SERVICES_BPP_MOCKSERVER_URL
-  const { context, message } = on_confirm;
+    switch (scenario) {
+      case "requote":
+        var responseMessage = requoteRequest(message);
+        break;
+      case "reschedule":
+        // var responseMessage = rescheduleRequest(message)
+        break;
+      default:
+        var responseMessage = requoteRequest(message);
+        break;
+    }
 
-  const timestamp = new Date().toISOString();
-  context.action = "update";
-  context.timestamp = timestamp;
-
-  switch (scenario) {
-    case "requote":
-      var responseMessage = requoteRequest(message);
-      break;
-    case "reschedule":
-      // var responseMessage = rescheduleRequest(message)
-      break;
-    default:
-      var responseMessage = requoteRequest(message);
-      break;
-  }
-
-  const update = {
-    context,
-    message:{
-      update_target:"payments",
-      order:{
-        id:message.order.id,
-        fulfillments:[{
-          id:"C1",
-          type:"Cancel"
-        }],
-        payments:{
-          tags:message.order.payments[0].tags
+    const update = {
+      context,
+      message: {
+        update_target: "payments",
+        order: {
+          id: message.order.id,
+          fulfillments: [{
+            id: "C1",
+            type: "Cancel"
+          }],
+          payments: {
+            tags: message.order.payments[0].tags
+          }
         }
       }
-    }
-  };
+    };
 
-  const header = await createAuthHeader(update);
-
-  try {
+    const header = await createAuthHeader(update);
     await redis.set(
       `${transactionId}-update-from-server`,
       JSON.stringify({ request: { ...update } })
@@ -90,8 +87,9 @@ export const initiateUpdateController = async (
       transactionId,
     });
   } catch (error) {
-    return next(error);
+    return next(error)
   }
+
 };
 
 function requoteRequest(message: any) {
@@ -135,5 +133,3 @@ function requoteRequest(message: any) {
   };
   return responseMessage;
 }
-
-function rescheduleRequest(message: any) { }

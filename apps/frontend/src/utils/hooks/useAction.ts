@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 import { useState } from "react";
-import { B2B_SCENARIOS, SERVICES_SCENARIOS, NEXT_ACTION } from "openapi-specs/constants";
+import { B2B_SCENARIOS, SERVICES_SCENARIOS, NEXT_ACTION, HEALTHCARE_SERVICES_SCENARIOS } from "openapi-specs/constants";
 
 export const useAction = (domain: string) => {
 	const [action, setAction] = useState<string>();
@@ -8,10 +8,12 @@ export const useAction = (domain: string) => {
 	const [scenarios, setScenarios] =
 		useState<{ name: string; scenario?: string }[]>();
 	const allScenarios =
-		domain.toLowerCase() === "b2b" ? B2B_SCENARIOS : SERVICES_SCENARIOS;
+		domain.toLowerCase() === "b2b" ? B2B_SCENARIOS : domain.toLowerCase() === "services"?SERVICES_SCENARIOS:HEALTHCARE_SERVICES_SCENARIOS;
+
 	const detectAction = _.debounce((log: string) => {
 		try {
 			const parsedLog = JSON.parse(log);
+
 			if (!parsedLog.context!.action) setLogError(true);
 			const parsedAction = parsedLog.context.action;
 			setAction(parsedAction);

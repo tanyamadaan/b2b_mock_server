@@ -24,6 +24,7 @@ type CurlDisplayProps = {
 	slideIn: boolean;
 	curl?: string;
 };
+
 export const CurlDisplay = ({
 	slideIn,
 	curl = "Something here",

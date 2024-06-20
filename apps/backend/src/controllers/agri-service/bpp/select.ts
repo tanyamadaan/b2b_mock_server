@@ -15,93 +15,102 @@ import fs from "fs";
 import YAML from "yaml";
 
 export const selectController = async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const on_search = await redisFetchFromServer("on_search", req.body.context.transaction_id);
+		const providersItems = on_search?.message?.catalog?.providers[0]?.items;
 
-	const on_search = await redisFetchFromServer("on_search", req.body.context.transaction_id);
-	const providersItems = on_search?.message?.catalog?.providers[0]?.items;
+		req.body.providersItems = providersItems
+		const { scenario } = req.query;
+		switch (scenario) {
+			// schedule_confirmed, schedule_rejected
 
-	req.body.providersItems = providersItems
-	const { scenario } = req.query;
-	switch (scenario) {
-		// schedule_confirmed, schedule_rejected
-
-		case "schedule_confirmed":
-			if (checkIfCustomized(req.body.message.order.items)) {
-				return selectServiceCustomizationConfirmedController(req, res, next);
-			}
-			selectConsultationConfirmController(req, res, next);
-			break;
-		case "schedule_rejected ":
-			selectConsultationRejectController(req, res, next);
-			break;
-		default:
-			if (checkIfCustomized(req.body.message.order.items)) {
-				return selectServiceCustomizationConfirmedController(req, res, next);
-			}else{
-				return selectConsultationConfirmController(req, res, next);
-			}
+			case "schedule_confirmed":
+				if (checkIfCustomized(req.body.message.order.items)) {
+					return selectServiceCustomizationConfirmedController(req, res, next);
+				}
+				selectConsultationConfirmController(req, res, next);
+				break;
+			case "schedule_rejected ":
+				selectConsultationRejectController(req, res, next);
+				break;
+			default:
+				if (checkIfCustomized(req.body.message.order.items)) {
+					return selectServiceCustomizationConfirmedController(req, res, next);
+				} else {
+					return selectConsultationConfirmController(req, res, next);
+				}
+		}
+	} catch (error) {
+		return next(error)
 	}
+
 };
 
 const selectConsultationConfirmController = (req: Request, res: Response, next: NextFunction) => {
-	const { context, message,providersItems} = req.body;
-	const { locations, ...provider } = message.order.provider;
-	var responseMessage = {
-		order: {
-			provider,
-			payments: message.order.payments.map(({ type }: { type: string }) => ({
-				type,
-				collected_by: "BAP",
-			})),
-
-			items: message.order.items.map(
-				({ ...remaining }: { location_ids: any; remaining: any }) => ({
-					...remaining,
-				})
-			),
-			
-			fulfillments: message.order.fulfillments.map(
-				({ id, stops, ...each }: any) => ({
-					...each,
-					id,
-					tracking: false,
-					state: {
-						descriptor: {
-							code: "Serviceable",
-						},
-					},
-					stops: stops.map((stop: any) => {
-						stop.time.label = "confirmed";
-						stop.tags = {
+	try{
+		const { context, message, providersItems } = req.body;
+		const { locations, ...provider } = message.order.provider;
+		var responseMessage = {
+			order: {
+				provider,
+				payments: message.order.payments.map(({ type }: { type: string }) => ({
+					type,
+					collected_by: "BAP",
+				})),
+	
+				items: message.order.items.map(
+					({ ...remaining }: { location_ids: any; remaining: any }) => ({
+						...remaining,
+					})
+				),
+	
+				fulfillments: message.order.fulfillments.map(
+					({ id, stops, ...each }: any) => ({
+						...each,
+						id,
+						tracking: false,
+						state: {
 							descriptor: {
-								code: "schedule",
+								code: "Serviceable",
 							},
-							list: [
-								{
-									descriptor: {
-										code: "ttl",
-									},
-									value: "PT1H",
+						},
+						stops: stops.map((stop: any) => {
+							stop.time.label = "confirmed";
+							stop.tags = {
+								descriptor: {
+									code: "schedule",
 								},
-							],
-						};
-						return stop;
-					}),
-				})
-			),
-			quote: quoteCreatorAgriService(message.order.items,providersItems),
-		},
-	};
+								list: [
+									{
+										descriptor: {
+											code: "ttl",
+										},
+										value: "PT1H",
+									},
+								],
+							};
+							return stop;
+						}),
+					})
+				),
+				quote: quoteCreatorAgriService(message.order.items, providersItems),
+			},
+		};
+	
+		return responseBuilder(
+			res,
+			next,
+			context,
+			responseMessage,
+			`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+			}`,
+			`on_select`,
+			"agri-services"
+		);
+	}catch(error){
+		next(error)
+	}
 
-	return responseBuilder(
-		res,
-		next,
-		context,
-		responseMessage,
-		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
-		}`,
-		`on_select`,
-		"agri-services"
-	);
 };
 
 const selectConsultationRejectController = (req: Request, res: Response, next: NextFunction) => {
