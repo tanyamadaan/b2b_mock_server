@@ -16,27 +16,29 @@ export const statusController = async (
   res: Response,
   next: NextFunction
 ) => {
-  let scenario: string = String(req.query.scenario) || "";
-  const { transaction_id } = req.body.context;
-
-  const on_confirm_data = await redisFetchFromServer(
-    "on_confirm",
-    transaction_id
-  ); //from
-  if (!on_confirm_data) {
-    return send_nack(res, "on confirm doesn't exist");
+  try{
+    let scenario: string = String(req.query.scenario) || "";
+    const { transaction_id } = req.body.context;
+  
+    const on_confirm_data = await redisFetchFromServer(
+      "on_confirm",
+      transaction_id
+    ); //from
+    if (!on_confirm_data) {
+      return send_nack(res, "on confirm doesn't exist");
+    }
+  
+    const on_cancel_exist = await redisExistFromServer(
+      "on_cancel",
+      transaction_id
+    );
+    if (on_cancel_exist) {
+      scenario = "cancel";
+    }
+    return statusRequest(req, res, next, on_confirm_data, scenario);
+  }catch(error){
+    return next(error)
   }
-
-  const on_cancel_exist = await redisExistFromServer(
-    "on_cancel",
-    transaction_id
-  );
-  if (on_cancel_exist) {
-    scenario = "cancel";
-  }
-  console.log("Senario ---", scenario);
-
-  return statusRequest(req, res, next, on_confirm_data, scenario);
 };
 
 const statusRequest = async (
@@ -46,7 +48,7 @@ const statusRequest = async (
   transaction: any,
   scenario: string
 ) => {
-
+try{
   const { context, message } = transaction;
   context.action = "on_status";
 
@@ -60,14 +62,10 @@ const statusRequest = async (
     if(lastStatus === 6){
       scenario = lastStatus
     }
-    console.log("lastStatusIndex",lastStatusIndex)
     if (lastStatusIndex !== -1 && lastStatusIndex < AGRI_HEALTHCARE_STATUS.length - 1) {
       const nextStatusIndex = lastStatusIndex + 1;
       scenario = AGRI_HEALTHCARE_STATUS[nextStatusIndex]
-      console.log("current index status", scenario)
     }
-    console.log("next status=>>>>>>>>>>", scenario)
-    console.log("current status=>>>>>>>>>>", on_status.message.order.fulfillments[0].state.descriptor.code)
   }
 
   const responseMessage: any = {
@@ -129,8 +127,6 @@ const statusRequest = async (
       updated_at: message.order.updated_at,
     },
   };
-
-  console.log("status=>>>>>>>>>>", scenario)
 
   switch (scenario) {
     case "IN_TRANSIT":
@@ -196,6 +192,9 @@ const statusRequest = async (
     `on_status`,
     "agri-services"
   );
+}catch(error){
+  next(error)
+}
 };
 
 

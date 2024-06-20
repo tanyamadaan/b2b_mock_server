@@ -14,12 +14,17 @@ export const initiateCancelController = async (
 	res: Response,
 	next: NextFunction
 ) => {
-	const { transactionId, orderId, cancellationReasonId } = req.body;
-	const on_confirm = await redisFetchToServer(ON_ACTTION_KEY.ON_CONFIRM, transactionId);
-	if (!on_confirm) {
-		return send_nack(res, ERROR_MESSAGES.ON_CONFIRM_DOES_NOT_EXISTED)
+	try{
+		const { transactionId, orderId, cancellationReasonId } = req.body;
+		const on_confirm = await redisFetchToServer(ON_ACTTION_KEY.ON_CONFIRM, transactionId);
+		if (!on_confirm) {
+			return send_nack(res, ERROR_MESSAGES.ON_CONFIRM_DOES_NOT_EXISTED)
+		}
+		return intializeRequest(res, next, on_confirm, orderId, cancellationReasonId);
+	}catch(error){
+		return next(error)
 	}
-	return intializeRequest(res, next, on_confirm, orderId, cancellationReasonId);
+	
 };
 
 const intializeRequest = async (
@@ -29,18 +34,23 @@ const intializeRequest = async (
 	order_id: string,
 	cancellation_reason_id: string
 ) => {
-	const { context } = transaction;
-	let scenario = "ack"
-	const cancel = {
-		context: {
-			...context,
-			action: ACTTION_KEY.CANCEL,
-			message_id: uuidv4(),
-		},
-		message: {
-			order_id,
-			cancellation_reason_id,
-		},
-	};
-	await send_response(res, next, cancel, context.transaction_id, ACTTION_KEY.CANCEL, scenario = scenario);
+	try{
+		const { context } = transaction;
+		let scenario = "ack"
+		const cancel = {
+			context: {
+				...context,
+				action: ACTTION_KEY.CANCEL,
+				message_id: uuidv4(),
+			},
+			message: {
+				order_id,
+				cancellation_reason_id,
+			},
+		};
+		await send_response(res, next, cancel, context.transaction_id, ACTTION_KEY.CANCEL, scenario = scenario);
+	}catch(error){
+		next(error)
+	}
+
 };

@@ -30,56 +30,23 @@ const intializeRequest = async (
 	order_id: string,
 	cancellation_reason_id: string
 ) => {
-	const { context } = transaction;
-	let scenario="ack"
-	const cancel = {
-		context: {
-			...context,
-			action: "cancel",
-			message_id: uuidv4(),
-		},
-		message: {
-			order_id,
-			cancellation_reason_id,
-		},
-	};
-	await send_response(res, next, cancel, context.transaction_id, "cancel",scenario=scenario);
-	// const header = await createAuthHeader(cancel);
-	// try {
-	// 	await redis.set(
-	// 		`${context.transaction_id}-cancel-from-server`,
-	// 		JSON.stringify({ request: { ...cancel } })
-	// 	);
-	// 	const response = await axios.post(
-	// 		`${context.bpp_uri}/cancel?scenario=ack`,
-	// 		cancel,
-	// 		{
-	// 			headers: {
-	// 				// "X-Gateway-Authorization": header,
-	// 				authorization: header,
-	// 			},
-	// 		}
-	// 	);
-	// 	await redis.set(
-	// 		`${context.transaction_id}-cancel-from-server`,
-	// 		JSON.stringify({
-	// 			request: { ...cancel },
-	// 			response: {
-	// 				response: response.data,
-	// 				timestamp: new Date().toISOString(),
-	// 			},
-	// 		})
-	// 	);
-
-	// 	return res.json({
-	// 		message: {
-	// 			ack: {
-	// 				status: "ACK",
-	// 			},
-	// 		},
-	// 		transaction_id: context.transaction_id,
-	// 	});
-	// } catch (error) {
-	// 	return next(error);
-	// }
+	try{
+		const { context } = transaction;
+		let scenario="ack"
+		const cancel = {
+			context: {
+				...context,
+				action: "cancel",
+				message_id: uuidv4(),
+			},
+			message: {
+				order_id,
+				cancellation_reason_id,
+			},
+		};
+		await send_response(res, next, cancel, context.transaction_id, "cancel",scenario=scenario);
+	}catch(error){
+		return next(error)
+	}
+	
 };

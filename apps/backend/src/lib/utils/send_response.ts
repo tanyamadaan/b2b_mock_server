@@ -65,7 +65,7 @@ async function send_response(
 		});
 
 	} catch (error) {
-		return next(error);
+		next(error);
 	}
 }
 

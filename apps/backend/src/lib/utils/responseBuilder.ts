@@ -337,8 +337,6 @@ export const sendStatusAxiosCall = async (
 				timestamp: new Date().toISOString(),
 				response: response.data,
 			};
-
-			console.log("async=>>>>>>>>>>>>",JSON.stringify(async))
 			await redis.set(
 				`${(async.context! as any).transaction_id}-${action}-from-server`,
 				JSON.stringify(log)
@@ -361,6 +359,7 @@ export const sendStatusAxiosCall = async (
 				timestamp: new Date().toISOString(),
 				response: response,
 			};
+
 			await redis.set(
 				`${(async.context! as any).transaction_id}-${action}-from-server`,
 				JSON.stringify(log)
@@ -476,13 +475,15 @@ export const quoteCreatorAgriService = (items: Item[], providersItems?: any) => 
 	//get price from on_search
 	items.forEach(item => {
 		// Find the corresponding item in the second array
-		const matchingItem = providersItems.find((secondItem: { id: string; }) => secondItem.id === item.id);
-		// If a matching item is found, update the price in the items array
-		if (matchingItem) {
-			item.title = matchingItem.descriptor.name
-			item.price = matchingItem.price
-			item.tags = matchingItem.tags
-		};
+    if(providersItems){
+      const matchingItem = providersItems.find((secondItem: { id: string; }) => secondItem.id === item.id);
+      // If a matching item is found, update the price in the items array
+      if (matchingItem) {
+        item.title = matchingItem.descriptor.name
+        item.price = matchingItem.price
+        item.tags = matchingItem.tags
+      };
+    }
 	});
 
 	let breakup: any[] = [];
@@ -554,128 +555,106 @@ export const quoteCreatorAgriService = (items: Item[], providersItems?: any) => 
 };
 
 export const quoteCreatorHealthCareService = (items: Item[], providersItems?: any, offers?: any) => {
-	//GET PACKAGE ITEMS
-	//get price from on_search
-	items.forEach(item => {
-		if (item && item.tags && item.tags[0] && item.tags[0].list[0].value === "PACKAGE") {
-			const getItems = item.tags[0].list[1].value.split(",")
-			getItems.forEach(pItem => {
-				// Find the corresponding item in the second array
-				const matchingItem = providersItems.find((secondItem: { id: string; }) => secondItem.id === pItem);
-				// If a matching item is found, update the price in the items array
-				items.push({ ...matchingItem, quantity: item.quantity });
-			});
-		}
-	});
-
-	items.forEach(item => {
-		// Find the corresponding item in the second array
-		const matchingItem = providersItems.find((secondItem: { id: string; }) => secondItem.id === item.id);
-		// If a matching item is found, update the price in the items array
-		if (matchingItem) {
-			item.title = matchingItem.descriptor.name
-			item.price = matchingItem.price
-			item.tags = matchingItem.tags
-		};
-	});
-
-
-	let breakup: any[] = [];
-
-	items.forEach((item) => {
-		breakup.push({
-			title: item.title,
-			price: {
-				currency: "INR",
-				value: (Number(item.price.value) * item.quantity.selected.count).toString()
-			},
-			tags: item.tags,
-			item: item.title === "tax" ? {
-				id: item.id,
-			} : {
-				id: item.id,
-				price: item.price,
-				quantity: item.quantity ? item.quantity : undefined,
-			}
-		})
-	});
-
-	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
-
-	//ADD STATIC TAX FOR ITEM ONE
-	breakup.push(
-		{
-			title: "tax",
-			price: {
-				currency: "INR",
-				value: "10",
-			},
-			item: items[0],
-			tags: [
-				{
-					descriptor: {
-						code: "title",
-					},
-					list: [
-						{
-							descriptor: {
-								code: "type",
-							},
-							value: "tax",
-						},
-					],
-				},
-			],
-		},
-	)
-	//ADD OFFERS TAGS INTO BREAKUP
-	// if(offers){
-	// 	breakup.push(
-	// {
-	// 	title: "offers",
-	// 	price: {
-	// 		currency: "INR",
-	// 		value: "10",
-	// 	},
-	// 	item:items[0],
-	// 	tags: [
-	// 		{
-	// 			descriptor: {
-	// 				code: "title",
-	// 			},
-	// 			list: [
-	// 				{
-	// 					descriptor: {
-	// 						code: "type",
-	// 					},
-	// 					value: "tax",
-	// 				},
-	// 			],
-	// 		},
-	// 	],
-	// },
-	// )
-	// }
-	let totalPrice = 0;
-
-	breakup.forEach(entry => {
-		const priceValue = parseFloat(entry.price.value);
-		if (!isNaN(priceValue)) {
-			totalPrice += priceValue;
-		}
-	});
-
-	const result = {
-		breakup,
-		price: {
-			currency: "INR",
-			value: totalPrice.toFixed(2)
-		},
-		ttl: "P1D"
-	};
-
-	return result;
-
+  try{
+    //GET PACKAGE ITEMS
+    //get price from on_search
+    items.forEach(item => {
+      if (item && item?.tags && item?.tags[0] && item?.tags[0].list[0].value === "PACKAGE") {
+        const getItems = item.tags[0].list[1].value.split(",")
+        getItems.forEach(pItem => {
+          // Find the corresponding item in the second array
+          if (providersItems) {
+            const matchingItem = providersItems?.find((secondItem: { id: string; }) => secondItem.id === pItem);
+            // If a matching item is found, update the price in the items array
+            items.push({ ...matchingItem, quantity: item?.quantity });
+          }
+        });
+      }
+    });
+  
+    items.forEach(item => {
+      // Find the corresponding item in the second array
+      if(providersItems){
+        const matchingItem = providersItems?.find((secondItem: { id: string; }) => secondItem.id === item.id);
+        // If a matching item is found, update the price in the items array
+        if (matchingItem) {
+          item.title = matchingItem?.descriptor?.name
+          item.price = matchingItem?.price
+          item.tags = matchingItem?.tags
+        };
+      }
+    });
+  
+    let breakup: any[] = [];
+  
+    items.forEach((item) => {
+      breakup.push({
+        title: item.title,
+        price: {
+          currency: "INR",
+          value: (Number(item?.price?.value) * item?.quantity?.selected.count).toString()
+        },
+        tags: item?.tags,
+        item: item.title === "tax" ? {
+          id: item?.id,
+        } : {
+          id: item?.id,
+          price: item?.price,
+          quantity: item?.quantity ? item?.quantity : undefined,
+        }
+      })
+    });
+  
+    //MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
+  
+    //ADD STATIC TAX FOR ITEM ONE
+    breakup.push(
+      {
+        title: "tax",
+        price: {
+          currency: "INR",
+          value: "10",
+        },
+        item: items[0],
+        tags: [
+          {
+            descriptor: {
+              code: "title",
+            },
+            list: [
+              {
+                descriptor: {
+                  code: "type",
+                },
+                value: "tax",
+              },
+            ],
+          },
+        ],
+      },
+    )
+    let totalPrice = 0;
+  
+    breakup.forEach(entry => {
+      const priceValue = parseFloat(entry?.price?.value);
+      if (!isNaN(priceValue)) {
+        totalPrice += priceValue;
+      }
+    });
+  
+    const result = {
+      breakup,
+      price: {
+        currency: "INR",
+        value: totalPrice.toFixed(2)
+      },
+      ttl: "P1D"
+    };
+  
+    return result;
+  }catch(error:any){
+    return error
+  }
 };
 
 export const quoteCommon = (items: Item[], providersItems?: any) => {
@@ -871,6 +850,7 @@ export const quoteCreatorServiceCustomized = (
   });
   return result;
 };
+
 export const checkIfCustomized = (items: Item[]) => {
 	return items.some(
 		(item) =>

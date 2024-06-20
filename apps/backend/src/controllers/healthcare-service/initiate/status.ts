@@ -17,18 +17,21 @@ export const initiateStatusController = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { transactionId } = req.body;
-  const transactionKeys = await redis.keys(`${transactionId}-*`);
-  const on_confirm = await redisFetchToServer("on_confirm", transactionId);
-  if (!on_confirm) {
-    return send_nack(res, "On Confirm doesn't exist");
+  try{
+    const { transactionId } = req.body;
+    const transactionKeys = await redis.keys(`${transactionId}-*`);
+    const on_confirm = await redisFetchToServer("on_confirm", transactionId);
+    if (!on_confirm) {
+      return send_nack(res, "On Confirm doesn't exist");
+    }
+    const statusIndex = transactionKeys.filter((e) =>
+      e.includes("-status-to-server")
+    ).length;
+    return intializeRequest(res, next, on_confirm, statusIndex);
+  }catch(error){
+    return next(error)
   }
-  const statusIndex = transactionKeys.filter((e) =>
-    e.includes("-status-to-server")
-  ).length;
-
-  console.log("statusIndexxxxxxxx", transactionKeys,statusIndex)
-  return intializeRequest(res, next, on_confirm, statusIndex);
+ 
 };
 
 const intializeRequest = async (
@@ -37,32 +40,36 @@ const intializeRequest = async (
   transaction: any,
   statusIndex: number
 ) => {
-  const { context } = transaction;
-  const { transaction_id } = context;
-
-  const status = {
-    context: {
-      ...context,
-      message_id: uuidv4(),
-      timestamp: new Date().toISOString(),
-      action: "status",
-      bap_id: MOCKSERVER_ID,
-      bap_uri: HEALTHCARE_SERVICES_BAP_MOCKSERVER_URL,
-    },
-    message: {
-      order_id: transaction.message.order.id,
-    },
-  };
-
-  // satus index is always witin boundary of senarios array
-  statusIndex = Math.min(Math.max(statusIndex, 0), senarios.length - 1);
-  // console.log("Status:::", statusIndex);
-  await send_response(
-    res,
-    next,
-    status,
-    transaction_id,
-    "status",
-    senarios[statusIndex]
-  );
+  try{
+    const { context } = transaction;
+    const { transaction_id } = context;
+    const status = {
+      context: {
+        ...context,
+        message_id: uuidv4(),
+        timestamp: new Date().toISOString(),
+        action: "status",
+        bap_id: MOCKSERVER_ID,
+        bap_uri: HEALTHCARE_SERVICES_BAP_MOCKSERVER_URL,
+      },
+      message: {
+        order_id: transaction.message.order.id,
+      },
+    };
+  
+    // satus index is always witin boundary of senarios array
+    statusIndex = Math.min(Math.max(statusIndex, 0), senarios.length - 1);
+    // console.log("Status:::", statusIndex);
+    await send_response(
+      res,
+      next,
+      status,
+      transaction_id,
+      "status",
+      senarios[statusIndex]
+    );
+  }catch(error){
+    next(error)
+  }
+  
 };

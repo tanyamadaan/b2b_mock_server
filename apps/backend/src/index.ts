@@ -53,20 +53,23 @@ app.use("/auth", errorHandlingWrapper(authRouter));
 app.use("/services", errorHandlingWrapper(servicesRouter));
 app.use("/agri-services", errorHandlingWrapper(agriServiceRouter));
 app.use("/healthcare-services", errorHandlingWrapper(healthCareServiceRouter));
-
-app.use(globalErrorHandler);
-
 app.use("/detect_app_installation", (req: Request, res: Response) => {
     const headers = req.headers;
     return res.json({
         headers: headers,
     });
 });
+app.use(globalErrorHandler);
+
 
 //Schedule the function to run every 30 seconds using node-cron
 cron.schedule('*/30 * * * * *', async () => {
-    console.log("automatic status update cron=>>>>>>>>")
-    await sendUpsolicieatedOnStatus();
+    try {
+        console.log("automatic status update cron=>>>>>>>>")
+        await sendUpsolicieatedOnStatus();
+    }catch(error){
+        console.log("error occured in cron")
+    }
 });
 
 app.listen(port, () => {
