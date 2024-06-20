@@ -12,6 +12,7 @@ import {
 	redis,
 	redisFetchFromServer,
 	send_nack,
+	checkSelectedItems,
 } from "../../../lib/utils";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 
@@ -23,9 +24,12 @@ export const selectController = async (req: Request, res: Response, next: NextFu
 			return send_nack(res, ERROR_MESSAGES.ON_SEARCH_DOES_NOT_EXISTED)
 		}
 		const providersItems = on_search?.message?.catalog?.providers[0];
-		req.body.providersItems = providersItems
+		req.body.providersItems = providersItems;
+		const checkItemExistInSearch = await checkSelectedItems(req.body);
+		if(!checkItemExistInSearch){
+				return send_nack(res, ERROR_MESSAGES.SELECTED_ITEMS_DOES_NOT_EXISTED)
+		}
 		const { scenario } = req.query;
-
 		switch (scenario) {
 			case "schedule_confirmed":
 				if (checkIfCustomized(req.body.message.order.items)) {

@@ -883,3 +883,33 @@ export const checkIfCustomized = (items: Item[]) => {
 			)
 	);
 };
+
+
+export const checkSelectedItems = async (data:any)=>{
+	try{
+		const {message,providersItems} = data
+		const items = message?.order?.items
+		const providersItem = providersItems?.items 
+		let matchingItem:any = null
+		items.forEach((item:any) => {
+			if (
+				item &&
+				item?.tags &&
+				item?.tags[0] &&
+				item?.tags[0]?.list[0]?.value === "PACKAGE"
+			) {
+				const selectedackages = item?.id;
+					// Find the corresponding item in the second array
+					if (providersItem) {
+						matchingItem = providersItem?.find(
+							(secondItem: { id: string }) => secondItem.id === selectedackages
+						);	
+					}
+			}
+		});
+		return matchingItem;
+	}catch(error){
+		console.log("error occured in matching content")
+	}
+
+}
