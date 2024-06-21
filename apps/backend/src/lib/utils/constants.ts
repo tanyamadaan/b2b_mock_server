@@ -1,5 +1,5 @@
 export const HOUR24 = 24 * 60 * 60 * 1000;
-
+const MOCK_API_BASE_URL = process.env?.MOCK_API_BASE_URL?process.env.MOCK_API_BASE_URL:"http://localhost:3005/api/"
 export const REGISTRY_URL = "https://staging.registry.ondc.org/lookup";
 // export const REGISTRY_URL = "https://preprod.registry.ondc.org/ondc/lookup";
 
@@ -14,20 +14,20 @@ export const B2B_EXAMPLES_PATH = "./domain-repos/@retail-b2b/release-2.0.2/api/c
 export const MOCKSERVER_ID = "mock.ondc.org/api";
 // export const B2B_BPP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/b2b/bpp`;
 // export const B2B_BAP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/b2b/bap`;
-export const B2B_BPP_MOCKSERVER_URL = `http://localhost:3005/api/b2b/bpp`;
-export const B2B_BAP_MOCKSERVER_URL = `http://localhost:3005/api/b2b/bap`;
+export const B2B_BPP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}b2b/bpp`;
+export const B2B_BAP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}b2b/bap`;
 // export const SERVICES_BPP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/services/bpp`;
 // export const SERVICES_BAP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/services/bap`;
-export const SERVICES_BPP_MOCKSERVER_URL = `http://localhost:3005/api/services/bpp`;
-export const SERVICES_BAP_MOCKSERVER_URL = `http://localhost:3005/api/services/bap`;
+export const SERVICES_BPP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}services/bpp`;
+export const SERVICES_BAP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}services/bap`;
 
-export const AGRI_SERVICES_BPP_MOCKSERVER_URL = `http://localhost:3005/api/agri-services/bpp`;
-export const AGRI_SERVICES_BAP_MOCKSERVER_URL = `http://localhost:3005/api/agri-services/bap`;
+export const AGRI_SERVICES_BPP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}agri-services/bpp`;
+export const AGRI_SERVICES_BAP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}agri-services/bap`;
 // export const AGRI_SERVICES_BPP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/agri-services/bpp`;
 // export const AGRI_SERVICES_BAP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/agri-services/bap`;
 
-export const HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL = `http://localhost:3005/api/healthcare-services/bpp`;
-export const HEALTHCARE_SERVICES_BAP_MOCKSERVER_URL = `http://localhost:3005/api/healthcare-services/bap`;
+export const HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}healthcare-services/bpp`;
+export const HEALTHCARE_SERVICES_BAP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}healthcare-services/bap`;
 
 // export const HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/healthcare-services/bpp`;
 // export const HEALTHCARE_SERVICES_BAP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/healthcare-services/bap`;
