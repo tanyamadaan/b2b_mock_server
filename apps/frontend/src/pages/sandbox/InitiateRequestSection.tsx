@@ -118,9 +118,10 @@ export const InitiateRequestSection = ({
 			}
 		} catch (error:any) {
 			setMessageType("error");
-			if (error instanceof AxiosError && error.response?.data?.error?.message)
+			console.log("error.response?.data?.error?.message",error.response?.data?.error?.message)
+			if (error instanceof AxiosError && error.response?.data?.error?.message.error?.message)
 				handleMessageToggle(
-					`Error Occurred while initiating request!`
+					error.response?.data?.error?.message.error?.message === "string"?error.response?.data?.error?.message.error?.message:"Error Occurred while initiating request!"
 				);
 			else handleMessageToggle("Error Occurred while initiating request!");
 		}

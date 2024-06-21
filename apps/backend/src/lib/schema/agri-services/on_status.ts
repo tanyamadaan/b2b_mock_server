@@ -360,7 +360,7 @@ export const onStatusSchema = {
                         "location",
                         "time",
                         "contact",
-                        "person",
+                        // "person",
                       ],
                     },
                   },

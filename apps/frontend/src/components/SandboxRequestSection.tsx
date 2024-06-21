@@ -18,6 +18,7 @@ import Option from "@mui/joy/Option";
 import { useAction, useSandbox } from "../utils/hooks";
 import { URL_MAPPING } from "../utils";
 import axios, { AxiosError } from "axios";
+import { UserGuide } from "./UserGuideSection";
 
 type SandboxRequestSectionProp = {
 	domain: string;
@@ -144,6 +145,7 @@ export const SandboxRequestSection = ({
 										</Typography>
 									</Box>
 								</Grid>
+							{domain !== "healthcare-services" || action === "update" || action === "status" && (
 								<Grid item xs={12} md={6}>
 									<Select
 										placeholder="Select a scenario"
@@ -157,7 +159,6 @@ export const SandboxRequestSection = ({
 												},
 											},
 										}}
-
 										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 										// @ts-ignore
 										onChange={(
@@ -178,6 +179,7 @@ export const SandboxRequestSection = ({
 										))}
 									</Select>
 								</Grid>
+							)}	
 							</Grid>
 						)}
 
@@ -195,6 +197,7 @@ export const SandboxRequestSection = ({
 					</Stack>
 				</Paper>
 			</Fade>
+			<UserGuide domain={domain}/>
 			<CurlDisplay slideIn={showCurl} curl={curl} />
 		</>
 	);

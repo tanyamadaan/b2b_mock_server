@@ -5,12 +5,8 @@ import {
   send_response,
   send_nack,
   redisFetchToServer,
-  checkIfCustomized,
-  createAuthHeader,
-  logger,
   redis,
 } from "../../../lib/utils";
-import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
 const senarios: string[] = [

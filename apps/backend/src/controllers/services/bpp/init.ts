@@ -2,8 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import {
   SERVICES_EXAMPLES_PATH,
   checkIfCustomized,
-  // quoteCreatorService,
-  // quoteCreatorServiceCustomized,
   responseBuilder,
   send_nack,
   redis,
