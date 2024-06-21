@@ -187,7 +187,7 @@ export const updateRescheduleAndItemsController = (req: Request, res: Response, 
 
 //UPDATE PAYMENT OBJECT FUNCTION HANDLE HERE
 function updatePaymentObject(payments: any, quotePrice: any) {
-	console.log("update payment object")
+	try{
 	//UPDATE OBJECT WITH UNPAID AMOUNT
 	const unPaidAmount = (parseFloat(quotePrice) - parseFloat(payments[0]?.params?.amount)).toString()
 	payments.push({
@@ -200,6 +200,8 @@ function updatePaymentObject(payments: any, quotePrice: any) {
 		},
 		status: "NOT-PAID"
 	})
-
 	return payments;
+	}catch(error){
+		console.log("error ocuured in payment object:",error)
+	}
 }
