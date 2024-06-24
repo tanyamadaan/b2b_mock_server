@@ -1,79 +1,75 @@
 import { NextFunction, Request, Response } from "express";
-import { v4 as uuidv4 } from "uuid";
 
 import {
-	SERVICES_EXAMPLES_PATH,
 	responseBuilder,
-	quoteCreatorAgriService,
-	quoteCreatorServiceCustomized,
-	checkIfCustomized,
-	redis,
 	redisFetchFromServer,
 	quoteCreatorHealthCareService,
 	checkSelectedItems,
 	send_nack,
 } from "../../../lib/utils";
-import path from "path";
-import fs from "fs";
-import YAML from "yaml";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 import { ON_ACTTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 
-export const selectController = async (req: Request, res: Response, next: NextFunction) => {
+export const selectController = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	try {
-		const on_search = await redisFetchFromServer(ON_ACTTION_KEY.ON_SEARCH, req.body.context.transaction_id);
+		const on_search = await redisFetchFromServer(
+			ON_ACTTION_KEY.ON_SEARCH,
+			req.body.context.transaction_id
+		);
 		if (!on_search) {
-			return send_nack(res, ERROR_MESSAGES.ON_SEARCH_DOES_NOT_EXISTED)
+			return send_nack(res, ERROR_MESSAGES.ON_SEARCH_DOES_NOT_EXISTED);
 		}
 		const providersItems = on_search?.message?.catalog?.providers[0];
-		req.body.providersItems = providersItems
+		req.body.providersItems = providersItems;
 		const checkItemExistInSearch = await checkSelectedItems(req.body);
-		if(!checkItemExistInSearch){
-				return send_nack(res, ERROR_MESSAGES.SELECTED_ITEMS_DOES_NOT_EXISTED)
+		if (!checkItemExistInSearch) {
+			return send_nack(res, ERROR_MESSAGES.SELECTED_ITEMS_DOES_NOT_EXISTED);
 		}
 		const { scenario } = req.query;
+
 		switch (scenario) {
 			// schedule_confirmed, schedule_rejected
 			case "schedule_confirmed":
-				if (checkIfCustomized(req.body.message.order.items)) {
-					return selectServiceCustomizationConfirmedController(req, res, next);
-				}
 				selectConsultationConfirmController(req, res, next);
 				break;
-			case "schedule_rejected ":
+			case "schedule_rejected":
 				selectConsultationRejectController(req, res, next);
 				break;
 			default:
-				if (checkIfCustomized(req.body.message.order.items)) {
-					return selectServiceCustomizationConfirmedController(req, res, next);
-				} else {
-					return selectConsultationConfirmController(req, res, next);
-				}
+				selectConsultationConfirmController(req, res, next);
 		}
 	} catch (error) {
-		return next(error)
+		return next(error);
 	}
-
 };
 
-const selectConsultationConfirmController = (req: Request, res: Response, next: NextFunction) => {
-	try{
+const selectConsultationConfirmController = (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
 		const { context, message, providersItems } = req.body;
 		const { locations, ...provider } = message.order.provider;
-		var responseMessage = {
+
+		const responseMessage = {
 			order: {
 				provider,
 				payments: message.order.payments.map(({ type }: { type: string }) => ({
 					type,
 					collected_by: "BAP",
 				})),
-	
+
 				items: message.order.items.map(
 					({ ...remaining }: { location_ids: any; remaining: any }) => ({
 						...remaining,
 					})
 				),
-	
+
 				fulfillments: message.order.fulfillments.map(
 					({ id, stops, ...each }: any) => ({
 						...each,
@@ -103,114 +99,101 @@ const selectConsultationConfirmController = (req: Request, res: Response, next: 
 						}),
 					})
 				),
-				quote: quoteCreatorHealthCareService(message.order.items, providersItems?.items),
+				quote: quoteCreatorHealthCareService(
+					message.order.items,
+					providersItems?.items
+				),
 			},
 		};
-	
+
 		return responseBuilder(
 			res,
 			next,
 			context,
 			responseMessage,
-			`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+			`${req.body.context.bap_uri}${
+				req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
 			}`,
 			`on_select`,
 			"agri-services"
 		);
-	}catch(error){
-		next(error)
+	} catch (error) {
+		next(error);
 	}
-
 };
 
-const selectConsultationRejectController = (req: Request, res: Response, next: NextFunction) => {
-	const { context } = req.body;
-	const file = fs.readFileSync(
-		path.join(
-			SERVICES_EXAMPLES_PATH,
-			"on_select/on_select_consultation_rejected.yaml"
-		)
-	);
-	const response = YAML.parse(file.toString());
-
-	return responseBuilder(
-		res,
-		next,
-		context,
-		response.value.message,
-		`${context.bap_uri}/on_select`,
-		`on_select`,
-		"services"
-	);
-};
-
-const selectServiceCustomizationConfirmedController = async (
+const selectConsultationRejectController = (
 	req: Request,
 	res: Response,
 	next: NextFunction
 ) => {
+	try {
+		const { context, message, providersItems } = req.body;
+		const { locations, ...provider } = message.order.provider;
 
-	const { context, message } = req.body;
-	const { locations, ...provider } = message.order.provider;
-	const { id, parent_item_id, location_ids, quantity, ...item } = message.order.items[0];
-	const transactionKeys = await redis.keys(`${context.transaction_id}-*`);
-	const ifTransactionToExist = transactionKeys.filter((e) =>
-		e.includes("on_search-to-server")
-	);
+		const responseMessage = {
+			order: {
+				provider,
+				payments: message.order.payments.map(({ type }: { type: string }) => ({
+					type,
+					collected_by: "BAP",
+				})),
 
-	const ifTransactionFromExist = transactionKeys.filter((e) =>
-		e.includes("on_search-from-server")
-	);
+				items: message.order.items.map(
+					({ ...remaining }: { location_ids: any; remaining: any }) => ({
+						...remaining,
+					})
+				),
 
-	const raw = await redis.mget(
-		ifTransactionToExist ? ifTransactionToExist : ifTransactionFromExist
-	);
-	const onSearchHistory = raw.map((ele) => {
-		return JSON.parse(ele as string);
-	})[0].request;
-
-	const fulfillment = message.order.fulfillments[0];
-
-	const fulfillment_id = onSearchHistory.message.catalog.fulfillments.filter(
-		(e: { type: string }) => e.type === fulfillment.type
-	)[0].id;
-
-	const responseMessage = {
-		order: {
-			provider,
-			payments: message.order.payments.map(({ type }: { type: string }) => ({
-				type,
-				collected_by: "BAP",
-			})),
-			items: [
-				{ id, parent_item_id, location_ids, quantity, fulfillment_ids: [uuidv4()] },
-				...message.order.items.slice(1).map(({ location_ids, ...remaining }:
-					{ location_ids: any; remaining: any; }) => ({ ...remaining, location_ids, fulfillment_ids: [uuidv4()] })
-				)
-			],
-			fulfillments:
-				[{
-					...fulfillment,
-					id: fulfillment_id,
-					tracking: false,
-					state: {
-						descriptor: {
-							code: "Serviceable",
+				fulfillments: message.order.fulfillments.map(
+					({ id, stops, ...each }: any) => ({
+						...each,
+						id,
+						tracking: false,
+						state: {
+							descriptor: {
+								code: "Serviceable",
+							},
 						},
-					},
-					stops: fulfillment.stops.map((e: { time: any; }) => ({ ...e, time: { ...e.time, label: "confirmed" } }))
-				}],
-			quote: quoteCreatorServiceCustomized(message.order.items),
-		},
-	};
-
-	return responseBuilder(
-		res,
-		next,
-		context,
-		responseMessage,
-		`${context.bap_uri}/on_select`,
-		`on_select`,
-		"agri-services"
-	);
+						stops: stops.map((stop: any) => {
+							stop.time.label = "rejected";
+							stop.tags = {
+								descriptor: {
+									code: "schedule",
+								},
+								list: [
+									{
+										descriptor: {
+											code: "ttl",
+										},
+										value: "PT1H",
+									},
+								],
+							};
+							return stop;
+						}),
+					})
+				),
+				quote: quoteCreatorHealthCareService(
+					message.order.items,
+					providersItems?.items
+				),
+				error: {
+					code: 90001,
+					message: "Schedule not available",
+				},
+			},
+		};
+		return responseBuilder(
+			res,
+			next,
+			context,
+			responseMessage,
+			`${context.bap_uri}/on_select`,
+			`on_select`,
+			"agri-services"
+		);
+	} catch (error) {
+		next(error);
+	}
 };
