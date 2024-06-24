@@ -85,16 +85,16 @@ const initConsultationController = (req: Request, res: Response, next: NextFunct
 				}],
 				quote: quoteData,
 				payments: [{
-					id: response.value.message.order.payments[0]?.id,
+					id: response?.value?.message?.order?.payments[0]?.id,
 					type: payments[0]?.type,
 					collected_by: payments[0]?.collected_by,
 					params: {
 						amount: quoteData?.price?.value,
 						currency: quoteData?.price?.currency,
-						bank_account_number: response.value.message.order.payments[0]?.params?.bank_account_number,
-						virtual_payment_address: response.value.message.order.payments[0]?.params?.virtual_payment_address
+						bank_account_number: response?.value?.message?.order?.payments[0]?.params?.bank_account_number,
+						virtual_payment_address: response?.value?.message?.order?.payments[0]?.params?.virtual_payment_address
 					},
-					tags: response.value.message.order.payments[0]?.tags
+					tags: response?.value?.message?.order?.payments[0]?.tags
 				}],
 			}
 		}
@@ -153,7 +153,7 @@ const initServiceCustomizationController = (req: Request, res: Response, next: N
 			payments: [{
 				id: payments[0].id,
 				type: payments[0].type,
-				...response.value.message.order.payments[0]
+				...response?.value?.message?.order?.payments[0]
 			}],
 		}
 	}
