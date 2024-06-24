@@ -11,6 +11,7 @@ export const B2B_SCENARIOS = {
 			scenario: "non-rfq",
 		},
 	],
+	
 	on_select: [
 		{
 			name: "Default",

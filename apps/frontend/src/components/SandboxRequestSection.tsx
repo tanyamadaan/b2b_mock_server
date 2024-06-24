@@ -42,8 +42,6 @@ export const SandboxRequestSection = ({
 		setSyncResponse(undefined);
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
-	console.log(domain, scenarios, action);
-
 	const [curl, setCurl] = useState<string>();
 
 	const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -145,7 +143,7 @@ export const SandboxRequestSection = ({
 										</Typography>
 									</Box>
 								</Grid>
-							{domain !== "healthcare-services" || action === "update" || action === "status" && (
+							{scenarios && scenarios?.length>0 && (
 								<Grid item xs={12} md={6}>
 									<Select
 										placeholder="Select a scenario"
@@ -179,7 +177,7 @@ export const SandboxRequestSection = ({
 										))}
 									</Select>
 								</Grid>
-							)}	
+							)}
 							</Grid>
 						)}
 

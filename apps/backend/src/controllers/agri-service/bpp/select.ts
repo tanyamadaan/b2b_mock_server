@@ -9,21 +9,31 @@ import {
 	checkIfCustomized,
 	redis,
 	redisFetchFromServer,
+	quoteCreatorHealthCareService,
+	checkSelectedItems,
+	send_nack,
 } from "../../../lib/utils";
 import path from "path";
 import fs from "fs";
 import YAML from "yaml";
+import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
+import { ON_ACTTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 
 export const selectController = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const on_search = await redisFetchFromServer("on_search", req.body.context.transaction_id);
-		const providersItems = on_search?.message?.catalog?.providers[0]?.items;
-
+		const on_search = await redisFetchFromServer(ON_ACTTION_KEY.ON_SEARCH, req.body.context.transaction_id);
+		if (!on_search) {
+			return send_nack(res, ERROR_MESSAGES.ON_SEARCH_DOES_NOT_EXISTED)
+		}
+		const providersItems = on_search?.message?.catalog?.providers[0];
 		req.body.providersItems = providersItems
+		const checkItemExistInSearch = await checkSelectedItems(req.body);
+		if(!checkItemExistInSearch){
+				return send_nack(res, ERROR_MESSAGES.SELECTED_ITEMS_DOES_NOT_EXISTED)
+		}
 		const { scenario } = req.query;
 		switch (scenario) {
 			// schedule_confirmed, schedule_rejected
-
 			case "schedule_confirmed":
 				if (checkIfCustomized(req.body.message.order.items)) {
 					return selectServiceCustomizationConfirmedController(req, res, next);
@@ -93,7 +103,7 @@ const selectConsultationConfirmController = (req: Request, res: Response, next: 
 						}),
 					})
 				),
-				quote: quoteCreatorAgriService(message.order.items, providersItems),
+				quote: quoteCreatorHealthCareService(message.order.items, providersItems?.items),
 			},
 		};
 	
