@@ -11,6 +11,7 @@ import {
 export const useAction = (domain: string) => {
 	const [action, setAction] = useState<string>();
 	const [logError, setLogError] = useState(false);
+	
 	const [scenarios, setScenarios] =
 		useState<{ name: string; scenario?: string }[]>();
 
