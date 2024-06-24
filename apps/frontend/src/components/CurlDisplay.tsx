@@ -20,6 +20,7 @@ const localTheme = createTheme({
 		mode: "dark",
 	},
 });
+
 type CurlDisplayProps = {
 	slideIn: boolean;
 	curl?: string;
@@ -32,6 +33,7 @@ export const CurlDisplay = ({
 	const containerRef = useRef<HTMLElement>(null);
 	const [display, setDisplay] = useState(false);
 	const [copied, setCopied] = useState(false);
+
 	const showButton = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
 		e.preventDefault();
 		setDisplay(true);
@@ -41,6 +43,7 @@ export const CurlDisplay = ({
 		e.preventDefault();
 		setDisplay(false);
 	};
+
 	const copyCurl = () => {
 		navigator.clipboard
 			.writeText(curl)
@@ -54,6 +57,7 @@ export const CurlDisplay = ({
 				console.log(err.message);
 			});
 	};
+
 	return (
 		<Box
 			sx={{
