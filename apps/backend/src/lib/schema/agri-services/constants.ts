@@ -3,9 +3,11 @@ export const VERSION = "2.0.0";
 export const DOMAIN = ["ONDC:SRV14"];
 
 export const SRV_FULFILLMENT_TYPE = ["Seller-Fulfilled", "Buyer-Fulfilled"];
+
 export const SRV_PAYMENT_TYPE = [
 	"PRE-FULFILLMENT",
 	"ON-FULFILLMENT",
+	"POST-FULFILLMENT"
 ];
 export const SRV_FULFILLMENT_STATE = [
 	"Pending",
@@ -14,6 +16,7 @@ export const SRV_FULFILLMENT_STATE = [
 	"Completed",
 	"Cancelled",
 ];
+
 export const SRV_ORDER_STATE = [
 	"Created",
 	"Accepted",
@@ -24,7 +27,9 @@ export const SRV_ORDER_STATE = [
 ];
 export const GPS_PATTERN =
 	"^(-?[0-9]{1,3}(?:.[0-9]{6,15})?),( )*?(-?[0-9]{1,3}(?:.[0-9]{6,15})?)$";
+
 export const SERVICEABILITY = ["location", "category", "type", "val", "unit"];
+
 export const RESCHEDULE_TERMS = [
 	"fulfillment_state",
 	"reschedule_eligible",

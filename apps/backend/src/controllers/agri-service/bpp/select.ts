@@ -100,8 +100,10 @@ const selectConsultationConfirmController = (
 					})
 				),
 				quote: quoteCreatorHealthCareService(
-					message.order.items,
-					providersItems?.items
+					message?.order?.items,
+					providersItems?.items,
+					"",
+					message?.order?.fulfillments[0]?.type,
 				),
 			},
 		};
@@ -174,9 +176,12 @@ const selectConsultationRejectController = (
 						}),
 					})
 				),
+
 				quote: quoteCreatorHealthCareService(
-					message.order.items,
-					providersItems?.items
+					message?.order?.items,
+					providersItems?.items,
+					"",
+					message?.order?.fulfillments[0]?.type,
 				),
 				error: {
 					code: 90001,
@@ -184,6 +189,7 @@ const selectConsultationRejectController = (
 				},
 			},
 		};
+
 		return responseBuilder(
 			res,
 			next,

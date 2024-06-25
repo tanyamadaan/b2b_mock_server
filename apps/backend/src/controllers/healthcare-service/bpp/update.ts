@@ -180,7 +180,8 @@ export const updateRescheduleAndItemsController = (
 		const quote = quoteCreatorHealthCareService(
 			order?.items,
 			providersItems?.items,
-			providersItems?.offers
+			providersItems?.offers,
+			order?.fulfillments[0]?.type,
 		);
 
 		//UPDATE PAYMENT OBJECT ACCORDING TO QUANTITY

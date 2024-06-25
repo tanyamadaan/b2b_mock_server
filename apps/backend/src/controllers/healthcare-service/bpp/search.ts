@@ -8,7 +8,6 @@ import { HEALTHCARE_SERVICES_EXAMPLES_PATH, responseBuilder } from "../../../lib
 export const searchController = (req: Request, res: Response, next: NextFunction) => {
   try{
     const { message: { intent } } = req.body;
-    const id = intent?.item?.category?.id
     const file = fs.readFileSync(
       path.join(
         HEALTHCARE_SERVICES_EXAMPLES_PATH,

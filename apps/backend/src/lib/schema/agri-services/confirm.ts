@@ -425,7 +425,7 @@ export const confirmSchema = {
                             required: ["currency", "value"],
                           },
                         },
-                        required: ["id", "quantity", "price"],
+                        required: ["id"],
                       },
                     },
                     required: ["title", "price", "item"],

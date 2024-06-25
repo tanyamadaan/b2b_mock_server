@@ -448,7 +448,7 @@ export const onConfirmSchema = {
                             required: ["currency", "value"],
                           },
                         },
-                        required: ["id", "quantity", "price"],
+                        required: ["id"],
                       },
                       tags: {
                         type: "array",

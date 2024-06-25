@@ -10,12 +10,11 @@ export const searchController = (req: Request, res: Response, next: NextFunction
       path.join(
         AGRI_SERVICES_EXAMPLES_PATH,
         `on_search/${
-          "on_search.yaml"
+          req.body.message?.intent?.item?.category?.id === "SRV14:1004" || req.body.message?.intent?.item?.descriptor?.name !== "Soil Testing" ? "on_search_assaying.yaml":"on_search.yaml"
         }`
       )
     ); 
-  
-    const response = YAML.parse(file.toString());    
+    const response = YAML.parse(file.toString());   
     return responseBuilder(
       res,
       next,

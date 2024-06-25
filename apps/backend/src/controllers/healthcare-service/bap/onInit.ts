@@ -22,7 +22,7 @@ export const onInitController = async (req: Request, res: Response, next: NextFu
 
 const onInitConsultationController = (req: Request, res: Response, next: NextFunction) => {
 	try{
-		const { context, providersItems, message: { order: { provider, locations, items, billing, fulfillments, payments,quote } } } = req.body;
+		const { context, message: { order: { provider, locations, items, billing, fulfillments, payments,quote } } } = req.body;
 		const { stops, ...remainingfulfillments } = fulfillments[0]
 	
 		const file = fs.readFileSync(
@@ -114,7 +114,8 @@ const onInitServiceCustomizedController = (req: Request, res: Response, next: Ne
 					}
 				})
 			}],
-			quote: quoteCreatorHealthCareService(items, providersItems),
+			quote: quoteCreatorHealthCareService(items, providersItems,"",fulfillments[0]?.type
+			),
 			payments: [{
 				...payments[0],
 				status: "PAID"
