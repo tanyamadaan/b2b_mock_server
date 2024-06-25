@@ -1,5 +1,6 @@
 export const HOUR24 = 24 * 60 * 60 * 1000;
-const MOCK_API_BASE_URL = process.env?.MOCK_API_BASE_URL?process.env.MOCK_API_BASE_URL:"http://localhost:3005/api/"
+const MOCK_API_BASE_URL = process.env?.MOCK_API_BASE_URL?process.env.MOCK_API_BASE_URL:"http://localhost:3005/api/";
+
 export const REGISTRY_URL = "https://staging.registry.ondc.org/lookup";
 // export const REGISTRY_URL = "https://preprod.registry.ondc.org/ondc/lookup";
 

@@ -35,15 +35,14 @@ export const SandboxRequestSection = ({
 		scenario: string;
 	}>();
 	const { action, detectAction, logError, scenarios } = useAction(domain);
+
 	const { setSyncResponse } = useSandbox();
 	useEffect(() => {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		setSyncResponse(undefined);
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
-	console.log(domain, scenarios, action);
-
 	const [curl, setCurl] = useState<string>();
 
 	const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -145,41 +144,43 @@ export const SandboxRequestSection = ({
 										</Typography>
 									</Box>
 								</Grid>
-							{domain !== "healthcare-services" || action === "update" || action === "status" && (
-								<Grid item xs={12} md={6}>
-									<Select
-										placeholder="Select a scenario"
-										indicator={<KeyboardArrowDown />}
-										sx={{
-											width: "100%",
-											[`& .${selectClasses.indicator}`]: {
-												transition: "0.2s",
-												[`&.${selectClasses.expanded}`]: {
-													transform: "rotate(-180deg)",
+								{scenarios && scenarios?.length > 0 && (
+									<Grid item xs={12} md={6}>
+										<Select
+											placeholder="Select a scenario"
+											indicator={<KeyboardArrowDown />}
+											sx={{
+												width: "100%",
+												[`& .${selectClasses.indicator}`]: {
+													transition: "0.2s",
+													[`&.${selectClasses.expanded}`]: {
+														transform: "rotate(-180deg)",
+													},
 												},
-											},
-										}}
-										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-										// @ts-ignore
-										onChange={(
-											_event: React.SyntheticEvent | null,
-											newValue: object
-										) => {
-											setActiveScenario(newValue as { name: string; scenario: string; } );
-										}}
-									>
-										{scenarios?.map((scenario, index) => (
-											<Option
-												value={scenario}
-												key={"scenario-" + index}
-												disabled={!scenario.scenario}
-											>
-												{scenario.name}
-											</Option>
-										))}
-									</Select>
-								</Grid>
-							)}	
+											}}
+											// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+											// @ts-ignore
+											onChange={(
+												_event: React.SyntheticEvent | null,
+												newValue: object
+											) => {
+												setActiveScenario(
+													newValue as { name: string; scenario: string }
+												);
+											}}
+										>
+											{scenarios?.map((scenario, index) => (
+												<Option
+													value={scenario}
+													key={"scenario-" + index}
+													disabled={!scenario.scenario}
+												>
+													{scenario.name}
+												</Option>
+											))}
+										</Select>
+									</Grid>
+								)}
 							</Grid>
 						)}
 
@@ -197,7 +198,7 @@ export const SandboxRequestSection = ({
 					</Stack>
 				</Paper>
 			</Fade>
-			<UserGuide domain={domain}/>
+			<UserGuide domain={domain} />
 			<CurlDisplay slideIn={showCurl} curl={curl} />
 		</>
 	);

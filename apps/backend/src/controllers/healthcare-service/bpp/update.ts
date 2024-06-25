@@ -1,28 +1,47 @@
 import { NextFunction, Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
-import { quoteCreatorHealthCareService, redisFetchToServer, responseBuilder, send_nack } from "../../../lib/utils";
+import {
+	quoteCreatorHealthCareService,
+	redisFetchToServer,
+	responseBuilder,
+	send_nack,
+} from "../../../lib/utils";
 import { ON_ACTTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 
-
-export const updateController = async (req: Request, res: Response, next: NextFunction) => {
-	try{
+export const updateController = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
 		let { scenario } = req.query;
-		scenario = scenario === "fulfillments" ? "reschedule" : scenario === "items" ? "modifyItems" : "payments"
-		const on_confirm = await redisFetchToServer(ON_ACTTION_KEY.ON_CONFIRM, req.body.context.transaction_id);
+		scenario =
+			scenario === "fulfillments"
+				? "reschedule"
+				: scenario === "items"
+				? "modifyItems"
+				: "payments";
+		const on_confirm = await redisFetchToServer(
+			ON_ACTTION_KEY.ON_CONFIRM,
+			req.body.context.transaction_id
+		);
 		if (!on_confirm) {
-			return send_nack(res, ERROR_MESSAGES.ON_CONFIRM_DOES_NOT_EXISTED)
+			return send_nack(res, ERROR_MESSAGES.ON_CONFIRM_DOES_NOT_EXISTED);
 		}
-	
-		const on_search = await redisFetchToServer(ON_ACTTION_KEY.ON_SEARCH, req.body.context.transaction_id);
+
+		const on_search = await redisFetchToServer(
+			ON_ACTTION_KEY.ON_SEARCH,
+			req.body.context.transaction_id
+		);
 		if (!on_search) {
-			return send_nack(res, ERROR_MESSAGES.ON_SEARCH_DOES_NOT_EXISTED)
+			return send_nack(res, ERROR_MESSAGES.ON_SEARCH_DOES_NOT_EXISTED);
 		}
-	
+
 		const providersItems = on_search?.message?.catalog?.providers[0];
-		req.body.providersItems = providersItems
-	
-		req.body.on_confirm = on_confirm
+		req.body.providersItems = providersItems;
+
+		req.body.on_confirm = on_confirm;
 		switch (scenario) {
 			case "payments":
 				updatePaymentController(req, res, next);
@@ -40,14 +59,18 @@ export const updateController = async (req: Request, res: Response, next: NextFu
 				updateRequoteController(req, res, next);
 				break;
 		}
-	}catch(error){
-		return next(error)
+	} catch (error) {
+		return next(error);
 	}
 };
 
-//HANDLE PAYMENTS TARGET 
-export const updateRequoteController = (req: Request, res: Response, next: NextFunction) => {
-	try{
+//HANDLE PAYMENTS TARGET
+export const updateRequoteController = (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
 		const { context, message, on_confirm } = req.body;
 		//CREATED COMMON RESPONSE MESSAGE FOR ALL SCENRIO AND UPDATE ACCORDENGLY IN FUNCTIONS
 		const responseMessages = {
@@ -55,30 +78,34 @@ export const updateRequoteController = (req: Request, res: Response, next: NextF
 				id: on_confirm?.message?.order.id,
 				status: "Pending",
 				provider: {
-					id: on_confirm?.message?.order?.provider.id
+					id: on_confirm?.message?.order?.provider.id,
 				},
 				...on_confirm?.message?.order,
-			}
-		}
-		
+			},
+		};
+
 		return responseBuilder(
 			res,
 			next,
 			context,
 			responseMessages,
-			`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_update" : "/on_update"
+			`${req.body.context.bap_uri}${
+				req.body.context.bap_uri.endsWith("/") ? "on_update" : "/on_update"
 			}`,
 			`on_update`,
 			"healthcare-service"
 		);
-	}catch(error){
-		next(error)
+	} catch (error) {
+		next(error);
 	}
 };
 
-
 //HANDLE UPDATE PAYMENTS AFTER ITEMS UPDATE
-export const updatePaymentController = (req: Request, res: Response, next: NextFunction) => {
+export const updatePaymentController = (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	return res.json({
 		sync: {
 			message: {
@@ -90,63 +117,77 @@ export const updatePaymentController = (req: Request, res: Response, next: NextF
 	});
 };
 
-//HANDLE FULFILLMENT TARGET (TIME SLOT RESCHEDULE) 
-export const updateRescheduleController = (req: Request, res: Response, next: NextFunction) => {
-try{
-	const {
-		context,
-		message: { order },
-	} = req.body;
+//HANDLE FULFILLMENT TARGET (TIME SLOT RESCHEDULE)
+export const updateRescheduleController = (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const {
+			context,
+			message: { order },
+		} = req.body;
 
-	const responseMessage = {
-		order: {
-			...order,
-			fulfillments: [
-				{
-					...order.fulfillments[0],
-					stops: order.fulfillments[0].stops.map((stop: any) => ({
-						...stop,
-						time:
-							stop.type === "end"
-								? { ...stop.time, label: "selected" }
-								: stop.time,
-					})),
-				},
-			]
-		}
-	};
+		const responseMessage = {
+			order: {
+				...order,
+				fulfillments: [
+					{
+						...order.fulfillments[0],
+						stops: order.fulfillments[0].stops.map((stop: any) => ({
+							...stop,
+							time:
+								stop.type === "end"
+									? { ...stop.time, label: "selected" }
+									: stop.time,
+						})),
+					},
+				],
+			},
+		};
 
-	return responseBuilder(
-		res,
-		next,
-		context,
-		responseMessage,
-		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_update" : "/on_update"
-		}`,
-		`on_update`,
-		"healthcare-service"
-	);
-}catch(error){
-	next(error)
-}
-	
+		return responseBuilder(
+			res,
+			next,
+			context,
+			responseMessage,
+			`${req.body.context.bap_uri}${
+				req.body.context.bap_uri.endsWith("/") ? "on_update" : "/on_update"
+			}`,
+			`on_update`,
+			"healthcare-service"
+		);
+	} catch (error) {
+		next(error);
+	}
 };
 
 //HANDLE FULFILLMENT TARGET (TIME SLOT RESCHEDULE,ITEMS AND PATIENTS)(MODIFY NUMBER OF PATIENTS AND NUMBER OF TEST)
-export const updateRescheduleAndItemsController = (req: Request, res: Response, next: NextFunction) => {
-	try{
+export const updateRescheduleAndItemsController = (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
 		const {
 			context,
 			message: { order },
 			on_confirm,
-			providersItems
+			providersItems,
 		} = req.body;
 		//UPDATE PAYMENT OBJECT AND QUOTE ACCORDING TO ITEMS AND PERSONS
-		const quote = quoteCreatorHealthCareService(order?.items, providersItems?.items, providersItems?.offers)
-	
-		//UPDATE PAYMENT OBJECT ACCORDING TO QUANTITY 
-		const updatedPaymentObj = updatePaymentObject(order?.payments, quote?.price?.value);
-	
+		const quote = quoteCreatorHealthCareService(
+			order?.items,
+			providersItems?.items,
+			providersItems?.offers
+		);
+
+		//UPDATE PAYMENT OBJECT ACCORDING TO QUANTITY
+		const updatedPaymentObj = updatePaymentObject(
+			order?.payments,
+			quote?.price?.value
+		);
 		const responseMessage = {
 			order: {
 				...order,
@@ -164,44 +205,45 @@ export const updateRescheduleAndItemsController = (req: Request, res: Response, 
 					},
 				],
 				payments: updatedPaymentObj,
-				quote
-			}
+				quote,
+			},
 		};
-	
+
 		return responseBuilder(
 			res,
 			next,
 			context,
 			responseMessage,
-			`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_update" : "/on_update"
+			`${req.body.context.bap_uri}${
+				req.body.context.bap_uri.endsWith("/") ? "on_update" : "/on_update"
 			}`,
 			`on_update`,
 			"healthcare-service"
 		);
-	}catch(error){
-		next(error)
+	} catch (error) {
+		next(error);
 	}
-	
 };
-
 
 //UPDATE PAYMENT OBJECT FUNCTION HANDLE HERE
 function updatePaymentObject(payments: any, quotePrice: any) {
-	try{
-	//UPDATE OBJECT WITH UNPAID AMOUNT
-	const unPaidAmount = (parseFloat(quotePrice) - parseFloat(payments[0]?.params?.amount)).toString()
-	payments.push({
-		...payments[0],
-		id: "P2",
-		params: {
-			...payments[0].params,
-			amount: unPaidAmount,
-			transaction_id: uuidv4()
-		},
-		status: "NOT-PAID"
-	})
-	return payments;
-	}catch(error){
-		console.log("error ocuured in payment object:",error)
+	try {
+		//UPDATE OBJECT WITH UNPAID AMOUNT
+		const unPaidAmount = (
+			parseFloat(quotePrice) - parseFloat(payments[0]?.params?.amount)
+		).toString();
+		payments.push({
+			...payments[0],
+			id: "P2",
+			params: {
+				...payments[0].params,
+				amount: unPaidAmount,
+				transaction_id: uuidv4(),
+			},
+			status: "NOT-PAID",
+		});
+		return payments;
+	} catch (error) {
+		console.log("error ocuured in payment object:", error);
 	}
 }

@@ -1,14 +1,28 @@
 import * as _ from "lodash";
 import { useState } from "react";
-import { B2B_SCENARIOS, SERVICES_SCENARIOS, NEXT_ACTION, HEALTHCARE_SERVICES_SCENARIOS } from "openapi-specs/constants";
+import {
+	B2B_SCENARIOS,
+	SERVICES_SCENARIOS,
+	NEXT_ACTION,
+	HEALTHCARE_SERVICES_SCENARIOS,
+	AGRI_SERVICES_SCENARIOS,
+} from "openapi-specs/constants";
 
 export const useAction = (domain: string) => {
 	const [action, setAction] = useState<string>();
 	const [logError, setLogError] = useState(false);
+	
 	const [scenarios, setScenarios] =
 		useState<{ name: string; scenario?: string }[]>();
+
 	const allScenarios =
-		domain.toLowerCase() === "b2b" ? B2B_SCENARIOS : domain.toLowerCase() === "services"?SERVICES_SCENARIOS:HEALTHCARE_SERVICES_SCENARIOS;
+		domain.toLowerCase() === "b2b"
+			? B2B_SCENARIOS
+			: domain.toLowerCase() === "services"
+			? SERVICES_SCENARIOS
+			: domain.toLowerCase() === "healthcare-services"
+			? HEALTHCARE_SERVICES_SCENARIOS
+			: AGRI_SERVICES_SCENARIOS;
 
 	const detectAction = _.debounce((log: string) => {
 		try {
@@ -25,7 +39,6 @@ export const useAction = (domain: string) => {
 			} else {
 				setScenarios([]);
 			}
-
 			setLogError(false);
 		} catch (error) {
 			// console.log("Error Occurred in LOG", error);
