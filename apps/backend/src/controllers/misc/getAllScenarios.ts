@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { AGRI_SERVICES_SCENARIOS, B2B_SCENARIOS, HEALTHCARE_SERVICES_SCENARIOS, SERVICES_SCENARIOS } from "openapi-specs/constants";
+import { B2B_SCENARIOS, HEALTHCARE_SERVICES_SCENARIOS, SERVICES_SCENARIOS } from "openapi-specs/constants";
 
 export const getAllScenarios = (req: Request, res: Response) => {
   const action = req.params["action"]
@@ -7,12 +7,12 @@ export const getAllScenarios = (req: Request, res: Response) => {
   let scenarios
   if(domain === "b2b") {
     scenarios = B2B_SCENARIOS[action as keyof typeof B2B_SCENARIOS]
+    
   } else if(domain === "services"){
     scenarios = SERVICES_SCENARIOS[action as keyof typeof SERVICES_SCENARIOS]
-  }else if(domain === "healthcare-services"){
-    scenarios = HEALTHCARE_SERVICES_SCENARIOS[action as keyof typeof HEALTHCARE_SERVICES_SCENARIOS]
   }else{
-    scenarios = AGRI_SERVICES_SCENARIOS[action as keyof typeof AGRI_SERVICES_SCENARIOS]
+    scenarios = HEALTHCARE_SERVICES_SCENARIOS[action as keyof typeof HEALTHCARE_SERVICES_SCENARIOS]
+
   }
   return res.json({scenarios})
 }

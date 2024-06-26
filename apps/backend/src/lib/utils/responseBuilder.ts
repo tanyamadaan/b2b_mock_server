@@ -470,13 +470,13 @@ export const quoteCreatorAgriService = (
 		// Find the corresponding item in the second array
 		if (providersItems) {
 			const matchingItem = providersItems.find(
-				(secondItem: { id: string }) => secondItem?.id === item?.id
+				(secondItem: { id: string }) => secondItem.id === item.id
 			);
 			// If a matching item is found, update the price in the items array
 			if (matchingItem) {
-				item.title = matchingItem?.descriptor?.name;
-				item.price = matchingItem?.price;
-				item.tags = matchingItem?.tags;
+				item.title = matchingItem.descriptor.name;
+				item.price = matchingItem.price;
+				item.tags = matchingItem.tags;
 			}
 		}
 	});
@@ -489,7 +489,7 @@ export const quoteCreatorAgriService = (
 			price: {
 				currency: "INR",
 				value: (
-					Number(item?.price?.value) * item?.quantity?.selected?.count
+					Number(item.price.value) * item.quantity.selected.count
 				).toString(),
 			},
 			tags: item.tags,
@@ -578,7 +578,7 @@ export const quoteCreatorHealthCareService = (
 
 						if (matchingItem) {
 							items.push({ ...matchingItem, quantity: item?.quantity });
-						}
+						} 
 					}
 				});
 			}
@@ -650,7 +650,6 @@ export const quoteCreatorHealthCareService = (
 				},
 			],
 		});
-		
 		let totalPrice = 0;
 
 		breakup.forEach((entry) => {
@@ -886,28 +885,31 @@ export const checkIfCustomized = (items: Item[]) => {
 };
 
 
-//Function for check selected items are existed in onsearch or not
-export const checkSelectedItems = async (data: any) => {
-	try {
-		const { message, providersItems } = data;
-		const items = message?.order?.items;
-		const providersItem = providersItems?.items;
-		let matchingItem: any = null;
-
-		items.forEach((item: any) => {
-			if (item) {
-				const selectedItem = item?.id;
-				// Find the corresponding item in the second array
-				if (providersItem) {
-					matchingItem = providersItem?.find(
-						(secondItem: { id: string }) => secondItem.id === selectedItem
-					);
-				}
+export const checkSelectedItems = async (data:any)=>{
+	try{
+		const {message,providersItems} = data
+		const items = message?.order?.items
+		const providersItem = providersItems?.items 
+		let matchingItem:any = null
+		items.forEach((item:any) => {
+			if (
+				item &&
+				item?.tags &&
+				item?.tags[0] &&
+				item?.tags[0]?.list[0]?.value === "PACKAGE"
+			) {
+				const selectedackages = item?.id;
+					// Find the corresponding item in the second array
+					if (providersItem) {
+						matchingItem = providersItem?.find(
+							(secondItem: { id: string }) => secondItem.id === selectedackages
+						);	
+					}
 			}
 		});
-
 		return matchingItem;
-	} catch (error) {
-		console.log("error occured in matching content");
+	}catch(error){
+		console.log("error occured in matching content")
 	}
-};
+
+}

@@ -51,26 +51,23 @@ const statusRequest = async (
 try{
   const { context, message } = transaction;
   context.action = "on_status";
-  const on_status = await redisFetchFromServer("on_status", req.body.context.transaction_id);
 
-  let next_status = scenario;
+  const on_status = await redisFetchFromServer("on_status", req.body.context.transaction_id);
   if (on_status) {
     //UPDATE SCENARIO TO NEXT STATUS
     const lastStatus = on_status?.message?.order?.fulfillments[0]?.state?.descriptor?.code
     //FIND NEXT STATUS
-
     const lastStatusIndex = AGRI_HEALTHCARE_STATUS.indexOf(lastStatus);
 
     if(lastStatus === 6){
-      next_status = lastStatus
+      scenario = lastStatus
     }
     if (lastStatusIndex !== -1 && lastStatusIndex < AGRI_HEALTHCARE_STATUS.length - 1) {
       const nextStatusIndex = lastStatusIndex + 1;
-      next_status = AGRI_HEALTHCARE_STATUS[nextStatusIndex];
+      scenario = AGRI_HEALTHCARE_STATUS[nextStatusIndex]
     }
   }
-  scenario = scenario?scenario:next_status;
-  
+
   const responseMessage: any = {
     order: {
       id: message.order.id,
@@ -131,7 +128,6 @@ try{
     },
   };
 
-  console.log("next scenario",scenario)
   switch (scenario) {
     case "IN_TRANSIT":
       responseMessage.order.fulfillments.forEach((fulfillment: Fulfillment) => {

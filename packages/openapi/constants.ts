@@ -11,7 +11,6 @@ export const B2B_SCENARIOS = {
 			scenario: "non-rfq",
 		},
 	],
-
 	on_select: [
 		{
 			name: "Default",
@@ -290,10 +289,6 @@ export const AGRI_SERVICES_SCENARIOS = {
 	// 	},
 	// ],
 	on_select: [
-		{
-			name: "Default",
-			scenario: "default",
-		},
 		{
 			name: "Schedule Confirmed",
 			scenario: "schedule_confirmed",
