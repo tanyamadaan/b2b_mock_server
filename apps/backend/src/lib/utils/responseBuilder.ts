@@ -12,8 +12,15 @@ import { createAuthHeader } from "./responseAuth";
 import { logger } from "./logger";
 import { TransactionType, redis } from "./redis";
 import { AxiosError } from "axios";
-import { redisFetchFromServer } from "./redisFetch";
-import { send_nack } from "./send_response";
+import { ON_ACTION_KEY } from "./actionOnActionKeys";
+import {
+	FULFILLMENT_END,
+	FULFILLMENT_LABELS,
+	FULFILLMENT_START,
+	FULFILLMENT_STATES,
+	FULFILLMENT_TYPES,
+	SCENARIO,
+} from "./apiConstants";
 
 interface TagDescriptor {
 	code: string;
@@ -531,6 +538,31 @@ export const quoteCreatorAgriService = (
 		],
 	});
 
+	breakup?.push({
+		title: "pickup_charge",
+		price: {
+			currency: "INR",
+			value: "149",
+		},
+		item: {
+			id: "I1",
+		},
+		tags: [
+			{
+				descriptor: {
+					code: "title",
+				},
+				list: [
+					{
+						descriptor: {
+							code: "type",
+						},
+						value: "misc",
+					},
+				],
+			},
+		],
+	});
 	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
 	let totalPrice = 0;
 	breakup.forEach((entry) => {
@@ -555,7 +587,8 @@ export const quoteCreatorAgriService = (
 export const quoteCreatorHealthCareService = (
 	items: Item[],
 	providersItems?: any,
-	offers?: any
+	offers?: any,
+	fulfillment_type?: string
 ) => {
 	try {
 		//GET PACKAGE ITEMS
@@ -627,7 +660,7 @@ export const quoteCreatorHealthCareService = (
 		//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
 
 		//ADD STATIC TAX FOR ITEM ONE
-		breakup.push({
+		breakup?.push({
 			title: "tax",
 			price: {
 				currency: "INR",
@@ -650,7 +683,34 @@ export const quoteCreatorHealthCareService = (
 				},
 			],
 		});
-		
+
+		if (fulfillment_type === "Seller-Fulfilled") {
+			breakup?.push({
+				title: "pickup_charge",
+				price: {
+					currency: "INR",
+					value: "149",
+				},
+				item: {
+					id: "I1",
+				},
+				tags: [
+					{
+						descriptor: {
+							code: "title",
+						},
+						list: [
+							{
+								descriptor: {
+									code: "type",
+								},
+								value: "misc",
+							},
+						],
+					},
+				],
+			});
+		}
 		let totalPrice = 0;
 
 		breakup.forEach((entry) => {
@@ -745,6 +805,7 @@ export const quoteCommon = (items: Item[], providersItems?: any) => {
 			totalPrice += priceValue;
 		}
 	});
+
 	const result = {
 		breakup,
 		price: {
@@ -885,7 +946,6 @@ export const checkIfCustomized = (items: Item[]) => {
 	);
 };
 
-
 //Function for check selected items are existed in onsearch or not
 export const checkSelectedItems = async (data: any) => {
 	try {
@@ -909,5 +969,125 @@ export const checkSelectedItems = async (data: any) => {
 		return matchingItem;
 	} catch (error) {
 		console.log("error occured in matching content");
+	}
+};
+
+export const updateFulfillments = (
+	fulfillments?: any,
+	action?: string,
+	scenario?: string
+) => {
+	try {
+		// Update fulfillments according to actions
+
+		const rangeStart = new Date().setHours(new Date().getHours() + 2);
+		const rangeEnd = new Date().setHours(new Date().getHours() + 3);
+
+		let updatedFulfillments: any = [];
+
+		if (!fulfillments || fulfillments.length === 0) {
+			return updatedFulfillments; // Return empty if fulfillments is not provided or empty
+		}
+
+		const fulfillmentObj = {
+			id: "F1",
+			type: FULFILLMENT_TYPES.SELLER_FULFILLED,
+			tracking: false,
+			state: {
+				descriptor: {
+					code: FULFILLMENT_STATES.SERVICEABLE,
+				},
+			},
+			stops: fulfillments[0]?.stops.map((ele: any) => {
+				ele.time.label = FULFILLMENT_LABELS.CONFIRMED;
+				return ele;
+			}),
+		};
+
+		switch (action) {
+			case ON_ACTION_KEY.ON_SELECT:
+				// Always push the initial fulfillmentObj
+				updatedFulfillments.push(fulfillmentObj);
+				if (scenario === SCENARIO.MULTI_COLLECTION) {
+					updatedFulfillments.push({
+						...fulfillmentObj,
+						id: "F2",
+					});
+				}
+				break;
+			case ON_ACTION_KEY.ON_CONFIRM:
+				updatedFulfillments = fulfillments;
+				// Add your logic for ON_CONFIRM
+				updatedFulfillments = updatedFulfillments.map((fulfill: any) => {
+					(fulfill.state = {
+						descriptor: {
+							code: FULFILLMENT_STATES.PENDING,
+						},
+					}),
+						fulfill.stops.push({
+							type: "start",
+							...FULFILLMENT_START,
+							time: {
+								range: {
+									start: new Date(rangeStart).toISOString(),
+									end: new Date(rangeEnd).toISOString(),
+								},
+							},
+						}),
+						(fulfill.stops = fulfill?.stops?.map((ele: any) => {
+							if (ele?.type === "end") {
+								ele = {
+									...ele,
+									...FULFILLMENT_END,
+									time:{
+										...ele.time,
+										label:FULFILLMENT_LABELS.CONFIRMED
+									},
+									person:
+										ele.customer && ele.customer.person
+											? ele.customer.person
+											: FULFILLMENT_END.person,
+								};
+							}
+							return ele;
+						})),
+						(fulfill.rateable = true);
+					return fulfill;
+				});
+				break;
+			case ON_ACTION_KEY.ON_CANCEL:
+				updatedFulfillments = fulfillments;
+				updatedFulfillments = updatedFulfillments.map((fulfillment: any) => ({
+					...fulfillment,
+					state: {
+						...fulfillment.state,
+						descriptor: {
+							code: FULFILLMENT_STATES.CANCELLED,
+						},
+					},
+					rateable: undefined,
+				}));
+				break;
+			case ON_ACTION_KEY.ON_UPDATE:
+				updatedFulfillments = fulfillments;
+				updatedFulfillments = updatedFulfillments.map((fulfillment: any) => ({
+					...fulfillment,
+					state: {
+						...fulfillment.state,
+						descriptor: {
+							code: FULFILLMENT_STATES.COMPLETED,
+						},
+					},
+					rateable: true,
+				}));
+				break;
+			default:
+				// Add your default logic if any
+				updatedFulfillments = fulfillments;
+				break;
+		}
+		return updatedFulfillments;
+	} catch (err) {
+		console.log("Error occured in fulfillments method");
 	}
 };

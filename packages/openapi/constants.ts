@@ -200,6 +200,14 @@ export const HEALTHCARE_SERVICES_SCENARIOS = {
 	// 	},
 	// ],
 	on_select: [
+		{
+			name:"Multi Collection",
+			scenario:"multi_collection"
+		},
+		{
+			name:"Default",
+			scenario:"default"
+		}
 	],
 	// init: [
 	// 	{

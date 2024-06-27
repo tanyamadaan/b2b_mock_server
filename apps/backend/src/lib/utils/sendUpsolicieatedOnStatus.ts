@@ -17,6 +17,7 @@ export const sendUpsolicieatedOnStatus = async () => {
 		let nextStatus: string = AGRI_HEALTHCARE_STATUS[0];
 		let lastStatus: string = AGRI_HEALTHCARE_STATUS[0];
 		let data: any = await findIncompleteOnConfirmCalls();
+		
 		if (data && data.length > 0) {
 			data.map(async (ele: any) => {
 				// 2. find on_status data with latest  state of the order based on transaction id
@@ -55,12 +56,12 @@ export const sendUpsolicieatedOnStatus = async () => {
 							id: message.order.id,
 							status: "In-progress",
 							provider: {
-								...message.order.provider,
+								...message?.order?.provider,
 								rateable: undefined,
 							},
-							items: message.order.items,
-							billing: { ...message.order.billing, tax_id: undefined },
-							fulfillments: message.order.fulfillments.map(
+							items: message?.order?.items,
+							billing: { ...message?.order?.billing, tax_id: undefined },
+							fulfillments: message?.order?.fulfillments?.map(
 								(fulfillment: Fulfillment) => ({
 									...fulfillment,
 									id: fulfillment.id,
@@ -69,14 +70,14 @@ export const sendUpsolicieatedOnStatus = async () => {
 											code: "IN_TRANSIT",
 										},
 									},
-									stops: fulfillment.stops.map((stop: Stop) => {
+									stops: fulfillment?.stops?.map((stop: Stop) => {
 										const demoObj = {
 											...stop,
 											id: undefined,
-											authorization: stop.authorization
-												? { ...stop.authorization, status: "confirmed" }
+											authorization: stop?.authorization
+												? { ...stop?.authorization, status: "confirmed" }
 												: undefined,
-											person: stop.person ? stop.person : stop.customer?.person,
+											person: stop?.person ? stop?.person : stop?.customer?.person,
 										};
 										if (stop.type === "start") {
 											return {
@@ -95,24 +96,24 @@ export const sendUpsolicieatedOnStatus = async () => {
 									rateable: undefined,
 								})
 							),
-							quote: message.order.quote,
-							payments: message.order.payments,
+							quote: message?.order?.quote,
+							payments: message?.order?.payments,
 							documents: [
 								{
 									url: "https://invoice_url",
 									label: "INVOICE",
 								},
 							],
-							created_at: message.order.created_at,
-							updated_at: message.order.updated_at,
+							created_at: message?.order?.created_at,
+							updated_at: message?.order?.updated_at,
 						},
 					};
 
 					switch (nextStatus) {
 						case "IN_TRANSIT":
-							responseMessage.order.fulfillments.forEach(
+							responseMessage?.order?.fulfillments?.forEach(
 								(fulfillment: Fulfillment) => {
-									fulfillment.stops.forEach((stop: Stop) =>
+									fulfillment?.stops?.forEach((stop: Stop) =>
 										stop?.authorization
 											? (stop.authorization = undefined)
 											: undefined
@@ -121,10 +122,10 @@ export const sendUpsolicieatedOnStatus = async () => {
 							);
 							break;
 						case "AT_LOCATION":
-							responseMessage.order.fulfillments.forEach(
+							responseMessage?.order?.fulfillments.forEach(
 								(fulfillment: Fulfillment) => {
 									fulfillment.state.descriptor.code = "AT_LOCATION";
-									fulfillment.stops.forEach((stop: Stop) =>
+									fulfillment?.stops?.forEach((stop: Stop) =>
 										stop?.authorization
 											? (stop.authorization = {
 													...stop.authorization,
@@ -136,21 +137,21 @@ export const sendUpsolicieatedOnStatus = async () => {
 							);
 							break;
 						case "COLLECTED_BY_AGENT":
-							responseMessage.order.fulfillments.forEach(
+							responseMessage?.order?.fulfillments.forEach(
 								(fulfillment: Fulfillment) => {
 									fulfillment.state.descriptor.code = "COLLECTED_BY_AGENT";
 								}
 							);
 							break;
 						case "RECEIVED_AT_LAB":
-							responseMessage.order.fulfillments.forEach(
+							responseMessage?.order?.fulfillments.forEach(
 								(fulfillment: Fulfillment) => {
 									fulfillment.state.descriptor.code = "RECEIVED_AT_LAB";
 								}
 							);
 							break;
 						case "TEST_COMPLETED":
-							responseMessage.order.fulfillments.forEach(
+							responseMessage?.order?.fulfillments?.forEach(
 								(fulfillment: Fulfillment) => {
 									fulfillment.state.descriptor.code = "TEST_COMPLETED";
 									fulfillment.stops.forEach((stop: Stop) =>
@@ -162,7 +163,7 @@ export const sendUpsolicieatedOnStatus = async () => {
 							);
 							break;
 						case "REPORT_GENERATED":
-							responseMessage.order.fulfillments.forEach(
+							responseMessage?.order?.fulfillments.forEach(
 								(fulfillment: Fulfillment) => {
 									fulfillment.state.descriptor.code = "REPORT_GENERATED";
 								}
@@ -170,7 +171,7 @@ export const sendUpsolicieatedOnStatus = async () => {
 							break;
 						case "REPORT_SHARED":
 							responseMessage.order.status = "Completed";
-							responseMessage.order.fulfillments.forEach(
+							responseMessage?.order?.fulfillments.forEach(
 								(fulfillment: Fulfillment) => {
 									fulfillment.state.descriptor.code = "REPORT_SHARED";
 								}
