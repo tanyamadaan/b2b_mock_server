@@ -5,9 +5,11 @@ import {
 	redisFetchToServer,
 	responseBuilder,
 	send_nack,
+	updateFulfillments,
 } from "../../../lib/utils";
-import { ON_ACTTION_KEY } from "../../../lib/utils/actionOnActionKeys";
+import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
+import { FULFILLMENT_STATES } from "../../../lib/utils/apiConstants";
 
 export const updateController = async (
 	req: Request,
@@ -22,8 +24,9 @@ export const updateController = async (
 				: scenario === "items"
 				? "modifyItems"
 				: "payments";
+
 		const on_confirm = await redisFetchToServer(
-			ON_ACTTION_KEY.ON_CONFIRM,
+			ON_ACTION_KEY.ON_CONFIRM,
 			req.body.context.transaction_id
 		);
 		if (!on_confirm) {
@@ -31,7 +34,7 @@ export const updateController = async (
 		}
 
 		const on_search = await redisFetchToServer(
-			ON_ACTTION_KEY.ON_SEARCH,
+			ON_ACTION_KEY.ON_SEARCH,
 			req.body.context.transaction_id
 		);
 		if (!on_search) {
@@ -41,16 +44,17 @@ export const updateController = async (
 		const providersItems = on_search?.message?.catalog?.providers[0];
 		req.body.providersItems = providersItems;
 
+		//UPDATE FULFILLMENTS HERE BECAUSE It IS SAME FOR ALL SACENRIOS
+		const updatedFulfillments = updateFulfillments(
+			req?.body?.message?.order?.fulfillments,
+			ON_ACTION_KEY?.ON_UPDATE
+		);
+		req.body.message.order.fulfillments = updatedFulfillments;
 		req.body.on_confirm = on_confirm;
+
 		switch (scenario) {
 			case "payments":
 				updatePaymentController(req, res, next);
-				break;
-			case "requote":
-				updateRequoteController(req, res, next);
-				break;
-			case "reschedule":
-				updateRescheduleController(req, res, next);
 				break;
 			case "modifyItems":
 				updateRescheduleAndItemsController(req, res, next);
@@ -73,14 +77,16 @@ export const updateRequoteController = (
 	try {
 		const { context, message, on_confirm } = req.body;
 		//CREATED COMMON RESPONSE MESSAGE FOR ALL SCENRIO AND UPDATE ACCORDENGLY IN FUNCTIONS
+
 		const responseMessages = {
 			order: {
-				id: on_confirm?.message?.order.id,
-				status: "Pending",
+				...message.order,
+				id: uuidv4(),
+				status: FULFILLMENT_STATES.PENDING,
+				ref_order_ids: [on_confirm?.message?.order?.id],
 				provider: {
 					id: on_confirm?.message?.order?.provider.id,
 				},
-				...on_confirm?.message?.order,
 			},
 		};
 
@@ -90,9 +96,11 @@ export const updateRequoteController = (
 			context,
 			responseMessages,
 			`${req.body.context.bap_uri}${
-				req.body.context.bap_uri.endsWith("/") ? "on_update" : "/on_update"
+				req.body.context.bap_uri.endsWith("/")
+					? ON_ACTION_KEY.ON_UPDATE
+					: `/${ON_ACTION_KEY.ON_UPDATE}`
 			}`,
-			`on_update`,
+			`${ON_ACTION_KEY.ON_UPDATE}`,
 			"healthcare-service"
 		);
 	} catch (error) {
@@ -117,52 +125,6 @@ export const updatePaymentController = (
 	});
 };
 
-//HANDLE FULFILLMENT TARGET (TIME SLOT RESCHEDULE)
-export const updateRescheduleController = (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
-	try {
-		const {
-			context,
-			message: { order },
-		} = req.body;
-
-		const responseMessage = {
-			order: {
-				...order,
-				fulfillments: [
-					{
-						...order.fulfillments[0],
-						stops: order.fulfillments[0].stops.map((stop: any) => ({
-							...stop,
-							time:
-								stop.type === "end"
-									? { ...stop.time, label: "selected" }
-									: stop.time,
-						})),
-					},
-				],
-			},
-		};
-
-		return responseBuilder(
-			res,
-			next,
-			context,
-			responseMessage,
-			`${req.body.context.bap_uri}${
-				req.body.context.bap_uri.endsWith("/") ? "on_update" : "/on_update"
-			}`,
-			`on_update`,
-			"healthcare-service"
-		);
-	} catch (error) {
-		next(error);
-	}
-};
-
 //HANDLE FULFILLMENT TARGET (TIME SLOT RESCHEDULE,ITEMS AND PATIENTS)(MODIFY NUMBER OF PATIENTS AND NUMBER OF TEST)
 export const updateRescheduleAndItemsController = (
 	req: Request,
@@ -176,12 +138,13 @@ export const updateRescheduleAndItemsController = (
 			on_confirm,
 			providersItems,
 		} = req.body;
+
 		//UPDATE PAYMENT OBJECT AND QUOTE ACCORDING TO ITEMS AND PERSONS
 		const quote = quoteCreatorHealthCareService(
 			order?.items,
 			providersItems?.items,
 			providersItems?.offers,
-			order?.fulfillments[0]?.type,
+			order?.fulfillments[0]?.type
 		);
 
 		//UPDATE PAYMENT OBJECT ACCORDING TO QUANTITY
@@ -189,36 +152,39 @@ export const updateRescheduleAndItemsController = (
 			order?.payments,
 			quote?.price?.value
 		);
+
 		const responseMessage = {
 			order: {
 				...order,
+				id: uuidv4(),
 				ref_order_ids: [on_confirm?.message?.order?.id],
-				fulfillments: [
-					{
-						...order.fulfillments[0],
-						stops: order.fulfillments[0].stops.map((stop: any) => ({
-							...stop,
-							time:
-								stop.type === "end"
-									? { ...stop.time, label: "selected" }
-									: stop.time,
-						})),
-					},
-				],
+				// fulfillments: [
+				// 	{
+				// 		...order.fulfillments[0],
+				// 		stops: order.fulfillments[0].stops.map((stop: any) => ({
+				// 			...stop,
+				// 			time:
+				// 				stop.type === "end"
+				// 					? { ...stop.time, label: "selected" }
+				// 					: stop.time,
+				// 		})),
+				// 	},
+				// ],
 				payments: updatedPaymentObj,
 				quote,
 			},
 		};
-
 		return responseBuilder(
 			res,
 			next,
 			context,
 			responseMessage,
 			`${req.body.context.bap_uri}${
-				req.body.context.bap_uri.endsWith("/") ? "on_update" : "/on_update"
+				req.body.context.bap_uri.endsWith("/")
+					? ON_ACTION_KEY.ON_UPDATE
+					: `/${ON_ACTION_KEY.ON_UPDATE}`
 			}`,
-			`on_update`,
+			`${ON_ACTION_KEY.ON_UPDATE}`,
 			"healthcare-service"
 		);
 	} catch (error) {

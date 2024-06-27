@@ -12,6 +12,16 @@ export const SERVICES_DOMAINS = {
 	HEALTHCARE_SERVICES: "ONDC:SRV13",
 };
 
+export const ORDER_STATUS = {
+	ACCEPTED:"Accepted",
+	CANCELLED: "Cancelled"
+}
+
+export const ORDER_CACELLED_BY = {
+	CONSUMER: "CONSUMER",
+	MERCHANT: "MERCHANT"
+}
+
 export const AGRI_HEALTHCARE_STATUS = [
 	"IN_TRANSIT",
 	"AT_LOCATION",
@@ -46,7 +56,8 @@ export const FULFILLMENT_LABELS = {
 export const FULFILLMENT_STATES = {
 	SERVICEABLE: "Serviceable",
 	PENDING: "Pending",
-	REJECTED: "rejected",
+	CANCELLED: "Cancelled",
+	COMPLETED: "Completed",
 };
 
 export const SCENARIO = {
@@ -88,6 +99,7 @@ export const FULFILLMENT_START = {
 };
 
 export const FULFILLMENT_END = {
+
 	location: {
 		gps: "12.974002,77.613458",
 		address: "My House #, My buildin",

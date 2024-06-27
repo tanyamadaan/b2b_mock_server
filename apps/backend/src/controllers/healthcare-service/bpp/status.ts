@@ -4,14 +4,12 @@ import { AGRI_HEALTHCARE_STATUS } from "../../../lib/utils/apiConstants";
 import {
 	Fulfillment,
 	Stop,
-	findIncompleteOnConfirmCalls,
-	redis,
 	redisExistFromServer,
 	redisFetchFromServer,
 	responseBuilder,
-	sendStatusAxiosCall,
 	send_nack,
 } from "../../../lib/utils";
+import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 
 export const statusController = async (
 	req: Request,
@@ -20,9 +18,7 @@ export const statusController = async (
 ) => {
 	try {
 		let scenario: string = String(req.query.scenario) || "";
-
 		const { transaction_id } = req.body.context;
-
 		const on_confirm_data = await redisFetchFromServer(
 			"on_confirm",
 			transaction_id
@@ -54,10 +50,10 @@ const statusRequest = async (
 ) => {
 	try {
 		const { context, message } = transaction;
-		context.action = "on_status";
+		context.action = ON_ACTION_KEY.ON_STATUS;
 
 		const on_status = await redisFetchFromServer(
-			"on_status",
+			ON_ACTION_KEY.ON_STATUS,
 			req.body.context.transaction_id
 		);
 
@@ -220,9 +216,9 @@ const statusRequest = async (
 			req.body.context,
 			responseMessage,
 			`${req.body.context.bap_uri}${
-				req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+				req.body.context.bap_uri.endsWith("/") ? ON_ACTION_KEY.ON_STATUS : `/${ON_ACTION_KEY.ON_STATUS}`
 			}`,
-			`on_status`,
+			`${ON_ACTION_KEY.ON_STATUS}`,
 			"healthcare-service"
 		);
 	} catch (error) {

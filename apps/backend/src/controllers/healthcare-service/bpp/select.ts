@@ -17,7 +17,7 @@ import {
 	updateFulfillments,
 } from "../../../lib/utils";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
-import { ON_ACTTION_KEY } from "../../../lib/utils/actionOnActionKeys";
+import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 
 export const selectController = async (
 	req: Request,
@@ -26,7 +26,7 @@ export const selectController = async (
 ) => {
 	try {
 		const on_search = await redisFetchFromServer(
-			"on_search",
+			ON_ACTION_KEY.ON_SEARCH,
 			req.body.context.transaction_id
 		);
 
@@ -60,7 +60,7 @@ const selectConsultationConfirmController = (
 	try {
 		const { context, message, providersItems } = req.body;
 		const { locations, ...provider } = message.order.provider;
-		const updatedFulfillments = updateFulfillments(message?.order?.fulfillments, ON_ACTTION_KEY?.ON_SELECT)
+		const updatedFulfillments = updateFulfillments(message?.order?.fulfillments, ON_ACTION_KEY?.ON_SELECT)
 
 		const responseMessage = {
 			order: {
@@ -91,9 +91,9 @@ const selectConsultationConfirmController = (
 			next,
 			context,
 			responseMessage,
-			`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
+			`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? ON_ACTION_KEY.ON_SELECT : `/${ON_ACTION_KEY.ON_SELECT}`
 			}`,
-			`on_select`,
+			`${ON_ACTION_KEY.ON_SELECT}`,
 			"healthcare-service"
 		);
 	} catch (error) {
@@ -108,7 +108,7 @@ const selectMultiCollectionController = (
 ) => {
 	try {
 		const { context, message, providersItems } = req.body;
-		const updatedFulfillments = updateFulfillments(req.body?.message?.order?.fulfillments, ON_ACTTION_KEY?.ON_SELECT, "multi_collection")
+		const updatedFulfillments = updateFulfillments(req.body?.message?.order?.fulfillments, ON_ACTION_KEY?.ON_SELECT, "multi_collection")
 
 		const { locations, ...provider } = message.order.provider;
 
@@ -141,8 +141,8 @@ const selectMultiCollectionController = (
 			next,
 			context,
 			responseMessage,
-			`${context.bap_uri}/on_select`,
-			`on_select`,
+			`${context.bap_uri}/${ON_ACTION_KEY.ON_SELECT}`,
+			`${ON_ACTION_KEY.ON_SELECT}`,
 			"healthcare-service"
 		);
 	} catch (error) {

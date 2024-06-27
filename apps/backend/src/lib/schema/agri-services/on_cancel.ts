@@ -389,7 +389,7 @@ export const onCancelSchema = {
                     },
                   },
                 },
-                required: ["id", "type", "tracking", "state", "stops"],
+                required: ["id", "type", "state", "stops"],
               },
             },
             quote: {

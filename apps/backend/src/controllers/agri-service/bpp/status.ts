@@ -10,6 +10,8 @@ import {
   responseBuilder,
   send_nack,
 } from "../../../lib/utils";
+import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
+import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 
 export const statusController = async (
   req: Request,
@@ -21,15 +23,15 @@ export const statusController = async (
     const { transaction_id } = req.body.context;
   
     const on_confirm_data = await redisFetchFromServer(
-      "on_confirm",
+      ON_ACTION_KEY.ON_CONFIRM,
       transaction_id
     ); //from
     if (!on_confirm_data) {
-      return send_nack(res, "on confirm doesn't exist");
+      return send_nack(res, ERROR_MESSAGES.ON_CONFIRM_DOES_NOT_EXISTED);
     }
   
     const on_cancel_exist = await redisExistFromServer(
-      "on_cancel",
+      ON_ACTION_KEY.ON_CANCEL,
       transaction_id
     );
     if (on_cancel_exist) {
@@ -50,8 +52,8 @@ const statusRequest = async (
 ) => {
 try{
   const { context, message } = transaction;
-  context.action = "on_status";
-  const on_status = await redisFetchFromServer("on_status", req.body.context.transaction_id);
+  context.action = ON_ACTION_KEY.ON_STATUS;
+  const on_status = await redisFetchFromServer(ON_ACTION_KEY.ON_STATUS, req.body.context.transaction_id);
 
   let next_status = scenario;
   if (on_status) {
@@ -131,7 +133,6 @@ try{
     },
   };
 
-  console.log("next scenario",scenario)
   switch (scenario) {
     case "IN_TRANSIT":
       responseMessage.order.fulfillments.forEach((fulfillment: Fulfillment) => {
@@ -191,9 +192,9 @@ try{
     next,
     req.body.context,
     responseMessage,
-    `${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+    `${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? ON_ACTION_KEY.ON_STATUS : `/${ON_ACTION_KEY.ON_STATUS}`
     }`,
-    `on_status`,
+    `${ON_ACTION_KEY.ON_STATUS}`,
     "agri-services"
   );
 }catch(error){

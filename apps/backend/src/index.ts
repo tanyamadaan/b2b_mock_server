@@ -62,6 +62,8 @@ app.use("/services", errorHandlingWrapper(servicesRouter));
 app.use("/agri-services", errorHandlingWrapper(agriServiceRouter));
 app.use("/healthcare-services", errorHandlingWrapper(healthCareServiceRouter));
 
+
+
 app.use("/detect_app_installation", (req: Request, res: Response) => {
 	const headers = req.headers;
 	return res.json({
@@ -73,7 +75,7 @@ app.use(globalErrorHandler);
 //Schedule the function to run every 30 seconds using node-cron
 cron.schedule("*/30 * * * * *", async () => {
 	try {
-		// await sendUpsolicieatedOnStatus();
+		await sendUpsolicieatedOnStatus();
 	} catch (error) {
 		console.log("error occured in cron");
 	}

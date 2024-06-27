@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { responseBuilder, updateFulfillments } from "../../../lib/utils";
-import { ON_ACTTION_KEY } from "../../../lib/utils/actionOnActionKeys";
+import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
+import { ORDER_STATUS } from "../../../lib/utils/apiConstants";
 
 export const confirmController = (
 	req: Request,
@@ -28,38 +29,13 @@ export const confirmConsultationController = (
 		const { fulfillments } = order;
 		const updatedFulfillments = updateFulfillments(
 			fulfillments,
-			ON_ACTTION_KEY?.ON_CONFIRM
+			ON_ACTION_KEY?.ON_CONFIRM
 		);
-
-		console.log("updatedFulfillmentsssssssssss",updatedFulfillments)
-		// fulfillments[0].stops.push({
-		// 	type: "start",
-		// 	location: {
-		// 		id: "L1",
-		// 		descriptor: {
-		// 			name: "ABC Store"
-		// 		},
-		// 		gps: "12.956399,77.636803"
-		// 	},
-		// 	time: {
-		// 		range: {
-		// 			start: new Date(rangeStart).toISOString(),
-		// 			end: new Date(rangeEnd).toISOString()
-		// 		}
-		// 	},
-		// 	contact: {
-		// 		phone: "9886098860",
-		// 		email: "nobody@nomail.com"
-		// 	},
-		// 	person: {
-		// 		name: "Kishan"
-		// 	}
-		// })
 
 		const responseMessage = {
 			order: {
 				...order,
-				status: "Accepted",
+				status: ORDER_STATUS.ACCEPTED,
 				fulfillments: updatedFulfillments,
 				provider: {
 					...order.provider,
@@ -74,9 +50,9 @@ export const confirmConsultationController = (
 			context,
 			responseMessage,
 			`${req.body.context.bap_uri}${
-				req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
+				req.body.context.bap_uri.endsWith("/") ? ON_ACTION_KEY.ON_CONFIRM : `/${ON_ACTION_KEY.ON_CONFIRM}`
 			}`,
-			`on_confirm`,
+			`${ON_ACTION_KEY.ON_CONFIRM}`,
 			"healthcare-service"
 		);
 	} catch (error) {

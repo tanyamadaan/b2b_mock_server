@@ -12,9 +12,7 @@ import { createAuthHeader } from "./responseAuth";
 import { logger } from "./logger";
 import { TransactionType, redis } from "./redis";
 import { AxiosError } from "axios";
-import { redisFetchFromServer } from "./redisFetch";
-import { send_nack } from "./send_response";
-import { ON_ACTTION_KEY } from "./actionOnActionKeys";
+import { ON_ACTION_KEY } from "./actionOnActionKeys";
 import {
 	FULFILLMENT_END,
 	FULFILLMENT_LABELS,
@@ -1006,21 +1004,19 @@ export const updateFulfillments = (
 			}),
 		};
 
-		// Always push the initial fulfillmentObj
-		updatedFulfillments.push(fulfillmentObj);
-
-		if (scenario === SCENARIO.MULTI_COLLECTION) {
-			updatedFulfillments.push({
-				...fulfillmentObj,
-				id: "F2",
-			});
-		}
-
 		switch (action) {
-			case ON_ACTTION_KEY.ON_INIT:
-				// Add your logic for ON_INIT
+			case ON_ACTION_KEY.ON_SELECT:
+				// Always push the initial fulfillmentObj
+				updatedFulfillments.push(fulfillmentObj);
+				if (scenario === SCENARIO.MULTI_COLLECTION) {
+					updatedFulfillments.push({
+						...fulfillmentObj,
+						id: "F2",
+					});
+				}
 				break;
-			case ON_ACTTION_KEY.ON_CONFIRM:
+			case ON_ACTION_KEY.ON_CONFIRM:
+				updatedFulfillments = fulfillments;
 				// Add your logic for ON_CONFIRM
 				updatedFulfillments = updatedFulfillments.map((fulfill: any) => {
 					(fulfill.state = {
@@ -1028,23 +1024,25 @@ export const updateFulfillments = (
 							code: FULFILLMENT_STATES.PENDING,
 						},
 					}),
-
-					fulfill.stops.push({
-						type: "start",
-						...FULFILLMENT_START,
-						time: {
-							range: {
-								start: new Date(rangeStart).toISOString(),
-								end: new Date(rangeEnd).toISOString(),
+						fulfill.stops.push({
+							type: "start",
+							...FULFILLMENT_START,
+							time: {
+								range: {
+									start: new Date(rangeStart).toISOString(),
+									end: new Date(rangeEnd).toISOString(),
+								},
 							},
-						},
-					}),
-					(
+						}),
 						(fulfill.stops = fulfill?.stops?.map((ele: any) => {
 							if (ele?.type === "end") {
 								ele = {
 									...ele,
 									...FULFILLMENT_END,
+									time:{
+										...ele.time,
+										label:FULFILLMENT_LABELS.CONFIRMED
+									},
 									person:
 										ele.customer && ele.customer.person
 											? ele.customer.person
@@ -1052,19 +1050,40 @@ export const updateFulfillments = (
 								};
 							}
 							return ele;
-						}))
-					),
+						})),
 						(fulfill.rateable = true);
 					return fulfill;
 				});
-
-				console.log("on confirm fulfillments", updatedFulfillments);
 				break;
-			case ON_ACTTION_KEY.ON_UPDATE:
-				// Add your logic for ON_UPDATE
+			case ON_ACTION_KEY.ON_CANCEL:
+				updatedFulfillments = fulfillments;
+				updatedFulfillments = updatedFulfillments.map((fulfillment: any) => ({
+					...fulfillment,
+					state: {
+						...fulfillment.state,
+						descriptor: {
+							code: FULFILLMENT_STATES.CANCELLED,
+						},
+					},
+					rateable: undefined,
+				}));
+				break;
+			case ON_ACTION_KEY.ON_UPDATE:
+				updatedFulfillments = fulfillments;
+				updatedFulfillments = updatedFulfillments.map((fulfillment: any) => ({
+					...fulfillment,
+					state: {
+						...fulfillment.state,
+						descriptor: {
+							code: FULFILLMENT_STATES.COMPLETED,
+						},
+					},
+					rateable: true,
+				}));
 				break;
 			default:
 				// Add your default logic if any
+				updatedFulfillments = fulfillments;
 				break;
 		}
 		return updatedFulfillments;

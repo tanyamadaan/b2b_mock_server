@@ -9,12 +9,11 @@ import {
   createAuthHeader,
   redis,
   redisFetchToServer,
-  MOCKSERVER_ID,
   HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL,
   HEALTHCARE_SERVICES_EXAMPLES_PATH,
 } from "../../../lib/utils";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
-import { ON_ACTTION_KEY } from "../../../lib/utils/actionOnActionKeys";
+import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 
 export const initiateUpdateController = async (
   req: Request,
@@ -23,12 +22,12 @@ export const initiateUpdateController = async (
 ) => {
   try {
     let { scenario, update_target, transactionId } = req.body;
-    const on_confirm = await redisFetchToServer(ON_ACTTION_KEY.ON_CONFIRM, transactionId);
+    const on_confirm = await redisFetchToServer(ON_ACTION_KEY.ON_CONFIRM, transactionId);
     if (!on_confirm) {
       return send_nack(res, ERROR_MESSAGES.ON_CONFIRM_DOES_NOT_EXISTED);
     }
     on_confirm.context.bpp_uri = HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
-    update_target = update_target ? update_target : "payments"
+    // update_target = update_target ? update_target : "payments"
 
     let { context, message } = on_confirm;
     const timestamp = new Date().toISOString();
@@ -37,11 +36,11 @@ export const initiateUpdateController = async (
     let responseMessage: any;
     // Need to reconstruct this logic
 
-    scenario = scenario ? scenario : update_target === "fulfillments" ? "reschedule" : update_target === "items" ? "modifyItems" : "payments"
+    scenario = update_target?update_target:"payments"
 
     if (scenario === "payments") {
       //FETCH ON UPDATE IF UPDATE PAYMENT FLOW COME
-      const on_update = await redisFetchToServer(ON_ACTTION_KEY.ON_UPDATE, transactionId);
+      const on_update = await redisFetchToServer(ON_ACTION_KEY.ON_UPDATE, transactionId);
       if (!on_update) {
         return send_nack(res, ERROR_MESSAGES.ON_SEARCH_DOES_NOT_EXISTED)
       }
@@ -52,10 +51,10 @@ export const initiateUpdateController = async (
       case "payments":
         responseMessage = updatePaymentController(message, update_target);
         break;
-      case "reschedule":
+      case "fulfillments":
         responseMessage = rescheduleRequest(message, update_target);
         break;
-      case "modifyItems":
+      case "items":
         responseMessage = modifyItemsRequest(message, update_target);
         break;
       default:

@@ -3,10 +3,7 @@ import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 import {
-	SERVICES_EXAMPLES_PATH,
-	checkIfCustomized,
 	quoteCreatorHealthCareService,
-	quoteCreatorServiceCustomized,
 	responseBuilder,
 	send_nack,
 	redisExistFromServer,
@@ -14,21 +11,21 @@ import {
 	redisFetchFromServer,
 	updateFulfillments,
 } from "../../../lib/utils";
-import { ON_ACTTION_KEY } from "../../../lib/utils/actionOnActionKeys";
+import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 
 
 export const initController = async (req: Request, res: Response, next: NextFunction) => {
 	try{
 		const { transaction_id } = req.body.context;
-		const on_search = await redisFetchFromServer(ON_ACTTION_KEY.ON_SEARCH, transaction_id);
+		const on_search = await redisFetchFromServer(ON_ACTION_KEY.ON_SEARCH, transaction_id);
 		if (!on_search) {
 			return send_nack(res, ERROR_MESSAGES.ON_SEARCH_DOES_NOT_EXISTED)
 		}
 		const providersItems = on_search?.message?.catalog?.providers[0]?.items;
 		req.body.providersItems = providersItems
 
-		const exit = await redisExistFromServer(ON_ACTTION_KEY.ON_SELECT, transaction_id)
+		const exit = await redisExistFromServer(ON_ACTION_KEY.ON_SELECT, transaction_id)
 		if (!exit) {
 			return send_nack(res, ERROR_MESSAGES.ON_SELECT_DOES_NOT_EXISTED)
 		}
@@ -43,7 +40,8 @@ const initConsultationController = (req: Request, res: Response, next: NextFunct
 	try{
 		const { context, providersItems, message: { order: { provider, items, billing, fulfillments, payments } } } = req.body;
 		const { locations, ...remainingProvider } = provider	
-		const updatedFulfillments = updateFulfillments(fulfillments, ON_ACTTION_KEY?.ON_INIT);
+
+		const updatedFulfillments = updateFulfillments(fulfillments, ON_ACTION_KEY?.ON_INIT);
 
 		const file = fs.readFileSync(
 			path.join(HEALTHCARE_SERVICES_EXAMPLES_PATH, "on_init/on_init.yaml")
@@ -74,16 +72,16 @@ const initConsultationController = (req: Request, res: Response, next: NextFunct
 				}],
 			}
 		}
-	
+
 		delete req.body?.providersItems
 		return responseBuilder(
 			res,
 			next,
 			context,
 			responseMessage,
-			`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_init" : "/on_init"
+			`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? ON_ACTION_KEY.ON_INIT: `/${ON_ACTION_KEY.ON_INIT}`
 			}`,
-			`on_init`,
+			`${ON_ACTION_KEY.ON_INIT}`,
 			"healthcare-service"
 		);
 	}catch(error){

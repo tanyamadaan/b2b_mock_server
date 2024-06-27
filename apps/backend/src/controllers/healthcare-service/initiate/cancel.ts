@@ -5,7 +5,7 @@ import {
 	send_nack,
 	redisFetchToServer,
 } from "../../../lib/utils";
-import { ACTTION_KEY, ON_ACTTION_KEY } from "../../../lib/utils/actionOnActionKeys";
+import { ACTTION_KEY, ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 
 
@@ -16,7 +16,7 @@ export const initiateCancelController = async (
 ) => {
 	try{
 		const { transactionId, orderId, cancellationReasonId } = req.body;
-		const on_confirm = await redisFetchToServer(ON_ACTTION_KEY.ON_CONFIRM, transactionId);
+		const on_confirm = await redisFetchToServer(ON_ACTION_KEY.ON_CONFIRM, transactionId);
 		if (!on_confirm) {
 			return send_nack(res, ERROR_MESSAGES.ON_CONFIRM_DOES_NOT_EXISTED)
 		}

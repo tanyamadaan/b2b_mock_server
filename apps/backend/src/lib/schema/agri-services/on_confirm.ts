@@ -375,7 +375,7 @@ export const onConfirmSchema = {
                   "state",
                   "type",
                   "stops",
-                  "tracking",
+                  // "tracking",
                   "rateable",
                 ],
               },
