@@ -58,9 +58,6 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 		)}/${action}?mode=mock`;
 		if (activeScenario?.scenario)
 			url = url + `&scenario=${activeScenario?.scenario}`;
-
-		// console.log("Form Values", log, activeScenario, url);
-
 		setCurl(`curl -X POST \\
 		  ${url} \\
 		-H 'accept: application/json' \\
@@ -74,6 +71,7 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 			});
 			console.log("RESPONSE", response)
 			setSyncResponse(response.data.sync);
+			
 			setAsyncResponse(response.data.async || {});
 		} catch (error) {
 			console.log("ERROR Occured while pinging backend:", error);

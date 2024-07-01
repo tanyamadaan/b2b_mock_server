@@ -62,6 +62,7 @@ export const InitiateRequestSection = ({
 	const handleFieldChange = (fieldName: string, value: string | object) => {
 		setFormState((prev) => ({ ...prev, [fieldName]: value }));
 	};
+	
 	useEffect(() => {
 		if (action) {
 			const keys = Object.keys(formState || {});
@@ -118,7 +119,6 @@ export const InitiateRequestSection = ({
 			}
 		} catch (error:any) {
 			setMessageType("error");
-			console.log("error.response?.data?.error?.message",error.response?.data?.error?.message)
 			if (error instanceof AxiosError && error.response?.data?.error?.message.error?.message)
 				handleMessageToggle(
 					error.response?.data?.error?.message.error?.message === "string"?error.response?.data?.error?.message.error?.message:"Error Occurred while initiating request!"
