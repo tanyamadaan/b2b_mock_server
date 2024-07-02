@@ -19,18 +19,19 @@ import { URL_MAPPING } from "../utils";
 import axios, { AxiosError } from "axios";
 import { UserGuide } from "./UserGuideSection";
 
-type MockRequestSectionProp = {
-	domain: string;
-};
+// type MockRequestSectionProp = {
+// 	domain: string;
+// };
 
-export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
+export const MockRequestSection = () => {
+
 	const [log, setLog] = useState<string>();
 	const [showCurl, setShowCurl] = useState(false);
 	const [activeScenario, setActiveScenario] = useState<{
 		name: string;
 		scenario: string;
 	}>();
-	const { action, detectAction, logError, scenarios } = useAction(domain);
+	const { action, detectAction,domain, logError, scenarios } = useAction();
 	const { setAsyncResponse, setSyncResponse } = useMock();
 
 	useEffect(() => {
@@ -90,7 +91,7 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 					elevation={5}
 				>
 					<Stack spacing={2} justifyContent="center" alignItems="center">
-						<Typography variant="h5">Domain: {domain}</Typography>
+						<Typography variant="h5">Mock Server</Typography>
 						<FormControl error={logError} sx={{ width: "100%" }}>
 							<Textarea
 								minRows={10}
@@ -178,7 +179,7 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 					</Stack>
 				</Paper>
 			</Fade>
-			<UserGuide domain={domain} />
+			<UserGuide/>
 			<CurlDisplay slideIn={showCurl} curl={curl} />
 		</>
 	);

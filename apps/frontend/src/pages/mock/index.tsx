@@ -12,7 +12,7 @@ export const Mock = () => {
 			<Container sx={{ py: 2 }}>
 				<Grid container spacing={2}>
 					<Grid item xs={12} lg={8}>
-					<MockRequestSection domain='B2B'/>
+					<MockRequestSection/>
 						<Outlet />
 					</Grid>
 					<Grid container item xs={12} lg={4} spacing={2}>

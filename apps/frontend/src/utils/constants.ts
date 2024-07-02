@@ -53,12 +53,27 @@ export const AGRI_SERVICES_DOMAINS = [
 export const HEALTHCARE_SERVICES_DOMAINS = [
 	"ONDC:SRV13",
 ]
+
+export const ALL_DOMAINS_FRONTEND={
+	SERVICES_DOMAINS:"ONDC:SRV11",
+	AGRI_SERVICES_DOMAINS:	"ONDC:SRV14",
+	HEALTHCARE_SERVICES_DOMAINS:"ONDC:SRV13"
+}
+
+export const ALL_DOMAINS_NAME	=[
+	"b2b",
+	"services",
+	"agri-services",
+	"healthcare-services"
+]
+
 export const CITY_CODE = [
 	"std:080",
 	"std:011"
 ]
 
 export const INITIATE_FIELDS = {
+
 	search: [
 		{
 			name: "bpp_uri",
@@ -66,8 +81,17 @@ export const INITIATE_FIELDS = {
 			type: "text",
 		},
 		{
+			name: "service_name",
+			placeholder: "Select Service...",
+			type: "select",
+			domainDepended: false,
+			options: ALL_DOMAINS_NAME
+		},
+
+		//DEPEND ON SELECTED SERVICES
+		{
 			name: "domain",
-			placeholder: "Select domain...",
+			placeholder: "Select Domain...",
 			type: "select",
 			domainDepended: true,
 			options: {
@@ -85,6 +109,7 @@ export const INITIATE_FIELDS = {
 			options: CITY_CODE,
 		},
 	],
+
 	select: [
 		{
 			name: "transactionId",
@@ -102,6 +127,7 @@ export const INITIATE_FIELDS = {
 			},
 		},
 	],
+
 	init: [
 		{
 			name: "transactionId",
@@ -119,6 +145,7 @@ export const INITIATE_FIELDS = {
 			},
 		},
 	],
+
 	confirm: [
 		{
 			name: "transactionId",
@@ -135,6 +162,7 @@ export const INITIATE_FIELDS = {
 			},
 		},
 	],
+
 	status: [
 		{
 			name: "transactionId",
@@ -151,6 +179,7 @@ export const INITIATE_FIELDS = {
 			},
 		},
 	],
+
 	update: [
 		{
 			name: "transactionId",
@@ -165,6 +194,7 @@ export const INITIATE_FIELDS = {
 			options: ["payments","fulfillments","items"],
 		},
 	],
+
 	cancel: [
 		{
 			name: "transactionId",
