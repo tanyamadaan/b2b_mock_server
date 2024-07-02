@@ -3,16 +3,16 @@ import path from "path";
 import YAML from "yaml";
 import { NextFunction, Request, Response } from "express";
 import {
-	SERVICES_EXAMPLES_PATH,
-	checkIfCustomized,
 	quoteCreatorAgriService,
-	quoteCreatorServiceCustomized,
 	responseBuilder,
 	send_nack,
 	redisExistFromServer,
 	AGRI_SERVICES_EXAMPLES_PATH,
 	redisFetchFromServer,
+	updateFulfillments,
 } from "../../../lib/utils";
+import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
+import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 
 export const initController = async (
 	req: Request,
@@ -21,18 +21,18 @@ export const initController = async (
 ) => {
 	try {
 		const { transaction_id } = req.body.context;
-		const on_search = await redisFetchFromServer("on_search", transaction_id);
+		const on_search = await redisFetchFromServer(ON_ACTION_KEY.ON_SEARCH, transaction_id);
 
 		if (!on_search) {
-			return send_nack(res, "On search doesn't exist");
+			return send_nack(res, ERROR_MESSAGES.ON_SEARCH_DOES_NOT_EXISTED);
 		}
 		const providersItems = on_search?.message?.catalog?.providers[0]?.items;
 		req.body.providersItems = providersItems;
 
-		const exit = await redisExistFromServer("on_select", transaction_id);
+		const exit = await redisExistFromServer(ON_ACTION_KEY.ON_SELECT, transaction_id);
 
 		if (!exit) {
-			return send_nack(res, "On Select doesn't exist");
+			return send_nack(res, ERROR_MESSAGES.ON_SELECT_DOES_NOT_EXISTED);
 		}
 		return initConsultationController(req, res, next);
 	} catch (error) {
@@ -54,7 +54,7 @@ const initConsultationController = (
 			},
 		} = req.body;
 		const { locations, ...remainingProvider } = provider;
-		const { stops, ...remainingfulfillments } = fulfillments[0];
+		const updatedFulfillments = updateFulfillments(fulfillments, ON_ACTION_KEY?.ON_INIT);
 
 		const file = fs.readFileSync(
 			path.join(AGRI_SERVICES_EXAMPLES_PATH, "on_init/on_init.yaml")
@@ -68,30 +68,7 @@ const initConsultationController = (
 				locations,
 				items,
 				billing,
-				fulfillments: [
-					{
-						...remainingfulfillments,
-						tracking: false,
-						stops: stops.map((stop: any) => {
-							return {
-								...stop,
-								tags: {
-									descriptor: {
-										code: "schedule",
-									},
-									list: [
-										{
-											descriptor: {
-												code: "ttl",
-											},
-											value: "PT1H",
-										},
-									],
-								},
-							};
-						}),
-					},
-				],
+				fulfillments: updatedFulfillments,
 				quote: quoteData,
 				payments: [
 					{
@@ -121,82 +98,12 @@ const initConsultationController = (
 			context,
 			responseMessage,
 			`${req.body.context.bap_uri}${
-				req.body.context.bap_uri.endsWith("/") ? "on_init" : "/on_init"
+				req.body.context.bap_uri.endsWith("/") ? ON_ACTION_KEY.ON_INIT : `/${ON_ACTION_KEY.ON_INIT}`
 			}`,
-			`on_init`,
+			`${ON_ACTION_KEY.ON_INIT}`,
 			"agri-services"
 		);
 	} catch (error) {
 		next(error);
 	}
-};
-
-const initServiceCustomizationController = (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
-	const {
-		context,
-		message: {
-			order: { provider, items, billing, fulfillments, payments },
-		},
-	} = req.body;
-
-	const { locations, ...remainingProvider } = provider;
-	const { stops, ...remainingfulfillments } = fulfillments[0];
-
-	const file = fs.readFileSync(
-		path.join(SERVICES_EXAMPLES_PATH, "on_init/on_init.yaml")
-	);
-	const response = YAML.parse(file.toString());
-	// splice to insert element at index 0
-	stops.splice(0, 0, {
-		type: "start",
-		instructions: {
-			name: "Instuctions by provider",
-			short_desc: "Instuctions by provider",
-			long_desc: "Instuctions by provider",
-			additional_desc: {
-				url: "https//abc.com/checklist",
-				content_type: "text/html",
-			},
-		},
-	});
-	const responseMessage = {
-		order: {
-			provider: remainingProvider,
-			locations,
-			items: items,
-			billing,
-			fulfillments: [
-				{
-					...remainingfulfillments,
-					tracking: false,
-					stops,
-				},
-			],
-			quote: quoteCreatorServiceCustomized(items),
-			payments: [
-				{
-					id: payments[0].id,
-					type: payments[0].type,
-					...response.value.message.order.payments[0],
-				},
-			],
-			xinput: response.value.message.order.xinput,
-		},
-	};
-
-	return responseBuilder(
-		res,
-		next,
-		context,
-		responseMessage,
-		`${req.body.context.bap_uri}${
-			req.body.context.bap_uri.endsWith("/") ? "on_init" : "/on_init"
-		}`,
-		`on_init`,
-		"agri-services"
-	);
 };

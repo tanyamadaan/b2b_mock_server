@@ -1,13 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import { responseBuilder } from "../../../lib/utils";
+import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
+import { FULFILLMENT_LABELS } from "../../../lib/utils/apiConstants";
 
 export const updateController = (req: Request, res: Response, next: NextFunction) => {
 	try{
 		const { scenario } = req.query;
 		switch (scenario) {
-			case "requote":
-				updateRequoteController(req, res, next);
-				break;
 			case "reschedule":
 				updateRescheduleController(req, res, next);
 				break;
@@ -47,7 +46,7 @@ export const updateRescheduleController = (req: Request, res: Response, next: Ne
 					...stop,
 					time:
 						stop.type === "end"
-							? { ...stop.time, label: "selected" }
+							? { ...stop.time, label: FULFILLMENT_LABELS.CONFIRMED }
 							: stop.time,
 				})),
 			},
@@ -59,9 +58,9 @@ export const updateRescheduleController = (req: Request, res: Response, next: Ne
 		next,
 		context,
 		responseMessage,
-		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_update" : "/on_update"
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? ON_ACTION_KEY.ON_UPDATE : `/${ON_ACTION_KEY.ON_UPDATE}`
 		}`,
-		`on_update`,
+		`${ON_ACTION_KEY.ON_UPDATE}`,
 		"agri-services"
 	);
 };

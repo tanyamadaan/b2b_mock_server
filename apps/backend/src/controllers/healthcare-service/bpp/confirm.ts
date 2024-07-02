@@ -1,86 +1,61 @@
 import { NextFunction, Request, Response } from "express";
-import { responseBuilder } from "../../../lib/utils";
+import { responseBuilder, updateFulfillments } from "../../../lib/utils";
+import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
+import { ORDER_STATUS } from "../../../lib/utils/apiConstants";
 
-
-export const confirmController = (req: Request, res: Response, next: NextFunction) => {
-	try{
+export const confirmController = (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
 		confirmConsultationController(req, res, next);
-	}catch(error){
-		return next(error)
+	} catch (error) {
+		return next(error);
 	}
 };
 
+export const confirmConsultationController = (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const {
+			context,
+			message: { order },
+		} = req.body;
 
-export const confirmConsultationController = (req: Request, res: Response, next: NextFunction) => {
-	try{
-		const { context, message: { order } } = req.body;
-		const { fulfillments } = order
-	
-		const rangeStart = new Date().setHours(new Date().getHours() + 2)
-		const rangeEnd = new Date().setHours(new Date().getHours() + 3)
-	
-		fulfillments[0].stops.push({
-			type: "start",
-			location: {
-				id: "L1",
-				descriptor: {
-					name: "ABC Store"
-				},
-				gps: "12.956399,77.636803"
-			},
-			time: {
-				range: {
-					start: new Date(rangeStart).toISOString(),
-					end: new Date(rangeEnd).toISOString()
-				}
-			},
-			contact: {
-				phone: "9886098860",
-				email: "nobody@nomail.com"
-			},
-			person: {
-				name: "Kishan"
-			}
-		})
-	
+		const { fulfillments } = order;
+		const updatedFulfillments = updateFulfillments(
+			fulfillments,
+			ON_ACTION_KEY?.ON_CONFIRM
+		);
+
 		const responseMessage = {
 			order: {
 				...order,
-				status: 'Accepted',
-				fulfillments: [{
-					...fulfillments[0],
-					state: {
-						descriptor: {
-							code: "Pending"
-						}
-					},
-					stops: fulfillments[0].stops.map((itm: any) => ({
-						...itm,
-						person: itm.customer && itm.customer.person ? itm.customer.person : undefined,
-					})),
-					rateable: true,
-				}],
+				status: ORDER_STATUS.ACCEPTED,
+				fulfillments: updatedFulfillments,
 				provider: {
 					...order.provider,
-					rateable: true
-				}
-			}
-		}
-	
+					rateable: true,
+				},
+			},
+		};
+
 		return responseBuilder(
 			res,
 			next,
 			context,
 			responseMessage,
-			`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
+			`${req.body.context.bap_uri}${
+				req.body.context.bap_uri.endsWith("/") ? ON_ACTION_KEY.ON_CONFIRM : `/${ON_ACTION_KEY.ON_CONFIRM}`
 			}`,
-			`on_confirm`,
+			`${ON_ACTION_KEY.ON_CONFIRM}`,
 			"healthcare-service"
 		);
-	}catch(error){
-		next(error)
+	} catch (error) {
+		next(error);
 	}
-	
 };
-
-

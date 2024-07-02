@@ -8,7 +8,7 @@ import {
 	send_nack,
 } from "../../../lib/utils";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
-import { ON_ACTTION_KEY } from "../../../lib/utils/actionOnActionKeys";
+import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 
 export const selectController = async (
 	req: Request,
@@ -17,7 +17,7 @@ export const selectController = async (
 ) => {
 	try {
 		const on_search = await redisFetchFromServer(
-			ON_ACTTION_KEY.ON_SEARCH,
+			ON_ACTION_KEY.ON_SEARCH,
 			req.body.context.transaction_id
 		);
 		if (!on_search) {
@@ -32,10 +32,6 @@ export const selectController = async (
 		const { scenario } = req.query;
 
 		switch (scenario) {
-			// schedule_confirmed, schedule_rejected
-			case "schedule_confirmed":
-				selectConsultationConfirmController(req, res, next);
-				break;
 			case "schedule_rejected":
 				selectConsultationRejectController(req, res, next);
 				break;
@@ -100,8 +96,10 @@ const selectConsultationConfirmController = (
 					})
 				),
 				quote: quoteCreatorHealthCareService(
-					message.order.items,
-					providersItems?.items
+					message?.order?.items,
+					providersItems?.items,
+					"",
+					message?.order?.fulfillments[0]?.type,
 				),
 			},
 		};
@@ -174,9 +172,12 @@ const selectConsultationRejectController = (
 						}),
 					})
 				),
+
 				quote: quoteCreatorHealthCareService(
-					message.order.items,
-					providersItems?.items
+					message?.order?.items,
+					providersItems?.items,
+					"",
+					message?.order?.fulfillments[0]?.type,
 				),
 				error: {
 					code: 90001,
@@ -184,6 +185,7 @@ const selectConsultationRejectController = (
 				},
 			},
 		};
+
 		return responseBuilder(
 			res,
 			next,

@@ -6,7 +6,6 @@ import {
 	send_response,
 	send_nack,
 	redisFetchToServer,
-	HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL,
 } from "../../../lib/utils";
 
 export const initiateConfirmController = async (

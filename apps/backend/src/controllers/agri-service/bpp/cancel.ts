@@ -1,22 +1,26 @@
 import { NextFunction, Request, Response } from "express";
-import { responseBuilder, redisFetchFromServer, send_nack } from "../../../lib/utils";
+import { responseBuilder, redisFetchFromServer, send_nack, updateFulfillments } from "../../../lib/utils";
+import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
+import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
+import { ORDER_CACELLED_BY, ORDER_STATUS } from "../../../lib/utils/apiConstants";
 
 export const cancelController = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const { scenario } = req.query;
 		const { transaction_id } = req.body.context;
 
-		const on_confirm_data = await redisFetchFromServer("on_confirm", transaction_id)
+		const on_confirm_data = await redisFetchFromServer(ON_ACTION_KEY.ON_CONFIRM, transaction_id)
 		if (!on_confirm_data) {
-			return send_nack(res, "on confirm doesn't exist")
+			return send_nack(res, ERROR_MESSAGES.ON_CONFIRM_DOES_NOT_EXISTED)
 		}
-		if (on_confirm_data.message.order.id != req.body.message.order_id) {
-			return send_nack(res, "Order id does not exist")
+		if (on_confirm_data?.message.order.id != req.body?.message?.order_id) {
+			return send_nack(res, ERROR_MESSAGES.ORDER_ID_DOES_NOT_EXISTED)
 		}
 
-		const on_search_data = await redisFetchFromServer("on_search", transaction_id)
-		const item_measure_ids = on_search_data.message.catalog.providers[0].items.reduce((accumulator: any, currentItem: any) => {
-			accumulator[currentItem.id] = currentItem.quantity ? currentItem.quantity.unitized.measure : undefined;
+		const on_search_data = await redisFetchFromServer(ON_ACTION_KEY.ON_SEARCH, transaction_id);
+
+		const item_measure_ids = on_search_data?.message?.catalog?.providers[0].items.reduce((accumulator: any, currentItem: any) => {
+			accumulator[currentItem.id] = currentItem?.quantity ? currentItem?.quantity?.unitized?.measure : undefined;
 			return accumulator;
 		}, {});
 
@@ -31,12 +35,13 @@ export const cancelController = async (req: Request, res: Response, next: NextFu
 const cancelRequest = async (req: Request, res: Response, next: NextFunction, transaction: any, scenario: any) => {
 	try {
 		const { context } = req.body;
+		const updatedFulfillments = updateFulfillments(transaction.message.order.fulfillments, ON_ACTION_KEY?.ON_CANCEL);
 		const responseMessage = {
 			order: {
 				id: req.body.message.order_id,
-				status: "Cancelled",
+				status: ORDER_STATUS.CANCELLED,
 				cancellation: {
-					cancelled_by: "CONSUMER",
+					cancelled_by: ORDER_CACELLED_BY.CONSUMER,
 					reason: {
 						descriptor: {
 							code: req.body.message.cancellation_reason_id
@@ -55,16 +60,7 @@ const cancelRequest = async (req: Request, res: Response, next: NextFunction, tr
 					}
 				})),
 				quote: transaction.message.order.quote,
-				fulfillments: transaction.message.order.fulfillments.map((fulfillment: any) => ({
-					...fulfillment,
-					state: {
-						...fulfillment.state,
-						descriptor: {
-							code: "Cancelled"
-						}
-					},
-					rateable: undefined
-				})),
+				fulfillments: updatedFulfillments,
 				billing: transaction.message.order.billing,
 				payments: transaction.message.order.payments.map((itm: any) => ({
 					...itm,
@@ -80,9 +76,9 @@ const cancelRequest = async (req: Request, res: Response, next: NextFunction, tr
 			next,
 			context,
 			responseMessage,
-			`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_cancel" : "/on_cancel"
+			`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? ON_ACTION_KEY.ON_CANCEL : `/${ON_ACTION_KEY.ON_CANCEL}`
 			}`,
-			`on_cancel`,
+			`${ON_ACTION_KEY.ON_CANCEL}`,
 			"agri-services",
 		)
 	} catch (error) {

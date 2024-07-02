@@ -354,7 +354,7 @@ export const confirmSchema = {
                     },
                   },
                 },
-                required: ["id", "type", "tracking", "stops"],
+                required: ["id", "type", "stops"],
               },
             },
             quote: {
@@ -425,7 +425,7 @@ export const confirmSchema = {
                             required: ["currency", "value"],
                           },
                         },
-                        required: ["id", "quantity", "price"],
+                        required: ["id"],
                       },
                     },
                     required: ["title", "price", "item"],
