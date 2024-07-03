@@ -55,12 +55,12 @@ const selectConsultationConfirmController = (
 		const responseMessage = {
 			order: {
 				provider,
-				payments: message.order.payments.map(({ type }: { type: string }) => ({
+				payments: message?.order?.payments && message?.order?.payments.map(({ type }: { type: string }) => ({
 					type,
 					collected_by: "BAP",
 				})),
 
-				items: message.order.items.map(
+				items: message?.order?.items.map(
 					({ ...remaining }: { location_ids: any; remaining: any }) => ({
 						...remaining,
 					})

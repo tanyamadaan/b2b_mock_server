@@ -257,7 +257,7 @@ export const selectSchema = {
               },
             },
           },
-          required: ["provider", "items", "fulfillments", "payments"],
+          required: ["provider", "items", "fulfillments"],
         },
       },
       required: ["order"],
