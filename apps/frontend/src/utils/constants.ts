@@ -55,6 +55,8 @@ export const B2B_DOMAINS = [
 ];
 
 export const ALL_SERVICE_DOMAINS_INITATE = ["Services- ONDC:SRV11", "Healthcare Services- ONDC:SRV13", "Agri Services- ONDC:SRV14"]
+export const ALL_SERVICE_DOMAINS_INITATEs = [{"Services- ONDC:SRV11":"ONDC:SRV11", "Healthcare Services- ONDC:SRV13":"ONDC:SRV13", "Agri Services- ONDC:SRV14":"ONDC:SRV14"}]
+
 export const SERVICES_DOMAINS = ["ONDC:SRV11"];
 
 export const AGRI_SERVICES_DOMAINS = ["ONDC:SRV14"];
@@ -102,6 +104,7 @@ export const INITIATE_FIELDS = {
 				services: ALL_SERVICE_DOMAINS_INITATE
 			},
 		},
+		
 		{
 			name: "city",
 			placeholder: "Select A City",
