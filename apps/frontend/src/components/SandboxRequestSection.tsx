@@ -37,6 +37,7 @@ export const SandboxRequestSection = () => {
 		setSyncResponse(undefined);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
+	
 	const [curl, setCurl] = useState<string>();
 
 	const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

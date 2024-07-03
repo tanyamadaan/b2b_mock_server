@@ -91,7 +91,7 @@ const DOMAIN_NAVS = [
 	{
 		name: "User Guide",
 		nested: false,
-		path: "/swagger/misc"
+		path: "/user-guide"
 	}
 ];
 type CustomDrawerProps = {
