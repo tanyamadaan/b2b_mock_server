@@ -93,6 +93,10 @@ const router = createBrowserRouter([
 				],
 			},
 			{
+				path: "/swagger/misc",
+				Component: MiscSwagger,
+			},
+			{
 				path: "/swagger",
 				Component: Swagger,
 				// children: [
