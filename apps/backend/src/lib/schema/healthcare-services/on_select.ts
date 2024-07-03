@@ -464,7 +464,7 @@ export const onSelectSchema = {
               },
             },
           },
-          required: ["provider", "items", "fulfillments", "quote", "payments"],
+          required: ["provider", "items", "fulfillments", "quote"]
         },
       },
       required: ["order"],

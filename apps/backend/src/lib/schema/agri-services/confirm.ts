@@ -574,7 +574,6 @@ export const confirmSchema = {
             "payments",
             "created_at",
             "updated_at",
-            "xinput",
           ],
         },
       },
