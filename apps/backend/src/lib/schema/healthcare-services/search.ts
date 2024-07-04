@@ -97,6 +97,7 @@ export const searchSchema = {
                 },
               },
             },
+
             fulfillment: {
               type: "object",
               properties: {
@@ -183,6 +184,7 @@ export const searchSchema = {
               },
               required: ["type", "stops"],
             },
+
             payment: {
               type: "object",
               properties: {
@@ -197,6 +199,7 @@ export const searchSchema = {
               },
               required: ["type", "collected_by"],
             },
+
             tags: {
               type: "array",
               minItems: 1,
@@ -241,7 +244,7 @@ export const searchSchema = {
               },
             },
           },
-          required: [ "fulfillment", "payment", "tags"],
+          required: ["tags"],
         },
       },
       required: ["intent"],
