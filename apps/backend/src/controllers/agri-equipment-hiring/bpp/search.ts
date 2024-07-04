@@ -12,10 +12,13 @@ export const searchController = (req: Request, res: Response, next: NextFunction
     const file = fs.readFileSync(
       path.join(
         AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH,
-        `${ON_ACTION_KEY.ON_SEARCH}/${ON_ACTION_KEY.ON_SEARCH}.yaml
-        }`
+        `${ON_ACTION_KEY.ON_SEARCH}/${ON_ACTION_KEY.ON_SEARCH}.yaml}`
       )
     );
+    console.log("Pathhhhhhhh",path.join(
+      AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH,
+      `${ON_ACTION_KEY.ON_SEARCH}/${ON_ACTION_KEY.ON_SEARCH}.yaml}`
+    ))
     const response = YAML.parse(file.toString());
     return responseBuilder(
       res,
