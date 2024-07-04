@@ -1,4 +1,4 @@
-import { DOMAIN, SRV_FULFILLMENT_STATE, SRV_ORDER_STATE, VERSION } from "./constants";
+import { DOMAIN, SRV_ORDER_STATE, VERSION } from "./constants";
 
 export const onStatusSchema = {
   $id: "onStatusSchema",
@@ -218,7 +218,7 @@ export const onStatusSchema = {
                 },
               },
 
-              required: ["name", "address", "state", "city","phone"],
+              required: ["name", "address", "state", "city", "phone"],
             },
             fulfillments: {
               type: "array",
@@ -360,12 +360,12 @@ export const onStatusSchema = {
                         "location",
                         "time",
                         "contact",
-                        "person",
+                        // "person",
                       ],
                     },
                   },
                 },
-                required: ["id", "type", "tracking", "state", "stops"],
+                required: ["id", "type", "state", "stops"],
               },
             },
             quote: {

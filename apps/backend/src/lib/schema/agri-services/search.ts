@@ -106,6 +106,7 @@ export const searchSchema = {
               },
               required: ["id"],
             },
+
             fulfillment: {
               type: "object",
               properties: {
@@ -169,6 +170,7 @@ export const searchSchema = {
               },
               required: ["type", "stops"],
             },
+
             payment: {
               type: "object",
               properties: {
@@ -183,6 +185,7 @@ export const searchSchema = {
               },
               required: ["type", "collected_by"],
             },
+            
             tags: {
               type: "array",
               minItems: 1,

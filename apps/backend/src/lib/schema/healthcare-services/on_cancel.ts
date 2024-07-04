@@ -389,7 +389,7 @@ export const onCancelSchema = {
                     },
                   },
                 },
-                required: ["id", "type", "tracking", "state", "stops"],
+                required: ["id", "type", "state", "stops"],
               },
             },
             quote: {
@@ -460,7 +460,7 @@ export const onCancelSchema = {
                             required: ["currency", "value"],
                           },
                         },
-                        required: ["id", "quantity", "price"],
+                        required: ["id"]
                       },
                       tags: {
                         type: "array",

@@ -11,7 +11,6 @@ export const authValidatorMiddleware = async (
 	try {
 		const mode = req.query.mode as string;
 		res.setHeader("mode", mode ? mode : "sandbox");
-
 		if (
 			mode === "mock" 
 			||
@@ -22,7 +21,7 @@ export const authValidatorMiddleware = async (
 			return;
 		} else {
 			const auth_header = req.headers["authorization"] || "";
-			var verified = await verifyHeader(auth_header, (req as any).rawBody.toString());
+			let verified = await verifyHeader(auth_header, (req as any).rawBody.toString());
 
 			if (!verified) {
 				return res.status(401).json({

@@ -102,6 +102,12 @@ export const onUpdateSchema = {
             id: {
               type: "string",
             },
+            ref_order_ids:{
+              type:"array",
+              items: {
+                type: "string"
+              },
+            },
             status: {
               type: "string",
             },
@@ -124,7 +130,7 @@ export const onUpdateSchema = {
                   },
                 },
               },
-              required: ["id", "locations"],
+              required: ["id"],
             },
             items: {
               type: "array",
@@ -152,9 +158,9 @@ export const onUpdateSchema = {
                 },
                 required: [
                   "id",
-                  "parent_item_id",
+                  // "parent_item_id",
                   "fulfillment_ids",
-                  "location_ids",
+                  // "location_ids",
                 ],
               },
             },
@@ -308,7 +314,8 @@ export const onUpdateSchema = {
                               type: "string",
                             },
                           },
-                          required: ["id", "descriptor", "gps"],
+                          required: [
+                            "gps"],
                         },
                         time: {
                           type: "object",
@@ -367,7 +374,7 @@ export const onUpdateSchema = {
                         "location",
                         "time",
                         "contact",
-                        "person",
+                        // "person",
                       ],
                     },
                   },
@@ -432,7 +439,7 @@ export const onUpdateSchema = {
                             required: ["currency", "value"],
                           },
                         },
-                        required: ["id", "price"],
+                        required: ["id"],
                       },
                       tags: {
                         type: "array",

@@ -47,6 +47,7 @@ export const initiateSearchController = async (
     };
     search.bpp_uri = bpp_uri;
     await send_response(res, next, search, transaction_id, "search");
+    
   } catch (error) {
     return next(error);
   }

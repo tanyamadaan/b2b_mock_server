@@ -7,10 +7,6 @@ import {
   responseBuilder,
   Select,
 } from "../../../lib/utils";
-import fs from "fs";
-import path from "path";
-import YAML from "yaml";
-import { or } from "ajv/dist/compile/codegen";
 
 export const updateController = (
   req: Request,

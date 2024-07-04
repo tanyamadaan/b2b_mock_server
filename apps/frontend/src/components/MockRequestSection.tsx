@@ -17,6 +17,7 @@ import { CurlDisplay } from ".";
 import { useAction, useMock } from "../utils/hooks";
 import { URL_MAPPING } from "../utils";
 import axios, { AxiosError } from "axios";
+import { UserGuide } from "./UserGuideSection";
 
 type MockRequestSectionProp = {
 	domain: string;
@@ -179,6 +180,7 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 					</Stack>
 				</Paper>
 			</Fade>
+			<UserGuide domain={domain} />
 			<CurlDisplay slideIn={showCurl} curl={curl} />
 		</>
 	);

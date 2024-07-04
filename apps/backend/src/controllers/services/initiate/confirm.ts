@@ -5,16 +5,9 @@ import {
   checkIfCustomized,
   send_response,
   send_nack,
-  createAuthHeader,
-  logger,
-  // quoteCreatorService,
-  // quoteCreatorServiceCustomized,
-  redis,
   redisFetchToServer,
   Stop,
-  Item,
 } from "../../../lib/utils";
-import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
 export const initiateConfirmController = async (
@@ -24,34 +17,11 @@ export const initiateConfirmController = async (
 ) => {
   try {
     const { scenario, transactionId } = req.body;
-
-    // const transactionKeys = await redis.keys(`${transactionId}-*`);
-    // const ifTransactionExist = transactionKeys.filter((e) =>
-    // 	e.includes("on_init-to-server")
-    // );
-
-    // if (ifTransactionExist.length === 0) {
-    // 	return res.status(400).json({
-    // 		message: {
-    // 			ack: {
-    // 				status: "NACK",
-    // 			},
-    // 		},
-    // 		error: {
-    // 			message: "On Init doesn't exist",
-    // 		},
-    // 	});
-    // }
-    // const transaction = await redis.mget(ifTransactionExist);
-    // const parsedTransaction = transaction.map((ele) => {
-    // 	return JSON.parse(ele as string);
-    // });
+   
     const on_init = await redisFetchToServer("on_init", transactionId);
     if (!on_init) {
       return send_nack(res, "On Init doesn't exist");
     }
-
-    // console.log("parsedTransaction:::: ", parsedTransaction[0]);
     return intializeRequest(res, next, on_init, scenario);
   } catch (error) {
     return next(error);
@@ -171,28 +141,4 @@ const intializeRequest = async (
   } catch (error) {
     next(error);
   }
-  // const header = await createAuthHeader(confirm);
-  // try {
-  // 	await redis.set(
-  // 		`${transaction_id}-confirm-from-server`,
-  // 		JSON.stringify({ request: confirm })
-  // 	);
-  // 	await axios.post(`${context.bpp_uri}/confirm?scenario=${scenario}`, confirm, {
-  // 		headers: {
-  // 			// "X-Gateway-Authorization": header,
-  // 			authorization: header,
-  // 		},
-  // 	});
-
-  // 	return res.json({
-  // 		message: {
-  // 			ack: {
-  // 				status: "ACK",
-  // 			},
-  // 		},
-  // 		transaction_id,
-  // 	});
-  // } catch (error) {
-  // 	return next(error)
-  // }
 };

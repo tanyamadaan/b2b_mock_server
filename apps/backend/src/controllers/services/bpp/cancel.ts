@@ -125,7 +125,7 @@ const cancelRequest = async (
         req.body.context.bap_uri.endsWith("/") ? "on_cancel" : "/on_cancel"
       }`,
       `on_cancel`,
-      "b2b"
+      "services"
     );
   } catch (error) {
     return next(error);

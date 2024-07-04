@@ -35,6 +35,7 @@ export const confirmConsultationController = (
 
     const rangeStart = new Date().setHours(new Date().getHours() + 2);
     const rangeEnd = new Date().setHours(new Date().getHours() + 3);
+    
     fulfillments[0].stops.splice(0, 0, {
       type: "start",
       location: {
