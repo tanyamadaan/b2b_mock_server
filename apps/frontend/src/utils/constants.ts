@@ -54,7 +54,7 @@ export const B2B_DOMAINS = [
 	"ONDC:RET14",
 ];
 
-export const ALL_SERVICE_DOMAINS_INITATE = ["Services- ONDC:SRV11", "Healthcare Services- ONDC:SRV13", "Agri Services- ONDC:SRV14"]
+export const ALL_SERVICE_DOMAINS_INITATE = ["ONDC:SRV11", "ONDC:SRV13", "ONDC:SRV14"]
 export const ALL_SERVICE_DOMAINS_INITATEs = [{"Services- ONDC:SRV11":"ONDC:SRV11", "Healthcare Services- ONDC:SRV13":"ONDC:SRV13", "Agri Services- ONDC:SRV14":"ONDC:SRV14"}]
 
 export const SERVICES_DOMAINS = ["ONDC:SRV11"];
@@ -72,8 +72,8 @@ export const ALL_DOMAINS_FRONTEND = {
 export const ALL_DOMAINS_NAME = [
 	"b2b",
 	"services",
-	// "agri-services",
-	// "healthcare-services",
+	"agri-services",
+	"healthcare-services",
 ];
 
 export const CITY_CODE = ["std:080", "std:011"];
@@ -101,7 +101,9 @@ export const INITIATE_FIELDS = {
 			domainDepended: true,
 			options: {
 				b2b: B2B_DOMAINS,
-				services: ALL_SERVICE_DOMAINS_INITATE
+				services: SERVICES_DOMAINS,
+				"agri-services":AGRI_SERVICES_DOMAINS,
+				"healthcare-services":HEALTHCARE_SERVICES_DOMAINS
 			},
 		},
 		
