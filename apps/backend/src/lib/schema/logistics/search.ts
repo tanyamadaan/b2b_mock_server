@@ -201,7 +201,6 @@ export const searchSchema = {
 												"parent_stop_id",
 												"type",
 												"location",
-												"time",
 											],
 										},
 								},

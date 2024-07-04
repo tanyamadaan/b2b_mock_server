@@ -137,7 +137,7 @@ export const updateSchema = {
 										type: "array",
 										items: {
 											type: "string",
-											enum:["P2P","P2H2P"]
+											//enum:["P2P","P2H2P"]
 										},
 									},
 									descriptor: {
@@ -227,7 +227,6 @@ export const updateSchema = {
 														},
 													},
 													required: [
-														"code",
 														"short_desc",
 														"long_desc",
 														"additional_desc",

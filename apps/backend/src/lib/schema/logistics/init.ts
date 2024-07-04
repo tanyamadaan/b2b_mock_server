@@ -287,7 +287,7 @@ export const initSchema = {
 								"time",
 							],
 						},
-						payment: {
+						payments: {
 							type: "object",
 							properties: {
 								collected_by: {
@@ -522,7 +522,7 @@ export const initSchema = {
 						"items",
 						"fulfillments",
 						"billing",
-						"payment",
+						"payments",
 						"xinput",
 					],
 				},
