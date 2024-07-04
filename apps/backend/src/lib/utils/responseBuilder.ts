@@ -2,6 +2,7 @@ import axios from "axios";
 import { NextFunction, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import {
+	AGRI_EQUIPMENT_BPP_MOCKSERVER_URL,
 	AGRI_SERVICES_BPP_MOCKSERVER_URL,
 	B2B_BPP_MOCKSERVER_URL,
 	HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL,
@@ -63,7 +64,7 @@ export const responseBuilder = async (
 	message: object,
 	uri: string,
 	action: string,
-	domain: "b2b" | "services" | "agri-services" | "healthcare-service",
+	domain: "b2b" | "services" | "agri-services" | "healthcare-service" | "agri-equipment-hiring",
 	error?: object | undefined
 ) => {
 	res.locals = {};
@@ -83,6 +84,8 @@ export const responseBuilder = async (
 			? AGRI_SERVICES_BPP_MOCKSERVER_URL
 			: domain === "healthcare-service"
 			? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
+			: domain === "agri-equipment-hiring"
+			? AGRI_EQUIPMENT_BPP_MOCKSERVER_URL
 			: SERVICES_BPP_MOCKSERVER_URL;
 
 	if (action.startsWith("on_")) {
@@ -285,7 +288,7 @@ export const sendStatusAxiosCall = async (
 	message: object,
 	uri: string,
 	action: string,
-	domain: "b2b" | "services" | "agri-services" | "healthcare-service",
+	domain: "b2b" | "services" | "agri-services" | "healthcare-service" | "agri-equipment-hiring",
 	error?: object | undefined
 ) => {
 	let ts = new Date();
@@ -303,6 +306,8 @@ export const sendStatusAxiosCall = async (
 			? AGRI_SERVICES_BPP_MOCKSERVER_URL
 			: domain === "healthcare-service"
 			? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
+			: domain === "agri-equipment-hiring"
+			? AGRI_EQUIPMENT_BPP_MOCKSERVER_URL
 			: SERVICES_BPP_MOCKSERVER_URL;
 
 	async = {

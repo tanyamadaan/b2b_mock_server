@@ -13,6 +13,7 @@ export const SERVICES_DOMAINS = {
 };
 
 export const ORDER_STATUS = {
+	CREATED:"Created",
 	ACCEPTED:"Accepted",
 	CANCELLED: "Cancelled"
 }
@@ -63,6 +64,11 @@ export const FULFILLMENT_STATES = {
 export const SCENARIO = {
 	MULTI_COLLECTION: "multi_collection",
 };
+
+export const PAYMENT_STATUS={
+	PAID:"PAID",
+	NON_PAID:"NON-PAID"
+}
 
 export const BILLING_DETAILS = {
 	name: "ONDC buyer",
