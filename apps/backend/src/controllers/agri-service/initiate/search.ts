@@ -10,36 +10,39 @@ import {
 	AGRI_SERVICES_BAP_MOCKSERVER_URL,
 } from "../../../lib/utils";
 
-export const initiateSearchController = async (req: Request, res: Response,  next: NextFunction) => {
+export const initiateSearchController = async (req: Request, res: Response, next: NextFunction) => {
+	try{
+
+		const { bpp_uri, city, domain } = req.body;
+		const file = fs.readFileSync(
+			path.join(AGRI_SERVICES_EXAMPLES_PATH, "search/search_by_category.yaml")
+		);
 	
-	const { bpp_uri, city, domain } = req.body;
-	const file = fs.readFileSync(
-		path.join(AGRI_SERVICES_EXAMPLES_PATH, "search/search_by_category.yaml")
-	);
-
-	let search = YAML.parse(file.toString());
-	search = search?.value;
-	const transaction_id = uuidv4();
-
-	search = {
-		...search,
-		context: {
-			...search.context,
-			timestamp: new Date().toISOString(),
-			location: {
-				...search.context.location,
-				city: {
-					code: city
-				}
+		let search = YAML.parse(file.toString());
+		search = search?.value;
+		const transaction_id = uuidv4();
+	
+		search = {
+			...search,
+			context: {
+				...search.context,
+				timestamp: new Date().toISOString(),
+				location: {
+					...search.context.location,
+					city: {
+						code: city
+					}
+				},
+				transaction_id,
+				domain,
+				bap_id: MOCKSERVER_ID,
+				bap_uri: AGRI_SERVICES_BAP_MOCKSERVER_URL,
+				message_id: uuidv4()
 			},
-			transaction_id,
-			domain,
-			bap_id: MOCKSERVER_ID,
-			bap_uri: AGRI_SERVICES_BAP_MOCKSERVER_URL,
-			message_id: uuidv4()
-		},
-	};
-	search.bpp_uri=bpp_uri
-
-	await send_response(res, next, search,transaction_id, "search");
+		};
+		search.bpp_uri = bpp_uri
+		await send_response(res, next, search, transaction_id, "search");
+	}catch(error){
+		return next(error)
+	}
 };

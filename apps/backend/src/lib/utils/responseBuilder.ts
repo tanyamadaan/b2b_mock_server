@@ -2,25 +2,26 @@ import axios from "axios";
 import { NextFunction, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import {
-	AGRI_SERVICES_BAP_MOCKSERVER_URL,
 	AGRI_SERVICES_BPP_MOCKSERVER_URL,
-	B2B_BAP_MOCKSERVER_URL,
 	B2B_BPP_MOCKSERVER_URL,
 	HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL,
 	LOGISTICS_BPP_MOCKSERVER_URL,
 	MOCKSERVER_ID,
-	SERVICES_BAP_MOCKSERVER_URL,
 	SERVICES_BPP_MOCKSERVER_URL,
-	SERVICES_EXAMPLES_PATH,
 } from "./constants";
 import { createAuthHeader } from "./responseAuth";
 import { logger } from "./logger";
 import { TransactionType, redis } from "./redis";
-import fs from "fs";
-import path from "path";
-import YAML from "yaml";
 import { AxiosError } from "axios";
-import { redisFetchFromServer } from "./redisFetch";
+import { ON_ACTION_KEY } from "./actionOnActionKeys";
+import {
+	FULFILLMENT_END,
+	FULFILLMENT_LABELS,
+	FULFILLMENT_START,
+	FULFILLMENT_STATES,
+	FULFILLMENT_TYPES,
+	SCENARIO,
+} from "./apiConstants";
 
 interface TagDescriptor {
 	code: string;
@@ -92,11 +93,9 @@ export const responseBuilder = async (
 			: SERVICES_BPP_MOCKSERVER_URL;
 
 	if (action.startsWith("on_")) {
-		// const { bap_uri, bap_id, ...remainingContext } = reqContext as any;
 		async = {
 			...async,
 			context: {
-				// ...remainingContext,
 				...reqContext,
 				bpp_id: MOCKSERVER_ID,
 				bpp_uri: bppURI,
@@ -119,9 +118,11 @@ export const responseBuilder = async (
 			},
 		};
 	}
+
 	if (error) {
 		async = { ...async, error };
 	}
+
 	const header = await createAuthHeader(async);
 
 	if (sandboxMode) {
@@ -136,6 +137,7 @@ export const responseBuilder = async (
 				const logIndex = transactionKeys.filter((e) =>
 					e.includes("on_status-to-server")
 				).length;
+
 				await redis.set(
 					`${
 						(async.context! as any).transaction_id
@@ -159,6 +161,7 @@ export const responseBuilder = async (
 					timestamp: new Date().toISOString(),
 					response: response.data,
 				};
+
 				await redis.set(
 					`${(async.context! as any).transaction_id}-${action}-from-server`,
 					JSON.stringify(log)
@@ -247,22 +250,13 @@ export const responseBuilder = async (
 					error instanceof AxiosError
 						? error?.response?.data
 						: {
-								async: {
-									message: {
-										ack: {
-											status: "NACK",
-										},
-									},
-									error: {
-										message: "Error occured while pinging backend",
+								message: {
+									ack: {
+										status: "NACK",
 									},
 								},
-								sync: {
-									message: {
-										ack: {
-											status: "ACK",
-										},
-									},
+								error: {
+									message: error,
 								},
 						  };
 				log.response = {
@@ -273,7 +267,6 @@ export const responseBuilder = async (
 					`${(async.context! as any).transaction_id}-${action}-from-server`,
 					JSON.stringify(log)
 				);
-
 				return next(error);
 			}
 		}
@@ -285,32 +278,107 @@ export const responseBuilder = async (
 			message: { sync: { message: { ack: { status: "ACK" } } } },
 		});
 		return res.json({
-			sync: {
-				message: {
-					ack: {
-						status: "ACK",
-					},
-				},
-			},
-			async: {
-				message: {
-					ack: {
-						status: "ACK",
-					},
+			message: {
+				ack: {
+					status: "ACK",
 				},
 			},
 		});
-		// return res.json({
-		// 	sync: {
-		// 		message: {
-		// 			ack: {
-		// 				status: "ACK",
-		// 			},
-		// 		},
-		// 	},
-		// 	async,
-		// });
 	}
+};
+
+export const sendStatusAxiosCall = async (
+	reqContext: object,
+	message: object,
+	uri: string,
+	action: string,
+	domain: "b2b" | "services" | "agri-services" | "healthcare-service",
+	error?: object | undefined
+) => {
+	let ts = new Date();
+	ts.setSeconds(ts.getSeconds() + 1);
+
+	let async: { message: object; context?: object; error?: object } = {
+		context: {},
+		message,
+	};
+
+	const bppURI =
+		domain === "b2b"
+			? B2B_BPP_MOCKSERVER_URL
+			: domain === "agri-services"
+			? AGRI_SERVICES_BPP_MOCKSERVER_URL
+			: domain === "healthcare-service"
+			? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
+			: SERVICES_BPP_MOCKSERVER_URL;
+
+	async = {
+		...async,
+		context: {
+			...reqContext,
+			bpp_id: MOCKSERVER_ID,
+			bpp_uri: bppURI,
+			timestamp: ts.toISOString(),
+			action,
+		},
+	};
+
+	if (error) {
+		async = { ...async, error };
+	}
+
+	const header = await createAuthHeader(async);
+
+	if (action.startsWith("on_")) {
+		var log: TransactionType = {
+			request: async,
+		};
+		try {
+			const response = await axios.post(uri, async, {
+				headers: {
+					authorization: header,
+				},
+			});
+			log.response = {
+				timestamp: new Date().toISOString(),
+				response: response.data,
+			};
+			await redis.set(
+				`${(async.context! as any).transaction_id}-${action}-from-server`,
+				JSON.stringify(log)
+			);
+		} catch (error) {
+			const response =
+				error instanceof AxiosError
+					? error?.response?.data
+					: {
+							message: {
+								ack: {
+									status: "NACK",
+								},
+							},
+							error: {
+								message: error,
+							},
+					  };
+			log.response = {
+				timestamp: new Date().toISOString(),
+				response: response,
+			};
+
+			await redis.set(
+				`${(async.context! as any).transaction_id}-${action}-from-server`,
+				JSON.stringify(log)
+			);
+		}
+	}
+
+	logger.info({
+		type: "response",
+		action: action,
+		transaction_id: (reqContext as any).transaction_id,
+		message: { sync: { message: { ack: { status: "ACK" } } } },
+	});
 };
 
 export const quoteCreator = (items: Item[]) => {
@@ -407,7 +475,273 @@ export const quoteCreator = (items: Item[]) => {
 	};
 };
 
-//common body of quote in different sector
+export const quoteCreatorAgriService = (
+	items: Item[],
+	providersItems?: any
+) => {
+	//get price from on_search
+	items.forEach((item) => {
+		// Find the corresponding item in the second array
+		if (providersItems) {
+			const matchingItem = providersItems.find(
+				(secondItem: { id: string }) => secondItem?.id === item?.id
+			);
+			// If a matching item is found, update the price in the items array
+			if (matchingItem) {
+				item.title = matchingItem?.descriptor?.name;
+				item.price = matchingItem?.price;
+				item.tags = matchingItem?.tags;
+			}
+		}
+	});
+
+	let breakup: any[] = [];
+
+	items.forEach((item) => {
+		breakup.push({
+			title: item.title,
+			price: {
+				currency: "INR",
+				value: (
+					Number(item?.price?.value) * item?.quantity?.selected?.count
+				).toString(),
+			},
+			tags: item.tags,
+			item:
+				item.title === "tax"
+					? {
+							id: item.id,
+					  }
+					: {
+							id: item.id,
+							price: item.price,
+							quantity: item.quantity ? item.quantity : undefined,
+					  },
+		});
+	});
+
+	//ADD STATIC TAX IN BREAKUP QUOTE
+	breakup.push({
+		title: "tax",
+		price: {
+			currency: "INR",
+			value: "10",
+		},
+		item: items[0],
+		tags: [
+			{
+				descriptor: {
+					code: "title",
+				},
+				list: [
+					{
+						descriptor: {
+							code: "type",
+						},
+						value: "tax",
+					},
+				],
+			},
+		],
+	});
+
+	breakup?.push({
+		title: "pickup_charge",
+		price: {
+			currency: "INR",
+			value: "149",
+		},
+		item: {
+			id: "I1",
+		},
+		tags: [
+			{
+				descriptor: {
+					code: "title",
+				},
+				list: [
+					{
+						descriptor: {
+							code: "type",
+						},
+						value: "misc",
+					},
+				],
+			},
+		],
+	});
+	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
+	let totalPrice = 0;
+	breakup.forEach((entry) => {
+		const priceValue = parseFloat(entry.price.value);
+		if (!isNaN(priceValue)) {
+			totalPrice += priceValue;
+		}
+	});
+
+	const result = {
+		breakup,
+		price: {
+			currency: "INR",
+			value: totalPrice.toFixed(2),
+		},
+		ttl: "P1D",
+	};
+
+	return result;
+};
+
+export const quoteCreatorHealthCareService = (
+	items: Item[],
+	providersItems?: any,
+	offers?: any,
+	fulfillment_type?: string
+) => {
+	try {
+		//GET PACKAGE ITEMS
+		//get price from on_search
+		items.forEach((item) => {
+			if (
+				item &&
+				item?.tags &&
+				item?.tags[0] &&
+				item?.tags[0]?.list[0]?.value === "PACKAGE"
+			) {
+				const getItems = item.tags[0].list[1].value.split(",");
+				getItems.forEach((pItem) => {
+					// Find the corresponding item in the second array
+					if (providersItems) {
+						const matchingItem = providersItems?.find(
+							(secondItem: { id: string }) => secondItem.id === pItem
+						);
+						// If a matching item is found, update the price in the items array
+
+						if (matchingItem) {
+							items.push({ ...matchingItem, quantity: item?.quantity });
+						}
+					}
+				});
+			}
+		});
+
+		items.forEach((item) => {
+			// Find the corresponding item in the second array
+			if (providersItems) {
+				const matchingItem = providersItems?.find(
+					(secondItem: { id: string }) => secondItem.id === item.id
+				);
+				// If a matching item is found, update the price in the items array
+				if (matchingItem) {
+					item.title = matchingItem?.descriptor?.name;
+					item.price = matchingItem?.price;
+					item.tags = matchingItem?.tags;
+				}
+			}
+		});
+
+		let breakup: any[] = [];
+
+		items.forEach((item) => {
+			breakup.push({
+				title: item.title,
+				price: {
+					currency: "INR",
+					value: (
+						Number(item?.price?.value) * item?.quantity?.selected.count
+					).toString(),
+				},
+				tags: item?.tags,
+				item:
+					item.title === "tax"
+						? {
+								id: item?.id,
+						  }
+						: {
+								id: item?.id,
+								price: item?.price,
+								quantity: item?.quantity ? item?.quantity : undefined,
+						  },
+			});
+		});
+
+		//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
+
+		//ADD STATIC TAX FOR ITEM ONE
+		breakup?.push({
+			title: "tax",
+			price: {
+				currency: "INR",
+				value: "10",
+			},
+			item: items[0],
+			tags: [
+				{
+					descriptor: {
+						code: "title",
+					},
+					list: [
+						{
+							descriptor: {
+								code: "type",
+							},
+							value: "tax",
+						},
+					],
+				},
+			],
+		});
+
+		if (fulfillment_type === "Seller-Fulfilled") {
+			breakup?.push({
+				title: "pickup_charge",
+				price: {
+					currency: "INR",
+					value: "149",
+				},
+				item: {
+					id: "I1",
+				},
+				tags: [
+					{
+						descriptor: {
+							code: "title",
+						},
+						list: [
+							{
+								descriptor: {
+									code: "type",
+								},
+								value: "misc",
+							},
+						],
+					},
+				],
+			});
+		}
+		let totalPrice = 0;
+
+		breakup.forEach((entry) => {
+			const priceValue = parseFloat(entry?.price?.value);
+			if (!isNaN(priceValue)) {
+				totalPrice += priceValue;
+			}
+		});
+
+		const result = {
+			breakup,
+			price: {
+				currency: "INR",
+				value: totalPrice.toFixed(2),
+			},
+			ttl: "P1D",
+		};
+
+		return result;
+	} catch (error: any) {
+		return error;
+	}
+};
+
 export const quoteCommon = (items: Item[], providersItems?: any) => {
 	//get price from on_search
 	items.forEach((item) => {
@@ -478,6 +812,7 @@ export const quoteCommon = (items: Item[], providersItems?: any) => {
 			totalPrice += priceValue;
 		}
 	});
+
 	const result = {
 		breakup,
 		price: {
@@ -566,749 +901,6 @@ export const quoteCreatorService = (items: Item[], providersItems?: any) => {
 	return result;
 };
 
-export const quoteCreatorAgriService = (
-	items: Item[],
-	providersItems?: any
-) => {
-	//get price from on_search
-	items.forEach((item) => {
-		// Find the corresponding item in the second array
-		const matchingItem = providersItems.find(
-			(secondItem: { id: string }) => secondItem.id === item.id
-		);
-		// If a matching item is found, update the price in the items array
-		if (matchingItem) {
-			item.title = matchingItem.descriptor.name;
-			item.price = matchingItem.price;
-			item.tags = matchingItem.tags;
-		}
-	});
-
-	let breakup: any[] = [];
-
-	items.forEach((item) => {
-		breakup.push({
-			title: item.title,
-			price: {
-				currency: "INR",
-				value: (
-					Number(item.price.value) * item.quantity.selected.count
-				).toString(),
-			},
-			tags: item.tags,
-			item:
-				item.title === "tax"
-					? {
-							id: item.id,
-					  }
-					: {
-							id: item.id,
-							price: item.price,
-							quantity: item.quantity ? item.quantity : undefined,
-					  },
-		});
-	});
-
-	//ADD STATIC TAX IN BREAKUP QUOTE
-	breakup.push({
-		title: "tax",
-		price: {
-			currency: "INR",
-			value: "10",
-		},
-		item: items[0],
-		tags: [
-			{
-				descriptor: {
-					code: "title",
-				},
-				list: [
-					{
-						descriptor: {
-							code: "type",
-						},
-						value: "tax",
-					},
-				],
-			},
-		],
-	});
-
-	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
-
-	let totalPrice = 0;
-
-	breakup.forEach((entry) => {
-		const priceValue = parseFloat(entry.price.value);
-		if (!isNaN(priceValue)) {
-			totalPrice += priceValue;
-		}
-	});
-	const result = {
-		breakup,
-		price: {
-			currency: "INR",
-			value: totalPrice.toFixed(2),
-		},
-		ttl: "P1D",
-	};
-
-	return result;
-};
-
-export const quoteCreatorHealthCareService = (
-	items: Item[],
-	providersItems?: any,
-	offers?: any
-) => {
-	//GET PACKAGE ITEMS
-
-	//get price from on_search
-	items.forEach((item) => {
-		if (item.tags[0].list[0].value === "PACKAGE") {
-			const getItems = item.tags[0].list[1].value.split(",");
-
-			getItems.forEach((pItem) => {
-				// Find the corresponding item in the second array
-				const matchingItem = providersItems.find(
-					(secondItem: { id: string }) => secondItem.id === pItem
-				);
-				// If a matching item is found, update the price in the items array
-				items.push({ ...matchingItem, quantity: item.quantity });
-			});
-		}
-	});
-
-	items.forEach((item) => {
-		// Find the corresponding item in the second array
-		const matchingItem = providersItems.find(
-			(secondItem: { id: string }) => secondItem.id === item.id
-		);
-		// If a matching item is found, update the price in the items array
-		if (matchingItem) {
-			item.title = matchingItem.descriptor.name;
-			item.price = matchingItem.price;
-			item.tags = matchingItem.tags;
-		}
-	});
-
-	let breakup: any[] = [];
-
-	items.forEach((item) => {
-		breakup.push({
-			title: item.title,
-			price: {
-				currency: "INR",
-				value: (
-					Number(item.price.value) * item.quantity.selected.count
-				).toString(),
-			},
-			tags: item.tags,
-			item:
-				item.title === "tax"
-					? {
-							id: item.id,
-					  }
-					: {
-							id: item.id,
-							price: item.price,
-							quantity: item.quantity ? item.quantity : undefined,
-					  },
-		});
-	});
-
-	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
-
-	//ADD STATIC TAX FOR ITEM ONE
-
-	breakup.push({
-		title: "tax",
-		price: {
-			currency: "INR",
-			value: "10",
-		},
-		item: items[0],
-		tags: [
-			{
-				descriptor: {
-					code: "title",
-				},
-				list: [
-					{
-						descriptor: {
-							code: "type",
-						},
-						value: "tax",
-					},
-				],
-			},
-		],
-	});
-
-	//ADD OFFERS TAGS INTO BREAKUP
-	// if(offers){
-	// 	breakup.push(
-	// {
-	// 	title: "offers",
-	// 	price: {
-	// 		currency: "INR",
-	// 		value: "10",
-	// 	},
-	// 	item:items[0],
-	// 	tags: [
-	// 		{
-	// 			descriptor: {
-	// 				code: "title",
-	// 			},
-	// 			list: [
-	// 				{
-	// 					descriptor: {
-	// 						code: "type",
-	// 					},
-	// 					value: "tax",
-	// 				},
-	// 			],
-	// 		},
-	// 	],
-	// },
-	// )
-	// }
-	let totalPrice = 0;
-
-	breakup.forEach((entry) => {
-		const priceValue = parseFloat(entry.price.value);
-		if (!isNaN(priceValue)) {
-			totalPrice += priceValue;
-		}
-	});
-
-	const result = {
-		breakup,
-		price: {
-			currency: "INR",
-			value: totalPrice.toFixed(2),
-		},
-		ttl: "P1D",
-	};
-
-	return result;
-};
-
-export const quoteCreatorHealthCareForItemsService = (
-	items: Item[],
-	providersItems?: any
-) => {
-	//get price from on_search
-	items.forEach((item) => {
-		// Find the corresponding item in the second array
-		const matchingItem = providersItems.find(
-			(secondItem: { id: string }) => secondItem.id === item.id
-		);
-		// If a matching item is found, update the price in the items array
-		if (matchingItem) {
-			item.title = matchingItem.descriptor.name;
-			item.price = matchingItem.price;
-			item.tags = matchingItem.tags;
-		}
-	});
-
-	let breakup: any[] = [];
-
-	items.forEach((item) => {
-		breakup.push({
-			title: item.title,
-			price: {
-				currency: "INR",
-				value: (
-					Number(item.price.value) * item.quantity.selected.count
-				).toString(),
-			},
-			tags: item.tags,
-			item:
-				item.title === "tax"
-					? {
-							id: item.id,
-					  }
-					: {
-							id: item.id,
-							price: item.price,
-							quantity: item.quantity ? item.quantity : undefined,
-					  },
-		});
-	});
-
-	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
-
-	//ADD STATIC TAX FOR ITEM ONE
-
-	breakup.push({
-		title: "tax",
-		price: {
-			currency: "INR",
-			value: "10",
-		},
-		item: items[0],
-		tags: [
-			{
-				descriptor: {
-					code: "title",
-				},
-				list: [
-					{
-						descriptor: {
-							code: "type",
-						},
-						value: "tax",
-					},
-				],
-			},
-		],
-	});
-
-	let totalPrice = 0;
-
-	breakup.forEach((entry) => {
-		const priceValue = parseFloat(entry.price.value);
-		if (!isNaN(priceValue)) {
-			totalPrice += priceValue;
-		}
-	});
-
-	const result = {
-		breakup,
-		price: {
-			currency: "INR",
-			value: totalPrice.toFixed(2),
-		},
-		ttl: "P1D",
-	};
-
-	return result;
-};
-
-// export const quoteCreatorServiceCustomized = (items: Item[]) => {
-// 	// var breakup: any[] = [
-// 	// 	{
-// 	// 		title: "Service/Consultation",
-// 	// 		price: {
-// 	// 			currency: "INR",
-// 	// 			value: "99",
-// 	// 		},
-// 	// 		tags: [
-// 	// 			{
-// 	// 				"descriptor": {
-// 	// 					"code": "title"
-// 	// 				},
-// 	// 				"list": [
-// 	// 					{
-// 	// 						"descriptor": {
-// 	// 							"code": "type"
-// 	// 						},
-// 	// 						"value": "item"
-// 	// 					}
-// 	// 				]
-// 	// 			}
-// 	// 		]
-// 	// 	}, {
-// 	// 		title: "tax",
-// 	// 		price: {
-// 	// 			currency: "INR",
-// 	// 			value: "0",
-// 	// 		},
-// 	// 		tags: [
-// 	// 			{
-// 	// 				"descriptor": {
-// 	// 					"code": "title"
-// 	// 				},
-// 	// 				"list": [
-// 	// 					{
-// 	// 						"descriptor": {
-// 	// 							"code": "type"
-// 	// 						},
-// 	// 						"value": "tax"
-// 	// 					}
-// 	// 				]
-// 	// 			}
-// 	// 		]
-// 	// 	}
-// 	// ];
-
-// 	const file = fs.readFileSync(
-// 		path.join(
-// 			SERVICES_EXAMPLES_PATH,
-// 			"on_select/on_select_service_customization_confirmed.yaml"
-// 		)
-// 	);
-// 	const response = YAML.parse(file.toString());
-
-// 	const { price, ttl, breakup } = response.value.message.order.quote;
-
-// 	// const breakup = [
-// 	// 	{
-// 	// 		"title": "Cook - On Demand",
-// 	// 		"price": {
-// 	// 			"currency": "INR",
-// 	// 			"value": "00.00"
-// 	// 		},
-// 	// 		"item": {
-// 	// 			"id": "I1",
-// 	// 			"price": {
-// 	// 				"currency": "INR",
-// 	// 				"value": "00.00"
-// 	// 			}
-// 	// 		},
-// 	// 		"tags": [
-// 	// 			{
-// 	// 				"descriptor": {
-// 	// 					"code": "title"
-// 	// 				},
-// 	// 				"list": [
-// 	// 					{
-// 	// 						"descriptor": {
-// 	// 							"code": "type"
-// 	// 						},
-// 	// 						"value": "item"
-// 	// 					}
-// 	// 				]
-// 	// 			}
-// 	// 		]
-// 	// 	},
-// 	// 	{
-// 	// 		"title": "People",
-// 	// 		"price": {
-// 	// 			"currency": "INR",
-// 	// 			"value": "299.00"
-// 	// 		},
-// 	// 		"item": {
-// 	// 			"id": "IC1",
-// 	// 			"quantity": {
-// 	// 				"selected": {
-// 	// 					"count": 3
-// 	// 				}
-// 	// 			},
-// 	// 			"price": {
-// 	// 				"currency": "INR",
-// 	// 				"value": "199.00"
-// 	// 			}
-// 	// 		},
-// 	// 		"tags": [
-// 	// 			{
-// 	// 				"descriptor": {
-// 	// 					"code": "title"
-// 	// 				},
-// 	// 				"list": [
-// 	// 					{
-// 	// 						"descriptor": {
-// 	// 							"code": "type"
-// 	// 						},
-// 	// 						"value": "customization"
-// 	// 					}
-// 	// 				]
-// 	// 			}
-// 	// 		]
-// 	// 	},
-// 	// 	{
-// 	// 		"title": "Sandwich",
-// 	// 		"price": {
-// 	// 			"currency": "INR",
-// 	// 			"value": "199.00"
-// 	// 		},
-// 	// 		"item": {
-// 	// 			"id": "IC2",
-// 	// 			"quantity": {
-// 	// 				"selected": {
-// 	// 					"count": 1
-// 	// 				}
-// 	// 			},
-// 	// 			"price": {
-// 	// 				"currency": "INR",
-// 	// 				"value": "199.00"
-// 	// 			}
-// 	// 		},
-// 	// 		"tags": [
-// 	// 			{
-// 	// 				"descriptor": {
-// 	// 					"code": "title"
-// 	// 				},
-// 	// 				"list": [
-// 	// 					{
-// 	// 						"descriptor": {
-// 	// 							"code": "type"
-// 	// 						},
-// 	// 						"value": "customization"
-// 	// 					}
-// 	// 				]
-// 	// 			}
-// 	// 		]
-// 	// 	},
-// 	// 	{
-// 	// 		"title": "Dahi Ke Kebab",
-// 	// 		"price": {
-// 	// 			"currency": "INR",
-// 	// 			"value": "199.00"
-// 	// 		},
-// 	// 		"item": {
-// 	// 			"id": "IC3",
-// 	// 			"quantity": {
-// 	// 				"selected": {
-// 	// 					"count": 1
-// 	// 				}
-// 	// 			},
-// 	// 			"price": {
-// 	// 				"currency": "INR",
-// 	// 				"value": "199.00"
-// 	// 			}
-// 	// 		},
-// 	// 		"tags": [
-// 	// 			{
-// 	// 				"descriptor": {
-// 	// 					"code": "title"
-// 	// 				},
-// 	// 				"list": [
-// 	// 					{
-// 	// 						"descriptor": {
-// 	// 							"code": "type"
-// 	// 						},
-// 	// 						"value": "customization"
-// 	// 					}
-// 	// 				]
-// 	// 			}
-// 	// 		]
-// 	// 	},
-// 	// 	{
-// 	// 		"title": "Dal Makhni",
-// 	// 		"price": {
-// 	// 			"currency": "INR",
-// 	// 			"value": "199.00"
-// 	// 		},
-// 	// 		"item": {
-// 	// 			"id": "IC4",
-// 	// 			"quantity": {
-// 	// 				"selected": {
-// 	// 					"count": 1
-// 	// 				}
-// 	// 			},
-// 	// 			"price": {
-// 	// 				"currency": "INR",
-// 	// 				"value": "199.00"
-// 	// 			}
-// 	// 		},
-// 	// 		"tags": [
-// 	// 			{
-// 	// 				"descriptor": {
-// 	// 					"code": "title"
-// 	// 				},
-// 	// 				"list": [
-// 	// 					{
-// 	// 						"descriptor": {
-// 	// 							"code": "type"
-// 	// 						},
-// 	// 						"value": "customization"
-// 	// 					}
-// 	// 				]
-// 	// 			}
-// 	// 		]
-// 	// 	},
-// 	// 	{
-// 	// 		"title": "tax",
-// 	// 		"price": {
-// 	// 			"currency": "INR",
-// 	// 			"value": "25"
-// 	// 		},
-// 	// 		"item": {
-// 	// 			"id": "I1"
-// 	// 		},
-// 	// 		"tags": [
-// 	// 			{
-// 	// 				"descriptor": {
-// 	// 					"code": "title"
-// 	// 				},
-// 	// 				"list": [
-// 	// 					{
-// 	// 						"descriptor": {
-// 	// 							"code": "type"
-// 	// 						},
-// 	// 						"value": "tax"
-// 	// 					}
-// 	// 				]
-// 	// 			}
-// 	// 		]
-// 	// 	},
-// 	// 	{
-// 	// 		"title": "tax",
-// 	// 		"price": {
-// 	// 			"currency": "INR",
-// 	// 			"value": "25"
-// 	// 		},
-// 	// 		"item": {
-// 	// 			"id": "IC1"
-// 	// 		},
-// 	// 		"tags": [
-// 	// 			{
-// 	// 				"descriptor": {
-// 	// 					"code": "title"
-// 	// 				},
-// 	// 				"list": [
-// 	// 					{
-// 	// 						"descriptor": {
-// 	// 							"code": "type"
-// 	// 						},
-// 	// 						"value": "tax"
-// 	// 					}
-// 	// 				]
-// 	// 			}
-// 	// 		]
-// 	// 	},
-// 	// 	{
-// 	// 		"title": "tax",
-// 	// 		"price": {
-// 	// 			"currency": "INR",
-// 	// 			"value": "25"
-// 	// 		},
-// 	// 		"item": {
-// 	// 			"id": "IC2"
-// 	// 		},
-// 	// 		"tags": [
-// 	// 			{
-// 	// 				"descriptor": {
-// 	// 					"code": "title"
-// 	// 				},
-// 	// 				"list": [
-// 	// 					{
-// 	// 						"descriptor": {
-// 	// 							"code": "type"
-// 	// 						},
-// 	// 						"value": "tax"
-// 	// 					}
-// 	// 				]
-// 	// 			}
-// 	// 		]
-// 	// 	},
-// 	// 	{
-// 	// 		"title": "tax",
-// 	// 		"price": {
-// 	// 			"currency": "INR",
-// 	// 			"value": "25"
-// 	// 		},
-// 	// 		"item": {
-// 	// 			"id": "IC3"
-// 	// 		},
-// 	// 		"tags": [
-// 	// 			{
-// 	// 				"descriptor": {
-// 	// 					"code": "title"
-// 	// 				},
-// 	// 				"list": [
-// 	// 					{
-// 	// 						"descriptor": {
-// 	// 							"code": "type"
-// 	// 						},
-// 	// 						"value": "tax"
-// 	// 					}
-// 	// 				]
-// 	// 			}
-// 	// 		]
-// 	// 	},
-// 	// 	{
-// 	// 		"title": "tax",
-// 	// 		"price": {
-// 	// 			"currency": "INR",
-// 	// 			"value": "25"
-// 	// 		},
-// 	// 		"item": {
-// 	// 			"id": "IC4"
-// 	// 		},
-// 	// 		"tags": [
-// 	// 			{
-// 	// 				"descriptor": {
-// 	// 					"code": "title"
-// 	// 				},
-// 	// 				"list": [
-// 	// 					{
-// 	// 						"descriptor": {
-// 	// 							"code": "type"
-// 	// 						},
-// 	// 						"value": "tax"
-// 	// 					}
-// 	// 				]
-// 	// 			}
-// 	// 		]
-// 	// 	},
-// 	// 	{
-// 	// 		"title": "discount",
-// 	// 		"price": {
-// 	// 			"currency": "INR",
-// 	// 			"value": "0"
-// 	// 		},
-// 	// 		"item": {
-// 	// 			"id": "I1"
-// 	// 		},
-// 	// 		"tags": [
-// 	// 			{
-// 	// 				"descriptor": {
-// 	// 					"code": "title"
-// 	// 				},
-// 	// 				"list": [
-// 	// 					{
-// 	// 						"descriptor": {
-// 	// 							"code": "type"
-// 	// 						},
-// 	// 						"value": "discount"
-// 	// 					}
-// 	// 				]
-// 	// 			}
-// 	// 		]
-// 	// 	},
-// 	// 	{
-// 	// 		"title": "convenience_fee",
-// 	// 		"price": {
-// 	// 			"currency": "INR",
-// 	// 			"value": "0"
-// 	// 		},
-// 	// 		"item": {
-// 	// 			"id": "I1"
-// 	// 		},
-// 	// 		"tags": [
-// 	// 			{
-// 	// 				"descriptor": {
-// 	// 					"code": "title"
-// 	// 				},
-// 	// 				"list": [
-// 	// 					{
-// 	// 						"descriptor": {
-// 	// 							"code": "type"
-// 	// 						},
-// 	// 						"value": "misc"
-// 	// 					}
-// 	// 				]
-// 	// 			}
-// 	// 		]
-// 	// 	}
-// 	// ]
-
-// 	items.forEach((item) => {
-// 		breakup.forEach((each: any) => {
-// 			each.item = {
-// 				id: item.id,
-// 				price: {
-// 					currency: "INR",
-// 					value: "99",
-// 				},
-// 				quantity: item.quantity ? item.quantity : undefined,
-// 			};
-// 		});
-// 	});
-
-// 	return {
-// 		breakup,
-// 		price: {
-// 			currency: "INR",
-// 			value: (99 * items.length).toString(),
-// 		},
-// 		ttl,
-// 	};
-// };
-
 export const quoteCreatorServiceCustomized = (
 	items: Item[],
 	providersItems?: any
@@ -1361,9 +953,148 @@ export const checkIfCustomized = (items: Item[]) => {
 	);
 };
 
-export const getOnSearchFromRadisByTransactionId = async (
-	transactionId: string
+//Function for check selected items are existed in onsearch or not
+export const checkSelectedItems = async (data: any) => {
+	try {
+		const { message, providersItems } = data;
+		const items = message?.order?.items;
+		const providersItem = providersItems?.items;
+		let matchingItem: any = null;
+
+		items.forEach((item: any) => {
+			if (item) {
+				const selectedItem = item?.id;
+				// Find the corresponding item in the second array
+				if (providersItem) {
+					matchingItem = providersItem?.find(
+						(secondItem: { id: string }) => secondItem.id === selectedItem
+					);
+				}
+			}
+		});
+
+		return matchingItem;
+	} catch (error) {
+		console.log("error occured in matching content");
+	}
+};
+
+export const updateFulfillments = (
+	fulfillments?: any,
+	action?: string,
+	scenario?: string
 ) => {
-	const on_search = await redisFetchFromServer("on_search", transactionId);
-	return on_search?.message?.catalog?.providers[0]?.items;
+	try {
+		// Update fulfillments according to actions
+
+		const rangeStart = new Date().setHours(new Date().getHours() + 2);
+		const rangeEnd = new Date().setHours(new Date().getHours() + 3);
+
+		let updatedFulfillments: any = [];
+
+		if (!fulfillments || fulfillments.length === 0) {
+			return updatedFulfillments; // Return empty if fulfillments is not provided or empty
+		}
+
+		const fulfillmentObj = {
+			id: "F1",
+			type: FULFILLMENT_TYPES.SELLER_FULFILLED,
+			tracking: false,
+			state: {
+				descriptor: {
+					code: FULFILLMENT_STATES.SERVICEABLE,
+				},
+			},
+			stops: fulfillments[0]?.stops.map((ele: any) => {
+				ele.time.label = FULFILLMENT_LABELS.CONFIRMED;
+				return ele;
+			}),
+		};
+
+		switch (action) {
+			case ON_ACTION_KEY.ON_SELECT:
+				// Always push the initial fulfillmentObj
+				updatedFulfillments.push(fulfillmentObj);
+				if (scenario === SCENARIO.MULTI_COLLECTION) {
+					updatedFulfillments.push({
+						...fulfillmentObj,
+						id: "F2",
+					});
+				}
+				break;
+			case ON_ACTION_KEY.ON_CONFIRM:
+				updatedFulfillments = fulfillments;
+				// Add your logic for ON_CONFIRM
+				updatedFulfillments = updatedFulfillments.map((fulfill: any) => {
+					(fulfill.state = {
+						descriptor: {
+							code: FULFILLMENT_STATES.PENDING,
+						},
+					}),
+						fulfill.stops.push({
+							type: "start",
+							...FULFILLMENT_START,
+							time: {
+								range: {
+									start: new Date(rangeStart).toISOString(),
+									end: new Date(rangeEnd).toISOString(),
+								},
+							},
+						}),
+						(fulfill.stops = fulfill?.stops?.map((ele: any) => {
+							if (ele?.type === "end") {
+								ele = {
+									...ele,
+									...FULFILLMENT_END,
+									time:{
+										...ele.time,
+										label:FULFILLMENT_LABELS.CONFIRMED
+									},
+									person:
+										ele.customer && ele.customer.person
+											? ele.customer.person
+											: FULFILLMENT_END.person,
+								};
+							}
+							return ele;
+						})),
+						(fulfill.rateable = true);
+					return fulfill;
+				});
+				break;
+			case ON_ACTION_KEY.ON_CANCEL:
+				updatedFulfillments = fulfillments;
+				updatedFulfillments = updatedFulfillments.map((fulfillment: any) => ({
+					...fulfillment,
+					state: {
+						...fulfillment.state,
+						descriptor: {
+							code: FULFILLMENT_STATES.CANCELLED,
+						},
+					},
+					rateable: undefined,
+				}));
+				break;
+			case ON_ACTION_KEY.ON_UPDATE:
+				updatedFulfillments = fulfillments;
+				updatedFulfillments = updatedFulfillments.map((fulfillment: any) => ({
+					...fulfillment,
+					state: {
+						...fulfillment.state,
+						descriptor: {
+							code: FULFILLMENT_STATES.COMPLETED,
+						},
+					},
+					rateable: true,
+				}));
+				break;
+			default:
+				// Add your default logic if any
+				updatedFulfillments = fulfillments;
+				break;
+		}
+		return updatedFulfillments;
+	} catch (err) {
+		console.log("Error occured in fulfillments method");
+	}
 };

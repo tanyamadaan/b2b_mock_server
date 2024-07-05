@@ -405,7 +405,7 @@ export const onSearchSchema = {
                               type: "string",
                             },
                           },
-                          // required: ["code"],
+                          required: ["code"],
                         },
                         list: {
                           type: "array",

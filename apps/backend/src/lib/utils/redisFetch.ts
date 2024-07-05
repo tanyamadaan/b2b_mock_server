@@ -1,62 +1,96 @@
+import { AGRI_HEALTHCARE_STATUS, SERVICES_DOMAINS } from "./apiConstants";
 import { redis } from "./redis"
 async function redisFetchToServer(action: string, transaction_id: string) {
-    const transactionKeys = await redis.keys(`${transaction_id}-*`);
-    const ifTransactionExist = transactionKeys.filter((e) =>
-        e.includes(`${action}-to-server`)
-    );
-    if (ifTransactionExist.length === 0) {
-        return null
-    }
+  const transactionKeys = await redis.keys(`${transaction_id}-*`);
+  
+  const ifTransactionExist = transactionKeys.filter((e) =>
+    e.includes(`${action}-to-server`)
+  );
+  if (ifTransactionExist.length === 0) {
+    return null
+  }
 
-    const transaction = await redis.mget(ifTransactionExist);
-    const parsedTransaction = transaction.map((ele: any) => {
-        return JSON.parse(ele as string);
-    });
+  const transaction = await redis.mget(ifTransactionExist);
+  const parsedTransaction = transaction.map((ele: any) => {
+    return JSON.parse(ele as string);
+  });
 
-    return parsedTransaction[0].request
+  return parsedTransaction[0].request
 }
 
 async function redisFetchFromServer(action: string, transaction_id: string) {
-    const transactionKeys = await redis.keys(`${transaction_id}-*`);
-    const ifTransactionExist = transactionKeys.filter((e) =>
-        e.includes(`${action}-from-server`)
-    );
+  const transactionKeys = await redis.keys(`${transaction_id}-*`);
 
-    if (ifTransactionExist.length === 0) {
-        return null
-    }
+  const ifTransactionExist = transactionKeys.filter((e) =>
+    e.includes(`${action}-from-server`)
+  );
 
-    const transaction = await redis.mget(ifTransactionExist);
-    const parsedTransaction = transaction.map((ele: any) => {
-        return JSON.parse(ele as string);
-    });
+  if (ifTransactionExist.length === 0) {
+    return null
+  }
 
-    return parsedTransaction[0].request
+  const transaction = await redis.mget(ifTransactionExist);
+  const parsedTransaction = transaction.map((ele: any) => {
+    return JSON.parse(ele as string);
+  });
+
+  return parsedTransaction[0].request
 }
 
 async function redisExistToServer(action: string, transaction_id: string) {
-    const transactionKeys = await redis.keys(`${transaction_id}-*`);
-    const ifTransactionExist = transactionKeys.filter((e) =>
-        e.includes(`${action}-to-server`)
-    );
+  const transactionKeys = await redis.keys(`${transaction_id}-*`);
+  const ifTransactionExist = transactionKeys.filter((e) =>
+    e.includes(`${action}-to-server`)
+  );
 
-    if (ifTransactionExist.length === 0) {
-        return false
-    }
-    else
-        return true
+  if (ifTransactionExist.length === 0) {
+    return false
+  }
+  else
+    return true
 }
 
 async function redisExistFromServer(action: string, transaction_id: string) {
-    const transactionKeys = await redis.keys(`${transaction_id}-*`);
-    const ifTransactionExist = transactionKeys.filter((e) =>
-        e.includes(`${action}-from-server`)
-    );
+  const transactionKeys = await redis.keys(`${transaction_id}-*`);
+  const ifTransactionExist = transactionKeys.filter((e) =>
+    e.includes(`${action}-from-server`)
+  );
 
-    if (ifTransactionExist.length === 0) {
-        return false
-    }
-    else
-        return true
+  if (ifTransactionExist.length === 0) {
+    return false
+  }
+  else
+    return true
 }
-export { redisFetchToServer, redisFetchFromServer,redisExistFromServer,redisExistToServer }
+
+
+async function findIncompleteOnConfirmCalls() {
+  try {
+
+    const keys = await redis.keys('*-on_confirm-from-server');
+    if (keys.length === 0) {
+      console.log('No matching keys found');
+      return [];
+    }
+
+    const values = await redis.mget(keys);
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+
+    const incompleteCalls = values
+      .map((value: any, index: any) => {
+        const parsedValue = JSON.parse(value);
+        return {
+          key: keys[index],
+          ...parsedValue,
+        };
+      })
+      .filter(item => ((item.request.context.domain === SERVICES_DOMAINS.AGRI_SERVICES || item.request.context.domain === SERVICES_DOMAINS.HEALTHCARE_SERVICES) && new Date(item.response.timestamp) > new Date(fiveMinutesAgo)));
+
+    return incompleteCalls;
+  } catch (error) {
+    console.error('Error finding incomplete on_confirm calls:', error);
+  }
+}
+
+
+export { redisFetchToServer, redisFetchFromServer, redisExistFromServer, redisExistToServer, findIncompleteOnConfirmCalls }

@@ -1,10 +1,12 @@
 import * as _ from "lodash";
 import { useState } from "react";
 import {
+	B2B_SCENARIOS,
+	SERVICES_SCENARIOS,
+	NEXT_ACTION,
+	HEALTHCARE_SERVICES_SCENARIOS,
+	AGRI_SERVICES_SCENARIOS,
   LOGISTICS_SCENARIOS,
-  B2B_SCENARIOS,
-  SERVICES_SCENARIOS,
-  NEXT_ACTION,
   NEXT_ACTION_LOGISTICS,
 } from "openapi-specs/constants";
 
@@ -21,8 +23,14 @@ export const useAction = (domain: string) => {
     case "logistics":
       allScenarios = LOGISTICS_SCENARIOS;
       break;
+      case "healthcare-services":
+        allScenarios = HEALTHCARE_SERVICES_SCENARIOS;
+        break;
+      case "services":
+        allScenarios = SERVICES_SCENARIOS;
+        break;
     default:
-      allScenarios = SERVICES_SCENARIOS;
+      allScenarios = AGRI_SERVICES_SCENARIOS;
       break;
   }
 

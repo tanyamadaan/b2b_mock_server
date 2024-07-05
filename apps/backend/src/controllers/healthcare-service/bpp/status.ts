@@ -1,178 +1,227 @@
 import { NextFunction, Request, Response } from "express";
-import { v4 as uuidv4 } from "uuid";
-import fs from "fs";
-import path from "path";
-import YAML from "yaml";
-import { HEALTHCARE_SERVICES_BAP_MOCKSERVER_URL, HEALTHCARE_SERVICES_EXAMPLES_PATH, MOCKSERVER_ID, checkIfCustomized, quoteCreatorHealthCareService, quoteCreatorServiceCustomized, redisFetchFromServer, responseBuilder, send_nack } from "../../../lib/utils";
+import { AGRI_HEALTHCARE_STATUS } from "../../../lib/utils/apiConstants";
 
+import {
+	Fulfillment,
+	Stop,
+	redisExistFromServer,
+	redisFetchFromServer,
+	responseBuilder,
+	send_nack,
+} from "../../../lib/utils";
+import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 
-export const statusController = async (req: Request, res: Response, next: NextFunction) => {
-	const { scenario } = req.query;
-	const on_confirm = await redisFetchFromServer("on_confirm", req.body.context.transaction_id);
-	if (!on_confirm) {
-		return send_nack(res, "On Confirm doesn't exist")
+export const statusController = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		let scenario: string = String(req.query.scenario) || "";
+		const { transaction_id } = req.body.context;
+		const on_confirm_data = await redisFetchFromServer(
+			"on_confirm",
+			transaction_id
+		); 
+
+		if (!on_confirm_data) {
+			return send_nack(res, "on confirm doesn't exist");
+		}
+
+		const on_cancel_exist = await redisExistFromServer(
+			"on_cancel",
+			transaction_id
+		);
+		if (on_cancel_exist) {
+			scenario = "cancel";
+		}
+		return statusRequest(req, res, next, on_confirm_data, scenario);
+	} catch (error) {
+		return next(error);
 	}
-	req.body.on_confirm = on_confirm;
-	switch (scenario) {
-		case 'completed':
-			statusCompletedController(req, res, next)
-			break;
-		case 'in-transit':
-			statusInTransitController(req, res, next)
-			break;
-		case 'reached-re-otp':
-			statusReachedReOtpController(req, res, next)
-			break;
-		case 'reached':
-			statusReachedController(req, res, next)
-			break;
-		case 'service-started':
-			// if (checkIfCustomized(req.body.message.providers[0].items)) {
-			// 	return onSelectServiceCustomizedController(req, res);
-			// }
-			statusServiceStartedController(req, res, next)
-			break;
-		default:
-			statusCompletedController(req, res, next)//default senario : completed
-			break;
-	}
-}
+};
 
-const statusCompletedController = (req: Request, res: Response, next: NextFunction) => {
-	const { context, message, on_confirm } = req.body;
-	const file = fs.readFileSync(
-		path.join(HEALTHCARE_SERVICES_EXAMPLES_PATH, "on_status/on_status_report_shared.yaml")
-	);
-	const response = YAML.parse(file.toString());
-	const timestamp = new Date().toISOString();
+const statusRequest = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+	transaction: any,
+	scenario: string
+) => {
+	try {
+		const { context, message } = transaction;
+		context.action = ON_ACTION_KEY.ON_STATUS;
 
-	const status = {
-		context: {
-			...context,
-			timestamp: new Date().toISOString(),
-			action: "on_status",
-			bap_id: MOCKSERVER_ID,
-			bap_uri: HEALTHCARE_SERVICES_BAP_MOCKSERVER_URL,
-			message_id: uuidv4()
-		},
-		message: {
+		const on_status = await redisFetchFromServer(
+			ON_ACTION_KEY.ON_STATUS,
+			req.body.context.transaction_id
+		);
+
+		let next_status = scenario;
+
+		if (on_status) {
+			//UPDATE SCENARIO TO NEXT STATUS
+			const lastStatus = on_status?.message?.order?.fulfillments[0]?.state?.descriptor?.code;
+			//FIND NEXT STATUS
+
+			const lastStatusIndex = AGRI_HEALTHCARE_STATUS.indexOf(lastStatus);
+
+			if (lastStatus === 6) {
+				next_status = lastStatus;
+			}
+			if (
+				lastStatusIndex !== -1 &&
+				lastStatusIndex < AGRI_HEALTHCARE_STATUS.length - 1
+			) {
+				const nextStatusIndex = lastStatusIndex + 1;
+				next_status = AGRI_HEALTHCARE_STATUS[nextStatusIndex];
+			}
+		}
+		scenario = scenario ? scenario : next_status;
+
+		const responseMessage: any = {
 			order: {
-				...response.value.message.order,
-				id: on_confirm.message.order.id,
-				status: response.value.message.order.status,
-				provider: on_confirm.message.order.provider,
-				items: on_confirm.message.order.items,
-				fulfillments: response.value.message.order.fulfillments,
-				quote: on_confirm.message.order.quote,
-				payments: [
-					{
-						...on_confirm.message.order.payments[0],
-						params: {
-							...on_confirm.message.order.payments[0].params,
-							transaction_id: uuidv4(),
+				id: message.order.id,
+				status: "In-progress",
+				provider: {
+					...message.order.provider,
+					rateable: undefined,
+				},
+				items: message.order.items,
+				billing: { ...message.order.billing, tax_id: undefined },
+
+				fulfillments: message.order.fulfillments.map(
+					(fulfillment: Fulfillment) => ({
+						...fulfillment,
+						id: fulfillment.id,
+						state: {
+							descriptor: {
+								code: "AT_LOCATION",
+							},
 						},
-						status: "PAID",
+
+						stops: fulfillment.stops.map((stop: Stop) => {
+							const demoObj = {
+								...stop,
+								id: undefined,
+								authorization: stop.authorization
+									? { ...stop.authorization, status: "confirmed" }
+									: undefined,
+								person: stop.person ? stop.person : stop.customer?.person,
+							};
+							if (stop.type === "start") {
+								return {
+									...demoObj,
+									location: {
+										...stop.location,
+										descriptor: {
+											...stop.location?.descriptor,
+											images: ["https://gf-integration/images/5.png"],
+										},
+									},
+								};
+							}
+							return demoObj;
+						}),
+						rateable: undefined,
+					})
+				),
+				quote: message.order.quote,
+				payments: message.order.payments,
+				documents: [
+					{
+						url: "https://invoice_url",
+						label: "INVOICE",
 					},
 				],
-				document: response.value.message.order.document,
-				created_at: timestamp,
-				updated_at: timestamp,
+				created_at: message.order.created_at,
+				updated_at: message.order.updated_at,
 			},
-		},
-	};
+		};
 
-	return responseBuilder(
-		res,
-		next,
-		context,
-		status.message,
-		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
-		}`,
-		`on_status`,
-		"healthcare-service"
-	);
+		switch (scenario) {
+			case "IN_TRANSIT":
+				responseMessage.order.fulfillments.forEach(
+					(fulfillment: Fulfillment) => {
+						fulfillment.state.descriptor.code = "IN_TRANSIT";
+						fulfillment.stops.forEach((stop: Stop) =>
+							stop?.authorization ? (stop.authorization = undefined) : undefined
+						);
+					}
+				);
+				break;
+			case "AT_LOCATION":
+				responseMessage.order.fulfillments.forEach(
+					(fulfillment: Fulfillment) => {
+						fulfillment.stops.forEach((stop: Stop) =>
+							stop?.authorization
+								? (stop.authorization = {
+										...stop.authorization,
+										status: "valid",
+								  })
+								: undefined
+						);
+					}
+				);
+				break;
+			case "COLLECTED_BY_AGENT":
+				responseMessage.order.fulfillments.forEach(
+					(fulfillment: Fulfillment) => {
+						fulfillment.state.descriptor.code = "COLLECTED_BY_AGENT";
+					}
+				);
+				break;
+			case "RECEIVED_AT_LAB":
+				responseMessage.order.fulfillments.forEach(
+					(fulfillment: Fulfillment) => {
+						fulfillment.state.descriptor.code = "RECEIVED_AT_LAB";
+					}
+				);
+				break;
+			case "TEST_COMPLETED":
+				responseMessage.order.fulfillments.forEach(
+					(fulfillment: Fulfillment) => {
+						fulfillment.state.descriptor.code = "TEST_COMPLETED";
+						fulfillment.stops.forEach((stop: Stop) =>
+							stop?.authorization ? (stop.authorization = undefined) : undefined
+						);
+					}
+				);
+				break;
+			case "REPORT_GENERATED":
+				responseMessage.order.fulfillments.forEach(
+					(fulfillment: Fulfillment) => {
+						fulfillment.state.descriptor.code = "REPORT_GENERATED";
+					}
+				);
+				break;
+			case "REPORT_SHARED":
+				responseMessage.order.status = "Completed";
+				responseMessage.order.fulfillments.forEach(
+					(fulfillment: Fulfillment) => {
+						fulfillment.state.descriptor.code = "REPORT_SHARED";
+					}
+				);
+				break;
+			case "cancel":
+				responseMessage.order.status = "Cancelled";
+				break;
+			default: //service started is the default case
+				break;
+		}
+
+		return responseBuilder(
+			res,
+			next,
+			req.body.context,
+			responseMessage,
+			`${req.body.context.bap_uri}${
+				req.body.context.bap_uri.endsWith("/") ? ON_ACTION_KEY.ON_STATUS : `/${ON_ACTION_KEY.ON_STATUS}`
+			}`,
+			`${ON_ACTION_KEY.ON_STATUS}`,
+			"healthcare-service"
+		);
+	} catch (error) {
+		next(error);
+	}
 };
-
-const statusInTransitController = (req: Request, res: Response, next: NextFunction) => {
-	const { context } = req.body;
-	const file = fs.readFileSync(
-		path.join(HEALTHCARE_SERVICES_EXAMPLES_PATH, "on_status/on_status_In_Transit.yaml")
-	);
-	const response = YAML.parse(file.toString());
-	return responseBuilder(
-		res,
-		next,
-		context,
-		response.value.message,
-		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
-		}`,
-		`on_status`,
-		"healthcare-service"
-	);
-};
-
-const statusReachedReOtpController = (req: Request, res: Response, next: NextFunction) => {
-	const { context } = req.body;
-	const file = fs.readFileSync(
-		path.join(HEALTHCARE_SERVICES_EXAMPLES_PATH, "on_status/on_status_Reached_re-otp.yaml")
-	);
-	const response = YAML.parse(file.toString());
-	return responseBuilder(
-		res,
-		next,
-		context,
-		response.value.message,
-		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
-		}`,
-		`on_status`,
-		"healthcare-service"
-	);
-};
-
-const statusReachedController = (
-	req: Request,
-	res: Response,
-	next: NextFunction
-
-) => {
-	const { context } = req.body;
-	const file = fs.readFileSync(
-		path.join(HEALTHCARE_SERVICES_EXAMPLES_PATH, "on_status/on_status_Reached.yaml")
-	);
-	const response = YAML.parse(file.toString());
-	return responseBuilder(
-		res,
-		next,
-		context,
-		response.value.message,
-		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
-		}`,
-		`on_status`,
-		"healthcare-service"
-	);
-};
-
-const statusServiceStartedController = (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
-	const { context } = req.body;
-	const file = fs.readFileSync(
-		path.join(HEALTHCARE_SERVICES_EXAMPLES_PATH, "on_status/on_status_Service_Started.yaml")
-	);
-	const response = YAML.parse(file.toString());
-	return responseBuilder(
-		res,
-		next,
-		context,
-		response.value.message,
-		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
-		}`,
-		`on_status`,
-		"healthcare-service"
-	);
-};
-
-
-

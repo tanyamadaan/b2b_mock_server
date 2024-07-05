@@ -17,6 +17,7 @@ import { CurlDisplay } from ".";
 import { useAction, useMock } from "../utils/hooks";
 import { URL_MAPPING } from "../utils";
 import axios, { AxiosError } from "axios";
+import { UserGuide } from "./UserGuideSection";
 
 type MockRequestSectionProp = {
     domain: string;
@@ -144,47 +145,47 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
                                             },
                                         }}
 
-                                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                        // @ts-ignore
-                                        onChange={(
-                                            _event: React.SyntheticEvent | null,
-                                            newValue: object
-                                        ) => {
-                                            setActiveScenario(newValue as { name: string; scenario: string; });
-                                            console.log("Active Scenario:", newValue);
-                                        }}
-                                        defaultValue={scenarios![0]}
-                                        disabled={scenarios?.length === 0}
-                                    >
-                                        {scenarios?.map((scenario, index) => (
-                                            <Option
-                                                value={scenario}
-                                                key={"scenario-" + index}
-                                                disabled={!scenario.scenario}
-                                            >
-                                                {scenario.name +
-                                                    (scenario.scenario ? `` : "(Work In-Progress)")}
-                                            </Option>
-                                        ))}
-                                    </Select>
-                                </Grid>
-                            </Grid>
-                        )}
-                        <Button
-                            variant="solid"
-                            onClick={handleSubmit}
-                            disabled={
-                                logError ||
-                                !action ||
-                                (scenarios!.length > 0 && !activeScenario)
-                            }
-                        >
-                            Submit
-                        </Button>
-                    </Stack>
-                </Paper>
-            </Fade>
-            <CurlDisplay slideIn={showCurl} curl={curl} />
-        </>
-    );
+										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+										// @ts-ignore
+										onChange={(
+											_event: React.SyntheticEvent | null,
+											newValue: object
+										) => {
+											setActiveScenario(newValue as { name: string; scenario: string; });
+										}}
+										defaultValue={scenarios![0]}
+										disabled={scenarios?.length === 0}
+									>
+										{scenarios?.map((scenario, index) => (
+											<Option
+												value={scenario}
+												key={"scenario-" + index}
+												disabled={!scenario.scenario}
+											>
+												{scenario.name +
+													(scenario.scenario ? `` : "(Work In-Progress)")}
+											</Option>
+										))}
+									</Select>
+								</Grid>
+							</Grid>
+						)}
+						<Button
+							variant="solid"
+							onClick={handleSubmit}
+							disabled={
+								logError ||
+								!action ||
+								(scenarios!.length > 0 && !activeScenario)
+							}
+						>
+							Submit
+						</Button>
+					</Stack>
+				</Paper>
+			</Fade>
+			<UserGuide domain={domain} />
+			<CurlDisplay slideIn={showCurl} curl={curl} />
+		</>
+	);
 };

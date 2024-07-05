@@ -3,7 +3,7 @@ import { B2B_SCENARIOS } from "openapi-specs/constants";
 export const SUPPORTED_DOMAINS = [
 	"B2B",
 	"SERVICES",
-	"AGRI_SERVICES",
+	"AGRI SERVICES","HEALTHCARE SERVICES",
 	"LOGISTICS",
 ];
 
@@ -167,7 +167,7 @@ export const INITIATE_FIELDS = {
 			placeholder: "Update Target",
 			type: "select",
 			domainDepended: false,
-			options: ["payments"],
+			options: ["payments","fulfillments","items"],
 		},
 	],
 	cancel: [

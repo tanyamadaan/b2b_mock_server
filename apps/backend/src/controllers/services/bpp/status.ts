@@ -2,18 +2,13 @@ import { NextFunction, Request, Response } from "express";
 
 import {
   Fulfillment,
-  SERVICES_EXAMPLES_PATH,
   Stop,
-  checkIfCustomized,
   redisExistFromServer,
   redisFetchFromServer,
   responseBuilder,
   send_nack,
 } from "../../../lib/utils";
 import fs from "fs";
-import path from "path";
-import YAML from "yaml";
-import { fullFormats } from "ajv-formats/dist/formats";
 export const statusController = async (
   req: Request,
   res: Response,
@@ -141,6 +136,7 @@ const statusRequest = async (
       );
       break;
     case "completed":
+      console.log("come in completed")
       responseMessage.order.status = "Completed";
       responseMessage.order.fulfillments?.forEach(
         (fulfillment: Fulfillment) => {
@@ -157,6 +153,7 @@ const statusRequest = async (
     default: //service started is the default case
       break;
   }
+
   return responseBuilder(
     res,
     next,

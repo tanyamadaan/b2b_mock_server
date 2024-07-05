@@ -2,8 +2,10 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Layout } from "./layout/Layout";
 import { Analyse, Landing, Mock, Sandbox, Sign, Swagger } from "./pages";
 import {
+	AgriServicesSwagger,
 	AuthSwagger,
 	B2BSwagger,
+	HealthCareServicesSwagger,
 	MiscSwagger,
 	ServicesSwagger,
 } from "./pages/swagger/domains";
@@ -107,7 +109,8 @@ const router = createBrowserRouter([
 				children: [
 					{ path: "b2b", Component: B2BSwagger },
 					{ path: "services", Component: ServicesSwagger },
-					{ path: "agri-services", Component: ServicesSwagger },
+					{ path: "agri-services", Component: AgriServicesSwagger },
+					{ path: "healthcare-services", Component: HealthCareServicesSwagger },
 					{ path: "auth", Component: AuthSwagger },
 					{ path: "misc", Component: MiscSwagger },
 					{ path: "logistics", Component: LogisticsSwagger}

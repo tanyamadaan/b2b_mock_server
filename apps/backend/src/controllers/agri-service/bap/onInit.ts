@@ -17,17 +17,21 @@ export const onInitController = async (
   res: Response,
   next: NextFunction
 ) => {
-  const on_search = await redisFetchFromServer(
-    "on_search",
-    req.body.context.transaction_id
-  );
-  const providersItems = on_search?.message?.catalog?.providers[0]?.items;
-
-  req.body.providersItems = providersItems;
-  if (checkIfCustomized(req.body.message.order.items)) {
-    return onInitServiceCustomizedController(req, res, next);
+  try{
+    const on_search = await redisFetchFromServer(
+      "on_search",
+      req.body.context.transaction_id
+    );
+    const providersItems = on_search?.message?.catalog?.providers[0]?.items;
+  
+    req.body.providersItems = providersItems;
+    if (checkIfCustomized(req.body.message.order.items)) {
+      return onInitServiceCustomizedController(req, res, next);
+    }
+    onInitConsultationController(req, res, next);
+  }catch(error){
+    return next(error)
   }
-  onInitConsultationController(req, res, next);
 };
 
 const onInitConsultationController = (
@@ -35,79 +39,84 @@ const onInitConsultationController = (
   res: Response,
   next: NextFunction
 ) => {
-  const {
-    context,
-    providersItems,
-    message: {
+  try{
+    const {
+      context,
+      providersItems,
+      message: {
+        order: {
+          provider,
+          locations,
+          items,
+          billing,
+          fulfillments,
+          payments,
+          xinput,
+        },
+      },
+    } = req.body;
+    const { stops, ...remainingfulfillments } = fulfillments[0];
+    const timestamp = new Date();
+  
+    const file = fs.readFileSync(
+      path.join(AGRI_SERVICES_EXAMPLES_PATH, "confirm/confirm.yaml")
+    );
+    const response = YAML.parse(file.toString());
+  
+    const responseMessage = {
       order: {
-        provider,
-        locations,
+        id: uuidv4(),
+        status: response.value.message.order.status,
+        provider: {
+          ...provider,
+          ...locations,
+        },
         items,
         billing,
-        fulfillments,
-        payments,
+        fulfillments: [
+          {
+            ...remainingfulfillments,
+            stops: stops.map(({ tags, ...stop }: { tags: any }) => {
+              return {
+                ...stop,
+                customer: {
+                  person: {
+                    name: "Ramu",
+                  },
+                },
+              };
+            }),
+          },
+        ],
+  
+        quote: quoteCreatorAgriService(items, providersItems),
+        payments: [
+          {
+            ...payments[0],
+            status: "PAID",
+          },
+        ],
+        created_at: timestamp,
+        updated_at: timestamp,
         xinput,
       },
-    },
-  } = req.body;
-  const { stops, ...remainingfulfillments } = fulfillments[0];
-  const timestamp = new Date();
-
-  const file = fs.readFileSync(
-    path.join(AGRI_SERVICES_EXAMPLES_PATH, "confirm/confirm.yaml")
-  );
-  const response = YAML.parse(file.toString());
-
-  const responseMessage = {
-    order: {
-      id: uuidv4(),
-      status: response.value.message.order.status,
-      provider: {
-        ...provider,
-        ...locations,
-      },
-      items,
-      billing,
-      fulfillments: [
-        {
-          ...remainingfulfillments,
-          stops: stops.map(({ tags, ...stop }: { tags: any }) => {
-            return {
-              ...stop,
-              customer: {
-                person: {
-                  name: "Ramu",
-                },
-              },
-            };
-          }),
-        },
-      ],
-
-      quote: quoteCreatorAgriService(items, providersItems),
-      payments: [
-        {
-          ...payments[0],
-          status: "PAID",
-        },
-      ],
-      created_at: timestamp,
-      updated_at: timestamp,
-      xinput,
-    },
-  };
-
-  return responseBuilder(
-    res,
-    next,
-    context,
-    responseMessage,
-    `${context.bpp_uri}${
-      context.bpp_uri.endsWith("/") ? "confirm" : "/confirm"
-    }`,
-    `confirm`,
-    "agri-services"
-  );
+    };
+  
+    return responseBuilder(
+      res,
+      next,
+      context,
+      responseMessage,
+      `${context.bpp_uri}${
+        context.bpp_uri.endsWith("/") ? "confirm" : "/confirm"
+      }`,
+      `confirm`,
+      "agri-services"
+    );
+  }catch(error){
+    next(error)
+  }
+  
 };
 
 const onInitServiceCustomizedController = (
