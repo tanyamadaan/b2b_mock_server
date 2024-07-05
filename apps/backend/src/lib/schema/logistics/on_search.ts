@@ -1,4 +1,5 @@
-import { VERSION, DOMAIN, LOG_BPP_TERMS, TERMS } from "./constants";
+
+import { VERSION, DOMAIN, DELIVERY_CATEGORIES, PROVIDER_TERMS,PROVIDER_TERMS_BPP,FULFILLMENT_TYPES } from "./constants";
 
 export const onSearchSchema = {
 	$id: "onSearchSchema",
@@ -66,6 +67,7 @@ export const onSearchSchema = {
 				},
 				ttl: {
 					type: "string",
+					const:"PT30S"
 				},
 			},
 			required: [
@@ -105,7 +107,7 @@ export const onSearchSchema = {
 												properties: {
 													code: {
 														type: "string",
-														enum: TERMS,
+														enum: PROVIDER_TERMS,
 													},
 												},
 												required: ["code"],
@@ -120,7 +122,7 @@ export const onSearchSchema = {
 															properties: {
 																code: {
 																	type: "string",
-																	enum: LOG_BPP_TERMS,
+																	enum: PROVIDER_TERMS_BPP,
 																},
 															},
 															required: ["code"],
@@ -149,6 +151,7 @@ export const onSearchSchema = {
 									},
 									type: {
 										type: "string",
+										enum: FULFILLMENT_TYPES
 									},
 								},
 								required: ["id", "type"],
@@ -190,7 +193,7 @@ export const onSearchSchema = {
 													properties: {
 														code: {
 															type: "string",
-															enum: ["Standard_Delivery", "Express_Delivery"],
+															enum: DELIVERY_CATEGORIES,
 														},
 													},
 													required: ["code"],
@@ -200,12 +203,14 @@ export const onSearchSchema = {
 													properties: {
 														label: {
 															type: "string",
+															const:"TAT"
 														},
 														duration: {
 															type: "string",
 														},
 														timestamp: {
 															type: "string",
+															pattern: "^\d{4}-\d{2}-\d{2}$"
 														},
 													},
 													required: ["label", "duration", "timestamp"],
@@ -316,6 +321,7 @@ export const onSearchSchema = {
 														},
 														timestamp: {
 															type: "string",
+															pattern: "^\d{4}-\d{2}-\d{2}$"
 														},
 													},
 													required: ["label", "duration", "timestamp"],
@@ -378,8 +384,7 @@ export const onSearchSchema = {
 									"id",
 									"descriptor",
 									"categories",
-									"locations",
-									"items",
+									"items"
 								],
 							},
 						},

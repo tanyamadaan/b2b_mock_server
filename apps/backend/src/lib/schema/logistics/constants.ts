@@ -15,20 +15,23 @@ export const PAYMENT_BPP_TERMS = [
 	"Amount",
 	"Type",
 ];
+ 
+export const FULFILLMENT_TYPES = ["Delivery","Return","RTO"];
+export const DELIVERY_CATEGORIES=["Surface_Delivery","Air_Delivery","Ocean_Delivery"]
+export const PROVIDER_TERMS = ["BPP_TERMS", "KYC"];
+export const PROVIDER_TERMS_BPP = ["Static_Terms",
+	"Static_Terms_New", "Effective_Date", "url", "required"]
 export const TERMS = [
 	"Package_Weight",
 	"Package_Dimensions",
 	"Package_Details",
 	"Cold_Logistics",
-	"BPP_Terms",
 	"BAP_Terms",
-	"KYC",
 	"Diff_Proof",
 ];
 export const LOG_BPP_TERMS = [
 	"Accept_BPP_Terms",
-	"Static_Terms",
-	"Static_Terms_New",
+
 	"Delay_Interest",
 	"Court_Jurisdiction",
 	"Mandatory_Arbitration",
@@ -48,9 +51,6 @@ export const LOG_BPP_TERMS = [
 	"Length",
 	"Unit",
 	"Value",
-	"Effective_Date",
-	"url",
-	"required",
 	"Package_Dimensions_Diff",
 	"Counterparty",
 ];
