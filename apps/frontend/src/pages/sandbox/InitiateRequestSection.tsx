@@ -17,7 +17,7 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 
 type InitiateRequestSectionProp = {
-	domain: "b2b" | "services" | "agri-services" | "healthcare-services";
+	domain: "b2b" | "services" | "agri-services" | "healthcare-services" | "logistics";
 };
 
 type SELECT_OPTIONS =
@@ -27,6 +27,7 @@ type SELECT_OPTIONS =
 	| { services: string[] }
 	| { agri_services: string[] }
 	| { healthcare_services: string[] }
+	| { logistics: string[] }
 	| object;
 
 type SELECT_FIELD = {

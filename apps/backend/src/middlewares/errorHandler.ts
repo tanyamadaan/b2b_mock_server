@@ -5,13 +5,22 @@ import { AxiosError } from "axios";
 export const globalErrorHandler = (err: Error, _req: Request, res: Response, _next: NextFunction) => {
 	logger.error(`Error occured: ${err.stack}`);
 	return res.status(500).send({
-		message: {
-			ack: {
-				status: "NACK",
+		async: {
+			message: {
+				ack: {
+					status: "NACK",
+				},
+			},
+			error: {
+				message: "Error occured while pinging backend",
 			},
 		},
-		error: {
-			message: err instanceof AxiosError ? err?.response?.data : err.message,
+		sync: {
+			message: {
+				ack: {
+					status: "ACK",
+				},
+			},
 		},
 	});
 }

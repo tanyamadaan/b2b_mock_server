@@ -2,7 +2,7 @@ import {
 	TERMS,
 	LOG_BPP_TERMS,
 	VERSION,
-	DOMAIN,
+	CONTEXT_DOMAIN,
 	PAYMENT_TERMS,
 	PAYMENT_BPP_TERMS,
 } from "./constants";

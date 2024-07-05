@@ -35,3 +35,6 @@
 	path = packages/openapi/domain-repos/@services/draft-healthcare-services
 	url = https://github.com/ONDC-Official/ONDC-SRV-Specifications
 	branch = draft-healthcare
+[submodule "apps/backend/domain-repos/@logistics/ONDC-LOG-Specifications"]
+	path = apps/backend/domain-repos/@logistics/ONDC-LOG-Specifications
+	url = https://github.com/ONDC-Official/ONDC-LOG-Specifications.git

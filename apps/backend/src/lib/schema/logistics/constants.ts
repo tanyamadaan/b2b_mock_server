@@ -1,8 +1,16 @@
 export const VERSION = "2.0.0";
 
-export const DOMAIN = ["ONDC:LOG10", "ONDC:LOG11"];
+export const CONTEXT_DOMAIN = ["ONDC:LOG10", "ONDC:LOG11"];
 
-export const DELIVERY_TYPE = ["EXPRESS_DELIVERY", "STANDARD_DELIVERY"];
+export const MESSAGE_INTENT_CATEGORY_DESCRIPTOR_CODE = [
+	"Surface_Delivery",
+	"Air_Delivery",
+	"Ocean_Delivery",
+];
+
+export const MESSAGE_INTENT_FULFILLMENTS_TYPE = ["Delivery", "Return"];
+
+export const Delivery_Terms_Tags = ["Ready_To_Ship","AWB_No","RTO_Action","Incoterms", "Named_Place_Of_Delivery"];
 
 export const PAYMENT_TERMS = ["Settlement_Details", "Collection_Details"];
 export const PAYMENT_BPP_TERMS = [

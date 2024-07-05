@@ -1,4 +1,10 @@
-import { DELIVERY_TYPE, DOMAIN, VERSION } from "./constants";
+import {
+	Delivery_Terms_Tags,
+	MESSAGE_INTENT_FULFILLMENTS_TYPE,
+	MESSAGE_INTENT_CATEGORY_DESCRIPTOR_CODE,
+	CONTEXT_DOMAIN,
+	VERSION,
+} from "./constants";
 
 export const searchSchema = {
 	$id: "searchSchema",
@@ -9,7 +15,7 @@ export const searchSchema = {
 			properties: {
 				domain: {
 					type: "string",
-					enum: DOMAIN
+					enum: CONTEXT_DOMAIN,
 				},
 				location: {
 					type: "object",
@@ -37,7 +43,7 @@ export const searchSchema = {
 				},
 				action: {
 					type: "string",
-					const: "search"
+					const: "search",
 				},
 				version: {
 					type: "string",
@@ -91,7 +97,7 @@ export const searchSchema = {
 											properties: {
 												code: {
 													type: "string",
-													enum: DELIVERY_TYPE,
+													enum: MESSAGE_INTENT_CATEGORY_DESCRIPTOR_CODE,
 												},
 											},
 											required: ["code"],
@@ -118,10 +124,9 @@ export const searchSchema = {
 											properties: {
 												holidays: {
 													type: "array",
-													items: 
-														{
-															type: "string",
-														},			
+													items: {
+														type: "string",
+													},
 												},
 											},
 											required: ["holidays"],
@@ -152,57 +157,51 @@ export const searchSchema = {
 								},
 								stops: {
 									type: "array",
-									items: 
-										{
-											type: "object",
-											properties: {
-												id: {
-													type: "string",
-												},
-												parent_stop_id: {
-													type: "string",
-												},
-												type: {
-													type: "string",
-												},
-												location: {
-													type: "object",
-													properties: {
-														gps: {
-															type: "string",
-														},
-														area_code: {
-															type: "string",
-														},
-													},
-													required: ["gps", "area_code"],
-												},
-												time: {
-													type: "object",
-													properties: {
-														range: {
-															type: "object",
-															properties: {
-																start: {
-																	type: "string",
-																},
-																end: {
-																	type: "string",
-																},
-															},
-															required: ["start", "end"],
-														},
-													},
-													required: ["range"],
-												},
+									items: {
+										type: "object",
+										properties: {
+											id: {
+												type: "string",
 											},
-											required: [
-												"id",
-												"parent_stop_id",
-												"type",
-												"location",
-											],
+											parent_stop_id: {
+												type: "string",
+											},
+											type: {
+												type: "string",
+											},
+											location: {
+												type: "object",
+												properties: {
+													gps: {
+														type: "string",
+													},
+													area_code: {
+														type: "string",
+													},
+												},
+												required: ["gps", "area_code"],
+											},
+											time: {
+												type: "object",
+												properties: {
+													range: {
+														type: "object",
+														properties: {
+															start: {
+																type: "string",
+															},
+															end: {
+																type: "string",
+															},
+														},
+														required: ["start", "end"],
+													},
+												},
+												required: ["range"],
+											},
 										},
+										required: ["id", "parent_stop_id", "type", "location"],
+									},
 								},
 							},
 							required: ["type", "stops"],
@@ -215,68 +214,21 @@ export const searchSchema = {
 								},
 								tags: {
 									type: "array",
-									items:
-										{
-											type: "object",
-											properties: {
-												descriptor: {
-													type: "object",
-													properties: {
-														code: {
-															type: "string",
-														},
+									items: {
+										type: "object",
+										properties: {
+											descriptor: {
+												type: "object",
+												properties: {
+													code: {
+														type: "string",
 													},
-													required: ["code"],
 												},
-												list: {
-													type: "array",
-													items:
-														{
-															type: "object",
-															properties: {
-																descriptor: {
-																	type: "object",
-																	properties: {
-																		code: {
-																			type: "string",
-																		},
-																	},
-																	required: ["code"],
-																},
-																value: {
-																	type: "string",
-																},
-															},
-															required: ["descriptor", "value"],
-														},
-												},
+												required: ["code"],
 											},
-											required: ["descriptor", "list"],
-										},
-									
-								},
-							},
-							required: ["collected_by", "tags"],
-						},
-						tags: {
-							type: "array",
-							items:
-								{
-									type: "object",
-									properties: {
-										descriptor: {
-											type: "object",
-											properties: {
-												code: {
-													type: "string",
-												},
-											},
-											required: ["code"],
-										},
-										list: {
-											type: "array",
-											items:
-												{
+											list: {
+												type: "array",
+												items: {
 													type: "object",
 													properties: {
 														descriptor: {
@@ -294,10 +246,52 @@ export const searchSchema = {
 													},
 													required: ["descriptor", "value"],
 												},
+											},
+										},
+										required: ["descriptor", "list"],
+									},
+								},
+							},
+							required: ["collected_by", "tags"],
+						},
+						tags: {
+							type: "array",
+							items: {
+								type: "object",
+								properties: {
+									descriptor: {
+										type: "object",
+										properties: {
+											code: {
+												type: "string",
+											},
+										},
+										required: ["code"],
+									},
+									list: {
+										type: "array",
+										items: {
+											type: "object",
+											properties: {
+												descriptor: {
+													type: "object",
+													properties: {
+														code: {
+															type: "string",
+														},
+													},
+													required: ["code"],
+												},
+												value: {
+													type: "string",
+												},
+											},
+											required: ["descriptor", "value"],
 										},
 									},
-									required: ["descriptor", "list"],
 								},
+								required: ["descriptor", "list"],
+							},
 						},
 					},
 					required: ["category", "provider", "fulfillments", "payment", "tags"],

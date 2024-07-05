@@ -1,5 +1,5 @@
 import {
-	DOMAIN,
+	CONTEXT_DOMAIN,
 	VERSION,
 	TERMS,
 	LOG_BPP_TERMS,
@@ -16,7 +16,7 @@ export const onCancelSchema = {
 			properties: {
 				domain: {
 					type: "string",
-					const: DOMAIN,
+					const: CONTEXT_DOMAIN,
 				},
 				location: {
 					type: "object",
@@ -395,7 +395,6 @@ export const onCancelSchema = {
 														"short_desc",
 														"long_desc",
 														"additional_desc",
-														"images",
 													],
 												},
 												time: {
@@ -439,7 +438,7 @@ export const onCancelSchema = {
 													properties: {
 														code: {
 															type: "string",
-                              const: "Delivery_Terms",
+															const: "Delivery_Terms",
 														},
 													},
 													required: ["code"],
@@ -555,7 +554,7 @@ export const onCancelSchema = {
 													properties: {
 														code: {
 															type: "string",
-                              enum: PAYMENT_TERMS,
+															enum: PAYMENT_TERMS,
 														},
 													},
 													required: ["code"],
@@ -570,7 +569,7 @@ export const onCancelSchema = {
 																properties: {
 																	code: {
 																		type: "string",
-                                    enum: PAYMENT_BPP_TERMS,
+																		enum: PAYMENT_BPP_TERMS,
 																	},
 																},
 																required: ["code"],
@@ -600,7 +599,7 @@ export const onCancelSchema = {
 										properties: {
 											code: {
 												type: "string",
-                        enum: TERMS
+												enum: TERMS,
 											},
 										},
 										required: ["code"],
@@ -615,7 +614,7 @@ export const onCancelSchema = {
 													properties: {
 														code: {
 															type: "string",
-                              enum: LOG_BPP_TERMS
+															enum: LOG_BPP_TERMS,
 														},
 													},
 													required: ["code"],

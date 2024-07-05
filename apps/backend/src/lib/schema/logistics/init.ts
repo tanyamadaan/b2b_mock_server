@@ -1,4 +1,4 @@
-import { DOMAIN, VERSION } from "./constants";
+import { CONTEXT_DOMAIN, VERSION } from "./constants";
 
 export const initSchema = {
 	$id: "initSchema",
@@ -9,7 +9,7 @@ export const initSchema = {
 			properties: {
 				domain: {
 					type: "string",
-					enum: DOMAIN,
+					enum: CONTEXT_DOMAIN,
 				},
 				location: {
 					type: "object",
@@ -137,7 +137,7 @@ export const initSchema = {
 										properties: {
 											code: {
 												type: "string",
-												enum: ["P2H2P", "P2P"]
+												enum: ["P2H2P", "P2P"],
 											},
 										},
 										required: ["code"],
@@ -153,94 +153,92 @@ export const initSchema = {
 						},
 						fulfillments: {
 							type: "array",
-							items: 
-								{
-									type: "object",
-									properties: {
-										id: {
-											type: "string",
-										},
-										type: {
-											type: "string",
-										},
-										stops: {
-											type: "array",
-											items: {
+							items: {
+								type: "object",
+								properties: {
+									id: {
+										type: "string",
+									},
+									type: {
+										type: "string",
+									},
+									stops: {
+										type: "array",
+										items: {
+											type: "object",
+											properties: {
+												type: {
+													type: "string",
+													enum: ["start", "end"],
+												},
+												location: {
 													type: "object",
 													properties: {
-														type: {
+														gps: {
 															type: "string",
-															enum: ["start","end"]
 														},
-														location: {
+														address: {
+															type: "string",
+														},
+														city: {
 															type: "object",
 															properties: {
-																gps: {
-																	type: "string",
-																},
-																address: {
-																	type: "string",
-																},
-																city: {
-																	type: "object",
-																	properties: {
-																		name: {
-																			type: "string",
-																		},
-																	},
-																	required: ["name"],
-																},
-																state: {
-																	type: "object",
-																	properties: {
-																		name: {
-																			type: "string",
-																		},
-																	},
-																	required: ["name"],
-																},
-																country: {
-																	type: "object",
-																	properties: {
-																		code: {
-																			type: "string",
-																		},
-																	},
-																	required: ["code"],
-																},
-																area_code: {
+																name: {
 																	type: "string",
 																},
 															},
-															required: [
-																"gps",
-																"address",
-																"city",
-																"state",
-																"country",
-																"area_code",
-															],
+															required: ["name"],
 														},
-														contact: {
+														state: {
 															type: "object",
 															properties: {
-																phone: {
-																	type: "string",
-																},
-																email: {
+																name: {
 																	type: "string",
 																},
 															},
-															required: ["phone", "email"],
+															required: ["name"],
+														},
+														country: {
+															type: "object",
+															properties: {
+																code: {
+																	type: "string",
+																},
+															},
+															required: ["code"],
+														},
+														area_code: {
+															type: "string",
 														},
 													},
-													required: ["type", "location", "contact"],
+													required: [
+														"gps",
+														"address",
+														"city",
+														"state",
+														"country",
+														"area_code",
+													],
 												},
+												contact: {
+													type: "object",
+													properties: {
+														phone: {
+															type: "string",
+														},
+														email: {
+															type: "string",
+														},
+													},
+													required: ["phone", "email"],
+												},
+											},
+											required: ["type", "location", "contact"],
 										},
 									},
-									required: ["id", "type", "stops"],
 								},
-							
+								required: ["id", "type", "stops"],
+							},
 						},
 						billing: {
 							type: "object",

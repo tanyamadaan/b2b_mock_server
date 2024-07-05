@@ -1,5 +1,5 @@
 import {
-	DOMAIN,
+	CONTEXT_DOMAIN,
 	VERSION,
 	TERMS,
 	LOG_BPP_TERMS,
@@ -16,7 +16,7 @@ export const onStatusSchema = {
 			properties: {
 				domain: {
 					type: "string",
-          const: DOMAIN,
+					const: CONTEXT_DOMAIN,
 				},
 				location: {
 					type: "object",
@@ -44,11 +44,11 @@ export const onStatusSchema = {
 				},
 				action: {
 					type: "string",
-          const: "on_status",
+					const: "on_status",
 				},
 				version: {
 					type: "string",
-          const: VERSION,
+					const: VERSION,
 				},
 				bap_id: {
 					type: "string",
@@ -101,7 +101,7 @@ export const onStatusSchema = {
 						},
 						status: {
 							type: "string",
-              enum: ["In-progress", "Cancelled"],
+							enum: ["In-progress", "Cancelled"],
 						},
 						cancellation: {
 							type: "object",
@@ -129,79 +129,67 @@ export const onStatusSchema = {
 								},
 								locations: {
 									type: "array",
-									items: 
-										{
-											type: "object",
-											properties: {
-												id: {
-													type: "string",
-												},
+									items: {
+										type: "object",
+										properties: {
+											id: {
+												type: "string",
 											},
-											required: ["id"],
 										},
-									
+										required: ["id"],
+									},
 								},
 							},
 							required: ["id", "locations"],
 						},
 						items: {
 							type: "array",
-							items: 
-								{
-									type: "object",
-									properties: {
-										id: {
+							items: {
+								type: "object",
+								properties: {
+									id: {
+										type: "string",
+									},
+									category_ids: {
+										type: "array",
+										items: {
 											type: "string",
 										},
-										category_ids: {
-											type: "array",
-											items: 
-												{
-													type: "string",
-												},
-											
-										},
-										fulfillment_ids: {
-											type: "array",
-											items: 
-												{
-													type: "string",
-												},
-											
-										},
-										descriptor: {
-											type: "object",
-											properties: {
-												code: {
-													type: "string",
-                          enum: ["P2P", "P2H2P"]
-												},
-											},
-											required: ["code"],
-										},
-										time: {
-											type: "object",
-											properties: {
-												label: {
-													type: "string",
-												},
-												duration: {
-													type: "string",
-												},
-												timestamp: {
-													type: "string",
-												},
-											},
-											required: ["label", "duration", "timestamp"],
+									},
+									fulfillment_ids: {
+										type: "array",
+										items: {
+											type: "string",
 										},
 									},
-									required: [
-										"id",
-										"category_ids",
-										"descriptor",
-										"time",
-									],
+									descriptor: {
+										type: "object",
+										properties: {
+											code: {
+												type: "string",
+												enum: ["P2P", "P2H2P"],
+											},
+										},
+										required: ["code"],
+									},
+									time: {
+										type: "object",
+										properties: {
+											label: {
+												type: "string",
+											},
+											duration: {
+												type: "string",
+											},
+											timestamp: {
+												type: "string",
+											},
+										},
+										required: ["label", "duration", "timestamp"],
+									},
 								},
+								required: ["id", "category_ids", "descriptor", "time"],
+							},
 						},
 						quote: {
 							type: "object",
@@ -220,54 +208,232 @@ export const onStatusSchema = {
 								},
 								breakup: {
 									type: "array",
-									items: 
-										{
-											type: "object",
-											properties: {
-												item: {
-													type: "object",
-													properties: {
-														id: {
-															type: "string",
-														},
+									items: {
+										type: "object",
+										properties: {
+											item: {
+												type: "object",
+												properties: {
+													id: {
+														type: "string",
 													},
-													required: ["id"],
 												},
-												title: {
-													type: "string",
-												},
-												price: {
-													type: "object",
-													properties: {
-														currency: {
-															type: "string",
-														},
-														value: {
-															type: "string",
-														},
-													},
-													required: ["currency", "value"],
-												},
+												required: ["id"],
 											},
-											required: ["item", "title", "price"],
+											title: {
+												type: "string",
+											},
+											price: {
+												type: "object",
+												properties: {
+													currency: {
+														type: "string",
+													},
+													value: {
+														type: "string",
+													},
+												},
+												required: ["currency", "value"],
+											},
 										},
+										required: ["item", "title", "price"],
+									},
 								},
 							},
 							required: ["price", "breakup"],
 						},
 						fulfillments: {
 							type: "array",
-							items: 
-								{
-									type: "object",
-									properties: {
-										id: {
-											type: "string",
+							items: {
+								type: "object",
+								properties: {
+									id: {
+										type: "string",
+									},
+									type: {
+										type: "string",
+									},
+									state: {
+										type: "object",
+										properties: {
+											descriptor: {
+												type: "object",
+												properties: {
+													code: {
+														type: "string",
+														enum: ["Order-picked-up", "Out-for-delivery"],
+													},
+												},
+												required: ["code"],
+											},
 										},
-										type: {
-											type: "string",
+										required: ["descriptor"],
+									},
+									tracking: {
+										type: "boolean",
+									},
+									stops: {
+										type: "array",
+										items: {
+											type: "object",
+											properties: {
+												id: {
+													type: "string",
+												},
+												parent_stop_id: {
+													type: "string",
+												},
+												type: {
+													type: "string",
+													enum: ["start", "end"],
+												},
+												location: {
+													type: "object",
+													properties: {
+														gps: {
+															type: "string",
+															pattern:
+																"^(-?[0-9]{1,3}(?:.[0-9]{6,15})?),( )*?(-?[0-9]{1,3}(?:.[0-9]{6,15})?)$",
+															errorMessage:
+																"Incorrect gps value (minimum of six decimal places are required)",
+														},
+														area_code: {
+															type: "string",
+														},
+														map_url: {
+															type: "string",
+														},
+														address: {
+															type: "string",
+														},
+														city: {
+															type: "string",
+														},
+														state: {
+															type: "string",
+														},
+														country: {
+															type: "string",
+														},
+													},
+													required: [
+														"gps",
+														"area_code",
+														"map_url",
+														"address",
+														"city",
+														"state",
+														"country",
+													],
+												},
+												contact: {
+													type: "object",
+													properties: {
+														phone: {
+															type: "string",
+															pattern: "^(\\d{10})$",
+														},
+														email: {
+															type: "string",
+														},
+													},
+													required: ["phone", "email"],
+												},
+												authorization: {
+													type: "object",
+													properties: {
+														type: {
+															type: "string",
+														},
+														token: {
+															type: "string",
+														},
+														valid_from: {
+															type: "string",
+														},
+														valid_to: {
+															type: "string",
+														},
+													},
+													required: ["type", "token", "valid_from", "valid_to"],
+												},
+												instructions: {
+													type: "object",
+													properties: {
+														code: {
+															type: "string",
+														},
+														short_desc: {
+															type: "string",
+														},
+														long_desc: {
+															type: "string",
+														},
+														additional_desc: {
+															type: "object",
+															properties: {
+																content_type: {
+																	type: "string",
+																},
+																url: {
+																	type: "string",
+																},
+															},
+															required: ["content_type", "url"],
+														},
+														images: {
+															type: "array",
+															items: [
+																{
+																	type: "string",
+																},
+															],
+														},
+													},
+													required: [
+														"short_desc",
+														"long_desc",
+														"additional_desc",
+														"images",
+													],
+												},
+												time: {
+													type: "object",
+													properties: {
+														range: {
+															type: "object",
+															properties: {
+																start: {
+																	type: "string",
+																},
+																end: {
+																	type: "string",
+																},
+															},
+															required: ["start", "end"],
+														},
+														timestamp: {
+															type: "string",
+														},
+													},
+													required: ["range", "timestamp"],
+												},
+											},
+											required: [
+												"id",
+												"parent_stop_id",
+												"type",
+												"location",
+												"contact",
+												"authorization",
+												"instructions",
+												"time",
+											],
 										},
-										state: {
+									},
+									tags: {
+										type: "array",
+										items: {
 											type: "object",
 											properties: {
 												descriptor: {
@@ -275,236 +441,39 @@ export const onStatusSchema = {
 													properties: {
 														code: {
 															type: "string",
-                              enum: ["Order-picked-up","Out-for-delivery"]
+															const: "Delivery_Terms",
 														},
 													},
 													required: ["code"],
 												},
+												list: {
+													type: "array",
+													items: {
+														type: "object",
+														properties: {
+															descriptor: {
+																type: "object",
+																properties: {
+																	code: {
+																		type: "string",
+																	},
+																},
+																required: ["code"],
+															},
+															value: {
+																type: "string",
+															},
+														},
+														required: ["descriptor", "value"],
+													},
+												},
 											},
-											required: ["descriptor"],
-										},
-										tracking: {
-											type: "boolean",
-										},
-										stops: {
-											type: "array",
-											items: 
-												{
-													type: "object",
-													properties: {
-														id: {
-															type: "string",
-														},
-														parent_stop_id: {
-															type: "string",
-														},
-														type: {
-															type: "string",
-                              enum : ["start", "end"]
-														},
-														location: {
-															type: "object",
-															properties: {
-																gps: {
-																	type: "string",
-                                  pattern:
-																"^(-?[0-9]{1,3}(?:.[0-9]{6,15})?),( )*?(-?[0-9]{1,3}(?:.[0-9]{6,15})?)$",
-															errorMessage:
-																"Incorrect gps value (minimum of six decimal places are required)",
-																},
-																area_code: {
-																	type: "string",
-																},
-																map_url: {
-																	type: "string",
-																},
-																address: {
-																	type: "string",
-																},
-																city: {
-																	type: "string",
-																},
-																state: {
-																	type: "string",
-																},
-																country: {
-																	type: "string",
-																},
-															},
-															required: [
-																"gps",
-																"area_code",
-																"map_url",
-																"address",
-																"city",
-																"state",
-																"country",
-															],
-														},
-														contact: {
-															type: "object",
-															properties: {
-																phone: {
-																	type: "string",
-                                  pattern: "^(\\d{10})$"			
-																},
-																email: {
-																	type: "string",
-																},
-															},
-															required: ["phone", "email"],
-														},
-														authorization: {
-															type: "object",
-															properties: {
-																type: {
-																	type: "string",
-																},
-																token: {
-																	type: "string",
-																},
-																valid_from: {
-																	type: "string",
-																},
-																valid_to: {
-																	type: "string",
-																},
-															},
-															required: [
-																"type",
-																"token",
-																"valid_from",
-																"valid_to",
-															],
-														},
-														instructions: {
-															type: "object",
-															properties: {
-                                code:{
-                                  type: "string",
-                                },
-																short_desc: {
-																	type: "string",
-																},
-																long_desc: {
-																	type: "string",
-																},
-																additional_desc: {
-																	type: "object",
-																	properties: {
-																		content_type: {
-																			type: "string",
-																		},
-																		url: {
-																			type: "string",
-																		},
-																	},
-																	required: ["content_type", "url"],
-																},
-																images: {
-																	type: "array",
-																	items: [
-																		{
-																			type: "string",
-																		},
-																	],
-																},
-															},
-															required: [
-																"short_desc",
-																"long_desc",
-																"additional_desc",
-																"images",
-															],
-														},
-														time: {
-															type: "object",
-															properties: {
-																range: {
-																	type: "object",
-																	properties: {
-																		start: {
-																			type: "string",
-																		},
-																		end: {
-																			type: "string",
-																		},
-																	},
-																	required: ["start", "end"],
-																},
-																timestamp: {
-																	type: "string",
-																},
-															},
-															required: ["range", "timestamp"],
-														},
-													},
-													required: [
-														"id",
-														"parent_stop_id",
-														"type",
-														"location",
-														"contact",
-														"authorization",
-														"instructions",
-														"time",
-													],
-												},
-										},
-										tags: {
-											type: "array",
-											items: 
-												{
-													type: "object",
-													properties: {
-														descriptor: {
-															type: "object",
-															properties: {
-																code: {
-																	type: "string",
-                                  const: "Delivery_Terms",
-																},
-															},
-															required: ["code"],
-														},
-														list: {
-															type: "array",
-															items:
-																{
-																	type: "object",
-																	properties: {
-																		descriptor: {
-																			type: "object",
-																			properties: {
-																				code: {
-																					type: "string",
-																				},
-																			},
-																			required: ["code"],
-																		},
-																		value: {
-																			type: "string",
-																		},
-																	},
-																	required: ["descriptor", "value"],
-																},
-															
-														},
-													},
-													required: ["descriptor", "list"],
-												},
-											
+											required: ["descriptor", "list"],
 										},
 									},
-									required: [
-										"id",
-										"type",
-										"state",
-										"tracking",
-										"stops",
-										"tags",
-									],
 								},
+								required: ["id", "type", "state", "tracking", "stops", "tags"],
+							},
 						},
 						billing: {
 							type: "object",
@@ -543,222 +512,217 @@ export const onStatusSchema = {
 						},
 						payment: {
 							type: "array",
-							items: 
-								{
-									type: "object",
-									properties: {
-										id: {
-											type: "string",
+							items: {
+								type: "object",
+								properties: {
+									id: {
+										type: "string",
+									},
+									collected_by: {
+										type: "string",
+									},
+									params: {
+										type: "object",
+										properties: {
+											amount: {
+												type: "string",
+											},
+											currency: {
+												type: "string",
+											},
+											bank_account_number: {
+												type: "string",
+											},
+											virtual_payment_address: {
+												type: "string",
+											},
 										},
-										collected_by: {
-											type: "string",
-										},
-										params: {
+										required: [
+											"amount",
+											"currency",
+											"bank_account_number",
+											"virtual_payment_address",
+										],
+									},
+									type: {
+										type: "string",
+										enum: PAYMENT_TERMS,
+									},
+									tags: {
+										type: "array",
+										items: {
 											type: "object",
 											properties: {
-												amount: {
-													type: "string",
-												},
-												currency: {
-													type: "string",
-												},
-												bank_account_number: {
-													type: "string",
-												},
-												virtual_payment_address: {
-													type: "string",
-												},
-											},
-											required: [
-												"amount",
-												"currency",
-												"bank_account_number",
-												"virtual_payment_address",
-											],
-										},
-										type: {
-											type: "string",
-                      enum: PAYMENT_TERMS,
-										},
-										tags: {
-											type: "array",
-											items: 
-												{
+												descriptor: {
 													type: "object",
 													properties: {
-														descriptor: {
-															type: "object",
-															properties: {
-																code: {
-																	type: "string",
-                                  enum: TERMS
-																},
-															},
-															required: ["code"],
-														},
-														list: {
-															type: "array",
-															items: [
-																{
-																	type: "object",
-																	properties: {
-																		descriptor: {
-																			type: "object",
-																			properties: {
-																				code: {
-																					type: "string",
-                                          enum: LOG_BPP_TERMS
-																				},
-																			},
-																			required: ["code"],
-																		},
-																		value: {
-																			type: "string",
-																		},
-																	},
-																	required: ["descriptor", "value"],
-																},
-																{
-																	type: "object",
-																	properties: {
-																		descriptor: {
-																			type: "object",
-																			properties: {
-																				code: {
-																					type: "string",
-																				},
-																			},
-																			required: ["code"],
-																		},
-																		value: {
-																			type: "string",
-																		},
-																	},
-																	required: ["descriptor", "value"],
-																},
-																{
-																	type: "object",
-																	properties: {
-																		descriptor: {
-																			type: "object",
-																			properties: {
-																				code: {
-																					type: "string",
-																				},
-																			},
-																			required: ["code"],
-																		},
-																		value: {
-																			type: "string",
-																		},
-																	},
-																	required: ["descriptor", "value"],
-																},
-																{
-																	type: "object",
-																	properties: {
-																		descriptor: {
-																			type: "object",
-																			properties: {
-																				code: {
-																					type: "string",
-																				},
-																			},
-																			required: ["code"],
-																		},
-																		value: {
-																			type: "string",
-																		},
-																	},
-																	required: ["descriptor", "value"],
-																},
-																{
-																	type: "object",
-																	properties: {
-																		descriptor: {
-																			type: "object",
-																			properties: {
-																				code: {
-																					type: "string",
-																				},
-																			},
-																			required: ["code"],
-																		},
-																		value: {
-																			type: "string",
-																		},
-																	},
-																	required: ["descriptor", "value"],
-																},
-																{
-																	type: "object",
-																	properties: {
-																		descriptor: {
-																			type: "object",
-																			properties: {
-																				code: {
-																					type: "string",
-																				},
-																			},
-																			required: ["code"],
-																		},
-																		value: {
-																			type: "string",
-																		},
-																	},
-																	required: ["descriptor", "value"],
-																},
-															],
+														code: {
+															type: "string",
+															enum: TERMS,
 														},
 													},
-													required: ["descriptor", "list"],
+													required: ["code"],
 												},
+												list: {
+													type: "array",
+													items: [
+														{
+															type: "object",
+															properties: {
+																descriptor: {
+																	type: "object",
+																	properties: {
+																		code: {
+																			type: "string",
+																			enum: LOG_BPP_TERMS,
+																		},
+																	},
+																	required: ["code"],
+																},
+																value: {
+																	type: "string",
+																},
+															},
+															required: ["descriptor", "value"],
+														},
+														{
+															type: "object",
+															properties: {
+																descriptor: {
+																	type: "object",
+																	properties: {
+																		code: {
+																			type: "string",
+																		},
+																	},
+																	required: ["code"],
+																},
+																value: {
+																	type: "string",
+																},
+															},
+															required: ["descriptor", "value"],
+														},
+														{
+															type: "object",
+															properties: {
+																descriptor: {
+																	type: "object",
+																	properties: {
+																		code: {
+																			type: "string",
+																		},
+																	},
+																	required: ["code"],
+																},
+																value: {
+																	type: "string",
+																},
+															},
+															required: ["descriptor", "value"],
+														},
+														{
+															type: "object",
+															properties: {
+																descriptor: {
+																	type: "object",
+																	properties: {
+																		code: {
+																			type: "string",
+																		},
+																	},
+																	required: ["code"],
+																},
+																value: {
+																	type: "string",
+																},
+															},
+															required: ["descriptor", "value"],
+														},
+														{
+															type: "object",
+															properties: {
+																descriptor: {
+																	type: "object",
+																	properties: {
+																		code: {
+																			type: "string",
+																		},
+																	},
+																	required: ["code"],
+																},
+																value: {
+																	type: "string",
+																},
+															},
+															required: ["descriptor", "value"],
+														},
+														{
+															type: "object",
+															properties: {
+																descriptor: {
+																	type: "object",
+																	properties: {
+																		code: {
+																			type: "string",
+																		},
+																	},
+																	required: ["code"],
+																},
+																value: {
+																	type: "string",
+																},
+															},
+															required: ["descriptor", "value"],
+														},
+													],
+												},
+											},
+											required: ["descriptor", "list"],
 										},
 									},
-									required: ["id", "collected_by", "params", "type", "tags"],
 								},
-							
+								required: ["id", "collected_by", "params", "type", "tags"],
+							},
 						},
 						tags: {
 							type: "array",
-							items: 
-								{
-									type: "object",
-									properties: {
-										descriptor: {
+							items: {
+								type: "object",
+								properties: {
+									descriptor: {
+										type: "object",
+										properties: {
+											code: {
+												type: "string",
+											},
+										},
+										required: ["code"],
+									},
+									list: {
+										type: "array",
+										items: {
 											type: "object",
 											properties: {
-												code: {
-													type: "string",
-												},
-											},
-											required: ["code"],
-										},
-										list: {
-											type: "array",
-											items: 
-												{
+												descriptor: {
 													type: "object",
 													properties: {
-														descriptor: {
-															type: "object",
-															properties: {
-																code: {
-																	type: "string",
-																},
-															},
-															required: ["code"],
-														},
-														value: {
+														code: {
 															type: "string",
 														},
 													},
-													required: ["descriptor", "value"],
+													required: ["code"],
 												},
+												value: {
+													type: "string",
+												},
+											},
+											required: ["descriptor", "value"],
 										},
 									},
-									required: ["descriptor", "list"],
 								},
+								required: ["descriptor", "list"],
+							},
 						},
 						updated_at: {
 							type: "string",
