@@ -9,8 +9,7 @@ import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
 import useTheme from "@mui/material/styles/useTheme";
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-
+import { useLocation, useNavigate } from "react-router-dom"
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import Typography from "@mui/material/Typography";
@@ -86,7 +85,7 @@ const DOMAIN_NAVS = [
 	{
 		name: "User Guide",
 		nested: false,
-		path: "/swagger/misc"
+		path: "/user-guide"
 	}
 ];
 type CustomDrawerProps = {
