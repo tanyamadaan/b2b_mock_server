@@ -230,7 +230,7 @@ export const searchSchema = {
               },
             },
           },
-          required: [ "fulfillment", "payment", "tags"],
+          required: ["tags"],
         },
       },
       required: ["intent"],
