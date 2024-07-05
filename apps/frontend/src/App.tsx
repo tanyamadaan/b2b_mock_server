@@ -18,6 +18,9 @@ import { B2BSandbox, ServicesSandbox } from "./pages/sandbox/domains";
 import { AgriServicesSandbox } from "./pages/sandbox/domains/agri-services";
 import { HealthCareServicesSandbox } from "./pages/sandbox/domains/healthcare-services";
 import Readme from "./pages/readme";
+import { LogisticsSandbox } from "./pages/sandbox/domains/logistics";
+import { LogisticsMock } from "./pages/mock/domains/logistics";
+import { LogisticsSwagger } from "./pages/swagger/domains/logistics";
 
 // log
 
@@ -62,6 +65,10 @@ const router = createBrowserRouter([
 						path: "healthcare-services",
 						Component: HealthCareServicesMock,
 					},
+					{
+						path: "logistics",
+						Component: LogisticsMock
+					}
 				],
 			},
 			{
@@ -88,6 +95,10 @@ const router = createBrowserRouter([
 						path: "healthcare-services",
 						Component: HealthCareServicesSandbox,
 					},
+					{
+						path: "logistics",
+						Component: LogisticsSandbox,
+					}
 				],
 			},
 			{
@@ -99,6 +110,7 @@ const router = createBrowserRouter([
 					{ path: "agri-services", Component: ServicesSwagger },
 					{ path: "auth", Component: AuthSwagger },
 					{ path: "misc", Component: MiscSwagger },
+					{ path: "logistics", Component: LogisticsSwagger}
 				],
 			},
 			{

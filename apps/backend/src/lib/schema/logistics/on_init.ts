@@ -1,4 +1,11 @@
-import { DOMAIN, VERSION, TERMS, LOG_BPP_TERMS, PAYMENT_TERMS, PAYMENT_BPP_TERMS } from "./constants";
+import {
+	CONTEXT_DOMAIN,
+	VERSION,
+	TERMS,
+	LOG_BPP_TERMS,
+	PAYMENT_TERMS,
+	PAYMENT_BPP_TERMS,
+} from "./constants";
 
 export const onInitSchema = {
 	$id: "onInitSchema",
@@ -9,7 +16,7 @@ export const onInitSchema = {
 			properties: {
 				domain: {
 					type: "string",
-					enum: DOMAIN,
+					enum: CONTEXT_DOMAIN,
 				},
 				location: {
 					type: "object",
@@ -144,7 +151,7 @@ export const onInitSchema = {
 									},
 									type: {
 										type: "string",
-                    const: "Delivery",
+										const: "Delivery",
 									},
 									stops: {
 										type: "array",
@@ -153,7 +160,7 @@ export const onInitSchema = {
 											properties: {
 												type: {
 													type: "string",
-                          enum: ["start", "end"],
+													enum: ["start", "end"],
 												},
 												location: {
 													type: "object",
@@ -213,7 +220,8 @@ export const onInitSchema = {
 													properties: {
 														phone: {
 															type: "string",
-                              pattern: "^(\\d{10})$"														},
+															pattern: "^(\\d{10})$",
+														},
 														email: {
 															type: "string",
 														},
@@ -295,8 +303,14 @@ export const onInitSchema = {
 												properties: {
 													code: {
 														type: "string",
-                            enum: ["Pending","Out-for-pickup","In-transit","At-destination-hub","Out-for-delivery"]
-                          },
+														enum: [
+															"Pending",
+															"Out-for-pickup",
+															"In-transit",
+															"At-destination-hub",
+															"Out-for-delivery",
+														],
+													},
 													short_desc: {
 														type: "string",
 													},
@@ -382,7 +396,7 @@ export const onInitSchema = {
 													properties: {
 														code: {
 															type: "string",
-                              enum: PAYMENT_TERMS
+															enum: PAYMENT_TERMS,
 														},
 													},
 													required: ["code"],
@@ -397,7 +411,7 @@ export const onInitSchema = {
 																properties: {
 																	code: {
 																		type: "string",
-                                    enum: PAYMENT_BPP_TERMS
+																		enum: PAYMENT_BPP_TERMS,
 																	},
 																},
 																required: ["code"],
@@ -451,7 +465,7 @@ export const onInitSchema = {
 								properties: {
 									code: {
 										type: "string",
-                    enum: TERMS
+										enum: TERMS,
 									},
 									list: {
 										type: "array",
@@ -460,7 +474,7 @@ export const onInitSchema = {
 											properties: {
 												code: {
 													type: "string",
-                          enum: LOG_BPP_TERMS
+													enum: LOG_BPP_TERMS,
 												},
 												value: {
 													type: "string",

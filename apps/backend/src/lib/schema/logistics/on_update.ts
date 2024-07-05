@@ -1,5 +1,5 @@
 import {
-	DOMAIN,
+	CONTEXT_DOMAIN,
 	VERSION,
 	TERMS,
 	LOG_BPP_TERMS,
@@ -8,7 +8,7 @@ import {
 } from "./constants";
 
 export const onUpdateSchema = {
-	$schema: "http://json-schema.org/draft-04/schema#",
+	$id: "onUpdateSchema",
 	type: "object",
 	properties: {
 		context: {
@@ -16,7 +16,7 @@ export const onUpdateSchema = {
 			properties: {
 				domain: {
 					type: "string",
-					const: DOMAIN,
+					const: CONTEXT_DOMAIN,
 				},
 				location: {
 					type: "object",

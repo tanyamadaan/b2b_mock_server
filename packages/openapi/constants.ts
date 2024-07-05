@@ -1,5 +1,38 @@
 export const USER_GUIDE_LINK = "";
 
+export const LOGISTICS_SCENARIOS = {
+	on_init: [
+		{
+			name: "Success",
+			scenario: "success",
+		},
+		{
+			name: "KYC Failed",
+			scenario: "kyc-failed",
+		},
+	],
+	update: [
+		{
+			name: "RTS",
+			scenario: "rts",
+		},
+		{
+			name: "RTS with weight difference",
+			scenario: "rts-weight-difference",
+		},
+	],
+	on_update: [
+		{
+			name: "RTS",
+			scenario: "rts",
+		},
+		{
+			name: "RTS with weight difference",
+			scenario: "rts-weight-difference",
+		},
+	],
+};
+
 export const B2B_SCENARIOS = {
 	select: [
 		{
@@ -187,6 +220,33 @@ export const SERVICES_SCENARIOS = {
 export const DOMAINS = {
 	b2b: "B2B",
 	services: "Services - Home Services",
+	logistics: "LOGISTICS",
+};
+
+export const NEXT_ACTION_LOGISTICS = {
+	search: "on_search",
+	on_search: "init",
+	init: "on_init",
+	on_init: "confirm",
+	confirm: "on_confirm",
+	on_confirm: "update",
+	update: "on_update",
+	status: "on_status",
+	cancel: "on_cancel",
+};
+
+export const PREV_ACTION_LOGISTICS = {
+	on_search: "search",
+	init: "on_search",
+	on_init: "init",
+	confirm: "on_init",
+	on_confirm: "confirm",
+	status: "on_confirm",
+	on_status: "status",
+	cancel: "on_confirm",
+	on_cancel: "cancel",
+	update: "on_confirm",
+	on_update: "update",
 };
 
 export const NEXT_ACTION = {

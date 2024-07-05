@@ -1,4 +1,4 @@
-import { VERSION, DOMAIN, LOG_BPP_TERMS, TERMS } from "./constants";
+import { VERSION, CONTEXT_DOMAIN, LOG_BPP_TERMS, TERMS } from "./constants";
 
 export const onSearchSchema = {
 	$id: "onSearchSchema",
@@ -9,7 +9,7 @@ export const onSearchSchema = {
 			properties: {
 				domain: {
 					type: "string",
-					enum: DOMAIN,
+					enum: CONTEXT_DOMAIN,
 				},
 				location: {
 					type: "object",
@@ -279,7 +279,7 @@ export const onSearchSchema = {
 													properties: {
 														code: {
 															type: "string",
-                              enum: ["P2P","P2H2P"]
+															enum: ["P2P", "P2H2P"],
 														},
 														name: {
 															type: "string",
@@ -330,7 +330,7 @@ export const onSearchSchema = {
 																properties: {
 																	code: {
 																		type: "string",
-                                    enum: ["Cargo_Details"]
+																		enum: ["Cargo_Details"],
 																	},
 																},
 																required: ["code"],
@@ -345,7 +345,12 @@ export const onSearchSchema = {
 																			properties: {
 																				code: {
 																					type: "string",
-                                          enum: ["Delivery_Mode","Vehicle_Type","Vehicle_Size","Load_Type"]
+																					enum: [
+																						"Delivery_Mode",
+																						"Vehicle_Type",
+																						"Vehicle_Size",
+																						"Load_Type",
+																					],
 																				},
 																			},
 																			required: ["code"],
