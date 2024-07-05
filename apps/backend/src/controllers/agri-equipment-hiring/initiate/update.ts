@@ -101,7 +101,6 @@ export const initiateUpdateController = async (
   } catch (error) {
     return next(error)
   }
-
 };
 
 function requoteRequest(message: any, update_target: string) {

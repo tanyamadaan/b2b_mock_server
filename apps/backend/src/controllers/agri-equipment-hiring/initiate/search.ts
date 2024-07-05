@@ -16,7 +16,7 @@ export const initiateSearchController = async (req: Request, res: Response, next
 	try{
 		const { bpp_uri, city, domain } = req.body;
 		const file = fs.readFileSync(
-			path.join(AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH, `${ACTTION_KEY.SEARCH}/${ACTTION_KEY.SEARCH}.yaml`)
+			path.join(AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH, "search/search_by_category.yaml")
 		);
 		let search = YAML.parse(file.toString());
 		search = search.value;
@@ -42,6 +42,8 @@ export const initiateSearchController = async (req: Request, res: Response, next
 			},
 		};
 		search.bpp_uri = bpp_uri
+		console.log("searchapppppppppppp", JSON.stringify(search))
+		
 		await send_response(res, next, search, transaction_id, ACTTION_KEY.SEARCH);
 	}catch(error){
 		return next(error);

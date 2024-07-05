@@ -22,7 +22,8 @@ type JsonSchemaValidatorType = {
 		| "track"
 		| "on_track"
 		| "cancel"
-		| "on_cancel";
+		| "on_cancel"
+		| "rating";
 };
 export const jsonSchemaValidator = ({
 	domain,

@@ -7,6 +7,7 @@ import { statusController } from "./status";
 import { updateController } from "./update";
 import { cancelController } from "./cancel";
 import { jsonSchemaValidator, redisRetriever } from "../../../middlewares";
+import { ratingController } from "./rating";
 
 export const bppRouter = Router();
 
@@ -57,4 +58,11 @@ bppRouter.post(
 	jsonSchemaValidator({ domain: "agri-equipment-hiring", action: "cancel" }),
 	redisRetriever,
 	cancelController
+);
+
+bppRouter.post(
+	"/rating",
+	jsonSchemaValidator({ domain: "agri-equipment-hiring", action: "rating" }),
+	redisRetriever,
+	ratingController
 );

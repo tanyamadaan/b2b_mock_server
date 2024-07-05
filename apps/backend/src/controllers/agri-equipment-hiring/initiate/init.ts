@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import {
 	MOCKSERVER_ID,
-	checkIfCustomized,
 	send_response,
 	send_nack,
 	redisFetchToServer,
@@ -15,14 +14,13 @@ import { BILLING_DETAILS } from "../../../lib/utils/apiConstants";
 export const initiateInitController = async (req: Request, res: Response, next: NextFunction) => {
 	try{
 		const { scenario, transactionId } = req.body;
-		const on_select = await redisFetchToServer(ON_ACTION_KEY.ON_SEARCH, transactionId)
+		const on_select = await redisFetchToServer(ON_ACTION_KEY.ON_SELECT, transactionId);
 		if (!on_select) {
 			return send_nack(res, ERROR_MESSAGES.ON_SELECT_DOES_NOT_EXISTED)
 		}
 		if (Object.keys(on_select).includes("error")) {
 			return send_nack(res, ERROR_MESSAGES.ON_SELECT_DOES_NOT_EXISTED)
 		}
-		
 		return intializeRequest(res, next, on_select, scenario);
 	}catch(error){
 		return next(error)
