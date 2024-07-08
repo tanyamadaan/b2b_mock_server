@@ -10,7 +10,6 @@ import {
 	miscRouter,
 	servicesRouter,
 } from "./controllers";
-
 import cors from "cors";
 import {
 	authSwagger,
@@ -56,13 +55,11 @@ app.use(express.raw({ type: "*/*", limit: "1mb" }));
 app.use(requestParser);
 app.use("/", miscRouter);
 
-app.use("/b2b", errorHandlingWrapper(b2bRouter));
 app.use("/auth", errorHandlingWrapper(authRouter));
+app.use("/b2b", errorHandlingWrapper(b2bRouter));
 app.use("/services", errorHandlingWrapper(servicesRouter));
 app.use("/agri-services", errorHandlingWrapper(agriServiceRouter));
 app.use("/healthcare-services", errorHandlingWrapper(healthCareServiceRouter));
-
-
 
 app.use("/detect_app_installation", (req: Request, res: Response) => {
 	const headers = req.headers;
@@ -70,6 +67,7 @@ app.use("/detect_app_installation", (req: Request, res: Response) => {
 		headers: headers,
 	});
 });
+
 app.use(globalErrorHandler);
 
 //Schedule the function to run every 30 seconds using node-cron
