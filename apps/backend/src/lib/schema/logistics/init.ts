@@ -373,62 +373,6 @@ export const initSchema = {
 											},
 											required: ["descriptor", "list"],
 										},
-										{
-											type: "object",
-											properties: {
-												descriptor: {
-													type: "object",
-													properties: {
-														code: {
-															type: "string",
-														},
-													},
-													required: ["code"],
-												},
-												list: {
-													type: "array",
-													items: [
-														{
-															type: "object",
-															properties: {
-																descriptor: {
-																	type: "object",
-																	properties: {
-																		code: {
-																			type: "string",
-																		},
-																	},
-																	required: ["code"],
-																},
-																value: {
-																	type: "string",
-																},
-															},
-															required: ["descriptor", "value"],
-														},
-														{
-															type: "object",
-															properties: {
-																descriptor: {
-																	type: "object",
-																	properties: {
-																		code: {
-																			type: "string",
-																		},
-																	},
-																	required: ["code"],
-																},
-																value: {
-																	type: "string",
-																},
-															},
-															required: ["descriptor", "value"],
-														},
-													],
-												},
-											},
-											required: ["descriptor", "list"],
-										},
 									],
 								},
 							},
