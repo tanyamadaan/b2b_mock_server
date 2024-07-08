@@ -25,8 +25,10 @@ export const PAYMENT_BPP_TERMS = [
 ];
  
 export const FULFILLMENT_TYPES = ["Delivery","Return","RTO"];
+
+export const FULFILLMENT_STATES =["Pending","Out-for-pickup","Order-picked-up","In-transit","At-destination-hub","Out-for-delivery","Order-delivered","RTO-Initiated","RTO-Delivered","RTO-Disposed"]
 export const DELIVERY_CATEGORIES=["Surface_Delivery","Air_Delivery","Ocean_Delivery"]
-export const PROVIDER_TERMS = ["BPP_TERMS", "KYC"];
+export const PROVIDER_TERMS = ["BPP_Terms", "KYC"];
 export const PROVIDER_TERMS_BPP = ["Static_Terms",
 	"Static_Terms_New", "Effective_Date", "url", "required"]
 export const TERMS = [
@@ -37,28 +39,13 @@ export const TERMS = [
 	"BAP_Terms",
 	"Diff_Proof",
 ];
-export const LOG_BPP_TERMS = [
-	"Accept_BPP_Terms",
 
+export const PAYMENT_TYPES = ["PRE_FULFILLMENT","ON-FULFILLMENT","POST-FULFILLMENT"]
+export const LOG_BPP_TERMS = [
 	"Delay_Interest",
 	"Court_Jurisdiction",
 	"Mandatory_Arbitration",
 	"Max_Liability_Cap",
 	"Max_Liability",
-	"Temp_Max",
-	"Temp_Min",
-	"Temp_Unit",
-	"Temp_Control",
-	"Package_Count",
-	"Shipment_Value",
-	"Stackable",
-	"Dangerous_Goods",
-	"Category",
-	"Height",
-	"Breadth",
-	"Length",
-	"Unit",
-	"Value",
-	"Package_Dimensions_Diff",
-	"Counterparty",
+	"Static_Terms"
 ];
