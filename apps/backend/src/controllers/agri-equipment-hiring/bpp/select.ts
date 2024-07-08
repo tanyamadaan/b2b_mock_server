@@ -32,7 +32,7 @@ export const selectController = async (
 		}
 		const { scenario } = req.query;
 		switch (scenario) {
-			case "multi_collection":
+			case "no_equipments_avaliable":
 				selectMultiCollectionController(req, res, next);
 				break;
 			default:

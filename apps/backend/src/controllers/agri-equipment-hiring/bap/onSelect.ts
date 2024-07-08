@@ -78,7 +78,7 @@ const onSelectConsultationController = (req: Request, res: Response, next: NextF
 			responseMessage,
 			`${req.body.context.bpp_uri}${req.body.context.bpp_uri.endsWith("/") ? "init" : "/init"}`,
 			`init`,
-			"healthcare-service"
+			"agri-equipment-hiring"
 		);
 	}catch(error){
 		next(error)
@@ -166,7 +166,7 @@ const onSelectServiceCustomizedController = (req: Request, res: Response, next: 
 		responseMessage,
 		`${req.body.context.bpp_uri}${req.body.context.bpp_uri.endsWith("/") ? "init" : "/init"}`,
 		`init`,
-		"healthcare-service"
+		"agri-equipment-hiring"
 	);
 };
 

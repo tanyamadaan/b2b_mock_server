@@ -29,7 +29,7 @@ const onSearchSelectionController = (req: Request, res: Response, next: NextFunc
 			resposneMessage,
 			`${context.bpp_uri}${context.bpp_uri.endsWith("/") ? "select" : "/select"}`,
 			`select`,
-			"healthcare-service"
+			"agri-equipment-hiring"
 		);
 	}catch(error){
 		next(error)
