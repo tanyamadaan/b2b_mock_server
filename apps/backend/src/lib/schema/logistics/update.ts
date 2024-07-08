@@ -1,4 +1,4 @@
-import { CONTEXT_DOMAIN, LOG_ORDER_TAGS, UPDATE_TAGS, VERSION, PAYMENT_TYPES, UPDATE_FULFILLMENT_TAGS } from "./constants";
+import { CONTEXT_DOMAIN, LOG_ORDER_TAGS, UPDATE_TAGS, VERSION, PAYMENT_TYPES, DELIVERY_TERMS_TAGS } from "./constants";
 
 export const updateSchema = {
 	$id: "updateSchema",
@@ -285,7 +285,7 @@ export const updateSchema = {
 																properties: {
 																	code: {
 																		type: "string",
-																		enum: UPDATE_FULFILLMENT_TAGS
+																		enum: DELIVERY_TERMS_TAGS
 																	},
 																},
 																required: ["code"],

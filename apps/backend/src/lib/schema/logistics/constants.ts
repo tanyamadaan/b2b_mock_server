@@ -55,17 +55,11 @@ export const DELIVERY_TERMS_TAGS = [
 	"AWB_No",
 	"RTO_Action",
 	"Incoterms",
-	"Named_Place_Of_Delivery",
-];
-
-export const UPDATE_FULFILLMENT_TAGS = [
-	"Ready_To_Ship",
-	"AWB_No",
-	"Eway_Bill_No",
-	"RTO_Action",
 	"LR_No",
+	"Transporter_Id",
 	"Doc_Way_Bill_No",
 ];
+
 
 export const COLD_LOGISTICS_TAGS = [
 	"Temp_Control",

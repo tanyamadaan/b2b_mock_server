@@ -7,6 +7,7 @@ import {
 	PAYMENT_BPP_TERMS,
 	FULFILLMENT_TYPES,
 	FULFILLMENT_STATES,
+	DELIVERY_TERMS_TAGS,
 } from "./constants";
 
 export const onStatusSchema = {
@@ -18,7 +19,7 @@ export const onStatusSchema = {
 			properties: {
 				domain: {
 					type: "string",
-					const: CONTEXT_DOMAIN,
+					enum: CONTEXT_DOMAIN,
 				},
 				location: {
 					type: "object",
@@ -459,6 +460,7 @@ export const onStatusSchema = {
 																properties: {
 																	code: {
 																		type: "string",
+																		enum: DELIVERY_TERMS_TAGS
 																	},
 																},
 																required: ["code"],
