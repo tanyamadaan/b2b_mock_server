@@ -2,9 +2,11 @@ import {
 	CONTEXT_DOMAIN,
 	VERSION,
 	TERMS,
-	LOG_BPP_TERMS,
+	LOG_ORDER_TAGS,
 	PAYMENT_TERMS,
 	PAYMENT_BPP_TERMS,
+	CONFIRM_MESSAGE_ORDER_TAG_GROUPS,
+	PAYMENT_TYPES,
 } from "./constants";
 
 export const confirmSchema = {
@@ -101,7 +103,13 @@ export const confirmSchema = {
 						},
 						status: {
 							type: "string",
-							enum: ["Created"],
+							enum: [
+								"Created",
+								"Accepted",
+								"In-Progress",
+								"Completed",
+								"Cancelled",
+							],
 						},
 						provider: {
 							type: "object",
@@ -173,45 +181,22 @@ export const confirmSchema = {
 									},
 									type: {
 										type: "string",
-									},
-									agent: {
-										type: "object",
-										properties: {
-											person: {
-												type: "object",
-												properties: {
-													name: {
-														type: "string",
-													},
-												},
-												required: ["name"],
-											},
-										},
-										required: ["person"],
+										enum: ["Delivery", "Return"],
 									},
 									stops: {
 										type: "array",
 										items: {
 											type: "object",
 											properties: {
-												id: {
-													type: "string",
-												},
-												parent_stop_id: {
-													type: "string",
-												},
 												type: {
 													type: "string",
+													enum: ["start", "end"],
 												},
 												location: {
 													type: "object",
 													properties: {
 														gps: {
 															type: "string",
-															pattern:
-																"^(-?[0-9]{1,3}(?:.[0-9]{6,15})?),( )*?(-?[0-9]{1,3}(?:.[0-9]{6,15})?)$",
-															errorMessage:
-																"Incorrect gps value (minimum of six decimal places are required)",
 														},
 														address: {
 															type: "string",
@@ -237,14 +222,11 @@ export const confirmSchema = {
 														country: {
 															type: "object",
 															properties: {
-																name: {
-																	type: "string",
-																},
 																code: {
 																	type: "string",
 																},
 															},
-															required: ["name", "code"],
+															required: ["code"],
 														},
 														area_code: {
 															type: "string",
@@ -272,17 +254,54 @@ export const confirmSchema = {
 													required: ["phone", "email"],
 												},
 											},
-											required: [
-												"id",
-												"parent_stop_id",
-												"type",
-												"location",
-												"contact",
-											],
+											required: ["type", "location", "contact"],
+										},
+									},
+									tags: {
+										type: "object",
+										properties: {
+											descriptor: {
+												type: "object",
+												properties: {
+													code: {
+														type: "string",
+														enum: ["Delivery_Terms"],
+													},
+												},
+												required: ["code"],
+											},
+											list: {
+												type: "array",
+												items: [
+													{
+														type: "object",
+														properties: {
+															descriptor: {
+																type: "object",
+																properties: {
+																	code: {
+																		type: "string",
+																		enum: [
+																			"INCOTERMS",
+																			"NAMED_PLACE_OF_DELIVERY",
+																		],
+																	},
+																},
+																required: ["code"],
+															},
+															value: {
+																type: "string",
+																enum: ["CIF", "EXW", "FOB", "DAP", "DDP"],
+															},
+														},
+														required: ["descriptor", "value"],
+													},
+												],
+											},
 										},
 									},
 								},
-								required: ["id", "type", "agent", "stops"],
+								required: ["id", "type", "stops"],
 							},
 						},
 						quote: {
@@ -316,6 +335,17 @@ export const confirmSchema = {
 											},
 											title: {
 												type: "string",
+												enum: [
+													"delivery",
+													"tax",
+													"Origin",
+													"Freight",
+													"Destination",
+													"Custom_Clearance_Service_Origin",
+													"Custom_Clearance_Service_Destination",
+													"rto",
+													"diff",
+												],
 											},
 											price: {
 												type: "object",
@@ -390,6 +420,7 @@ export const confirmSchema = {
 									},
 									collected_by: {
 										type: "string",
+										enum: ["BAP", "BPP", "SOR"],
 									},
 									params: {
 										type: "object",
@@ -416,6 +447,7 @@ export const confirmSchema = {
 									},
 									type: {
 										type: "string",
+										enum: PAYMENT_TYPES
 									},
 									tags: {
 										type: "array",
@@ -427,6 +459,7 @@ export const confirmSchema = {
 													properties: {
 														code: {
 															type: "string",
+															enum: PAYMENT_TERMS,
 														},
 													},
 													required: ["code"],
@@ -441,6 +474,7 @@ export const confirmSchema = {
 																properties: {
 																	code: {
 																		type: "string",
+																		enum: PAYMENT_BPP_TERMS,
 																	},
 																},
 																required: ["code"],
@@ -470,7 +504,7 @@ export const confirmSchema = {
 										properties: {
 											code: {
 												type: "string",
-												enum: TERMS,
+												enum: CONFIRM_MESSAGE_ORDER_TAG_GROUPS,
 											},
 										},
 										required: ["code"],
@@ -485,7 +519,7 @@ export const confirmSchema = {
 													properties: {
 														code: {
 															type: "string",
-															enum: LOG_BPP_TERMS,
+															enum: LOG_ORDER_TAGS,
 														},
 													},
 													required: ["code"],

@@ -57,13 +57,16 @@ export const initController = async (
 					break;
 			}
 			switch(scenario){
-        case "success":
-          file = path.join(file, "on_init_air_kyc_success.yaml");
-          break;
-        default:
-          file = path.join(file, "on_init_air.yaml");
-
-      };
+				case "success":
+					const successPath = path.join(file, "on_init_air_kyc_success.yaml");
+					if (fs.existsSync(successPath)) {
+						file = successPath;
+						break;
+					}
+					// If the file does not exist, do not break; instead, continue to the default case
+				default:
+					file = path.join(file, "on_init_air.yaml");
+			};
 			if (!file) {
 				return null; // Return null or handle this case as needed
 			}

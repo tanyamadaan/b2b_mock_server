@@ -1,4 +1,4 @@
-import { CONTEXT_DOMAIN, LOG_BPP_TERMS, TERMS, VERSION } from "./constants";
+import { CONTEXT_DOMAIN, LOG_ORDER_TAGS, UPDATE_TAGS, VERSION, PAYMENT_TYPES, UPDATE_FULFILLMENT_TAGS } from "./constants";
 
 export const updateSchema = {
 	$id: "updateSchema",
@@ -285,11 +285,7 @@ export const updateSchema = {
 																properties: {
 																	code: {
 																		type: "string",
-																		enum: [
-																			"Ready_To_Ship",
-																			"AWB_No",
-																			"Eway_Bill_No",
-																		],
+																		enum: UPDATE_FULFILLMENT_TAGS
 																	},
 																},
 																required: ["code"],
@@ -319,7 +315,7 @@ export const updateSchema = {
 										properties: {
 											code: {
 												type: "string",
-												enum: TERMS,
+												enum: UPDATE_TAGS,
 											},
 										},
 										required: ["code"],
@@ -334,7 +330,7 @@ export const updateSchema = {
 													properties: {
 														code: {
 															type: "string",
-															enum: LOG_BPP_TERMS,
+															enum: LOG_ORDER_TAGS,
 														},
 													},
 													required: ["code"],
@@ -360,7 +356,6 @@ export const updateSchema = {
 						"provider",
 						"items",
 						"fulfillments",
-						"tags",
 						"updated_at",
 					],
 				},
