@@ -5,6 +5,9 @@ import {
 	CONTEXT_DOMAIN,
 	PAYMENT_TERMS,
 	PAYMENT_BPP_TERMS,
+	FULFILLMENT_TYPES,
+	FULFILLMENT_STATES,
+	PAYMENT_TYPES,
 } from "./constants";
 
 export const onConfirmSchema = {
@@ -16,6 +19,7 @@ export const onConfirmSchema = {
 			properties: {
 				domain: {
 					type: "string",
+					enum : CONTEXT_DOMAIN
 				},
 				location: {
 					type: "object",
@@ -46,6 +50,7 @@ export const onConfirmSchema = {
 				},
 				version: {
 					type: "string",
+					enum : VERSION
 				},
 				bap_id: {
 					type: "string",
@@ -118,7 +123,7 @@ export const onConfirmSchema = {
 									},
 								},
 							},
-							required: ["id", "locations"],
+							required: ["id"],
 						},
 						items: {
 							type: "array",
@@ -219,6 +224,7 @@ export const onConfirmSchema = {
 									},
 									type: {
 										type: "string",
+										enum : FULFILLMENT_TYPES
 									},
 									state: {
 										type: "object",
@@ -251,6 +257,7 @@ export const onConfirmSchema = {
 												},
 												type: {
 													type: "string",
+													enum : ["start","end"]
 												},
 												location: {
 													type: "object",
@@ -314,7 +321,7 @@ export const onConfirmSchema = {
 															type: "string",
 														},
 													},
-													required: ["phone", "email"],
+													required: ["phone"],
 												},
 												instructions: {
 													type: "object",
@@ -340,8 +347,7 @@ export const onConfirmSchema = {
 													},
 													required: [
 														"short_desc",
-														"long_desc",
-														"additional_desc",
+														"long_desc"
 													],
 												},
 												time: {
@@ -437,13 +443,7 @@ export const onConfirmSchema = {
 												properties: {
 													code: {
 														type: "string",
-														enum: [
-															"Pending",
-															"Out-for-pickup",
-															"In-transit",
-															"At-destination-hub",
-															"Out-for-delivery",
-														],
+														enum: FULFILLMENT_STATES
 													},
 													short_desc: {
 														type: "string",
@@ -564,6 +564,7 @@ export const onConfirmSchema = {
 									},
 									type: {
 										type: "string",
+										enum : PAYMENT_TYPES
 									},
 									tags: {
 										type: "array",

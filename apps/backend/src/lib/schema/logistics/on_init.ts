@@ -229,7 +229,7 @@ export const onInitSchema = {
 															type: "string",
 														},
 													},
-													required: ["phone", "email"],
+													required: ["phone"],
 												},
 											},
 											required: ["type", "location", "contact"],
