@@ -239,6 +239,42 @@ export const onInitSchema = {
 								required: ["id", "type", "stops"],
 							},
 						},
+						billing: {
+							type: "object",
+							properties: {
+								name: {
+									type: "string",
+								},
+								address: {
+									type: "string",
+								},
+								city: {
+									type: "string",
+								},
+								state: {
+									type: "string",
+								},
+								tax_id: {
+									type: "string",
+								},
+								phone: {
+									type: "string",
+								},
+								email: {
+									type: "string",
+								},
+								time: {
+									type: "object",
+									properties: {
+										timestamp: {
+											type: "string",
+										},
+									},
+									required: ["timestamp"],
+								},
+							},
+							required: ["name", "address"],
+						},
 						quote: {
 							type: "object",
 							properties: {

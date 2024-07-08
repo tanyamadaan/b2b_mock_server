@@ -132,6 +132,7 @@ export const TERMS = [
 	"Package_Weight",
 	"Package_Dimensions",
 	"Package_Details",
+	"Package_Dimensions_Diff",
 	"Cold_Logistics",
 	"BAP_Terms",
 	"Diff_Proof",
@@ -159,7 +160,6 @@ export const LOG_ORDER_TAGS = [
 	"Length",
 	"Unit",
 	"Value",
-	"Package_Dimensions_Diff",
 	"HSN_Code",
 	"Transit_Risk_Owner"];
 

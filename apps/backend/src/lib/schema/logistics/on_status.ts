@@ -5,6 +5,8 @@ import {
 	LOG_ORDER_TAGS,
 	PAYMENT_TERMS,
 	PAYMENT_BPP_TERMS,
+	FULFILLMENT_TYPES,
+	FULFILLMENT_STATES,
 } from "./constants";
 
 export const onStatusSchema = {
@@ -252,6 +254,7 @@ export const onStatusSchema = {
 									},
 									type: {
 										type: "string",
+										enum : FULFILLMENT_TYPES
 									},
 									state: {
 										type: "object",
@@ -261,7 +264,7 @@ export const onStatusSchema = {
 												properties: {
 													code: {
 														type: "string",
-														enum: ["Order-picked-up", "Out-for-delivery"],
+													  enum: FULFILLMENT_STATES
 													},
 												},
 												required: ["code"],
@@ -499,16 +502,17 @@ export const onStatusSchema = {
 								email: {
 									type: "string",
 								},
+								time: {
+									type: "object",
+									properties: {
+										timestamp: {
+											type: "string",
+										},
+									},
+									required: ["timestamp"],
+								},
 							},
-							required: [
-								"name",
-								"address",
-								"city",
-								"state",
-								"tax_id",
-								"phone",
-								"email",
-							],
+							required: ["name", "address"],
 						},
 						payment: {
 							type: "array",
@@ -584,97 +588,7 @@ export const onStatusSchema = {
 																},
 															},
 															required: ["descriptor", "value"],
-														},
-														{
-															type: "object",
-															properties: {
-																descriptor: {
-																	type: "object",
-																	properties: {
-																		code: {
-																			type: "string",
-																		},
-																	},
-																	required: ["code"],
-																},
-																value: {
-																	type: "string",
-																},
-															},
-															required: ["descriptor", "value"],
-														},
-														{
-															type: "object",
-															properties: {
-																descriptor: {
-																	type: "object",
-																	properties: {
-																		code: {
-																			type: "string",
-																		},
-																	},
-																	required: ["code"],
-																},
-																value: {
-																	type: "string",
-																},
-															},
-															required: ["descriptor", "value"],
-														},
-														{
-															type: "object",
-															properties: {
-																descriptor: {
-																	type: "object",
-																	properties: {
-																		code: {
-																			type: "string",
-																		},
-																	},
-																	required: ["code"],
-																},
-																value: {
-																	type: "string",
-																},
-															},
-															required: ["descriptor", "value"],
-														},
-														{
-															type: "object",
-															properties: {
-																descriptor: {
-																	type: "object",
-																	properties: {
-																		code: {
-																			type: "string",
-																		},
-																	},
-																	required: ["code"],
-																},
-																value: {
-																	type: "string",
-																},
-															},
-															required: ["descriptor", "value"],
-														},
-														{
-															type: "object",
-															properties: {
-																descriptor: {
-																	type: "object",
-																	properties: {
-																		code: {
-																			type: "string",
-																		},
-																	},
-																	required: ["code"],
-																},
-																value: {
-																	type: "string",
-																},
-															},
-															required: ["descriptor", "value"],
-														},
+														}
 													],
 												},
 											},
@@ -731,7 +645,6 @@ export const onStatusSchema = {
 					required: [
 						"id",
 						"status",
-						"cancellation",
 						"provider",
 						"items",
 						"quote",

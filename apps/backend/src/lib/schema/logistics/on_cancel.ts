@@ -5,6 +5,8 @@ import {
 	LOG_ORDER_TAGS,
 	PAYMENT_TERMS,
 	PAYMENT_BPP_TERMS,
+	FULFILLMENT_TYPES,
+	PAYMENT_TYPES,
 } from "./constants";
 
 export const onCancelSchema = {
@@ -259,7 +261,7 @@ export const onCancelSchema = {
 									},
 									type: {
 										type: "string",
-										const: "Delivery",
+										enum : FULFILLMENT_TYPES
 									},
 									state: {
 										type: "object",
@@ -269,7 +271,7 @@ export const onCancelSchema = {
 												properties: {
 													code: {
 														type: "string",
-														const: "Cancelled",
+														enum : ["Cancelled", "RTO_Initiated"]
 													},
 												},
 												required: ["code"],
@@ -293,6 +295,7 @@ export const onCancelSchema = {
 												},
 												type: {
 													type: "string",
+													enum :["start","end"]
 												},
 												location: {
 													type: "object",
@@ -393,8 +396,7 @@ export const onCancelSchema = {
 													},
 													required: [
 														"short_desc",
-														"long_desc",
-														"additional_desc",
+														"long_desc"
 													],
 												},
 												time: {
@@ -418,11 +420,9 @@ export const onCancelSchema = {
 											},
 											required: [
 												"id",
-												"parent_stop_id",
 												"type",
 												"location",
 												"contact",
-												"authorization",
 												"instructions",
 												"time",
 											],
@@ -496,16 +496,17 @@ export const onCancelSchema = {
 								email: {
 									type: "string",
 								},
+								time: {
+									type: "object",
+									properties: {
+										timestamp: {
+											type: "string",
+										},
+									},
+									required: ["timestamp"],
+								},
 							},
-							required: [
-								"name",
-								"address",
-								"city",
-								"state",
-								"tax_id",
-								"phone",
-								"email",
-							],
+							required: ["name", "address"],
 						},
 						payment: {
 							type: "array",
@@ -517,6 +518,7 @@ export const onCancelSchema = {
 									},
 									collected_by: {
 										type: "string",
+										enum :["BAP","BPP"]
 									},
 									params: {
 										type: "object",
@@ -537,12 +539,11 @@ export const onCancelSchema = {
 										required: [
 											"amount",
 											"currency",
-											"bank_account_number",
-											"virtual_payment_address",
 										],
 									},
 									type: {
 										type: "string",
+										enum : PAYMENT_TYPES
 									},
 									tags: {
 										type: "array",

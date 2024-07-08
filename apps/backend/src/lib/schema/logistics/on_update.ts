@@ -5,6 +5,8 @@ import {
 	LOG_ORDER_TAGS,
 	PAYMENT_TERMS,
 	PAYMENT_BPP_TERMS,
+	FULFILLMENT_TYPES,
+	FULFILLMENT_STATES,
 } from "./constants";
 
 export const onUpdateSchema = {
@@ -236,10 +238,10 @@ export const onUpdateSchema = {
 								properties: {
 									id: {
 										type: "string",
-										enum: ["Delivery"],
 									},
 									type: {
 										type: "string",
+										enum: FULFILLMENT_TYPES,
 									},
 									state: {
 										type: "object",
@@ -249,6 +251,7 @@ export const onUpdateSchema = {
 												properties: {
 													code: {
 														type: "string",
+														enum : FULFILLMENT_STATES
 													},
 												},
 												required: ["code"],
@@ -272,6 +275,7 @@ export const onUpdateSchema = {
 												},
 												type: {
 													type: "string",
+													enum :["start","end"]
 												},
 												location: {
 													type: "object",
@@ -337,7 +341,7 @@ export const onUpdateSchema = {
 															type: "string",
 														},
 													},
-													required: ["phone", "email"],
+													required: ["phone"],
 												},
 												instructions: {
 													type: "object",
@@ -374,9 +378,7 @@ export const onUpdateSchema = {
 													},
 													required: [
 														"short_desc",
-														"long_desc",
-														"additional_desc",
-														"images",
+														"long_desc"
 													],
 												},
 												time: {
@@ -398,12 +400,11 @@ export const onUpdateSchema = {
 															type: "string",
 														},
 													},
-													required: ["range", "timestamp"],
+													required: ["range"],
 												},
 											},
 											required: [
 												"id",
-												"parent_stop_id",
 												"type",
 												"location",
 												"contact",
@@ -459,7 +460,7 @@ export const onUpdateSchema = {
 										},
 									},
 								},
-								required: ["id", "type", "state", "tracking", "stops", "tags"],
+								required: ["id", "type", "state", "tracking", "stops"],
 							},
 						},
 						billing: {
@@ -504,6 +505,7 @@ export const onUpdateSchema = {
 								"tax_id",
 								"phone",
 								"email",
+								"time"
 							],
 						},
 						payment: {
@@ -583,63 +585,7 @@ export const onUpdateSchema = {
 													},
 												},
 												required: ["descriptor", "list"],
-											},
-											{
-												type: "object",
-												properties: {
-													descriptor: {
-														type: "object",
-														properties: {
-															code: {
-																type: "string",
-															},
-														},
-														required: ["code"],
-													},
-													list: {
-														type: "array",
-														items: [
-															{
-																type: "object",
-																properties: {
-																	descriptor: {
-																		type: "object",
-																		properties: {
-																			code: {
-																				type: "string",
-																			},
-																		},
-																		required: ["code"],
-																	},
-																	value: {
-																		type: "string",
-																	},
-																},
-																required: ["descriptor", "value"],
-															},
-															{
-																type: "object",
-																properties: {
-																	descriptor: {
-																		type: "object",
-																		properties: {
-																			code: {
-																				type: "string",
-																			},
-																		},
-																		required: ["code"],
-																	},
-																	value: {
-																		type: "string",
-																	},
-																},
-																required: ["descriptor", "value"],
-															},
-														],
-													},
-												},
-												required: ["descriptor", "list"],
-											},
+											}
 										],
 									},
 								},
