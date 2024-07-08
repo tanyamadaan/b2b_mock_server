@@ -3,7 +3,7 @@ export const USER_GUIDE_LINK = "";
 export const LOGISTICS_SCENARIOS = {
 	on_init: [
 		{
-			name: "Success",
+			name: "KYC Success",
 			scenario: "success",
 		},
 		{

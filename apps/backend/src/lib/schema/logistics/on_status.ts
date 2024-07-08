@@ -2,7 +2,7 @@ import {
 	CONTEXT_DOMAIN,
 	VERSION,
 	TERMS,
-	LOG_BPP_TERMS,
+	LOG_ORDER_TAGS,
 	PAYMENT_TERMS,
 	PAYMENT_BPP_TERMS,
 } from "./constants";
@@ -574,7 +574,7 @@ export const onStatusSchema = {
 																	properties: {
 																		code: {
 																			type: "string",
-																			enum: LOG_BPP_TERMS,
+																			enum: LOG_ORDER_TAGS,
 																		},
 																	},
 																	required: ["code"],

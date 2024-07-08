@@ -58,11 +58,27 @@ export const DELIVERY_TERMS_TAGS = [
 	"Named_Place_Of_Delivery",
 ];
 
+export const UPDATE_FULFILLMENT_TAGS = [
+	"Ready_To_Ship",
+	"AWB_No",
+	"Eway_Bill_No",
+	"RTO_Action",
+	"LR_No",
+	"Doc_Way_Bill_No",
+];
+
 export const COLD_LOGISTICS_TAGS = [
 	"Temp_Control",
 	"Temp_Unit",
 	"Temp_Min",
 	"Temp_Max",
+];
+
+export const SEARCH_TAGS = [
+	...PACKAGE_DIMENSIONS_TAGS,
+	...PACKAGE_DETAILS_TAGS,
+	...DELIVERY_TERMS_TAGS,
+	...COLD_LOGISTICS_TAGS,
 ];
 
 export const PAYMENT_TERMS = ["Settlement_Details", "Collection_Details"];
@@ -76,7 +92,7 @@ export const PAYMENT_BPP_TERMS = [
 	"Amount",
 	"Type",
 ];
-
+export const PAYMENT_TYPES = ["ON-ORDER", "ON-FULFILLMENT", "POST-FULFILLMENT"];
 export const FULFILLMENT_TYPES = ["Delivery", "Return", "RTO"];
 export const DELIVERY_CATEGORIES = [
 	"Surface_Delivery",
@@ -91,6 +107,23 @@ export const PROVIDER_TERMS_BPP = [
 	"url",
 	"required",
 ];
+
+export const CONFIRM_MESSAGE_ORDER_TAG_GROUPS = [
+	"BPP_Terms",
+	"BAP_Terms",
+	"Package_Weight",
+	"Package_Dimensions",
+	"Package_Details",
+	"Cold_Logistics",
+];
+
+export const UPDATE_TAGS = [
+	"Package_Weight",
+	"Package_Dimensions",
+	"Package_Details",
+	"Cold_Logistics",
+]
+
 export const TERMS = [
 	"Package_Weight",
 	"Package_Dimensions",
@@ -99,14 +132,15 @@ export const TERMS = [
 	"BAP_Terms",
 	"Diff_Proof",
 ];
-export const LOG_BPP_TERMS = [
-	"Accept_BPP_Terms",
 
+export const LOG_ORDER_TAGS = [
+	"Accept_BPP_Terms",
+	"Max_Liability",
+	"Max_Liability_Cap",
 	"Delay_Interest",
 	"Court_Jurisdiction",
 	"Mandatory_Arbitration",
-	"Max_Liability_Cap",
-	"Max_Liability",
+	"Static_Terms",
 	"Temp_Max",
 	"Temp_Min",
 	"Temp_Unit",
@@ -122,5 +156,6 @@ export const LOG_BPP_TERMS = [
 	"Unit",
 	"Value",
 	"Package_Dimensions_Diff",
-	"Counterparty",
+	"HSN_Code",
+	"Transit_Risk_Owner"
 ];
