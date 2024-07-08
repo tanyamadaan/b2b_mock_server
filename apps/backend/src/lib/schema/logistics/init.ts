@@ -1,4 +1,5 @@
-import { CONTEXT_DOMAIN, VERSION } from "./constants";
+import { de } from "date-fns/locale";
+import { CONTEXT_DOMAIN, VERSION, PAYMENT_TERMS,PAYMENT_BPP_TERMS } from "./constants";
 
 export const initSchema = {
 	$id: "initSchema",
@@ -109,7 +110,7 @@ export const initSchema = {
 									},
 								},
 							},
-							required: ["id", "locations"],
+							required: ["id"],
 							additionalProperties: false,
 						},
 						items: {
@@ -161,6 +162,7 @@ export const initSchema = {
 									},
 									type: {
 										type: "string",
+										enum: ["Delivery", "Return"],
 									},
 									stops: {
 										type: "array",
@@ -236,6 +238,49 @@ export const initSchema = {
 											required: ["type", "location", "contact"],
 										},
 									},
+									tags: {
+										type: "object",
+										properties: {
+											descriptor: {
+												type: "object",
+												properties: {
+													code: {
+														type: "string",
+														enum: ["Delivery_Terms"],
+													},
+												},
+												required: ["code"],
+											},
+											list: {
+												type: "array",
+												items: [
+													{
+														type: "object",
+														properties: {
+															descriptor: {
+																type: "object",
+																properties: {
+																	code: {
+																		type: "string",
+																		enum: [
+																			"INCOTERMS",
+																			"NAMED_PLACE_OF_DELIVERY",
+																		],
+																	},
+																},
+																required: ["code"],
+															},
+															value: {
+																type: "string",
+																enum: ["CIF", "EXW", "FOB", "DAP", "DDP"],
+															},
+														},
+														required: ["descriptor", "value"],
+													},
+												],
+											},
+										},
+									},
 								},
 								required: ["id", "type", "stops"],
 							},
@@ -274,16 +319,7 @@ export const initSchema = {
 									required: ["timestamp"],
 								},
 							},
-							required: [
-								"name",
-								"address",
-								"city",
-								"state",
-								"tax_id",
-								"phone",
-								"email",
-								"time",
-							],
+							required: ["name", "address"],
 						},
 						payments: {
 							type: "object",
@@ -305,6 +341,7 @@ export const initSchema = {
 													properties: {
 														code: {
 															type: "string",
+															enum: PAYMENT_TERMS,
 														},
 													},
 													required: ["code"],
@@ -320,96 +357,7 @@ export const initSchema = {
 																	properties: {
 																		code: {
 																			type: "string",
-																		},
-																	},
-																	required: ["code"],
-																},
-																value: {
-																	type: "string",
-																},
-															},
-															required: ["descriptor", "value"],
-														},
-														{
-															type: "object",
-															properties: {
-																descriptor: {
-																	type: "object",
-																	properties: {
-																		code: {
-																			type: "string",
-																		},
-																	},
-																	required: ["code"],
-																},
-																value: {
-																	type: "string",
-																},
-															},
-															required: ["descriptor", "value"],
-														},
-														{
-															type: "object",
-															properties: {
-																descriptor: {
-																	type: "object",
-																	properties: {
-																		code: {
-																			type: "string",
-																		},
-																	},
-																	required: ["code"],
-																},
-																value: {
-																	type: "string",
-																},
-															},
-															required: ["descriptor", "value"],
-														},
-														{
-															type: "object",
-															properties: {
-																descriptor: {
-																	type: "object",
-																	properties: {
-																		code: {
-																			type: "string",
-																		},
-																	},
-																	required: ["code"],
-																},
-																value: {
-																	type: "string",
-																},
-															},
-															required: ["descriptor", "value"],
-														},
-														{
-															type: "object",
-															properties: {
-																descriptor: {
-																	type: "object",
-																	properties: {
-																		code: {
-																			type: "string",
-																		},
-																	},
-																	required: ["code"],
-																},
-																value: {
-																	type: "string",
-																},
-															},
-															required: ["descriptor", "value"],
-														},
-														{
-															type: "object",
-															properties: {
-																descriptor: {
-																	type: "object",
-																	properties: {
-																		code: {
-																			type: "string",
+																			enum: PAYMENT_BPP_TERMS,
 																		},
 																	},
 																	required: ["code"],
@@ -484,7 +432,7 @@ export const initSchema = {
 									],
 								},
 							},
-							required: ["collected_by", "type", "tags"],
+							required: ["type"],
 						},
 						xinput: {
 							type: "object",
@@ -506,13 +454,11 @@ export const initSchema = {
 											const: "SUCCESS",
 										},
 									},
-									required: ["url", "mime_type", "submission_id"],
 								},
 								required: {
 									type: "boolean",
 								},
 							},
-							required: ["form", "required"],
 						},
 					},
 					required: [
@@ -521,7 +467,6 @@ export const initSchema = {
 						"fulfillments",
 						"billing",
 						"payments",
-						"xinput",
 					],
 				},
 			},

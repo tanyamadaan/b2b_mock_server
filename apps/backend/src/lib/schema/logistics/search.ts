@@ -1,9 +1,18 @@
 import {
-	Delivery_Terms_Tags,
+	DELIVERY_TERMS_TAGS,
 	MESSAGE_INTENT_FULFILLMENTS_TYPE,
 	MESSAGE_INTENT_CATEGORY_DESCRIPTOR_CODE,
 	CONTEXT_DOMAIN,
 	VERSION,
+	MESSAGE_INTENT_TAGS_CODE,
+	PACKAGE_WEIGHT_TAGS,
+	SEARCH_TAGS,
+	PACKAGE_WEIGHT_UNIT_VALUES,
+	PACKAGE_DIMENSIONS_TAGS,
+	PACKAGE_DIMENSIONS_UNIT_VALUES,
+	PACKAGE_DETAILS_TAGS,
+	PACKAGE_DETAILS_CATEGORY_VALUES,
+	COLD_LOGISTICS_TAGS,
 } from "./constants";
 
 export const searchSchema = {
@@ -264,6 +273,7 @@ export const searchSchema = {
 										properties: {
 											code: {
 												type: "string",
+												enum: MESSAGE_INTENT_TAGS_CODE,
 											},
 										},
 										required: ["code"],
@@ -286,10 +296,93 @@ export const searchSchema = {
 													type: "string",
 												},
 											},
-											required: ["descriptor", "value"],
+											
 										},
 									},
 								},
+								
+									
+										if: {
+											properties: {
+												descriptor: {
+													properties: {
+														code: {
+															const :"Package_Weight"
+															
+														},
+													},
+												},
+											},
+										},
+										then: {
+											properties: { list:{properties:{descriptor:{properties:{code:{enum:PACKAGE_WEIGHT_TAGS}}}}}}},
+								
+									// {
+									// 	if: {
+									// 		properties: {
+									// 			descriptor: {
+									// 				properties: {
+									// 					code: {
+									// 						type: "string",
+									// 						enum: PACKAGE_DIMENSIONS_TAGS,
+									// 					},
+									// 				},
+									// 			},
+									// 		},
+									// 	},
+									// 	then: {
+									// 		properties: {
+									// 			value: {
+									// 				type: "string",
+									// 				enum: PACKAGE_DIMENSIONS_UNIT_VALUES, // Example currency codes
+									// 			},
+									// 		},
+									// 	},
+									// },
+									// {
+									// 	if: {
+									// 		properties: {
+									// 			descriptor: {
+									// 				properties: {
+									// 					code: {
+									// 						type: "string",
+									// 						enum: PACKAGE_DETAILS_TAGS,
+									// 					},
+									// 				},
+									// 			},
+									// 		},
+									// 	},
+									// 	then: {
+									// 		properties: {
+									// 			value: {
+									// 				type: "string",
+									// 				enum: PACKAGE_DETAILS_CATEGORY_VALUES,
+									// 			},
+									// 		},
+									// 	},
+									// },
+									// {
+									// 	if: {
+									// 		properties: {
+									// 			descriptor: {
+									// 				properties: {
+									// 					code: {
+									// 						type: "string",
+									// 						enum: COLD_LOGISTICS_TAGS,
+									// 					},
+									// 				},
+									// 			},
+									// 		},
+									// 	},
+									// 	then: {
+									// 		properties: {
+									// 			value: {
+									// 				type: "string",
+									// 			},
+									// 		},
+									// 	},
+									
+								
 								required: ["descriptor", "list"],
 							},
 						},
