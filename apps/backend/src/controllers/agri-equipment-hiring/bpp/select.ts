@@ -9,6 +9,7 @@ import {
 } from "../../../lib/utils";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
+import { TIME_AVALIABLITY } from "../../../lib/utils/apiConstants";
 
 export const selectController = async (
 	req: Request,
@@ -31,9 +32,11 @@ export const selectController = async (
 			return send_nack(res, ERROR_MESSAGES.SELECTED_ITEMS_DOES_NOT_EXISTED);
 		}
 		const { scenario } = req.query;
+
+		console.log("scenarioaaaaaaaaaa", scenario);
 		switch (scenario) {
-			case "no_equipments_avaliable":
-				selectMultiCollectionController(req, res, next);
+			case "no_equipment_avaliable":
+				onSelectNoEquipmentAvaliable(req, res, next);
 				break;
 			default:
 				return selectConsultationConfirmController(req, res, next);
@@ -51,7 +54,10 @@ const selectConsultationConfirmController = (
 	try {
 		const { context, message, providersItems } = req.body;
 		const { locations, ...provider } = message.order.provider;
-		const updatedFulfillments = updateFulfillments(message?.order?.fulfillments, ON_ACTION_KEY?.ON_SELECT)
+		const updatedFulfillments = updateFulfillments(
+			message?.order?.fulfillments,
+			ON_ACTION_KEY?.ON_SELECT
+		);
 
 		const responseMessage = {
 			order: {
@@ -82,7 +88,10 @@ const selectConsultationConfirmController = (
 			next,
 			context,
 			responseMessage,
-			`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? ON_ACTION_KEY.ON_SELECT : `/${ON_ACTION_KEY.ON_SELECT}`
+			`${req.body.context.bap_uri}${
+				req.body.context.bap_uri.endsWith("/")
+					? ON_ACTION_KEY.ON_SELECT
+					: `/${ON_ACTION_KEY.ON_SELECT}`
 			}`,
 			`${ON_ACTION_KEY.ON_SELECT}`,
 			"agri-equipment-hiring"
@@ -92,41 +101,54 @@ const selectConsultationConfirmController = (
 	}
 };
 
-const selectMultiCollectionController = (
+
+const onSelectNoEquipmentAvaliable = (
 	req: Request,
 	res: Response,
 	next: NextFunction
 ) => {
 	try {
 		const { context, message, providersItems } = req.body;
-		const updatedFulfillments = updateFulfillments(req.body?.message?.order?.fulfillments, ON_ACTION_KEY?.ON_SELECT, "multi_collection")
+		const updatedFulfillments = updateFulfillments(
+			req.body?.message?.order?.fulfillments,
+			ON_ACTION_KEY?.ON_SELECT
+		);
 
 		const { locations, ...provider } = message.order.provider;
 
 		const responseMessage = {
 			order: {
 				provider,
-				payments: message?.order?.payments.map(({ type }: { type: string }) => ({
-					type,
-					collected_by: "BAP",
-				})),
+				payments: message?.order?.payments.map(
+					({ type }: { type: string }) => ({
+						type,
+						collected_by: "BAP",
+					})
+				),
 
 				items: message?.order?.items.map(
 					({ ...remaining }: { location_ids: any; remaining: any }) => ({
 						...remaining,
+						time:TIME_AVALIABLITY
 					})
 				),
+
 				fulfillments: updatedFulfillments,
 
-				quote: quoteCreatorHealthCareService(
-					message.order.items,
-					providersItems?.items,
-					providersItems?.offers,
-					message?.order?.fulfillments[0]?.type
-				),
+				// quote: quoteCreatorHealthCareService(
+				// 	message.order.items,
+				// 	providersItems?.items,
+				// 	providersItems?.offers,
+				// 	message?.order?.fulfillments[0]?.type
+				// ),
 			},
 		};
 
+		const error = {
+			code: "90001",
+			message: ERROR_MESSAGES.EQUIPMENT_NOT_AVALIABLE,
+		}
+		
 		return responseBuilder(
 			res,
 			next,
@@ -134,7 +156,8 @@ const selectMultiCollectionController = (
 			responseMessage,
 			`${context.bap_uri}/${ON_ACTION_KEY.ON_SELECT}`,
 			`${ON_ACTION_KEY.ON_SELECT}`,
-			"agri-equipment-hiring"
+			"agri-equipment-hiring",
+			error
 		);
 	} catch (error) {
 		next(error);

@@ -26,9 +26,7 @@ export const initiateSelectController = async (
     }
     // on_search.context.bpp_uri = HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
     let scenario = "selection";
-    if (checkIfCustomized(on_search.message.catalog.providers[0].items)) {
-      scenario = "customization";
-    }
+    
     const items = on_search.message.catalog.providers[0]?.categories;
     let child_ids;
     if (items) {

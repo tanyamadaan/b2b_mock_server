@@ -39,7 +39,7 @@ export const initController = async (req: Request, res: Response, next: NextFunc
 const initConsultationController = (req: Request, res: Response, next: NextFunction) => {
 	try{
 		const { context, providersItems, message: { order: { provider, items, billing, fulfillments, payments } } } = req.body;
-		const { locations, ...remainingProvider } = provider	
+		const { locations, ...remainingProvider } = provider;
 
 		const updatedFulfillments = updateFulfillments(fulfillments, ON_ACTION_KEY?.ON_INIT);
 
