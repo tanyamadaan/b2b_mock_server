@@ -210,7 +210,6 @@ export const onSearchSchema = {
 														},
 														timestamp: {
 															type: "string",
-															pattern: "^\d{4}-\d{2}-\d{2}$"
 														},
 													},
 													required: ["label", "duration", "timestamp"],
@@ -321,7 +320,6 @@ export const onSearchSchema = {
 														},
 														timestamp: {
 															type: "string",
-															pattern: "^\d{4}-\d{2}-\d{2}$"
 														},
 													},
 													required: ["label", "duration", "timestamp"],

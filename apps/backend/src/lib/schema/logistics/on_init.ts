@@ -5,6 +5,9 @@ import {
 	LOG_ORDER_TAGS,
 	PAYMENT_TERMS,
 	PAYMENT_BPP_TERMS,
+	FULFILLMENT_TYPES,
+	FULFILLMENT_STATES,
+	PAYMENT_TYPES
 } from "./constants";
 
 export const onInitSchema = {
@@ -115,7 +118,7 @@ export const onInitSchema = {
 									},
 								},
 							},
-							required: ["id", "locations"],
+							required: ["id"],
 						},
 						items: {
 							type: "array",
@@ -151,7 +154,7 @@ export const onInitSchema = {
 									},
 									type: {
 										type: "string",
-										const: "Delivery",
+										enum: FULFILLMENT_TYPES,
 									},
 									stops: {
 										type: "array",
@@ -303,13 +306,7 @@ export const onInitSchema = {
 												properties: {
 													code: {
 														type: "string",
-														enum: [
-															"Pending",
-															"Out-for-pickup",
-															"In-transit",
-															"At-destination-hub",
-															"Out-for-delivery",
-														],
+														enum: FULFILLMENT_STATES,
 													},
 													short_desc: {
 														type: "string",
@@ -359,6 +356,7 @@ export const onInitSchema = {
 									},
 									collected_by: {
 										type: "string",
+										enum: ["BAP","BPP"]
 									},
 									params: {
 										type: "object",
@@ -385,6 +383,7 @@ export const onInitSchema = {
 									},
 									type: {
 										type: "string",
+										enum: PAYMENT_TYPES
 									},
 									tags: {
 										type: "array",
@@ -465,7 +464,7 @@ export const onInitSchema = {
 								properties: {
 									code: {
 										type: "string",
-										enum: TERMS,
+										enum: ["BPP_Terms"],
 									},
 									list: {
 										type: "array",

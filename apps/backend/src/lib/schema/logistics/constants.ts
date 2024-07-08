@@ -92,7 +92,7 @@ export const PAYMENT_BPP_TERMS = [
 	"Amount",
 	"Type",
 ];
-export const PAYMENT_TYPES = ["ON-ORDER", "ON-FULFILLMENT", "POST-FULFILLMENT"];
+export const PAYMENT_TYPES = ["PRE-FULFILLMENT", "ON-FULFILLMENT", "POST-FULFILLMENT"];
 export const FULFILLMENT_TYPES = ["Delivery", "Return", "RTO"];
 export const DELIVERY_CATEGORIES = [
 	"Surface_Delivery",
@@ -123,6 +123,10 @@ export const UPDATE_TAGS = [
 	"Package_Details",
 	"Cold_Logistics",
 ]
+
+ 
+
+export const FULFILLMENT_STATES =["Pending","Out-for-pickup","Order-picked-up","In-transit","At-destination-hub","Out-for-delivery","Order-delivered","RTO-Initiated","RTO-Delivered","RTO-Disposed"]
 
 export const TERMS = [
 	"Package_Weight",
@@ -157,5 +161,13 @@ export const LOG_ORDER_TAGS = [
 	"Value",
 	"Package_Dimensions_Diff",
 	"HSN_Code",
-	"Transit_Risk_Owner"
+	"Transit_Risk_Owner"];
+
+export const LOG_BPP_TERMS = [
+	"Delay_Interest",
+	"Court_Jurisdiction",
+	"Mandatory_Arbitration",
+	"Max_Liability_Cap",
+	"Max_Liability",
+	"Static_Terms"
 ];
