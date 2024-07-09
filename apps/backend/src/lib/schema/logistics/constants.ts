@@ -150,6 +150,7 @@ export const LOG_ORDER_TAGS = [
 	"Temp_Min",
 	"Temp_Unit",
 	"Temp_Control",
+	"Packaging",
 	"Package_Count",
 	"Shipment_Value",
 	"Stackable",
