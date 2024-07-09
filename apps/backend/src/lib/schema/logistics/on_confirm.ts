@@ -8,6 +8,8 @@ import {
 	FULFILLMENT_TYPES,
 	FULFILLMENT_STATES,
 	PAYMENT_TYPES,
+	DELIVERY_TERMS_TAGS,
+	QUOTE_TITLE,
 } from "./constants";
 
 export const onConfirmSchema = {
@@ -194,6 +196,7 @@ export const onConfirmSchema = {
 											},
 											title: {
 												type: "string",
+												enum : QUOTE_TITLE
 											},
 											price: {
 												type: "object",
@@ -405,12 +408,7 @@ export const onConfirmSchema = {
 																properties: {
 																	code: {
 																		type: "string",
-																		enum: [
-																			"AWB_No",
-																			"LR_No",
-																			"Transporter_Id",
-																			"Doc_Way_Bill_No",
-																		],
+																		enum: DELIVERY_TERMS_TAGS,
 																	},
 																},
 																required: ["code"],

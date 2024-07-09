@@ -7,6 +7,8 @@ import {
 	PAYMENT_BPP_TERMS,
 	FULFILLMENT_TYPES,
 	PAYMENT_TYPES,
+	DELIVERY_TERMS_TAGS,
+	QUOTE_TITLE,
 } from "./constants";
 
 export const onCancelSchema = {
@@ -18,7 +20,7 @@ export const onCancelSchema = {
 			properties: {
 				domain: {
 					type: "string",
-					const: CONTEXT_DOMAIN,
+					enum: CONTEXT_DOMAIN,
 				},
 				location: {
 					type: "object",
@@ -230,7 +232,7 @@ export const onCancelSchema = {
 											},
 											title: {
 												type: "string",
-												const: "delivery",
+												enum : QUOTE_TITLE
 											},
 											price: {
 												type: "object",
@@ -453,6 +455,7 @@ export const onCancelSchema = {
 																properties: {
 																	code: {
 																		type: "string",
+																		enum: DELIVERY_TERMS_TAGS
 																	},
 																},
 																required: ["code"],

@@ -7,6 +7,8 @@ import {
 	PAYMENT_BPP_TERMS,
 	FULFILLMENT_TYPES,
 	FULFILLMENT_STATES,
+	DELIVERY_TERMS_TAGS,
+	QUOTE_TITLE,
 } from "./constants";
 
 export const onUpdateSchema = {
@@ -18,7 +20,7 @@ export const onUpdateSchema = {
 			properties: {
 				domain: {
 					type: "string",
-					const: CONTEXT_DOMAIN,
+					enum: CONTEXT_DOMAIN,
 				},
 				location: {
 					type: "object",
@@ -211,6 +213,7 @@ export const onUpdateSchema = {
 											},
 											title: {
 												type: "string",
+												enum : QUOTE_TITLE
 											},
 											price: {
 												type: "object",
@@ -438,12 +441,7 @@ export const onUpdateSchema = {
 																properties: {
 																	code: {
 																		type: "string",
-																		enum: [
-																			"Ready_To_Ship",
-																			"AWB_No",
-																			"RTO_Action",
-																			"Doc_Way_Bill_No",
-																		],
+																		enum:DELIVERY_TERMS_TAGS
 																	},
 																},
 																required: ["code"],

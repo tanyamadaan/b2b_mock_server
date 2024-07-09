@@ -7,6 +7,7 @@ import {
 	PAYMENT_BPP_TERMS,
 	CONFIRM_MESSAGE_ORDER_TAG_GROUPS,
 	PAYMENT_TYPES,
+	QUOTE_TITLE,
 } from "./constants";
 
 export const confirmSchema = {
@@ -335,17 +336,7 @@ export const confirmSchema = {
 											},
 											title: {
 												type: "string",
-												enum: [
-													"delivery",
-													"tax",
-													"Origin",
-													"Freight",
-													"Destination",
-													"Custom_Clearance_Service_Origin",
-													"Custom_Clearance_Service_Destination",
-													"rto",
-													"diff",
-												],
+												enum: QUOTE_TITLE
 											},
 											price: {
 												type: "object",

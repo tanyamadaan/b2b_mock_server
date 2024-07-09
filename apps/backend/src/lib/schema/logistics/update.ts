@@ -1,4 +1,4 @@
-import { CONTEXT_DOMAIN, LOG_ORDER_TAGS, UPDATE_TAGS, VERSION, PAYMENT_TYPES, UPDATE_FULFILLMENT_TAGS } from "./constants";
+import { CONTEXT_DOMAIN, LOG_ORDER_TAGS, UPDATE_TAGS, VERSION, PAYMENT_TYPES, DELIVERY_TERMS_TAGS } from "./constants";
 
 export const updateSchema = {
 	$id: "updateSchema",
@@ -87,6 +87,7 @@ export const updateSchema = {
 			properties: {
 				update_target: {
 					type: "string",
+					enum : ["fulfillment"]
 				},
 				order: {
 					type: "object",
@@ -137,7 +138,6 @@ export const updateSchema = {
 										type: "array",
 										items: {
 											type: "string",
-											//enum:["P2P","P2H2P"]
 										},
 									},
 									descriptor: {
@@ -229,7 +229,6 @@ export const updateSchema = {
 													required: [
 														"short_desc",
 														"long_desc",
-														"additional_desc",
 													],
 												},
 												authorization: {
@@ -256,7 +255,6 @@ export const updateSchema = {
 												"parent_stop_id",
 												"type",
 												"instructions",
-												"authorization",
 											],
 										},
 									},
@@ -285,7 +283,7 @@ export const updateSchema = {
 																properties: {
 																	code: {
 																		type: "string",
-																		enum: UPDATE_FULFILLMENT_TAGS
+																		enum: DELIVERY_TERMS_TAGS
 																	},
 																},
 																required: ["code"],
