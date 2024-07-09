@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { AGRI_HEALTHCARE_STATUS } from "../../../lib/utils/apiConstants";
-
+import { EQUIPMENT_HIRING_STATUS, EQUIPMENT_HIRING_STATUS_OBJECT, FULFILLMENT_LABELS, ORDER_STATUS } from "../../../lib/utils/apiConstants";
 import {
 	Fulfillment,
 	Stop,
@@ -10,6 +9,7 @@ import {
 	send_nack,
 } from "../../../lib/utils";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
+import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 
 export const statusController = async (
 	req: Request,
@@ -20,16 +20,16 @@ export const statusController = async (
 		let scenario: string = String(req.query.scenario) || "";
 		const { transaction_id } = req.body.context;
 		const on_confirm_data = await redisFetchFromServer(
-			"on_confirm",
+			ON_ACTION_KEY.ON_CONFIRM,
 			transaction_id
 		); 
 
 		if (!on_confirm_data) {
-			return send_nack(res, "on confirm doesn't exist");
+			return send_nack(res, ERROR_MESSAGES.ON_CONFIRM_DOES_NOT_EXISTED);
 		}
 
 		const on_cancel_exist = await redisExistFromServer(
-			"on_cancel",
+			ON_ACTION_KEY.ON_CANCEL,
 			transaction_id
 		);
 		if (on_cancel_exist) {
@@ -63,26 +63,25 @@ const statusRequest = async (
 			//UPDATE SCENARIO TO NEXT STATUS
 			const lastStatus = on_status?.message?.order?.fulfillments[0]?.state?.descriptor?.code;
 			//FIND NEXT STATUS
+			const lastStatusIndex = EQUIPMENT_HIRING_STATUS.indexOf(lastStatus);
 
-			const lastStatusIndex = AGRI_HEALTHCARE_STATUS.indexOf(lastStatus);
-
-			if (lastStatus === 6) {
+			if (lastStatus === 2) {
 				next_status = lastStatus;
 			}
 			if (
 				lastStatusIndex !== -1 &&
-				lastStatusIndex < AGRI_HEALTHCARE_STATUS.length - 1
+				lastStatusIndex < EQUIPMENT_HIRING_STATUS.length - 1
 			) {
 				const nextStatusIndex = lastStatusIndex + 1;
-				next_status = AGRI_HEALTHCARE_STATUS[nextStatusIndex];
+				next_status = EQUIPMENT_HIRING_STATUS[nextStatusIndex];
 			}
 		}
-		scenario = scenario ? scenario : next_status;
 
+		scenario = scenario ? scenario : next_status;
 		const responseMessage: any = {
 			order: {
 				id: message.order.id,
-				status: "In-progress",
+				status: ORDER_STATUS.IN_PROGRESS,
 				provider: {
 					...message.order.provider,
 					rateable: undefined,
@@ -96,7 +95,7 @@ const statusRequest = async (
 						id: fulfillment.id,
 						state: {
 							descriptor: {
-								code: "AT_LOCATION",
+								code: EQUIPMENT_HIRING_STATUS_OBJECT.IN_TRANSIT,
 							},
 						},
 
@@ -105,7 +104,7 @@ const statusRequest = async (
 								...stop,
 								id: undefined,
 								authorization: stop.authorization
-									? { ...stop.authorization, status: "confirmed" }
+									? { ...stop.authorization, status: FULFILLMENT_LABELS.CONFIRMED }
 									: undefined,
 								person: stop.person ? stop.person : stop.customer?.person,
 							};
@@ -138,21 +137,21 @@ const statusRequest = async (
 				updated_at: message.order.updated_at,
 			},
 		};
-
 		switch (scenario) {
-			case "IN_TRANSIT":
+			case EQUIPMENT_HIRING_STATUS_OBJECT.IN_TRANSIT:
 				responseMessage.order.fulfillments.forEach(
 					(fulfillment: Fulfillment) => {
-						fulfillment.state.descriptor.code = "IN_TRANSIT";
+						fulfillment.state.descriptor.code = EQUIPMENT_HIRING_STATUS_OBJECT.IN_TRANSIT;
 						fulfillment.stops.forEach((stop: Stop) =>
 							stop?.authorization ? (stop.authorization = undefined) : undefined
 						);
 					}
 				);
 				break;
-			case "AT_LOCATION":
+			case EQUIPMENT_HIRING_STATUS_OBJECT.AT_LOCATION:
 				responseMessage.order.fulfillments.forEach(
 					(fulfillment: Fulfillment) => {
+						fulfillment.state.descriptor.code = EQUIPMENT_HIRING_STATUS_OBJECT.AT_LOCATION;
 						fulfillment.stops.forEach((stop: Stop) =>
 							stop?.authorization
 								? (stop.authorization = {
@@ -164,47 +163,19 @@ const statusRequest = async (
 					}
 				);
 				break;
-			case "COLLECTED_BY_AGENT":
+			case EQUIPMENT_HIRING_STATUS_OBJECT.COMPLETED:
+				responseMessage.order.status = ORDER_STATUS.COMPLETED;
 				responseMessage.order.fulfillments.forEach(
 					(fulfillment: Fulfillment) => {
-						fulfillment.state.descriptor.code = "COLLECTED_BY_AGENT";
-					}
-				);
-				break;
-			case "RECEIVED_AT_LAB":
-				responseMessage.order.fulfillments.forEach(
-					(fulfillment: Fulfillment) => {
-						fulfillment.state.descriptor.code = "RECEIVED_AT_LAB";
-					}
-				);
-				break;
-			case "TEST_COMPLETED":
-				responseMessage.order.fulfillments.forEach(
-					(fulfillment: Fulfillment) => {
-						fulfillment.state.descriptor.code = "TEST_COMPLETED";
+						fulfillment.state.descriptor.code = EQUIPMENT_HIRING_STATUS_OBJECT.COMPLETED;
 						fulfillment.stops.forEach((stop: Stop) =>
 							stop?.authorization ? (stop.authorization = undefined) : undefined
 						);
 					}
 				);
-				break;
-			case "REPORT_GENERATED":
-				responseMessage.order.fulfillments.forEach(
-					(fulfillment: Fulfillment) => {
-						fulfillment.state.descriptor.code = "REPORT_GENERATED";
-					}
-				);
-				break;
-			case "REPORT_SHARED":
-				responseMessage.order.status = "Completed";
-				responseMessage.order.fulfillments.forEach(
-					(fulfillment: Fulfillment) => {
-						fulfillment.state.descriptor.code = "REPORT_SHARED";
-					}
-				);
-				break;
-			case "cancel":
-				responseMessage.order.status = "Cancelled";
+				break;			
+			case EQUIPMENT_HIRING_STATUS_OBJECT.CANCEL:
+				responseMessage.order.status = ORDER_STATUS.CANCELLED;
 				break;
 			default: //service started is the default case
 				break;

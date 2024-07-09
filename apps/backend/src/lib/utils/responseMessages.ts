@@ -6,5 +6,6 @@ export const ERROR_MESSAGES = {
 	ON_INIT_DOES_NOT_EXISTED: "on init doesn't exist",
 	ON_UPDATE_DOES_NOT_EXISTED: "on update doesn't exist",
 	SELECTED_ITEMS_DOES_NOT_EXISTED: "selected items doesn't exist",
-	EQUIPMENT_NOT_AVALIABLE:"Equipment schedule selected by buyer is not available"
+	EQUIPMENT_NOT_AVALIABLE:"Equipment schedule selected by buyer is not available",
+	EQUIPMENT_NOT_LONGER_AVALIABLE:"Equipment schedule initialised by buyer is not available"
 };

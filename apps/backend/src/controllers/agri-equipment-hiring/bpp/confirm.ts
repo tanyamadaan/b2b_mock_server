@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { responseBuilder, updateFulfillments } from "../../../lib/utils";
+import { redisFetchFromServer, responseBuilder, send_nack, updateFulfillments } from "../../../lib/utils";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ORDER_STATUS } from "../../../lib/utils/apiConstants";
+import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 
 export const confirmController = (
 	req: Request,
@@ -15,7 +16,7 @@ export const confirmController = (
 	}
 };
 
-export const confirmConsultationController = (
+export const confirmConsultationController = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
@@ -25,6 +26,16 @@ export const confirmConsultationController = (
 			context,
 			message: { order },
 		} = req.body;
+
+		const on_init = await redisFetchFromServer(ON_ACTION_KEY.ON_INIT, context?.transaction_id);
+
+		if (on_init && on_init?.error) {
+			return send_nack(res, on_init?.error?.message?on_init?.error?.message:ERROR_MESSAGES.ON_INIT_DOES_NOT_EXISTED)
+		}
+
+		if (!on_init) {
+			return send_nack(res, ERROR_MESSAGES.ON_INIT_DOES_NOT_EXISTED)
+		}
 
 		const { fulfillments } = order;
 		const updatedFulfillments = updateFulfillments(

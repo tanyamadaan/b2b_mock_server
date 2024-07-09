@@ -8,9 +8,11 @@ import {
   AGRI_EQUIPMENT_BAP_MOCKSERVER_URL,
 } from "../../../lib/utils";
 import { v4 as uuidv4 } from "uuid";
-import { AGRI_HEALTHCARE_STATUS } from "../../../lib/utils/apiConstants";
+import { EQUIPMENT_HIRING_STATUS } from "../../../lib/utils/apiConstants";
+import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
+import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 
-const senarios: string[] = AGRI_HEALTHCARE_STATUS
+const senarios: string[] = EQUIPMENT_HIRING_STATUS
 
 export const initiateStatusController = async (
   req: Request,
@@ -20,9 +22,9 @@ export const initiateStatusController = async (
   try{
     const { transactionId } = req.body;
     const transactionKeys = await redis.keys(`${transactionId}-*`);
-    const on_confirm = await redisFetchToServer("on_confirm", transactionId);
+    const on_confirm = await redisFetchToServer(ON_ACTION_KEY.ON_CONFIRM, transactionId);
     if (!on_confirm) {
-      return send_nack(res, "On Confirm doesn't exist");
+      return send_nack(res, ERROR_MESSAGES.ON_INIT_DOES_NOT_EXISTED);
     }
     const statusIndex = transactionKeys.filter((e) =>
       e.includes("-status-to-server")

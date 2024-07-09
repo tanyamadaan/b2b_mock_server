@@ -9,7 +9,6 @@ import {
 } from "../../../lib/utils";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
-import { TIME_AVALIABLITY } from "../../../lib/utils/apiConstants";
 
 export const selectController = async (
 	req: Request,
@@ -27,13 +26,26 @@ export const selectController = async (
 		}
 		const providersItems = on_search?.message?.catalog?.providers[0];
 		req.body.providersItems = providersItems;
+
+		//Set available schedule time of items
+		req?.body?.message?.order?.items.forEach((item: any) => {
+			// Find the corresponding item in the second array
+			if (providersItems?.items) {
+				const matchingItem = providersItems?.items.find(
+					(secondItem: { id: string }) => secondItem.id === item.id
+				);
+				// If a matching item is found, update the price in the items array
+				if (matchingItem) {
+					item.time = matchingItem?.time;
+				}
+			}
+		});
 		const checkItemExistInSearch = await checkSelectedItems(req.body);
 		if (!checkItemExistInSearch) {
 			return send_nack(res, ERROR_MESSAGES.SELECTED_ITEMS_DOES_NOT_EXISTED);
 		}
 		const { scenario } = req.query;
 
-		console.log("scenarioaaaaaaaaaa", scenario);
 		switch (scenario) {
 			case "no_equipment_avaliable":
 				onSelectNoEquipmentAvaliable(req, res, next);
@@ -54,6 +66,7 @@ const selectConsultationConfirmController = (
 	try {
 		const { context, message, providersItems } = req.body;
 		const { locations, ...provider } = message.order.provider;
+
 		const updatedFulfillments = updateFulfillments(
 			message?.order?.fulfillments,
 			ON_ACTION_KEY?.ON_SELECT
@@ -75,7 +88,7 @@ const selectConsultationConfirmController = (
 
 				fulfillments: updatedFulfillments,
 				quote: quoteCreatorHealthCareService(
-					message.order.items,
+					message?.order?.items,
 					providersItems?.items,
 					providersItems?.offers,
 					message?.order?.fulfillments[0]?.type
@@ -101,7 +114,6 @@ const selectConsultationConfirmController = (
 	}
 };
 
-
 const onSelectNoEquipmentAvaliable = (
 	req: Request,
 	res: Response,
@@ -116,6 +128,7 @@ const onSelectNoEquipmentAvaliable = (
 
 		const { locations, ...provider } = message.order.provider;
 
+		console.log("itemssssssss", message?.order?.items);
 		const responseMessage = {
 			order: {
 				provider,
@@ -129,7 +142,7 @@ const onSelectNoEquipmentAvaliable = (
 				items: message?.order?.items.map(
 					({ ...remaining }: { location_ids: any; remaining: any }) => ({
 						...remaining,
-						time:TIME_AVALIABLITY
+						// time: TIME_AVALIABLITY,
 					})
 				),
 
@@ -147,8 +160,8 @@ const onSelectNoEquipmentAvaliable = (
 		const error = {
 			code: "90001",
 			message: ERROR_MESSAGES.EQUIPMENT_NOT_AVALIABLE,
-		}
-		
+		};
+
 		return responseBuilder(
 			res,
 			next,

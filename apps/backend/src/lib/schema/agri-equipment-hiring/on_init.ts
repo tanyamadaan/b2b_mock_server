@@ -573,13 +573,25 @@ export const onInitSchema = {
             "items",
             "billing",
             "fulfillments",
-            "quote",
-            "payments"
+            // "quote",
+            // "payments"
           ],
         },
       },
       required: ["order"],
     },
+    error: {
+			type: "object",
+			properties: {
+				code: {
+					type: "string",
+				},
+				message: {
+					type: "string",
+				},
+			},
+			required: ["code", "message"],
+		},
   },
   required: ["context", "message"],
 };

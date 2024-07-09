@@ -13,9 +13,11 @@ export const SERVICES_DOMAINS = {
 };
 
 export const ORDER_STATUS = {
+	IN_PROGRESS:"In-progress",
 	CREATED: "Created",
 	ACCEPTED: "Accepted",
 	CANCELLED: "Cancelled",
+	COMPLETED:"Completed"
 };
 
 export const ORDER_CACELLED_BY = {
@@ -41,6 +43,19 @@ export const AGRI_HEALTHCARE_STATUS_OBJECT = {
 	TEST_COMPLETED: "TEST_COMPLETED",
 	REPORT_GENERATED: "REPORT_GENERATED",
 	REPORT_SHARED: "REPORT_SHARED",
+};
+
+export const EQUIPMENT_HIRING_STATUS = [
+	"IN_TRANSIT",
+	"AT_LOCATION",
+	"COMPLETED",
+]
+
+export const EQUIPMENT_HIRING_STATUS_OBJECT = {
+	IN_TRANSIT: "IN_TRANSIT",
+	AT_LOCATION: "AT_LOCATION",
+	COMPLETED: "COMPLETED",
+	CANCEL:"cancel"
 };
 
 export const FULFILLMENT_TYPES = {

@@ -37,9 +37,11 @@ const onSelectConsultationController = (
 					...provider,
 					locations: [{ id: uuidv4() }],
 				},
+
 				items: items.map(
 					({ location_ids, ...items }: { location_ids: any }) => items
 				),
+
 				billing: {
 					name: "ONDC buyer",
 					address:
@@ -54,6 +56,7 @@ const onSelectConsultationController = (
 					email: "nobody@nomail.com",
 					phone: "9886098860",
 				},
+
 				fulfillments: [
 					{
 						id,
@@ -83,6 +86,7 @@ const onSelectConsultationController = (
 						],
 					},
 				],
+				
 				payments,
 			},
 		};

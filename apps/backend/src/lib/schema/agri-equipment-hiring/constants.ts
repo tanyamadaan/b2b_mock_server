@@ -11,6 +11,7 @@ export const SRV_PAYMENT_TYPE = [
 	"ON-FULFILLMENT",
 	"POST-FULFILLMENT",
 ];
+
 export const SRV_FULFILLMENT_STATE = [
 	"Pending",
 	"At-Location",
@@ -32,6 +33,7 @@ export const GPS_PATTERN =
 	"^(-?[0-9]{1,3}(?:.[0-9]{6,15})?),( )*?(-?[0-9]{1,3}(?:.[0-9]{6,15})?)$";
 
 export const SERVICEABILITY = ["location", "category", "type", "val", "unit"];
+
 export const RESCHEDULE_TERMS = [
 	"fulfillment_state",
 	"reschedule_eligible",
