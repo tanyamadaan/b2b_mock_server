@@ -8,6 +8,7 @@ import {
 	FULFILLMENT_TYPES,
 	PAYMENT_TYPES,
 	DELIVERY_TERMS_TAGS,
+	QUOTE_TITLE,
 } from "./constants";
 
 export const onCancelSchema = {
@@ -231,7 +232,7 @@ export const onCancelSchema = {
 											},
 											title: {
 												type: "string",
-												const: "delivery",
+												enum : QUOTE_TITLE
 											},
 											price: {
 												type: "object",

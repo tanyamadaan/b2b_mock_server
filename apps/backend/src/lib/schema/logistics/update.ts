@@ -87,6 +87,7 @@ export const updateSchema = {
 			properties: {
 				update_target: {
 					type: "string",
+					enum : ["fulfillment"]
 				},
 				order: {
 					type: "object",
@@ -137,7 +138,6 @@ export const updateSchema = {
 										type: "array",
 										items: {
 											type: "string",
-											//enum:["P2P","P2H2P"]
 										},
 									},
 									descriptor: {
@@ -229,7 +229,6 @@ export const updateSchema = {
 													required: [
 														"short_desc",
 														"long_desc",
-														"additional_desc",
 													],
 												},
 												authorization: {
@@ -256,7 +255,6 @@ export const updateSchema = {
 												"parent_stop_id",
 												"type",
 												"instructions",
-												"authorization",
 											],
 										},
 									},

@@ -7,7 +7,8 @@ import {
 	PAYMENT_BPP_TERMS,
 	FULFILLMENT_TYPES,
 	FULFILLMENT_STATES,
-	PAYMENT_TYPES
+	PAYMENT_TYPES,
+	QUOTE_TITLE
 } from "./constants";
 
 export const onInitSchema = {
@@ -306,6 +307,7 @@ export const onInitSchema = {
 											},
 											title: {
 												type: "string",
+												enum : QUOTE_TITLE
 											},
 											price: {
 												type: "object",

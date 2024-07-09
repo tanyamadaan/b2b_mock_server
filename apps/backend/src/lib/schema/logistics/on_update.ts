@@ -8,6 +8,7 @@ import {
 	FULFILLMENT_TYPES,
 	FULFILLMENT_STATES,
 	DELIVERY_TERMS_TAGS,
+	QUOTE_TITLE,
 } from "./constants";
 
 export const onUpdateSchema = {
@@ -212,6 +213,7 @@ export const onUpdateSchema = {
 											},
 											title: {
 												type: "string",
+												enum : QUOTE_TITLE
 											},
 											price: {
 												type: "object",

@@ -9,6 +9,7 @@ import {
 	FULFILLMENT_STATES,
 	PAYMENT_TYPES,
 	DELIVERY_TERMS_TAGS,
+	QUOTE_TITLE,
 } from "./constants";
 
 export const onConfirmSchema = {
@@ -195,6 +196,7 @@ export const onConfirmSchema = {
 											},
 											title: {
 												type: "string",
+												enum : QUOTE_TITLE
 											},
 											price: {
 												type: "object",
