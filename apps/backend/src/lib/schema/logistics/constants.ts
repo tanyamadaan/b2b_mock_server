@@ -62,9 +62,8 @@ export const DELIVERY_TERMS_TAGS = [
 	"RTO_Id",
 	"Cancellation_Reason_Id",
 	"Sub_Reason_Id",
-	"Cancelled_By"
+	"Cancelled_By",
 ];
-
 
 export const COLD_LOGISTICS_TAGS = [
 	"Temp_Control",
@@ -86,7 +85,7 @@ export const QUOTE_TITLE = [
 	"insurance",
 	"delivery_diff",
 	"tax_diff",
-]
+];
 export const SEARCH_TAGS = [
 	...PACKAGE_DIMENSIONS_TAGS,
 	...PACKAGE_DETAILS_TAGS,
@@ -105,7 +104,11 @@ export const PAYMENT_BPP_TERMS = [
 	"Amount",
 	"Type",
 ];
-export const PAYMENT_TYPES = ["PRE-FULFILLMENT", "ON-FULFILLMENT", "POST-FULFILLMENT"];
+export const PAYMENT_TYPES = [
+	"PRE-FULFILLMENT",
+	"ON-FULFILLMENT",
+	"POST-FULFILLMENT",
+];
 export const FULFILLMENT_TYPES = ["Delivery", "Return", "RTO"];
 export const DELIVERY_CATEGORIES = [
 	"Surface_Delivery",
@@ -135,11 +138,30 @@ export const UPDATE_TAGS = [
 	"Package_Dimensions",
 	"Package_Details",
 	"Cold_Logistics",
-]
+];
 
- 
-
-export const FULFILLMENT_STATES =["Pending","Out-for-pickup","Order-picked-up","In-transit","At-destination-hub","Out-for-delivery","Order-delivered","RTO-Initiated","RTO-Delivered","RTO-Disposed","Cancelled"]
+export const FULFILLMENT_STATES = [
+	"Pending",
+	"Packed",
+	"Pickup-approved",
+	"Pickup-rejected",
+	"Order-picked-up",
+	"In-transit",
+	"At-domestic-hub",
+	"Custom-cleared-domestic",
+	"Custom-rejected-domestic",
+	"Shipped",
+	"Reached-destination-country",
+	"Custom-cleared-destination",
+	"Custom-rejected-destination",
+	"At-destination-hub",
+	"Out-for-delivery",
+	"Order-delivered",
+	"Delivery-failed",
+	"RTO-Initiated",
+	"RTO-Delivered",
+	"RTO-Disposed",
+];
 
 export const TERMS = [
 	"Package_Weight",
@@ -175,7 +197,8 @@ export const LOG_ORDER_TAGS = [
 	"Unit",
 	"Value",
 	"HSN_Code",
-	"Transit_Risk_Owner"];
+	"Transit_Risk_Owner",
+];
 
 export const LOG_BPP_TERMS = [
 	"Delay_Interest",
@@ -183,5 +206,5 @@ export const LOG_BPP_TERMS = [
 	"Mandatory_Arbitration",
 	"Max_Liability_Cap",
 	"Max_Liability",
-	"Static_Terms"
+	"Static_Terms",
 ];
