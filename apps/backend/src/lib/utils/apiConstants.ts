@@ -85,6 +85,12 @@ export const PAYMENT_STATUS = {
 	NON_PAID: "NON-PAID",
 };
 
+export const PAYMENT_TYPE = {
+	PRE_FULFILLMENT:"PRE-FULFILLMENT",
+	ON_FULFILLMENT:"ON-FULFILLMENT",
+	POST_FULFILLMENT:"POST-FULFILLMENT",
+}
+
 export const BILLING_DETAILS = {
 	name: "ONDC buyer",
 	address:

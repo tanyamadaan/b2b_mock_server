@@ -61,7 +61,6 @@ const intializeRequest = async (
   
     // satus index is always witin boundary of senarios array
     statusIndex = Math.min(Math.max(statusIndex, 0), senarios.length - 1);
-    // console.log("Status:::", statusIndex);
     await send_response(
       res,
       next,

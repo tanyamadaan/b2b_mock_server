@@ -6,15 +6,14 @@ import {
 	quoteCreatorHealthCareService,
 	responseBuilder,
 	send_nack,
-	redisExistFromServer,
 	AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH,
 	redisFetchFromServer,
 	updateFulfillments,
 } from "../../../lib/utils";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
-import { TIME_AVALIABLITY } from "../../../lib/utils/apiConstants";
-
+import { SRV_PAYMENT_TYPE } from "../../../lib/schema/agri-equipment-hiring/constants";
+import { PAYMENT_TYPE } from "../../../lib/utils/apiConstants";
 
 export const initController = async (req: Request, res: Response, next: NextFunction) => {
 	try{
@@ -62,7 +61,7 @@ const initConsultationController = (req: Request, res: Response, next: NextFunct
 		);
 	
 		const response = YAML.parse(file.toString());
-		const quoteData = quoteCreatorHealthCareService(items, providersItems,"",	fulfillments[0]?.type)
+		const quoteData = quoteCreatorHealthCareService(items, providersItems,"",	fulfillments[0]?.type,"agri-equipment-hiring")
 
 		const responseMessage = {
 			order: {
@@ -72,18 +71,36 @@ const initConsultationController = (req: Request, res: Response, next: NextFunct
 				billing,
 				fulfillments: updatedFulfillments,
 				quote: quoteData,
-				payments: [{
-					id: response?.value?.message?.order?.payments[0]?.id,
-					type: payments[0]?.type,
-					collected_by: payments[0]?.collected_by,
+
+				//UPDATE PAYMENT OBJECT WITH REFUNDABLE SECURITY
+
+				payments: [
+					response?.value?.message?.order?.payments[0],
+					{
+					id: response?.value?.message?.order?.payments[1]?.id,
+					type: PAYMENT_TYPE.ON_FULFILLMENT,
+					collected_by: response?.value?.message?.order?.payments[0]?.collected_by,
 					params: {
-						amount: quoteData?.price?.value,
+						amount: (Number(quoteData?.price?.value) - 5000).toString(),
 						currency: quoteData?.price?.currency,
-						bank_account_number: response?.value?.message?.order?.payments[0]?.params?.bank_account_number,
-						virtual_payment_address: response?.value?.message?.order?.payments[0]?.params?.virtual_payment_address
+						bank_account_number: response?.value?.message?.order?.payments[1]?.params?.bank_account_number,
+						virtual_payment_address: response?.value?.message?.order?.payments[1]?.params?.virtual_payment_address
 					},
-					tags: response?.value?.message?.order?.payments[0]?.tags
-				}],
+					tags: response?.value?.message?.order?.payments[1]?.tags
+				}
+			],
+				// payments: [{
+				// 	id: response?.value?.message?.order?.payments[0]?.id,
+				// 	type: payments[0]?.type,
+				// 	collected_by: payments[0]?.collected_by,
+				// 	params: {
+				// 		amount: quoteData?.price?.value,
+				// 		currency: quoteData?.price?.currency,
+				// 		bank_account_number: response?.value?.message?.order?.payments[0]?.params?.bank_account_number,
+				// 		virtual_payment_address: response?.value?.message?.order?.payments[0]?.params?.virtual_payment_address
+				// 	},
+				// 	tags: response?.value?.message?.order?.payments[0]?.tags
+				// }],
 			}
 		}
 
@@ -109,6 +126,19 @@ const initItemNotAvaliableController = (req: Request, res: Response, next: NextF
 		const { context, providersItems, message: { order: { provider, items, billing, fulfillments, payments } } } = req.body;
 		const { locations, ...remainingProvider } = provider;
 
+		items.forEach((item: any) => {
+			// Find the corresponding item in the second array
+			if (providersItems) {
+				const matchingItem = providersItems.find(
+					(secondItem: { id: string }) => secondItem.id === item.id
+				);
+				// If a matching item is found, update the price in the items array
+				if (matchingItem) {
+					item.time = matchingItem?.time;
+				}
+			}
+		});
+
 		const updatedFulfillments = updateFulfillments(fulfillments, ON_ACTION_KEY?.ON_INIT);
 
 		const file = fs.readFileSync(
@@ -116,7 +146,7 @@ const initItemNotAvaliableController = (req: Request, res: Response, next: NextF
 		);
 	
 		const response = YAML.parse(file.toString());
-		const quoteData = quoteCreatorHealthCareService(items, providersItems,"",	fulfillments[0]?.type)
+		const quoteData = quoteCreatorHealthCareService(items, providersItems,"",	fulfillments[0]?.type,"agri-equipment-hiring")
 
 		const responseMessage = {
 			order: {
@@ -125,7 +155,6 @@ const initItemNotAvaliableController = (req: Request, res: Response, next: NextF
 				items: items.map(
 					({ ...remaining }: { location_ids: any; remaining: any }) => ({
 						...remaining,
-						time:TIME_AVALIABLITY
 					})
 				),
 				billing,

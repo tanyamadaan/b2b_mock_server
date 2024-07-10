@@ -41,9 +41,7 @@ export const initiateSearchController = async (req: Request, res: Response, next
 				message_id: uuidv4()
 			},
 		};
-		search.bpp_uri = bpp_uri
-		console.log("searchapppppppppppp", JSON.stringify(search))
-		
+		search.bpp_uri = bpp_uri		
 		await send_response(res, next, search, transaction_id, ACTTION_KEY.SEARCH);
 	}catch(error){
 		return next(error);

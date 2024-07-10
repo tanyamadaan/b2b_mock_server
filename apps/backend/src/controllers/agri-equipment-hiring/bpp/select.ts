@@ -27,19 +27,6 @@ export const selectController = async (
 		const providersItems = on_search?.message?.catalog?.providers[0];
 		req.body.providersItems = providersItems;
 
-		//Set available schedule time of items
-		req?.body?.message?.order?.items.forEach((item: any) => {
-			// Find the corresponding item in the second array
-			if (providersItems?.items) {
-				const matchingItem = providersItems?.items.find(
-					(secondItem: { id: string }) => secondItem.id === item.id
-				);
-				// If a matching item is found, update the price in the items array
-				if (matchingItem) {
-					item.time = matchingItem?.time;
-				}
-			}
-		});
 		const checkItemExistInSearch = await checkSelectedItems(req.body);
 		if (!checkItemExistInSearch) {
 			return send_nack(res, ERROR_MESSAGES.SELECTED_ITEMS_DOES_NOT_EXISTED);
@@ -91,7 +78,8 @@ const selectConsultationConfirmController = (
 					message?.order?.items,
 					providersItems?.items,
 					providersItems?.offers,
-					message?.order?.fulfillments[0]?.type
+					message?.order?.fulfillments[0]?.type,
+					"agri-equipment-hiring"
 				),
 			},
 		};
@@ -121,6 +109,21 @@ const onSelectNoEquipmentAvaliable = (
 ) => {
 	try {
 		const { context, message, providersItems } = req.body;
+
+		//Set available schedule time of items
+		message?.order?.items.forEach((item: any) => {
+			// Find the corresponding item in the second array
+			if (providersItems?.items) {
+				const matchingItem = providersItems?.items.find(
+					(secondItem: { id: string }) => secondItem.id === item.id
+				);
+				// If a matching item is found, update the price in the items array
+				if (matchingItem) {
+					item.time = matchingItem?.time;
+				}
+			}
+		});
+
 		const updatedFulfillments = updateFulfillments(
 			req.body?.message?.order?.fulfillments,
 			ON_ACTION_KEY?.ON_SELECT
@@ -128,7 +131,6 @@ const onSelectNoEquipmentAvaliable = (
 
 		const { locations, ...provider } = message.order.provider;
 
-		console.log("itemssssssss", message?.order?.items);
 		const responseMessage = {
 			order: {
 				provider,
@@ -142,7 +144,6 @@ const onSelectNoEquipmentAvaliable = (
 				items: message?.order?.items.map(
 					({ ...remaining }: { location_ids: any; remaining: any }) => ({
 						...remaining,
-						// time: TIME_AVALIABLITY,
 					})
 				),
 

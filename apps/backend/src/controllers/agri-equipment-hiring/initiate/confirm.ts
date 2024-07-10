@@ -57,6 +57,7 @@ const intializeRequest = async (
 		const { stops, ...remainingfulfillments } = fulfillments[0];
 	
 		const timestamp = new Date().toISOString();
+
 		const confirm = {
 			context: {
 				...context,
@@ -103,6 +104,14 @@ const intializeRequest = async (
 								transaction_id: uuidv4(),
 							},
 							status: PAYMENT_STATUS.PAID,
+						},
+						{
+							...payments[1],
+							params: {
+								...payments[1].params,
+								transaction_id: uuidv4(),
+							},
+							status: PAYMENT_STATUS.NON_PAID,
 						},
 					],
 					created_at: timestamp,

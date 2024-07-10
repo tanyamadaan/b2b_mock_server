@@ -64,7 +64,12 @@ export const responseBuilder = async (
 	message: object,
 	uri: string,
 	action: string,
-	domain: "b2b" | "services" | "agri-services" | "healthcare-service" | "agri-equipment-hiring",
+	domain:
+		| "b2b"
+		| "services"
+		| "agri-services"
+		| "healthcare-service"
+		| "agri-equipment-hiring",
 	error?: object | undefined
 ) => {
 	res.locals = {};
@@ -288,7 +293,12 @@ export const sendStatusAxiosCall = async (
 	message: object,
 	uri: string,
 	action: string,
-	domain: "b2b" | "services" | "agri-services" | "healthcare-service" | "agri-equipment-hiring",
+	domain:
+		| "b2b"
+		| "services"
+		| "agri-services"
+		| "healthcare-service"
+		| "agri-equipment-hiring",
 	error?: object | undefined
 ) => {
 	let ts = new Date();
@@ -593,7 +603,8 @@ export const quoteCreatorHealthCareService = (
 	items: Item[],
 	providersItems?: any,
 	offers?: any,
-	fulfillment_type?: string
+	fulfillment_type?: string,
+	service_name?: string
 ) => {
 	try {
 		//GET PACKAGE ITEMS
@@ -664,30 +675,55 @@ export const quoteCreatorHealthCareService = (
 
 		//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
 
-		//ADD STATIC TAX FOR ITEM ONE
-		breakup?.push({
-			title: "tax",
-			price: {
-				currency: "INR",
-				value: "10",
-			},
-			item: items[0],
-			tags: [
-				{
-					descriptor: {
-						code: "title",
-					},
-					list: [
-						{
-							descriptor: {
-								code: "type",
-							},
-							value: "tax",
-						},
-					],
+		//ADD STATIC TAX AND DISCOUNT FOR ITEM ONE
+		breakup?.push(
+			{
+				title: "tax",
+				price: {
+					currency: "INR",
+					value: "10",
 				},
-			],
-		});
+				item: items[0],
+				tags: [
+					{
+						descriptor: {
+							code: "title",
+						},
+						list: [
+							{
+								descriptor: {
+									code: "type",
+								},
+								value: "tax",
+							},
+						],
+					},
+				],
+			},
+			{
+				title: "discount",
+				price: {
+					currency: "INR",
+					value: "10",
+				},
+				item: items[0],
+				tags: [
+					{
+						descriptor: {
+							code: "title",
+						},
+						list: [
+							{
+								descriptor: {
+									code: "type",
+								},
+								value: "discount",
+							},
+						],
+					},
+				],
+			}
+		);
 
 		if (fulfillment_type === "Seller-Fulfilled") {
 			breakup?.push({
@@ -696,9 +732,7 @@ export const quoteCreatorHealthCareService = (
 					currency: "INR",
 					value: "149",
 				},
-				item: {
-					id: "I1",
-				},
+				item: items[0],
 				tags: [
 					{
 						descriptor: {
@@ -716,6 +750,33 @@ export const quoteCreatorHealthCareService = (
 				],
 			});
 		}
+
+		if (service_name === "agri-equipment-hiring") {
+			breakup?.push({
+				title: "refundable_security",
+				price: {
+					currency: "INR",
+					value: "5000",
+				},
+				item: items[0],
+				tags: [
+					{
+						descriptor: {
+							code: "title",
+						},
+						list: [
+							{
+								descriptor: {
+									code: "type",
+								},
+								value: "refundable_security",
+							},
+						],
+					},
+				],
+			});
+		}
+
 		let totalPrice = 0;
 
 		breakup.forEach((entry) => {
@@ -1044,9 +1105,9 @@ export const updateFulfillments = (
 								ele = {
 									...ele,
 									...FULFILLMENT_END,
-									time:{
+									time: {
 										...ele.time,
-										label:FULFILLMENT_LABELS.CONFIRMED
+										label: FULFILLMENT_LABELS.CONFIRMED,
 									},
 									person:
 										ele.customer && ele.customer.person
