@@ -399,8 +399,6 @@ export const onStatusSchema = {
 													required: [
 														"short_desc",
 														"long_desc",
-														"additional_desc",
-														"images",
 													],
 												},
 												time: {
@@ -422,7 +420,7 @@ export const onStatusSchema = {
 															type: "string",
 														},
 													},
-													required: ["range", "timestamp"],
+													required: ["range"],
 												},
 											},
 											required: [
@@ -431,7 +429,6 @@ export const onStatusSchema = {
 												"type",
 												"location",
 												"contact",
-												"authorization",
 												"instructions",
 												"time",
 											],
@@ -518,7 +515,7 @@ export const onStatusSchema = {
 							},
 							required: ["name", "address"],
 						},
-						payment: {
+						payments: {
 							type: "array",
 							items: {
 								type: "object",
@@ -554,7 +551,7 @@ export const onStatusSchema = {
 									},
 									type: {
 										type: "string",
-										enum: PAYMENT_TERMS,
+										enum: ["ON-ORDER","ON-FULFILLMENT","POST-FULFILLMENT"],
 									},
 									tags: {
 										type: "array",
@@ -566,7 +563,7 @@ export const onStatusSchema = {
 													properties: {
 														code: {
 															type: "string",
-															enum: TERMS,
+															enum: PAYMENT_TERMS,
 														},
 													},
 													required: ["code"],
@@ -582,7 +579,7 @@ export const onStatusSchema = {
 																	properties: {
 																		code: {
 																			type: "string",
-																			enum: LOG_ORDER_TAGS,
+																			enum: PAYMENT_BPP_TERMS,
 																		},
 																	},
 																	required: ["code"],
@@ -654,7 +651,7 @@ export const onStatusSchema = {
 						"quote",
 						"fulfillments",
 						"billing",
-						"payment",
+						"payments",
 						"tags",
 						"updated_at",
 					],

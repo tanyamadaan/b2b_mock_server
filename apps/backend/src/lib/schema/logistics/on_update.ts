@@ -506,7 +506,7 @@ export const onUpdateSchema = {
 								"time"
 							],
 						},
-						payment: {
+						payments: {
 							type: "array",
 							items: {
 								type: "object",
@@ -643,7 +643,7 @@ export const onUpdateSchema = {
 						"quote",
 						"fulfillments",
 						"billing",
-						"payment",
+						"payments",
 						"updated_at",
 					],
 				},

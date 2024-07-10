@@ -58,6 +58,11 @@ export const DELIVERY_TERMS_TAGS = [
 	"LR_No",
 	"Transporter_Id",
 	"Doc_Way_Bill_No",
+	"Retry_Count",
+	"RTO_Id",
+	"Cancellation_Reason_Id",
+	"Sub_Reason_Id",
+	"Cancelled_By"
 ];
 
 
@@ -78,7 +83,9 @@ export const QUOTE_TITLE = [
 	"Custom_Clearance_Service_Destination",
 	"rto",
 	"diff",
-	"insurance"
+	"insurance",
+	"delivery_diff",
+	"tax_diff",
 ]
 export const SEARCH_TAGS = [
 	...PACKAGE_DIMENSIONS_TAGS,
@@ -132,7 +139,7 @@ export const UPDATE_TAGS = [
 
  
 
-export const FULFILLMENT_STATES =["Pending","Out-for-pickup","Order-picked-up","In-transit","At-destination-hub","Out-for-delivery","Order-delivered","RTO-Initiated","RTO-Delivered","RTO-Disposed"]
+export const FULFILLMENT_STATES =["Pending","Out-for-pickup","Order-picked-up","In-transit","At-destination-hub","Out-for-delivery","Order-delivered","RTO-Initiated","RTO-Delivered","RTO-Disposed","Cancelled"]
 
 export const TERMS = [
 	"Package_Weight",
