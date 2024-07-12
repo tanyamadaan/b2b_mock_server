@@ -15,7 +15,7 @@ import Select, { selectClasses } from "@mui/joy/Select";
 import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";
 import Button from "@mui/joy/Button";
 import Option from "@mui/joy/Option";
-import { useAction, useSandbox } from "../utils/hooks";
+import { useAction, useDomain, useSandbox } from "../utils/hooks";
 import { URL_MAPPING } from "../utils";
 import axios, { AxiosError } from "axios";
 import { UserGuide } from "./UserGuideSection";
@@ -28,7 +28,8 @@ export const SandboxRequestSection = () => {
 		name: string;
 		scenario: string;
 	}>();
-	const { action, detectAction, domain, logError, scenarios } = useAction();
+	const { domain } = useDomain();
+	const { action, detectAction, logError, scenarios } = useAction();
 
 	const { setSyncResponse } = useSandbox();
 	useEffect(() => {
@@ -37,7 +38,7 @@ export const SandboxRequestSection = () => {
 		setSyncResponse(undefined);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
-	
+
 	const [curl, setCurl] = useState<string>();
 
 	const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

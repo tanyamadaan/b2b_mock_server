@@ -7,11 +7,11 @@ import {
 	HEALTHCARE_SERVICES_SCENARIOS,
 	AGRI_SERVICES_SCENARIOS,
 } from "openapi-specs/constants";
-import { ALL_DOMAINS_FRONTEND } from "../constants";
+// import { ALL_DOMAINS_FRONTEND } from "../constants";
 
 export const useAction = () => {
 	const [action, setAction] = useState<string>();
-	const [domain, setDomain] = useState<string>("b2b");
+	const [domain, setDomain] = useState<string>("");
 	const [logError, setLogError] = useState(false);
 
 	const [scenarios, setScenarios] =
@@ -20,20 +20,28 @@ export const useAction = () => {
 	const detectAction = _.debounce((log: string) => {
 		try {
 			const parsedLog = JSON.parse(log);
-			const newDomain = parsedLog?.context?.domain === ALL_DOMAINS_FRONTEND.SERVICES_DOMAINS?"services":parsedLog?.context?.domain === ALL_DOMAINS_FRONTEND.HEALTHCARE_SERVICES_DOMAINS?"healthcare-services":parsedLog?.context?.domain === ALL_DOMAINS_FRONTEND.AGRI_SERVICES_DOMAINS?"agri-services":"b2b";
+			// const newDomain =
+			// 	parsedLog?.context?.domain === ALL_DOMAINS_FRONTEND.SERVICES_DOMAINS
+			// 		? "services"
+			// 		: parsedLog?.context?.domain ===
+			// 		  ALL_DOMAINS_FRONTEND.HEALTHCARE_SERVICES_DOMAINS
+			// 		? "healthcare-services"
+			// 		: parsedLog?.context?.domain ===
+			// 		  ALL_DOMAINS_FRONTEND.AGRI_SERVICES_DOMAINS
+			// 		? "agri-services"
+			// 		: "b2b";
 
-			setDomain(newDomain);
+			// setDomain(newDomain);
 
-
-			//DETACT DOMAIN 
+			//DETACT DOMAIN
 			const allScenarios =
 				domain === "b2b"
 					? B2B_SCENARIOS
 					: domain === "services"
-						? SERVICES_SCENARIOS
-						: domain === "healthcare-services"
-							? HEALTHCARE_SERVICES_SCENARIOS
-							: AGRI_SERVICES_SCENARIOS;
+					? SERVICES_SCENARIOS
+					: domain === "healthcare-services"
+					? HEALTHCARE_SERVICES_SCENARIOS
+					: AGRI_SERVICES_SCENARIOS;
 
 			if (!parsedLog.context!.action) setLogError(true);
 			const parsedAction = parsedLog.context.action;
@@ -53,5 +61,5 @@ export const useAction = () => {
 			setAction(undefined);
 		}
 	}, 1500);
-	return { action,domain, logError, scenarios, detectAction };
+	return { action, domain, setDomain, logError, scenarios, detectAction };
 };

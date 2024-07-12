@@ -2,10 +2,10 @@
 	"$schema": "https://turbo.build/schema.json",
 	"pipeline": {
 		"test": {
-			"dependsOn": ["test:backend"]
+			"dependsOn": ["test:backend"],
+			"persistent": true
 		},
 		"test:backend": {
-			"dependsOn": ["db:migrate:dev"],
 			"cache": false,
 			"persistent": false
 		},

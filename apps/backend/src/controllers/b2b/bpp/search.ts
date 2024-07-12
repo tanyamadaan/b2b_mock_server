@@ -95,6 +95,7 @@ export const searchController = async (
         onSearch = YAML.parse(file.toString());
         break;
     }
+    console.log("REACHED HERE!")
 
     return responseBuilder(
       res,

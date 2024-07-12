@@ -70,14 +70,14 @@ app.use("/detect_app_installation", (req: Request, res: Response) => {
 
 app.use(globalErrorHandler);
 
-//Schedule the function to run every 30 seconds using node-cron
-cron.schedule("*/30 * * * * *", async () => {
-	try {
-		await sendUpsolicieatedOnStatus();
-	} catch (error) {
-		console.log("error occured in cron");
-	}
-});
+// //Schedule the function to run every 30 seconds using node-cron
+// cron.schedule("*/30 * * * * *", async () => {
+// 	try {
+// 		await sendUpsolicieatedOnStatus();
+// 	} catch (error) {
+// 		console.log("error occured in cron");
+// 	}
+// });
 
 app.listen(port, () => {
 	console.log(`[server]: Server is running at http://localhost:${port}`);

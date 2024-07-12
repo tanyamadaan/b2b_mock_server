@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
 import Divider from "@mui/material/Divider";
 import Grow from "@mui/material/Grow";
-import { useMessage } from "../../utils/hooks";
+import { useDomain, useMessage } from "../../utils/hooks";
 import HelpOutlineTwoToneIcon from "@mui/icons-material/HelpOutlineTwoTone";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
@@ -39,7 +39,7 @@ type SELECT_FIELD = {
 export const InitiateRequestSection = () => {
 	const { handleMessageToggle, setMessageType, setCopy } = useMessage();
 	const [action, setAction] = useState<string>();
-	const [domain, setDomain] = useState<string | object>("b2b");
+	const { domain } = useDomain();
 	const [renderActionFields, setRenderActionFields] = useState(false);
 	const [formState, setFormState] = useState<object>();
 	const [allowSubmission, setAllowSubmission] = useState<boolean>();
@@ -56,9 +56,6 @@ export const InitiateRequestSection = () => {
 	};
 
 	const handleFieldChange = (fieldName: string, value: string | object) => {
-		if (fieldName === "service_name") {
-			setDomain(value);
-		}
 		setFormState((prev) => ({ ...prev, [fieldName]: value }));
 	};
 

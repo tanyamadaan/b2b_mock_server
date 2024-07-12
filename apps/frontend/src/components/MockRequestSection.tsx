@@ -14,7 +14,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import { CurlDisplay } from ".";
-import { useAction, useMock } from "../utils/hooks";
+import { useAction, useDomain, useMock } from "../utils/hooks";
 import { URL_MAPPING } from "../utils";
 import axios, { AxiosError } from "axios";
 import { UserGuide } from "./UserGuideSection";
@@ -24,14 +24,14 @@ import { UserGuide } from "./UserGuideSection";
 // };
 
 export const MockRequestSection = () => {
-
 	const [log, setLog] = useState<string>();
 	const [showCurl, setShowCurl] = useState(false);
 	const [activeScenario, setActiveScenario] = useState<{
 		name: string;
 		scenario: string;
 	}>();
-	const { action, detectAction,domain, logError, scenarios } = useAction();
+	const { domain } = useDomain();
+	const { action, detectAction, logError, scenarios } = useAction();
 	const { setAsyncResponse, setSyncResponse } = useMock();
 
 	useEffect(() => {
@@ -41,9 +41,9 @@ export const MockRequestSection = () => {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		setAsyncResponse(undefined);
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
-	
+
 	const [curl, setCurl] = useState<string>();
 
 	const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -70,9 +70,9 @@ export const MockRequestSection = () => {
 					"Content-Type": "application/json",
 				},
 			});
-			console.log("RESPONSE", response)
+			console.log("RESPONSE", response);
 			setSyncResponse(response.data.sync);
-			
+
 			setAsyncResponse(response.data.async || {});
 		} catch (error) {
 			console.log("ERROR Occured while pinging backend:", error);
@@ -139,14 +139,15 @@ export const MockRequestSection = () => {
 												},
 											},
 										}}
-
 										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 										// @ts-ignore
 										onChange={(
 											_event: React.SyntheticEvent | null,
 											newValue: object
 										) => {
-											setActiveScenario(newValue as { name: string; scenario: string; });
+											setActiveScenario(
+												newValue as { name: string; scenario: string }
+											);
 										}}
 										defaultValue={scenarios![0]}
 										disabled={scenarios?.length === 0}
@@ -179,7 +180,7 @@ export const MockRequestSection = () => {
 					</Stack>
 				</Paper>
 			</Fade>
-			<UserGuide/>
+			<UserGuide />
 			<CurlDisplay slideIn={showCurl} curl={curl} />
 		</>
 	);

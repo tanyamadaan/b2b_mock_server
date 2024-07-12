@@ -1,13 +1,11 @@
 import { Toolbar } from "@mui/material";
-import Container from "@mui/material/Container";
-import { Outlet } from "react-router-dom";
 import "swagger-ui-react/swagger-ui.css";
 import { SwaggerDownloadButton } from "../../components";
 import serviceswaggerSpec from "openapi-specs/retail-b2b.json";
 import { useState } from "react";
 import SwaggerUI from "swagger-ui-react";
-import { Select } from "@mui/joy";
-import { SWAGGER_DOMAIN_FIELDS } from "../../utils";
+// import { Select } from "@mui/joy";
+// import { SWAGGER_DOMAIN_FIELDS } from "../../utils";
 
 export const Swagger = () => {
 	const [swaggerSpec, setSwaggerSpec] = useState(serviceswaggerSpec);
