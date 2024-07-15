@@ -52,7 +52,7 @@ type NavButtonProps = {
 		path: string;
 	};
 	disabled?: boolean;
-	tooltip?: {
+	disabledTooltip?: {
 		show: boolean;
 		text: string;
 	};
@@ -63,34 +63,36 @@ const NavButton = ({
 	index,
 	link,
 	disabled,
-	tooltip,
+	disabledTooltip,
 }: NavButtonProps) => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const theme = useTheme();
-	console.log("TOOLTIP", link.name, tooltip);
+	console.log("TOOLTIP", link.name, disabledTooltip);
 	return (
 		<Grow in={render} timeout={1000} key={"nonnested-nav-" + index}>
 			<ListItem disablePadding key={index}>
-				{tooltip?.show ? (
-					<Tooltip title={tooltip?.text}>
-						<ListItemButton
-							disabled={disabled}
-							onClick={() => navigate(link.path)}
-							selected={location.pathname === link.path}
-							sx={{
-								bgcolor: theme.palette.primary.dark,
-								color: theme.palette.primary.contrastText,
-								"&.Mui-selected": {
-									backgroundColor: theme.palette.primary.light,
-								},
-								"&:hover": {
-									color: theme.palette.common.black,
-								},
-							}}
-						>
-							<ListItemText primary={link.name} />
-						</ListItemButton>
+				{disabledTooltip?.show ? (
+					<Tooltip title={disabledTooltip?.text}>
+						<Box sx={{ width: "100%"}}>
+							<ListItemButton
+								disabled={disabled}
+								onClick={() => navigate(link.path)}
+								selected={location.pathname === link.path}
+								sx={{
+									bgcolor: theme.palette.primary.dark,
+									color: theme.palette.primary.contrastText,
+									"&.Mui-selected": {
+										backgroundColor: theme.palette.primary.light,
+									},
+									"&:hover": {
+										color: theme.palette.common.black,
+									},
+								}}
+							>
+								<ListItemText primary={link.name} />
+							</ListItemButton>
+						</Box>
 					</Tooltip>
 				) : (
 					<ListItemButton
@@ -170,7 +172,7 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 							index={index}
 							render={mobileOpen}
 							disabled={domain.length === 0}
-							tooltip={
+							disabledTooltip={
 								domain.length === 0
 									? {
 											show: true,
