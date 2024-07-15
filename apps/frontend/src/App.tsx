@@ -16,11 +16,10 @@ import {
 	SandboxProvider,
 } from "./utils/context";
 import { AgriServicesMock, B2BMock, HealthCareServicesMock, ServicesMock } from "./pages/mock/domains";
-import { B2BSandbox, ServicesSandbox } from "./pages/sandbox/domains";
+import { B2BSandbox, ServicesSandbox, LogisticsSandbox } from "./pages/sandbox/domains";
 import { AgriServicesSandbox } from "./pages/sandbox/domains/agri-services";
 import { HealthCareServicesSandbox } from "./pages/sandbox/domains/healthcare-services";
 import Readme from "./pages/readme";
-import { LogisticsSandbox } from "./pages/sandbox/domains/logistics";
 import { LogisticsMock } from "./pages/mock/domains/logistics";
 import { LogisticsSwagger } from "./pages/swagger/domains/logistics";
 

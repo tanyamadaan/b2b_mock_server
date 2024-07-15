@@ -80,6 +80,7 @@ export const INITIATE_FIELDS = {
 				services: SERVICES_DOMAINS,
 				"agri-services": AGRI_SERVICES_DOMAINS,
 				"healthcare-services": HEALTHCARE_SERVICES_DOMAINS,
+				logistics: LOGISTICS_DOMAINS
 			},
 		},
 		{

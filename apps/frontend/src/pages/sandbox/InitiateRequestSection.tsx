@@ -98,10 +98,10 @@ export const InitiateRequestSection = ({
 					},
 				}
 			);
-			if (response.data.message.ack.status === "ACK") {
+			if (response.data.message.ack.status === "ACK" || response.data.sync.message.ack.status === "ACK") {
 				if (action === "search") {
 					handleMessageToggle(
-						`Your Transaction ID is: ${response.data.transaction_id}`
+						`Your Transaction ID is: ${response.data.transaction_id ? response.data.transaction_id : response.data.async.context.transaction_id}`
 					);
 					setMessageType("success");
 					setCopy(response.data.transaction_id);
@@ -119,7 +119,7 @@ export const InitiateRequestSection = ({
 			}
 		} catch (error:any) {
 			setMessageType("error");
-			console.log("error.response?.data?.error?.message",error.response?.data?.error?.message)
+			console.log("error.response?.data?.error?.message",error)
 			if (error instanceof AxiosError && error.response?.data?.error?.message.error?.message)
 				handleMessageToggle(
 					error.response?.data?.error?.message.error?.message === "string"?error.response?.data?.error?.message.error?.message:"Error Occurred while initiating request!"

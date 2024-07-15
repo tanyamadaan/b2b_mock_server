@@ -161,6 +161,7 @@ export const FULFILLMENT_STATES = [
 	"RTO-Initiated",
 	"RTO-Delivered",
 	"RTO-Disposed",
+	"Out-for-pickup"
 ];
 
 export const TERMS = [

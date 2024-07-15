@@ -14,7 +14,6 @@ export const searchController = async (
 	next: NextFunction
 ) => {
 	const sandboxMode = res.getHeader("mode") === "sandbox";
-	if (!sandboxMode) {
 		try {
 			const domain = req.body.context.domain;
 
@@ -48,7 +47,7 @@ export const searchController = async (
 					onSearch = YAML.parse(file.toString());
 					break;
 			}
-			return responseBuilder_logistics(
+			if(!sandboxMode){return responseBuilder_logistics(
 				res,
 				next,
 				onSearch.value.context,
@@ -58,9 +57,11 @@ export const searchController = async (
 				}`,
 				`on_search`,
 				"logistics"
-			);
+			);}
+			else{
+				return responseBuilder_logistics(res, next, req.body.context, onSearch.value.message, `${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_search" : "/on_search"}`, `on_search`, "logistics");
+			}
 		} catch (error) {
 			return next(error);
 		}
-	}
 };

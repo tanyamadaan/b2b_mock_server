@@ -12,10 +12,8 @@ export const onStatusController = (
 	res: Response,
 	next: NextFunction
 ) => {
-	console.log("Hello");
 	const sandboxMode = res.getHeader("mode") === "sandbox";
 	if (!sandboxMode) {
-		console.log("Hello");
 		res.status(200).json({
 			sync: {
 				message: {
