@@ -62,7 +62,8 @@ export const SERVICE_DOMAINS = [
 
 export const ALL_DOMAINS = {
 	"B2B": B2B_DOMAINS,
-	"Services": SERVICE_DOMAINS
+	"Services": SERVICE_DOMAINS,
+	"Heathcare Services": SERVICE_DOMAINS
 };
 
 export const CITY_CODE = ["std:080", "std:011"];
