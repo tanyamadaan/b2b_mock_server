@@ -99,7 +99,7 @@ export const updateSchema = {
       properties: {
         update_target: {
           type: "string",
-          enum: ["payments","fulfillments","fulfillments,items"]
+          enum: ["payments","fulfillments","items"]
         },
         order: {
           type: "object",

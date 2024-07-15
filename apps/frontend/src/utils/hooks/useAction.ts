@@ -6,6 +6,7 @@ import {
 	NEXT_ACTION,
 	HEALTHCARE_SERVICES_SCENARIOS,
 	AGRI_SERVICES_SCENARIOS,
+	AGRI_EQUIPMENT_SERVICES_SCENARIOS,
 } from "openapi-specs/constants";
 
 export const useAction = (domain: string) => {
@@ -22,12 +23,12 @@ export const useAction = (domain: string) => {
 			? SERVICES_SCENARIOS
 			: domain.toLowerCase() === "healthcare-services"
 			? HEALTHCARE_SERVICES_SCENARIOS
-			: AGRI_SERVICES_SCENARIOS;
+			: domain.toLowerCase() === "agri-equipment-hiring"?AGRI_EQUIPMENT_SERVICES_SCENARIOS:
+			 AGRI_SERVICES_SCENARIOS;
 
 	const detectAction = _.debounce((log: string) => {
 		try {
 			const parsedLog = JSON.parse(log);
-
 			if (!parsedLog.context!.action) setLogError(true);
 			const parsedAction = parsedLog.context.action;
 			setAction(parsedAction);

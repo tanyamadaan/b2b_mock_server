@@ -13,13 +13,12 @@ export const searchController = (
 	res: Response,
 	next: NextFunction
 ) => {
-	try {
+	try {		
 		const file = fs.readFileSync(
 			path.join(AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH, "on_search/on_search.yaml")
 		);
     
 		const response = YAML.parse(file.toString());
-
 		return responseBuilder(
 			res,
 			next,
