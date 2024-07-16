@@ -139,14 +139,18 @@ export const updateRescheduleAndItemsController = (
 			on_confirm,
 			providersItems,
 		} = req.body;
+
 		//UPDATE PAYMENT OBJECT AND QUOTE ACCORDING TO ITEMS AND PERSONS
 		const quote = quoteCreatorHealthCareService(
 			order?.items,
 			providersItems?.items,
 			providersItems?.offers,
 			order?.fulfillments[0]?.type,
-			"agri-equipment-hiring"
+			"agri-equipment-hiring",
+			"update"
 		);
+
+		console.log("paymentsssssss", order?.payments,quote?.price?.value)
 
 		//UPDATE PAYMENT OBJECT ACCORDING TO QUANTITY
 		const updatedPaymentObj = updatePaymentObject(
@@ -159,18 +163,6 @@ export const updateRescheduleAndItemsController = (
 				...order,
 				id: uuidv4(),
 				ref_order_ids: [on_confirm?.message?.order?.id],
-				// fulfillments: [
-				// 	{
-				// 		...order.fulfillments[0],
-				// 		stops: order.fulfillments[0].stops.map((stop: any) => ({
-				// 			...stop,
-				// 			time:
-				// 				stop.type === "end"
-				// 					? { ...stop.time, label: "selected" }
-				// 					: stop.time,
-				// 		})),
-				// 	},
-				// ],
 				payments: updatedPaymentObj,
 				quote,
 			},
@@ -197,13 +189,19 @@ export const updateRescheduleAndItemsController = (
 //UPDATE PAYMENT OBJECT FUNCTION HANDLE HERE
 function updatePaymentObject(payments: any, quotePrice: any) {
 	try {
+		//GET TOTAL AMOUNT OF PAYMENT
+		let paymentAmount = 0;
+		payments.map((ele:any)=>{
+			paymentAmount += parseFloat(ele.params.amount)
+		});
+
 		//UPDATE OBJECT WITH UNPAID AMOUNT
-		const unPaidAmount = (
-			parseFloat(quotePrice) - parseFloat(payments[0]?.params?.amount)
-		).toString();
+		console.log("priceeeeeeeeeee",quotePrice,paymentAmount);
+		const unPaidAmount = (parseFloat(quotePrice) - paymentAmount).toString();
+
 		payments.push({
 			...payments[0],
-			id: "P2",
+			id: "PY2",
 			params: {
 				...payments[0].params,
 				amount: unPaidAmount,
