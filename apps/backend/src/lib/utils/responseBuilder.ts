@@ -650,13 +650,14 @@ export const quoteCreatorHealthCareService = (
 
 		let breakup: any[] = [];
 
-		items.forEach((item) => {
+		items.forEach((item:any) => {
+			const quantity = item?.quantity?.selected?.count?item?.quantity?.selected?.count:item?.quantity?.unitized?.measure?.value
 			breakup.push({
 				title: item.title,
 				price: {
 					currency: "INR",
 					value: (
-						Number(item?.price?.value) * item?.quantity?.selected.count
+						Number(item?.price?.value) * quantity
 					).toString(),
 				},
 				tags: item?.tags,

@@ -219,7 +219,7 @@ function updatePaymentController(message: any, update_target: string) {
 		update_target,
 		order: {
 			id: message.order.id,
-			status: "Accepted",
+			status: "Completed",
 			provider: message.order.provider,
 			items,
 			payments,
@@ -235,7 +235,7 @@ function updatePaymentController(message: any, update_target: string) {
 	return responseMessage;
 }
 
-function modifyItemsRequest(message: any, update_target: string) {
+function modifyItemsRequest(message: any, update_target: string){
 	let {
 		order: { items, payments, fulfillments, quote },
 	} = message;
@@ -244,24 +244,25 @@ function modifyItemsRequest(message: any, update_target: string) {
 	const file = fs.readFileSync(
 		path.join(
 			AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH,
-			"update/update_number_of_patients.yaml"
+			"update/update_extend_renting_period.yaml"
 		)
 	);
 
 	const response = YAML.parse(file.toString());
-	const updatedPackageQuantity = items.map((ele: any) => {
-		ele.quantity.selected.count = 3; //Update quantity of tests
-		return ele;
-	});
+	// const updatedPackageQuantity = items.map((ele: any) => {
+	// 	ele.quantity.selected.count = 3; //Update quantity of tests
+	// 	return ele;
+	// });
 	const responseMessage = {
 		update_target: "items",
 		order: {
 			...response.value.message.order,
 			id: uuidv4(),
-			items: [updatedPackageQuantity[0]],
+			// items: [updatedPackageQuantity[0]],
 			payments,
 			quote,
 		},
 	};
+
 	return responseMessage;
 }

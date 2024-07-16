@@ -103,6 +103,8 @@ export const INITIATE_FIELDS = {
 			domainDepended: true,
 			options: {
 				b2b: B2B_SCENARIOS["select"].map((each) => each.scenario),
+			  // "agri-equipment-hiring": A,
+
 				// services: SERVICES_SCENARIOS["select"].map((each) => each.scenario),
 			},
 		},
@@ -166,8 +168,14 @@ export const INITIATE_FIELDS = {
 			name: "update_target",
 			placeholder: "Update Target",
 			type: "select",
-			domainDepended: false,
-			options: ["payments","fulfillments","items"],
+			domainDepended: true,
+			options: {
+				"b2b":["payments"],
+				"services": ["payments"],
+				"agri-services": ["payments","fulfillments"],
+				"healthcare-services": ["payments","fulfillments","items"],
+				"agri-equipment-hiring": ["payments","items"]
+			},
 		},
 	],
 	cancel: [

@@ -37,6 +37,7 @@ export const updateController = async (
 			ON_ACTION_KEY.ON_SEARCH,
 			req.body.context.transaction_id
 		);
+
 		if (!on_search) {
 			return send_nack(res, ERROR_MESSAGES.ON_SEARCH_DOES_NOT_EXISTED);
 		}
@@ -138,13 +139,13 @@ export const updateRescheduleAndItemsController = (
 			on_confirm,
 			providersItems,
 		} = req.body;
-
 		//UPDATE PAYMENT OBJECT AND QUOTE ACCORDING TO ITEMS AND PERSONS
 		const quote = quoteCreatorHealthCareService(
 			order?.items,
 			providersItems?.items,
 			providersItems?.offers,
-			order?.fulfillments[0]?.type
+			order?.fulfillments[0]?.type,
+			"agri-equipment-hiring"
 		);
 
 		//UPDATE PAYMENT OBJECT ACCORDING TO QUANTITY
@@ -174,6 +175,7 @@ export const updateRescheduleAndItemsController = (
 				quote,
 			},
 		};
+
 		return responseBuilder(
 			res,
 			next,
