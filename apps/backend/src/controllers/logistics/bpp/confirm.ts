@@ -3,118 +3,166 @@ import {
 	responseBuilder_logistics,
 	LOGISTICS_EXAMPLES_PATH,
 	Fulfillment,
+	redis,
+	send_nack,
 } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 
-export const confirmController = (
+export const confirmController = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
 ) => {
-  const sandboxMode = res.getHeader("mode") === "sandbox";
-if(!sandboxMode) {
-	try {
-    //console.log(req)
-    const domain = req.body.context.domain;
+	const sandboxMode = res.getHeader("mode") === "sandbox";
+	if (!sandboxMode) {
+		try {
+			//console.log(req)
+			const domain = req.body.context.domain;
 
-		let response;
-		switch (domain) {
-			case "ONDC:LOG10":
-				var file = fs.readFileSync(
-					path.join(
-						LOGISTICS_EXAMPLES_PATH,
-						"/B2B_Dom_Logistics_yaml/on_confirm/on_confirm_air.yaml"
-					)
-				);
-				response = YAML.parse(file.toString());
-				break;
-			case "ONDC:LOG11":
-				var file = fs.readFileSync(
-					path.join(
-						LOGISTICS_EXAMPLES_PATH,
-						"/B2B_Int_Logistics_yaml/on_confirm/on_confirm_air.yaml"
-					)
-				);
-				response = YAML.parse(file.toString());
-				break;
-			default:
-				var file = fs.readFileSync(
-					path.join(
-						LOGISTICS_EXAMPLES_PATH,
-						"/B2B_Dom_Logistics_yaml/on_confirm/on_confirm_air.yaml"
-					)
-				);
-				response = YAML.parse(file.toString());
-				break;
+			let response;
+			switch (domain) {
+				case "ONDC:LOG10":
+					var file = fs.readFileSync(
+						path.join(
+							LOGISTICS_EXAMPLES_PATH,
+							"/B2B_Dom_Logistics_yaml/on_confirm/on_confirm_air.yaml"
+						)
+					);
+					response = YAML.parse(file.toString());
+					break;
+				case "ONDC:LOG11":
+					var file = fs.readFileSync(
+						path.join(
+							LOGISTICS_EXAMPLES_PATH,
+							"/B2B_Int_Logistics_yaml/on_confirm/on_confirm_air.yaml"
+						)
+					);
+					response = YAML.parse(file.toString());
+					break;
+				default:
+					var file = fs.readFileSync(
+						path.join(
+							LOGISTICS_EXAMPLES_PATH,
+							"/B2B_Dom_Logistics_yaml/on_confirm/on_confirm_air.yaml"
+						)
+					);
+					response = YAML.parse(file.toString());
+					break;
+			}
+
+			return responseBuilder_logistics(
+				res,
+				next,
+				response.value.context,
+				response.value.message,
+				`${req.body.context.bap_uri}${
+					req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
+				}`,
+				`on_confirm`,
+				"logistics"
+			);
+		} catch (error) {
+			return next(error);
 		}
+	} else {
+		const transactionId = req.body.context.transaction_id;
+		var transactionKeys = await redis.keys(`${transactionId}-*`);
+		var ifTransactionExist = transactionKeys.filter((e) =>
+			e.includes("on_init-from-server")
+		);
+		if (ifTransactionExist.length === 0) {
+			return send_nack(res, "On Init doesn't exist");
+		}
+		var transaction = await redis.mget(ifTransactionExist);
+		var parsedTransaction = transaction.map((ele) => {
+			return JSON.parse(ele as string);
+		});
 
-    return responseBuilder_logistics(
-      res,
-      next,
-      response.value.context,
-      response.value.message,
-      `${req.body.context.bap_uri}${
-        req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
-      }`,
-      `on_confirm`,
-      "logistics"
-    );
-
-	} catch (error) {
-		return next(error);
+		const onInit = parsedTransaction[0].request;
+		if (Object.keys(onInit).includes("error")) {
+			return send_nack(res, "On Init had errors");
+		}
+    console.log(JSON.stringify(req.body.message.order.fulfillments[0].stops));
+		let onConfirm = {
+			context: {
+				...req.body.context,
+				timestamp: new Date().toISOString(),
+				action: "on_confirm",
+			},
+			message: {
+				order: {
+					id: "O2",
+					status: "Accepted",
+					provider: req.body.message.order.provider,
+					items: req.body.message.order.items,
+					quote: req.body.message.order.quote,
+					fulfillments: [
+						{
+							id: req.body.message.order.fulfillments[0].id,
+							type: req.body.message.order.fulfillments[0].type,
+							state: {
+								descriptor: {
+									code: "Pending",
+								},
+							},
+							tracking: false,
+							stops: req.body.message.order.fulfillments[0].stops,
+							tags: [
+								{
+									descriptor: {
+										code: "Delivery_Terms",
+									},
+									list: [
+										{
+											descriptor: {
+												code: "AWB_No",
+											},
+											value: "1209878992826353",
+										},
+										{
+											descriptor: {
+												code: "LR_No",
+											},
+											value: "1209878992826353",
+										},
+										{
+											descriptor: {
+												code: "Transporter_Id",
+											},
+											value: "1209878992826353",
+										},
+										{
+											descriptor: {
+												code: "Doc_Way_Bill_No",
+											},
+											value: "1209567899003",
+										},
+									],
+								},
+							],
+						},
+					],
+					cancellation_terms: onInit.message.order.cancellation_terms,
+					billing: req.body.message.order.billing,
+					payments: req.body.message.order.payments,
+					tags: req.body.message.order.tags,
+					created_at: new Date().toISOString(),
+					updated_at: new Date().toISOString(),
+				},
+			},
+		};
+		return responseBuilder_logistics(
+			res,
+			next,
+			onConfirm.context,
+			onConfirm.message,
+			`${req.body.context.bap_uri}${
+				req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
+			}`,
+			`on_confirm`,
+			"logistics"
+		);
 	}
-}else{
-  // let response;
-  // const { context, message } = req.body;
-  //   const start = new Date(message.order.created_at);
-  //   start.setHours(start.getHours() + 1);
-  //   const end = new Date(message.order.created_at);
-  //   end.setHours(end.getHours() + 2);
-  //   const responseMessage = {
-  //     order: {
-  //       ...message.order,
-  //       ...message.items,
-  //       state: "Accepted",
-  //       provider: {
-  //         ...message.order.provider,
-  //         rateable: true,
-  //       },
-  //       fulfillments: message.order.fulfillments.map(
-  //         (eachFulfillment: Fulfillment) => ({
-  //           ...eachFulfillment,
-  //           "@ondc/org/provider_name":
-  //             response.value.message.order.fulfillments[0][
-  //               "@ondc/org/provider_name"
-  //             ],
-  //           state: response.value.message.order.fulfillments[0].state,
-  //           stops: [
-  //             ...eachFulfillment.stops,
-  //             {
-  //               ...response.value.message.order.fulfillments[0].stops[0],
-  //               time: {
-  //                 range: {
-  //                   start: start.toISOString(),
-  //                   end: end.toISOString(),
-  //                 },
-  //               },
-  //             },
-  //           ],
-  //         })
-  //       ),
-  //     },
-  //   };
-  //   return responseBuilder(
-  //     res,
-  //     next,
-  //     context,
-  //     responseMessage,
-  //     `${req.body.context.bap_uri}${
-  //       req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
-  //     }`,
-  //     `on_confirm`,
-  //     "logistics"
-  //   );
-}
 };

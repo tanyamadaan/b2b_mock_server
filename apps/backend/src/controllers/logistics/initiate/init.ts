@@ -61,6 +61,7 @@ export const initiateInitController = async (
 				action: "init",
 				bpp_id: MOCKSERVER_ID,
 				timestamp: new Date().toISOString(),
+				message_id: uuidv4(),
 			},
 			message: {
 				order: {

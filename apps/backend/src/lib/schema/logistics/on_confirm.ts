@@ -299,7 +299,7 @@ export const onConfirmSchema = {
 																	type: "string",
 																},
 															},
-															required: ["name", "code"],
+															required: ["code"],
 														},
 														area_code: {
 															type: "string",

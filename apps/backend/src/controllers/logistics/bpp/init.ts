@@ -115,7 +115,7 @@ export const initController = async (
 							breakup: [
 								{
 									item: {
-										id: req.body.message.order.items[0],
+										id: req.body.message.order.items[0].id,
 									},
 									title: "delivery",
 									price: {
@@ -125,7 +125,7 @@ export const initController = async (
 								},
 								{
 									item: {
-										id: req.body.message.order.items[0],
+										id: req.body.message.order.items[0].id,
 									},
 									title: "tax",
 									price: {
@@ -135,7 +135,7 @@ export const initController = async (
 								},
 								{
 									item: {
-										id: req.body.message.order.items[0],
+										id: req.body.message.order.items[0].id,
 									},
 									title: "insurance",
 									price: {
@@ -238,11 +238,11 @@ export const initController = async (
 							},
 						],
 						xinput: {
+							...req.body.message.order.xinput,
 							form: {
 								...req.body.message.order.xinput.form,
 								status: "success",
 							},
-							...req.body.message.order.xinput,
 						},
 						tags: [
 							{
