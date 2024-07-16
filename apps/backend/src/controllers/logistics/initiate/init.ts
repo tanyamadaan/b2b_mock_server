@@ -219,7 +219,6 @@ export const initiateInitController = async (
 				},
 			},
 		};
-		console.log(JSON.stringify(init));
 		await send_response(res, next, init, transactionId, "init");
 	} catch (error) {
 		return next(error);
