@@ -48,6 +48,12 @@ const DOMAIN_NAVS = [
 		children: NAV_LINKS,
 	},
 	{
+		name: "B2C",
+		nested: true,
+		path: "/b2c",
+		children: NAV_LINKS,
+	},
+	{
 		name: "Services",
 		nested: true,
 		path: "/services",

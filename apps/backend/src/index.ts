@@ -24,6 +24,7 @@ import {
 	healthcareServiceSwagger,
 } from "./middlewares";
 import { sendUpsolicieatedOnStatus } from "./lib/utils/sendUpsolicieatedOnStatus";
+import { b2cRouter } from "./controllers/b2c";
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
@@ -57,6 +58,8 @@ app.use(requestParser);
 app.use("/", miscRouter);
 
 app.use("/b2b", errorHandlingWrapper(b2bRouter));
+app.use("/b2c", errorHandlingWrapper(b2cRouter));
+
 app.use("/auth", errorHandlingWrapper(authRouter));
 app.use("/services", errorHandlingWrapper(servicesRouter));
 app.use("/agri-services", errorHandlingWrapper(agriServiceRouter));

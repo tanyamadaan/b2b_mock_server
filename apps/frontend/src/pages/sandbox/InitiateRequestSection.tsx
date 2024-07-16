@@ -17,16 +17,17 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 
 type InitiateRequestSectionProp = {
-	domain: "b2b" | "services" | "agri-services" | "healthcare-services";
+	domain: "b2b" | "services" | "agri-services" | "healthcare-services" | "b2c";
 };
 
 type SELECT_OPTIONS =
 	| string[]
-	| { b2b: string[]; services: string[]; agri_services: string[] }
-	| { b2b: string[]; services: string[]; agri_services: string[] }
+	| { b2b: string[]; services: string[]; agri_services: string[]; b2c: string[]}
+	| { b2b: string[]; services: string[]; agri_services: string[]; b2c: string[] }
 	| { services: string[] }
 	| { agri_services: string[] }
 	| { healthcare_services: string[] }
+	| {b2c: string[]}
 	| object;
 
 type SELECT_FIELD = {
@@ -118,8 +119,7 @@ export const InitiateRequestSection = ({
 			}
 		} catch (error:any) {
 			setMessageType("error");
-			console.log("error.response?.data?.error?.message",error.response?.data?.error?.message)
-			if (error instanceof AxiosError && error.response?.data?.error?.message.error?.message)
+						if (error instanceof AxiosError && error.response?.data?.error?.message.error?.message)
 				handleMessageToggle(
 					error.response?.data?.error?.message.error?.message === "string"?error.response?.data?.error?.message.error?.message:"Error Occurred while initiating request!"
 				);
