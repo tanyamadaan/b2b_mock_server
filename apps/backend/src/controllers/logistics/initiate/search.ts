@@ -9,6 +9,25 @@ import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 import { v4 as uuidv4 } from "uuid";
+import { schedule } from "node-cron";
+
+const getFutureDates = (days: number): string[] => {
+  const dates: string[] = [];
+  const today = new Date();
+
+  for (let i = 0; i < days; i++) {
+    const futureDate = new Date(today);
+    futureDate.setDate(today.getDate() + i);
+
+    const year = futureDate.getFullYear();
+    const month = String(futureDate.getMonth() + 1).padStart(2, '0');
+    const day = String(futureDate.getDate()).padStart(2, '0');
+
+    dates.push(`${year}-${month}-${day}`);
+  }
+
+  return dates;
+};
 
 export const initiateSearchController = async (
 	req: Request,
@@ -51,7 +70,6 @@ export const initiateSearchController = async (
 		var newTime = new Date().toISOString();
 		search = search.value;
     search = {
-			...search,
       context: {
         ...search.context,
         timestamp: newTime,
@@ -69,6 +87,24 @@ export const initiateSearchController = async (
         bap_id: MOCKSERVER_ID,
         bap_uri: LOGISTICS_BAP_MOCKSERVER_URL,
       },
+			message:{
+				intent:{
+					category: search.message.intent.category,
+					provider: {
+						...search.message.intent.provider,
+						time:{
+							days: search.message.intent.provider.time.days,
+							schedule:{
+								holidays:getFutureDates(2),
+							},
+							range : search.message.intent.provider.time.range,
+						}
+					},
+					fulfillments : search.message.intent.fulfillments,
+					payment : search.message.intent.payment,
+					tags : search.message.intent.tags,
+				}
+			},
     };
 		await send_response(res, next, search, transaction_id, "search");
 	} catch (error) {
