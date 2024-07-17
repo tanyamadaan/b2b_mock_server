@@ -140,6 +140,14 @@ export const updateRescheduleAndItemsController = (
 			providersItems,
 		} = req.body;
 
+		//Add total quantity of items using coming request and on_confirm order
+
+		//on_confirm items selected 
+		const on_confirm_quantity = on_confirm?.message?.order?.items[0]?.quantity?.selected?.count
+		const update_item_quantity = Number(order?.items[0]?.quantity?.unitized?.measure?.value);
+
+		order.items[0].quantity.unitized.measure.value = on_confirm_quantity + update_item_quantity;
+		
 		//UPDATE PAYMENT OBJECT AND QUOTE ACCORDING TO ITEMS AND PERSONS
 		const quote = quoteCreatorHealthCareService(
 			order?.items,
@@ -147,15 +155,12 @@ export const updateRescheduleAndItemsController = (
 			providersItems?.offers,
 			order?.fulfillments[0]?.type,
 			"agri-equipment-hiring",
-			"update"
 		);
-
-		console.log("paymentsssssss", order?.payments,quote?.price?.value)
 
 		//UPDATE PAYMENT OBJECT ACCORDING TO QUANTITY
 		const updatedPaymentObj = updatePaymentObject(
 			order?.payments,
-			quote?.price?.value
+			(update_item_quantity*parseFloat(order.items[0]?.price?.value)).toString()
 		);
 
 		const responseMessage = {
@@ -190,21 +195,13 @@ export const updateRescheduleAndItemsController = (
 function updatePaymentObject(payments: any, quotePrice: any) {
 	try {
 		//GET TOTAL AMOUNT OF PAYMENT
-		let paymentAmount = 0;
-		payments.map((ele:any)=>{
-			paymentAmount += parseFloat(ele.params.amount)
-		});
-
-		//UPDATE OBJECT WITH UNPAID AMOUNT
-		console.log("priceeeeeeeeeee",quotePrice,paymentAmount);
-		const unPaidAmount = (parseFloat(quotePrice) - paymentAmount).toString();
-
+	
 		payments.push({
 			...payments[0],
 			id: "PY2",
 			params: {
 				...payments[0].params,
-				amount: unPaidAmount,
+				amount: quotePrice,
 				transaction_id: uuidv4(),
 			},
 			status: "NOT-PAID",

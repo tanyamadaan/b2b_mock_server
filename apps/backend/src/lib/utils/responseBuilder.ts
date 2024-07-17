@@ -727,7 +727,7 @@ export const quoteCreatorHealthCareService = (
 			}
 		);
 
-		if (fulfillment_type === "Seller-Fulfilled") {
+		if (fulfillment_type === "Seller-Fulfilled" || service_name === "agri-equipment-hiring") {
 			breakup?.push({
 				title: "pickup_charge",
 				price: {
@@ -753,7 +753,7 @@ export const quoteCreatorHealthCareService = (
 			});
 		}
 
-		if (action !== "update" && service_name === "agri-equipment-hiring"){
+		if (service_name === "agri-equipment-hiring"){
 			breakup?.push({
 				title: "refundable_security",
 				price: {
