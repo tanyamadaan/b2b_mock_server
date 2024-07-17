@@ -36,7 +36,6 @@ export const initiateInitController = async (
 		if (Object.keys(request).includes("error")) {
 			return send_nack(res, "On Search had errors");
 		}
-		// console.log(request);
 		let bpp_uri = request.context.bpp_uri;
 		let city = request.context.location.city.code;
 		let domain = request.context.domain;
@@ -54,7 +53,6 @@ export const initiateInitController = async (
 		if (!randomItem) {
 			return send_nack(res, "No items available.");
 		}
-
 		init = {
 			context: {
 				...request.context,
