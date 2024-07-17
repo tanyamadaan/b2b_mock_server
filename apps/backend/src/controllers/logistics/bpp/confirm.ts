@@ -84,7 +84,7 @@ export const confirmController = async (
 		if (Object.keys(onInit).includes("error")) {
 			return send_nack(res, "On Init had errors");
 		}
-    console.log(JSON.stringify(req.body.message.order.fulfillments[0].stops));
+		console.log(JSON.stringify(req.body.message.order.fulfillments[0].stops));
 		let onConfirm = {
 			context: {
 				...req.body.context,

@@ -5,8 +5,10 @@ import path from "path";
 import YAML from "yaml";
 import {
 	LOGISTICS_EXAMPLES_PATH,
+	MOCKSERVER_ID,
 	responseBuilder_logistics,
 } from "../../../lib/utils";
+import { times } from "lodash";
 
 export const searchController = async (
 	req: Request,
@@ -47,31 +49,23 @@ export const searchController = async (
 				onSearch = YAML.parse(file.toString());
 				break;
 		}
-		if (!sandboxMode) {
-			return responseBuilder_logistics(
-				res,
-				next,
-				onSearch.value.context,
-				onSearch.value.message,
-				`${req.body.context.bap_uri}${
-					req.body.context.bap_uri.endsWith("/") ? "on_search" : "/on_search"
-				}`,
-				`on_search`,
-				"logistics"
-			);
-		} else {
-			return responseBuilder_logistics(
-				res,
-				next,
-				req.body.context,
-				onSearch.value.message,
-				`${req.body.context.bap_uri}${
-					req.body.context.bap_uri.endsWith("/") ? "on_search" : "/on_search"
-				}`,
-				`on_search`,
-				"logistics"
-			);
-		}
+		req.body.context = {
+			...req.body.context,
+			action: "on_search",
+			timestamp: new Date().toISOString(),
+			bpp_id: MOCKSERVER_ID,
+		};
+		return responseBuilder_logistics(
+			res,
+			next,
+			req.body.context,
+			onSearch.value.message,
+			`${req.body.context.bap_uri}${
+				req.body.context.bap_uri.endsWith("/") ? "on_search" : "/on_search"
+			}`,
+			`on_search`,
+			"logistics"
+		);
 	} catch (error) {
 		return next(error);
 	}

@@ -63,6 +63,8 @@ export const DELIVERY_TERMS_TAGS = [
 	"Cancellation_Reason_Id",
 	"Sub_Reason_Id",
 	"Cancelled_By",
+	"Eway_Bill_No",
+	"Invoice_Number",
 ];
 
 export const COLD_LOGISTICS_TAGS = [
@@ -115,7 +117,7 @@ export const DELIVERY_CATEGORIES = [
 	"Air_Delivery",
 	"Ocean_Delivery",
 ];
-export const PROVIDER_TERMS = ["BPP_TERMS", "KYC"];
+export const PROVIDER_TERMS = ["BPP_Terms", "KYC"];
 export const PROVIDER_TERMS_BPP = [
 	"Static_Terms",
 	"Static_Terms_New",
@@ -161,7 +163,7 @@ export const FULFILLMENT_STATES = [
 	"RTO-Initiated",
 	"RTO-Delivered",
 	"RTO-Disposed",
-	"Out-for-pickup"
+	"Out-for-pickup",
 ];
 
 export const TERMS = [
@@ -199,6 +201,8 @@ export const LOG_ORDER_TAGS = [
 	"Value",
 	"HSN_Code",
 	"Transit_Risk_Owner",
+	"type",
+	"url",
 ];
 
 export const LOG_BPP_TERMS = [

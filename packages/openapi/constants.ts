@@ -21,16 +21,16 @@ export const LOGISTICS_SCENARIOS = {
 			scenario: "rts-weight-difference",
 		},
 	],
-	on_update: [
+	on_update:[
 		{
-			name: "RTS",
-			scenario: "rts",
+			name:"Slots provided.",
+			scenario:"regular"
 		},
 		{
-			name: "RTS with weight difference",
-			scenario: "rts-weight-difference",
+			name:"Slots with updated quote.",
+			scenario:"updated-quote",
 		},
-	],
+	]
 };
 
 export const B2B_SCENARIOS = {
