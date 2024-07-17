@@ -52,7 +52,7 @@ export const onConfirmSchema = {
 				},
 				version: {
 					type: "string",
-					enum : VERSION
+					const : VERSION
 				},
 				bap_id: {
 					type: "string",
@@ -299,7 +299,7 @@ export const onConfirmSchema = {
 																	type: "string",
 																},
 															},
-															required: ["name", "code"],
+															required: ["code"],
 														},
 														area_code: {
 															type: "string",
