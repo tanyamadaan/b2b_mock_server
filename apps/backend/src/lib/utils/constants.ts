@@ -15,13 +15,13 @@ export const B2B_EXAMPLES_PATH = "./domain-repos/@retail-b2b/release-2.0.2/api/c
 export const LOGISTICS_EXAMPLES_PATH = "./domain-repos/@logistics/ONDC-LOG-Specifications/api/components/Examples"
 
 export const MOCKSERVER_ID = "mock.ondc.org/api";
-export const B2B_BPP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/b2b/bpp`;
+// export const B2B_BPP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/b2b/bpp`;
 export const B2B_BAP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/b2b/bap`;
 
 export const LOGISTICS_BPP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/logistics/bpp`;
 export const LOGISTICS_BAP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/logistics/bap`;
 
-// export const B2B_BPP_MOCKSERVER_URL = `http://localhost:3000/api/b2b/bpp`;
+export const B2B_BPP_MOCKSERVER_URL = `http://localhost:3000/api/b2b/bpp`;
 // export const B2B_BAP_MOCKSERVER_URL = `http://localhost:3000/api/b2b/bap`;
 export const SERVICES_BPP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/services/bpp`;
 export const SERVICES_BAP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/services/bap`;

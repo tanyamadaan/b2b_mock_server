@@ -511,7 +511,7 @@ export const onCancelSchema = {
 							},
 							required: ["name", "address"],
 						},
-						payment: {
+						payments: {
 							type: "array",
 							items: {
 								type: "object",
@@ -647,7 +647,7 @@ export const onCancelSchema = {
 						"quote",
 						"fulfillments",
 						"billing",
-						"payment",
+						"payments",
 						"tags",
 						"updated_at",
 					],

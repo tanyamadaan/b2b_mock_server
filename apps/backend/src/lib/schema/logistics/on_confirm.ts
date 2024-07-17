@@ -52,7 +52,7 @@ export const onConfirmSchema = {
 				},
 				version: {
 					type: "string",
-					enum : VERSION
+					const : VERSION
 				},
 				bap_id: {
 					type: "string",
