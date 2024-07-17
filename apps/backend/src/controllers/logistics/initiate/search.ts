@@ -23,7 +23,7 @@ export const initiateSearchController = async (
 				var file = fs.readFileSync(
 					path.join(
 						LOGISTICS_EXAMPLES_PATH,
-						"/B2B_Dom_Logistics_yaml/search/search_without_category.yaml"
+						"/B2B_Dom_Logistics_yaml/search/search_by_air_delivery.yaml"
 					)
 				);
 				search = YAML.parse(file.toString());
@@ -32,7 +32,7 @@ export const initiateSearchController = async (
 				var file = fs.readFileSync(
 					path.join(
 						LOGISTICS_EXAMPLES_PATH,
-						"/B2B_Int_Logistics_yaml/search/search_by_Express.yaml"
+						"/B2B_Int_Logistics_yaml/search/search_by_air_delivery.yaml"
 					)
 				);
 				search = YAML.parse(file.toString());
@@ -41,19 +41,20 @@ export const initiateSearchController = async (
 				var file = fs.readFileSync(
 					path.join(
 						LOGISTICS_EXAMPLES_PATH,
-						"/B2B_Dom_Logistics_yaml/search/search_without_category.yaml"
+						"/B2B_Dom_Logistics_yaml/search/search_by_air_delivery.yaml"
 					)
 				);
 				search = YAML.parse(file.toString());
 				break;
 		}
 		const transaction_id = uuidv4();
+		var newTime = new Date().toISOString();
 		search = search.value;
     search = {
-      ...search,
+			...search,
       context: {
         ...search.context,
-        timestamp: new Date().toISOString(),
+        timestamp: newTime,
         location: {
           ...search.context.location,
           city: {
