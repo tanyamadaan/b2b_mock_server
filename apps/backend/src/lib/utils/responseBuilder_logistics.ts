@@ -64,7 +64,7 @@ export const responseBuilder_logistics = async (
 		context: {},
 		message,
 	};
-	const bppURI = LOGISTICS_BPP_MOCKSERVER_URL;
+	//const bppURI = LOGISTICS_BPP_MOCKSERVER_URL;
 
 	if (action.startsWith("on_") && sandboxMode) {
 		// const { bap_uri, bap_id, ...remainingContext } = reqContext as any;
@@ -73,8 +73,8 @@ export const responseBuilder_logistics = async (
 			context: {
 				// ...remainingContext,
 				...reqContext,
-				bpp_id: MOCKSERVER_ID,
-				bpp_uri: bppURI,
+				// bpp_id: MOCKSERVER_ID,
+				// bpp_uri: bppURI,
 				timestamp: ts.toISOString(),
 				action,
 			},
@@ -104,22 +104,25 @@ export const responseBuilder_logistics = async (
 					JSON.stringify(log)
 				);
 			} else {
+
 				await redis.set(
 					`${(async.context! as any).transaction_id}-${action}-from-server`,
 					JSON.stringify(log)
 				);
 			}
 			try {
-				const response = await axios.post(uri, async, {
-					headers: {
-						authorization: header,
-					},
-				});
-
-				log.response = {
-					timestamp: new Date().toISOString(),
-					response: response.data,
-				};
+				//console.log(uri);
+				console.log(JSON.stringify(async));
+				// const response = await axios.post("http://localhost:3000/logistics/bap/on_search", async, {
+				// 	headers: {
+				// 		authorization: header,
+				// 	},
+				// });
+				
+				// log.response = {
+				// 	timestamp: new Date().toISOString(),
+				// 	response: response.data,
+				// };
 				await redis.set(
 					`${(async.context! as any).transaction_id}-${action}-from-server`,
 					JSON.stringify(log)

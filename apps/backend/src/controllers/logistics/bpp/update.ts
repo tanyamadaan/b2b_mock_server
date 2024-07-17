@@ -63,7 +63,7 @@ export const updateController = async (
 
 			let file;
 			switch (scenario) {
-				case "rts":
+				case "regular":
 					file = path.join(directory, "on_update_air.yaml");
 					break;
 				default:

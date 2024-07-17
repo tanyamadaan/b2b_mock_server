@@ -273,7 +273,7 @@ export const onCancelSchema = {
 												properties: {
 													code: {
 														type: "string",
-														enum : ["Cancelled", "RTO_Initiated"]
+														enum : ["Cancelled", "RTO-Initiated"]
 													},
 												},
 												required: ["code"],
@@ -440,7 +440,7 @@ export const onCancelSchema = {
 													properties: {
 														code: {
 															type: "string",
-															const: "Delivery_Terms",
+															enum: ["Delivery_Terms","RTO_Event"],
 														},
 													},
 													required: ["code"],

@@ -551,7 +551,7 @@ export const onStatusSchema = {
 									},
 									type: {
 										type: "string",
-										enum: PAYMENT_TERMS,
+										enum: ["ON-ORDER","ON-FULFILLMENT","POST-FULFILLMENT"],
 									},
 									tags: {
 										type: "array",
@@ -563,7 +563,7 @@ export const onStatusSchema = {
 													properties: {
 														code: {
 															type: "string",
-															enum: TERMS,
+															enum: PAYMENT_TERMS,
 														},
 													},
 													required: ["code"],
@@ -579,7 +579,7 @@ export const onStatusSchema = {
 																	properties: {
 																		code: {
 																			type: "string",
-																			enum: LOG_ORDER_TAGS,
+																			enum: PAYMENT_BPP_TERMS,
 																		},
 																	},
 																	required: ["code"],

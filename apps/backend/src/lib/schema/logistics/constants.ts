@@ -58,8 +58,14 @@ export const DELIVERY_TERMS_TAGS = [
 	"LR_No",
 	"Transporter_Id",
 	"Doc_Way_Bill_No",
+	"Retry_Count",
+	"RTO_Id",
+	"Cancellation_Reason_Id",
+	"Sub_Reason_Id",
+	"Cancelled_By",
+	"Eway_Bill_No",
+	"Invoice_Number",
 ];
-
 
 export const COLD_LOGISTICS_TAGS = [
 	"Temp_Control",
@@ -78,8 +84,10 @@ export const QUOTE_TITLE = [
 	"Custom_Clearance_Service_Destination",
 	"rto",
 	"diff",
-	"insurance"
-]
+	"insurance",
+	"delivery_diff",
+	"tax_diff",
+];
 export const SEARCH_TAGS = [
 	...PACKAGE_DIMENSIONS_TAGS,
 	...PACKAGE_DETAILS_TAGS,
@@ -98,14 +106,18 @@ export const PAYMENT_BPP_TERMS = [
 	"Amount",
 	"Type",
 ];
-export const PAYMENT_TYPES = ["PRE-FULFILLMENT", "ON-FULFILLMENT", "POST-FULFILLMENT"];
+export const PAYMENT_TYPES = [
+	"PRE-FULFILLMENT",
+	"ON-FULFILLMENT",
+	"POST-FULFILLMENT",
+];
 export const FULFILLMENT_TYPES = ["Delivery", "Return", "RTO"];
 export const DELIVERY_CATEGORIES = [
 	"Surface_Delivery",
 	"Air_Delivery",
 	"Ocean_Delivery",
 ];
-export const PROVIDER_TERMS = ["BPP_TERMS", "KYC"];
+export const PROVIDER_TERMS = ["BPP_Terms", "KYC"];
 export const PROVIDER_TERMS_BPP = [
 	"Static_Terms",
 	"Static_Terms_New",
@@ -128,11 +140,31 @@ export const UPDATE_TAGS = [
 	"Package_Dimensions",
 	"Package_Details",
 	"Cold_Logistics",
-]
+];
 
- 
-
-export const FULFILLMENT_STATES =["Pending","Out-for-pickup","Order-picked-up","In-transit","At-destination-hub","Out-for-delivery","Order-delivered","RTO-Initiated","RTO-Delivered","RTO-Disposed"]
+export const FULFILLMENT_STATES = [
+	"Pending",
+	"Packed",
+	"Pickup-approved",
+	"Pickup-rejected",
+	"Order-picked-up",
+	"In-transit",
+	"At-domestic-hub",
+	"Custom-cleared-domestic",
+	"Custom-rejected-domestic",
+	"Shipped",
+	"Reached-destination-country",
+	"Custom-cleared-destination",
+	"Custom-rejected-destination",
+	"At-destination-hub",
+	"Out-for-delivery",
+	"Order-delivered",
+	"Delivery-failed",
+	"RTO-Initiated",
+	"RTO-Delivered",
+	"RTO-Disposed",
+	"Out-for-pickup",
+];
 
 export const TERMS = [
 	"Package_Weight",
@@ -156,6 +188,7 @@ export const LOG_ORDER_TAGS = [
 	"Temp_Min",
 	"Temp_Unit",
 	"Temp_Control",
+	"Packaging",
 	"Package_Count",
 	"Shipment_Value",
 	"Stackable",
@@ -167,7 +200,10 @@ export const LOG_ORDER_TAGS = [
 	"Unit",
 	"Value",
 	"HSN_Code",
-	"Transit_Risk_Owner"];
+	"Transit_Risk_Owner",
+	"type",
+	"url",
+];
 
 export const LOG_BPP_TERMS = [
 	"Delay_Interest",
@@ -175,5 +211,5 @@ export const LOG_BPP_TERMS = [
 	"Mandatory_Arbitration",
 	"Max_Liability_Cap",
 	"Max_Liability",
-	"Static_Terms"
+	"Static_Terms",
 ];

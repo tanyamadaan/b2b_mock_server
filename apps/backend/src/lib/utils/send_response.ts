@@ -37,14 +37,10 @@ async function send_response(
 		}
 
 		const uri = `${bpp_uri}/${action}${scenario ? `?scenario=${scenario}` : ""}`
-		console.log("uriiiiiiiiiii",uri)
-		console.log(JSON.stringify(res_obj),headers);
-		
 		const response = await axios.post(uri, res_obj, {
 			headers: { ...headers },
 		});
 
-		console.log("response send axios",JSON.stringify(res_obj),JSON.stringify(response.data))
 
 		await redis.set(
 			`${transaction_id}-${action}-from-server`,

@@ -100,7 +100,7 @@ export const logisticsSchemaValidator =
 
 		isValid = validate(req.body);
 		if (!isValid) {
-			res.status(400).json({
+			const errorResponse = {
 				sync: {
 					message: {
 						ack: {
@@ -125,7 +125,11 @@ export const logisticsSchemaValidator =
 					},
 				},
 				async: {},
-			});
+			};
+
+			console.log(JSON.stringify(errorResponse, null, 2));
+			res.status(400).json(errorResponse);
+
 			return;
 		}
 		// res.json({

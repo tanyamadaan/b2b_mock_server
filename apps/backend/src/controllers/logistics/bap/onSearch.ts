@@ -7,7 +7,7 @@ import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 
-export const onSearchController = (
+export const onSearchController = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
