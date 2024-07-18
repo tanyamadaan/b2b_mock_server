@@ -5,6 +5,7 @@ import {
 	Fulfillment,
 	redis,
 	send_nack,
+	Stop,
 } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
@@ -83,6 +84,14 @@ export const confirmController = async (
 		if (Object.keys(onInit).includes("error")) {
 			return send_nack(res, "On Init had errors");
 		}
+		let startstartDate = new Date();
+		startstartDate.toISOString();
+		let startendDate = new Date();
+		startendDate.setMinutes(startstartDate.getDate() + 30);
+		let endstartDate = new Date();
+		endstartDate.setDate(startstartDate.getDate() + 7);
+		let endendDate = new Date();
+		endendDate.setMinutes(startstartDate.getDate() + 30); 
 		let onConfirm = {
 			context: {
 				...req.body.context,
@@ -106,7 +115,76 @@ export const confirmController = async (
 								},
 							},
 							tracking: false,
-							stops: req.body.message.order.fulfillments[0].stops,
+							stops: req.body.message.order.fulfillments[0].stops.map(
+								(stop: Stop) => {
+									// Add the instructions to both start and end stops
+									const instructions = {
+										name: "Proof of pickup",
+										short_desc: "Proof of pickup details",
+										long_desc: "Proof of pickup details",
+										images: ["https://image1_url.png"],
+									};
+									// Check if the stop type is "end"
+									if (stop.type === "end") {
+										// Add the agent object to the stop
+										return {
+											...stop,
+											id: "L2",
+											parent_stop_id: "L1",
+											time: {
+												range: {
+													start: endstartDate,
+													end: endendDate.toISOString(),
+												},
+											},
+											instructions: {
+												...instructions,
+												name: "Proof of delivery",
+												short_desc: "Proof of delivery details",
+												long_desc: "Proof of delivery details",
+											},
+											location: {
+												...stop.location,
+											},
+											agent: {
+												person: {
+													name: "Ramu",
+												},
+												contact: {
+													phone: "9886098860",
+												},
+											},
+										};
+									} else if (stop.type === "start") {
+										// For stops of type "start", add the instructions and location modifications
+										return {
+											...stop,
+											id: "L1",
+											parent_stop_id: "",
+											instructions,
+											time: {
+												range: {
+													start: startstartDate,
+													end: startendDate.toISOString(),
+												},
+											},
+											location: {
+												...stop.location,
+												descriptor: {
+													...stop.location?.descriptor,
+													images: ["https://gf-integration/images/5.png"],
+												},
+											},
+										};
+									} else {
+										// For other types, return the stop as is with instructions
+										return {
+											...stop,
+											instructions,
+										};
+									}
+								}
+							),
 							tags: [
 								{
 									descriptor: {

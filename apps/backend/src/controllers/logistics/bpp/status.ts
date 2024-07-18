@@ -91,21 +91,45 @@ export const statusController = async (
 			return next(error);
 		}
 	} else {
+		console.log(req.body);
 		try {
-			const scenario: string = String(req.query.scenario) || "";
-			const { transaction_id } = req.body.context;
-
-			const on_confirm = await redisFetchFromServer(
-				"on_confirm",
-				transaction_id
+			const transactionId = req.body.context.transaction_id;
+			var transactionKeys = await redis.keys(`${transactionId}-*`);
+			var ifTransactionExist = transactionKeys.filter((e) =>
+				e.includes("on_confirm-from-server")
 			);
-			if (!on_confirm) {
+			if (ifTransactionExist.length === 0) {
 				return send_nack(res, "On Confirm doesn't exist");
 			}
+			var transaction = await redis.mget(ifTransactionExist);
+			var parsedTransaction = transaction.map((ele) => {
+				return JSON.parse(ele as string);
+			});
+			const onConfirm = parsedTransaction[0].request;
+			if (Object.keys(onConfirm).includes("error")) {
+				return send_nack(res, "On Confirm had errors");
+			}
+			console.log(JSON.stringify(onConfirm));
+			let onStatus = {
+				context:{
 
-			return statusRequest(req, res, next, on_confirm, scenario);
+				},
+				message:{}
+			};
+			console.log(onStatus);
+			return responseBuilder_logistics(
+				res,
+				next,
+				onStatus.context,
+				onStatus.message,
+				`${req.body.context.bap_uri}${
+					req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
+				}`,
+				`on_confirm`,
+				"logistics"
+			);
 		} catch (error) {
-			return next(error);
+			next(error);
 		}
 	}
 };

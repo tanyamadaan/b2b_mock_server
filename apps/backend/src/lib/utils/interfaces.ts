@@ -165,7 +165,8 @@ export interface Fulfillment {
   type: string;
   tracking: boolean;
   stops: Stop[];
-  rateable: boolean;
+  rateable?: boolean;
+  tags: Tag[];
 }
 interface Params {
   amount: string;
