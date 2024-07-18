@@ -1,50 +1,60 @@
 import { NextFunction, Request, Response } from "express";
-import { v4 as uuidv4 } from "uuid";
-import { set, eq } from "lodash";
-import _ from "lodash";
-import { isBefore, addDays } from "date-fns";
 import {
   MOCKSERVER_ID,
+  SERVICES_BAP_MOCKSERVER_URL,
   checkIfCustomized,
   send_response,
   send_nack,
   redisFetchToServer,
-  AGRI_EQUIPMENT_BAP_MOCKSERVER_URL,
+  createAuthHeader,
+  logger,
+  redis,
+  Item,
+  Category,
+  Tag,
+  TagItem,
 } from "../../../lib/utils";
-
+import axios, { AxiosError } from "axios";
+import { v4 as uuidv4 } from "uuid";
+import { set, eq, isEmpty, min, keys } from "lodash";
+import _ from "lodash";
+import { isBefore, addDays } from "date-fns";
 
 export const initiateSelectController = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  try{
+  try {
     const { transactionId } = req.body;
+
     const on_search = await redisFetchToServer("on_search", transactionId);
     if (!on_search) {
-      return send_nack(res, "On Search doesn't exist")
+      return send_nack(res, "On Search doesn't exist");
     }
-    // on_search.context.bpp_uri = HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
+    // selecting the senarios
     let scenario = "selection";
-    
-    const items = on_search.message.catalog.providers[0]?.categories;
-    let child_ids;
-    if (items) {
-      // Need to validate it for healthcare
-      const parent_id = items.find(
-        (ele: any) => ele.descriptor.code === "MEAL"
-      )?.id;
-      child_ids = items.reduce((acc: string[], ele: any) => {
-        if (ele.parent_category_id === parent_id) {
-          acc.push(ele.id);
-        }
-        return acc;
-      }, []);
+    if (checkIfCustomized(on_search.message.catalog?.providers?.[0]?.items)) {
+      scenario = "customization";
     }
-    req.body.child_ids = child_ids;
+
+    // const items = on_search.message.catalog.providers[0]?.categories;
+    // let child_ids;
+    // if (items) {
+    //   const parent_id = items.find(
+    //     (ele: any) => ele.descriptor.code === "MEAL"
+    //   )?.id;
+    //   child_ids = items.reduce((acc: string[], ele: any) => {
+    //     if (ele.parent_category_id === parent_id) {
+    //       acc.push(ele.id);
+    //     }
+    //     return acc;
+    //   }, []);
+    // }
+    // req.body.child_ids = child_ids;
     return intializeRequest(req, res, next, on_search, scenario);
-  }catch(error:any){
-    return next(error)
+  } catch (error) {
+    return next(error);
   }
 };
 
@@ -55,7 +65,7 @@ const intializeRequest = async (
   transaction: any,
   scenario: string
 ) => {
-  try{
+  try {
     const {
       context,
       message: {
@@ -63,30 +73,49 @@ const intializeRequest = async (
       },
     } = transaction;
     const { transaction_id } = context;
-    const { id, locations } = providers[0];
+    const { id, locations } = providers?.[0];
+    //   const { location_ids } = providers[0].items[0];
     let items = [];
     let start;
     let endDate;
     if (scenario === "customization") {
-      const startDate = new Date(providers?.[0]?.time?.range?.start);
-  
-      const startCategory = providers?.[0]?.categories?.find((cat: any) => {
-        return cat.id === req.body.child_ids[0];
-      });
-      const startSchedule = startCategory?.tags?.find(
-        (ele: any) => ele.descriptor.code === "schedule"
+      //getting parent item
+      const parent_obj =providers?.[0]?.items?.find((itm: Item) =>
+        isEmpty(itm.parent_item_id)
       );
-      const startTime = startSchedule?.list?.find(
-        (ele: any) => ele.descriptor.code === "start_time"
-      ).value;
-      const hour = Number(startTime?.split(":")[0]);
-      const minutes = Number(startTime?.split(":")[1]);
-  
+      let startTime = parent_obj.time?.schedule?.times?.[0]?.split("T")[1];
+      // console.log("Start Time from parent_item::", startTime);
+
+      // getting the required categories ids to look  for
+      const { cat_ids, child_selected } = processCategories(
+        providers?.[0]?.categories
+      );
+      const required_categories = cat_ids;
+      //Start Date for items
+      const startDate = new Date(providers?.[0]?.time?.range?.start);
+
+      if (isEmpty(startTime) && !isEmpty(child_selected)) {
+        const startCategory = providers?.[0]?.categories?.find(
+          (cat: Category) => {
+            return cat.id === child_selected?.[0];
+          }
+        );
+        const startSchedule = startCategory?.tags?.find(
+          (ele: Tag) => ele.descriptor?.code === "schedule"
+        );
+        startTime = startSchedule?.list?.find(
+          (ele: TagItem) => ele.descriptor?.code === "start_time"
+        ).value;
+      }
+
+      //else case is to be defined
+      const hour = Number(startTime?.split(":")?.[0]) || startDate.getUTCHours();
+      const minutes =
+        Number(startTime?.split(":")[1]) || startDate.getUTCMinutes();
+
       start = new Date(startDate);
       start.setUTCHours(hour, minutes, 0, 0);
-  
       const currentDate = new Date();
-  
       // Compare the start date with the current date and time
       if (isBefore(start, currentDate)) {
         currentDate.setUTCHours(start.getUTCHours());
@@ -94,39 +123,41 @@ const intializeRequest = async (
         currentDate.setUTCSeconds(start.getUTCSeconds());
         start = addDays(currentDate, 1);
       }
-  
-      const scheduleobj = providers[0]?.categories
-        .find((itm: any) => itm.id === req.body.child_ids[0])
-        ?.tags.find((tag: any) => tag.descriptor.code === "schedule");
-  
+
+      const scheduleobj = providers?.[0]?.categories
+        .find((itm: Category) => itm.id === child_selected?.[0]) //getting the schedule based on category
+        ?.tags.find((tag: Tag) => tag.descriptor.code === "schedule");
+
       const endDateFrequency = scheduleobj?.list.find(
-        (ele: any) => ele.descriptor.code === "frequency"
+        (ele: TagItem) => ele.descriptor.code === "frequency"
       )?.value;
-  
-      const frequency = parseInt(endDateFrequency?.match(/\d+/)[0]);
-  
+
+      const frequency = parseInt(endDateFrequency?.match(/\d+/)?.[0]) || 1; //defaul value of frequency is set to 1
+
       //end date
       endDate = new Date(start);
       endDate.setUTCHours(start.getUTCHours() + frequency);
-  
-      // getting the required categories ids to look  for
-      const required_categories = processCategories(providers[0].categories);
-  
-      const count_cat: any = {};
-      required_categories.forEach((cat: any) => {
+
+      // console.log(
+      //   "-----Required Categories to include------",
+      //   required_categories
+      // );
+
+      const count_cat: { [key: string]: number } = {};
+      required_categories.forEach((cat: string) => {
         count_cat[cat] = 0;
       });
-  
+
       //get the parent item in customization
-      items = [...providers[0].items];
-      const parent_item = items.find((itm: any) =>
-        _.isEmpty(itm.parent_category_id)
+      items = [...providers?.[0].items];
+      const parent_item = items.find((itm: Item) =>
+        _.isEmpty(itm.parent_item_id)
       );
-  
+
       // selecting elements based on categories selected
-      items = items.filter((itm: any) => {
+      items = items.filter((itm: Item) => {
         let flag = 0;
-        itm?.category_ids.forEach((id: string) => {
+        itm?.category_ids?.forEach((id: string) => {
           if (id in count_cat && count_cat[id] < 1) {
             count_cat[id]++;
             flag = 1;
@@ -137,7 +168,30 @@ const intializeRequest = async (
         }
         return false;
       });
-  
+      // console.log("Items selected ::", items);
+      // if (req.body.child_ids) {
+      //   // items = items.filter(item => item.category_ids.includes(req.body.child_ids[0])).slice(0,1);
+      //   const new_items: any[] = [];
+      //   let count = 0;
+      //   let index = 0;
+      //   while (index < items.length && count < 2) {
+      //     if (items[index].category_ids.includes(req.body.child_ids[0])) {
+      //       if (
+      //         new_items.length > 0 &&
+      //         new_items[0].parent_item_id !== items[index].parent_item_id
+      //       ) {
+      //         continue;
+      //       }
+      //       new_items.push(items[index]);
+      //       count++;
+      //     }
+      //     index++;
+      //   }
+      //   const parent_item = items.find(
+      //     (item: any) => item.id === new_items[0].parent_item_id
+      //   );
+      //   items = [parent_item, ...new_items];
+      // }
       const { id: item_id, parent_item_id, location_ids } = parent_item;
       items = [
         {
@@ -150,21 +204,21 @@ const intializeRequest = async (
             },
           },
         },
-        ...items.map((item: any) => {
+        ...items.map((item: Item) => {
           return {
             // ...item,
-            id: item.id,
-            parent_item_id: item.parent_item_id,
+            id: item?.id,
+            parent_item_id: item?.parent_item_id,
             quantity: {
               selected: {
                 count: 1,
               },
             },
-            category_ids: item.category_ids,
-            location_ids: [location_ids],
-            tags: item.tags.map((tag: any) => ({
+            category_ids: item?.category_ids,
+            location_ids: location_ids,
+            tags: item.tags?.map((tag: Tag) => ({
               ...tag,
-              list: tag.list.map((itm2: any, index: any) => {
+              list: tag?.list?.map((itm2: TagItem, index: Number) => {
                 if (index === 0) {
                   return {
                     descriptor: {
@@ -182,32 +236,28 @@ const intializeRequest = async (
       ];
     } else {
       items = providers[0].items = [
-        providers[0]?.items.map(
+        providers?.[0]?.items.map(
           ({
             id,
             parent_item_id,
             location_ids,
-            fulfillment_ids,
-            tags
           }: {
-            id: any;
-            parent_item_id: any;
-            location_ids: any;
-            fulfillment_ids: any;
-            tags: any
-          }) =>
-            ({ id, parent_item_id, location_ids: [{ id: location_ids[0] }], fulfillment_ids: { id: fulfillment_ids[0] }, tags: [tags[0]] })
-        )[0],
+            id: string;
+            parent_item_id: string;
+            location_ids: string[];
+          }) => ({ id, parent_item_id, location_ids: [location_ids?.[0]] })
+        )?.[0],
       ];
     }
-  
+    // console.log("Items::", items, "Senario::", scenario)
+
     const select = {
       context: {
         ...context,
         timestamp: new Date().toISOString(),
         action: "select",
         bap_id: MOCKSERVER_ID,
-        bap_uri: AGRI_EQUIPMENT_BAP_MOCKSERVER_URL,
+        bap_uri: SERVICES_BAP_MOCKSERVER_URL,
         message_id: uuidv4(),
       },
       message: {
@@ -216,30 +266,25 @@ const intializeRequest = async (
             id,
             locations: [
               {
-                id: locations[0]?.id,
+                id: locations?.[0]?.id,
               },
             ],
           },
-          items: items.map((itm) => {
-            return {
-              ...itm,
-              location_ids: itm.location_ids
-                ? itm.location_ids.map((id: any) => {
-                  return id?.id;
-                })
-                : undefined,
-              fulfillment_ids: [itm.fulfillment_ids.id],
-              quantity: {
-                selected: {
-                  count: 1,
-                },
+          items: items.map((itm: Item) => ({
+            ...itm,
+            location_ids: itm.location_ids
+              ? itm.location_ids?.map((id: string) => String(id))
+              : undefined,
+            quantity: {
+              selected: {
+                count: 1,
               },
-            };
-          }),
+            },
+          })),
           fulfillments: [
             {
-              ...fulfillments[0],
-              type: fulfillments[0].type,
+              ...fulfillments?.[0],
+              type: fulfillments?.[0].type,
               stops: [
                 {
                   type: "end",
@@ -250,38 +295,25 @@ const intializeRequest = async (
                   time: {
                     label: "selected",
                     range: {
-                      // should be dynamic on the basis of schedule
+                      // should be dynamic on the basis of scehdule
                       start:
-                        providers[0]?.time?.schedule?.times?.[0] ?? new Date(),
-                      end: providers[0]?.time?.schedule?.times?.[1] ?? new Date(),
+                        providers?.[0]?.time?.schedule?.times?.[0] ?? new Date(),
+                      end:
+                        providers?.[0]?.time?.schedule?.times?.[1] ?? new Date(),
                     },
                   },
                   days: scenario === "customization" ? "4" : undefined,
+                  // 	? fulfillments[0].stops[0].time.days.split(",")[0]
+                  // 	: undefined,
                 },
               ],
             },
           ],
-        //   offers: [
-        //   {
-        //     id: providers[0]?.offers[0]?.id,
-        //     tags: [
-        //       {
-        //         code: "SELECTION",
-        //         list: [
-        //           {
-        //             code: "APPLY",
-        //             value: "true"
-        //           }
-        //         ]
-        //       }
-        //     ]
-        //   }
-        // ],
-          payments: [{ type: payments[0].type }],
+          payments: [{ type: payments?.[0].type }],
         },
-  
       },
     };
+    // console.log("Final start and end time ::", start, endDate);
     if (eq(scenario, "customization")) {
       set(
         select,
@@ -294,39 +326,81 @@ const intializeRequest = async (
         endDate
       );
     }
+
     await send_response(res, next, select, transaction_id, "select");
-  }catch(error){
-    next(error)
+    // const header = await createAuthHeader(select);
+    // try {
+    //   await redis.set(
+    //     `${transaction_id}-select-from-server`,
+    //     JSON.stringify({ request: { ...select } })
+    //   );
+    //   const response = await axios.post(`${context.bpp_uri}/select`, select, {
+    //     headers: {
+    //       "X-Gateway-Authorization": header,
+    //       authorization: header,
+    //     },
+    //   });
+    //   await redis.set(
+    //     `${transaction_id}-select-from-server`,
+    //     JSON.stringify({
+    //       request: { ...select },
+    //       response: {
+    //         response: response.data,
+    //         timestamp: new Date().toISOString(),
+    //       },
+    //     })
+    //   );
+    //   return res.json({
+    //     message: {
+    //       ack: {
+    //         status: "ACK",
+    //       },
+    //     },
+    //     transaction_id,
+    //   });
+    // } catch (error) {
+    //   console.log("ERROR :::::::::::::", (error as any).response.data.error);
+    //   return next(error);
+    // }
+  } catch (error) {
+    return next(error);
   }
 };
 
-function processCategories(categories: Array<any>) {
+function processCategories(categories: Category[]) {
   // sort the mandatory parent_ids
-  const cat_ids: string[] = categories.reduce((acc: string[], itm: any) => {
-    if (!("parent_category_id" in itm)) {
-      const lis_selection = itm.tags?.find(
-        (tag: any) => tag.descriptor?.code.toLowerCase() === "selection"
-      );
-      const mandatory = lis_selection?.list.find(
-        (ele: any) => ele.descriptor.code === "mandatory_selection"
-      )?.value;
-      if (mandatory) {
-        acc.push(itm.id);
+  const cat_ids: string[] = categories?.reduce(
+    (acc: string[], itm: Category) => {
+      if (!("parent_category_id" in itm)) {
+        const lis_selection = itm.tags?.find(
+          (tag: Tag) => tag.descriptor?.code.toLowerCase() === "selection"
+        );
+        const mandatory = lis_selection?.list?.find(
+          (ele: TagItem) => ele.descriptor?.code === "mandatory_selection"
+        )?.value;
+        if (mandatory) {
+          acc.push(itm.id);
+        }
       }
-    }
-    return acc;
-  }, []);
-
+      return acc;
+    },
+    []
+  );
   // sort the categories
-  categories.forEach((cat: any) => {
+  const child_selected: string[] = [];
+  categories.forEach((cat: Category) => {
     if ("parent_category_id" in cat) {
-      if (cat_ids.includes(cat.parent_category_id)) {
+      if (
+        cat.parent_category_id !== undefined &&
+        cat_ids.includes(cat.parent_category_id)
+      ) {
         cat_ids.push(cat.id);
+        child_selected.push(cat.id);
         if (cat_ids.indexOf(cat.parent_category_id) != -1) {
           cat_ids.splice(cat_ids.indexOf(cat.parent_category_id), 1);
         }
       }
     }
   });
-  return cat_ids;
+  return { cat_ids, child_selected };
 }

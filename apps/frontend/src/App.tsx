@@ -11,11 +11,17 @@ import {
 } from "./pages/swagger/domains";
 import {
 	AnalyseProvider,
+	DomainProvider,
 	MessageProvider,
 	MockProvider,
 	SandboxProvider,
 } from "./utils/context";
-import { AgriServicesMock, B2BMock, HealthCareServicesMock, ServicesMock } from "./pages/mock/domains";
+import {
+	AgriServicesMock,
+	B2BMock,
+	HealthCareServicesMock,
+	ServicesMock,
+} from "./pages/mock/domains";
 import { B2BSandbox, ServicesSandbox } from "./pages/sandbox/domains";
 import { AgriServicesSandbox } from "./pages/sandbox/domains/agri-services";
 import { HealthCareServicesSandbox } from "./pages/sandbox/domains/healthcare-services";
@@ -103,17 +109,20 @@ const router = createBrowserRouter([
 				],
 			},
 			{
+				path: "/swagger/misc",
+				Component: MiscSwagger,
+			},
+			{
 				path: "/swagger",
 				Component: Swagger,
-				children: [
-					{ path: "b2b", Component: B2BSwagger },
-					{ path: "services", Component: ServicesSwagger },
-					{ path: "agri-services", Component: AgriServicesSwagger },
-					{ path: "healthcare-services", Component: HealthCareServicesSwagger },
-					{ path: "agri-equipment-services", Component: HealthCareServicesSwagger },
-					{ path: "auth", Component: AuthSwagger },
-					{ path: "misc", Component: MiscSwagger },
-				],
+				// children: [
+				// 	{ path: "b2b", Component: B2BSwagger },
+				// 	{ path: "services", Component: ServicesSwagger },
+				// 	{ path: "agri-services", Component: AgriServicesSwagger },
+				// 	{ path: "healthcare-services", Component: HealthCareServicesSwagger },
+				// 	{ path: "auth", Component: AuthSwagger },
+				// 	{ path: "misc", Component: MiscSwagger },
+				// ],
 			},
 			{
 				path: "/analyse",
@@ -130,7 +139,9 @@ const router = createBrowserRouter([
 export default function App() {
 	return (
 		<MessageProvider>
-			<RouterProvider router={router} />
+			<DomainProvider>
+				<RouterProvider router={router} />
+			</DomainProvider>
 		</MessageProvider>
 	);
 }

@@ -185,7 +185,6 @@ export const searchSchema = {
               },
               required: ["type", "collected_by"],
             },
-            
             tags: {
               type: "array",
               minItems: 1,

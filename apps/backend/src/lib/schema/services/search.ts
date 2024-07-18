@@ -1,5 +1,4 @@
-import { SRV_FULFILLMENT_TYPE, GPS_PATTERN, SRV_PAYMENT_TYPE, PAYMENT_COLLECTEDBY, DOMAIN, VERSION } from "./constants";
-
+import { SRV_FULFILLMENT_TYPE, GPS_PATTERN, SRV_PAYMENT_TYPE, PAYMENT_COLLECTEDBY, DOMAIN, VERSION, SRV_INTENT_TAGS } from "./constants";
 
 export const searchSchema = {
   $id: "searchSchema",
@@ -152,7 +151,7 @@ export const searchSchema = {
                                 format: "date-time"
                               },
                             },
-                            required: ["start", "end"],
+                            required: ["start"],
                           },
                           days: {
                             type: "array",
@@ -195,7 +194,7 @@ export const searchSchema = {
                     properties: {
                       code: {
                         type: "string",
-                        enum: ["BAP_Terms"]
+                        enum: SRV_INTENT_TAGS
                       },
                     },
                     required: ["code"],
@@ -211,7 +210,7 @@ export const searchSchema = {
                           properties: {
                             code: {
                               type: "string",
-                              enum:["finder_fee_type","finder_fee_amount"]
+                              enum:SRV_INTENT_TAGS
                             },
                           },
                           required: ["code"],

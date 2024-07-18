@@ -10,14 +10,14 @@ import { useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
 import Divider from "@mui/material/Divider";
 import Grow from "@mui/material/Grow";
-import { useMessage } from "../../utils/hooks";
+import { useDomain, useMessage } from "../../utils/hooks";
 import HelpOutlineTwoToneIcon from "@mui/icons-material/HelpOutlineTwoTone";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 
-type InitiateRequestSectionProp = {
-	domain: "b2b" | "services" | "agri-services" | "healthcare-services" | "agri-equipment-hiring";
-};
+// type InitiateRequestSectionProp = {
+// 	domain: "b2b" | "services" | "agri-services" | "healthcare-services";
+// };
 
 type SELECT_OPTIONS =
 	| string[]
@@ -36,12 +36,10 @@ type SELECT_FIELD = {
 	options: SELECT_OPTIONS;
 };
 
-export const InitiateRequestSection = ({
-	domain,
-}: InitiateRequestSectionProp) => {
-
+export const InitiateRequestSection = () => {
 	const { handleMessageToggle, setMessageType, setCopy } = useMessage();
 	const [action, setAction] = useState<string>();
+	const { domain } = useDomain();
 	const [renderActionFields, setRenderActionFields] = useState(false);
 	const [formState, setFormState] = useState<object>();
 	const [allowSubmission, setAllowSubmission] = useState<boolean>();
@@ -50,7 +48,6 @@ export const InitiateRequestSection = ({
 		_event: React.SyntheticEvent | null,
 		newValue: string | null
 	) => {
-
 		setRenderActionFields(false);
 		setAction(newValue as string);
 		setFormState({});
@@ -61,13 +58,16 @@ export const InitiateRequestSection = ({
 	const handleFieldChange = (fieldName: string, value: string | object) => {
 		setFormState((prev) => ({ ...prev, [fieldName]: value }));
 	};
+
 	useEffect(() => {
 		if (action) {
 			const keys = Object.keys(formState || {});
-			const formKeys = INITIATE_FIELDS[action as keyof typeof INITIATE_FIELDS].map((e) => e.name);
-			const scenarios = INITIATE_FIELDS[action as keyof typeof INITIATE_FIELDS].filter(
-				(e) => e.name === "scenario"
-			)[0];
+			const formKeys = INITIATE_FIELDS[
+				action as keyof typeof INITIATE_FIELDS
+			].map((e) => e.name);
+			const scenarios = INITIATE_FIELDS[
+				action as keyof typeof INITIATE_FIELDS
+			].filter((e) => e.name === "scenario")[0];
 
 			if (checker(keys, formKeys)) setAllowSubmission(true);
 			else if (
@@ -88,7 +88,7 @@ export const InitiateRequestSection = ({
 			const response = await axios.post(
 				`${
 					import.meta.env.VITE_SERVER_URL
-				}/${domain.toLocaleLowerCase()}/initiate/${action}?mode=mock`,
+				}/${domain}/initiate/${action}?mode=mock`,
 				formState,
 				{
 					headers: {
@@ -115,16 +115,21 @@ export const InitiateRequestSection = ({
 				);
 				setMessageType("error");
 			}
-		} catch (error:any) {
+		} catch (error: any) {
 			setMessageType("error");
-			console.log("error.response?.data?.error?.message",error.response?.data?.error?.message)
-			if (error instanceof AxiosError && error.response?.data?.error?.message.error?.message)
+			if (
+				error instanceof AxiosError &&
+				error.response?.data?.error?.message.error?.message
+			)
 				handleMessageToggle(
-					error.response?.data?.error?.message.error?.message === "string"?error.response?.data?.error?.message.error?.message:"Error Occurred while initiating request!"
+					error.response?.data?.error?.message.error?.message === "string"
+						? error.response?.data?.error?.message.error?.message
+						: "Error Occurred while initiating request!"
 				);
 			else handleMessageToggle("Error Occurred while initiating request!");
 		}
 	};
+
 	return (
 		<Fade in={true} timeout={2500}>
 			<Paper
@@ -152,76 +157,82 @@ export const InitiateRequestSection = ({
 						</IconButton>
 					</Tooltip>
 				</Box>
+
 				<Stack spacing={2} sx={{ my: 2 }}>
 					<Select placeholder="Select Action" onChange={handleActionSelection}>
-
 						{Object.keys(INITIATE_FIELDS).map((action, idx) => (
 							<Option value={action} key={"action-" + idx}>
 								{action}
 							</Option>
-
 						))}
 					</Select>
+
 					<Grow in={renderActionFields} timeout={500}>
 						<Stack spacing={2} sx={{ my: 2 }}>
 							<Divider />
 							{action &&
-								INITIATE_FIELDS[action as keyof typeof INITIATE_FIELDS].map((field, index) => (
-									<>
-										{field.type === "text" ? (
-											<Input
-												fullWidth
-												placeholder={field.placeholder}
-												key={"input-" + action + "-" + index}
-												onChange={(e) =>
-													handleFieldChange(field.name, e.target.value)
-												}
-											/>
-										) : field.type === "select" &&
-										  (field as SELECT_FIELD).domainDepended &&
-										  (field as SELECT_FIELD).options[
-												domain as keyof SELECT_OPTIONS
-										  ] ? (
-											<Select
-												placeholder={field.placeholder}
-												key={"select-" + action + "-" + index}
-												onChange={(
-													_event: React.SyntheticEvent | null,
-													newValue: string | null
-												) => handleFieldChange(field.name, newValue as string)}
-											>
-												{(
-													(field as SELECT_FIELD).options[
-														domain as keyof SELECT_OPTIONS
-													] as string[]
-												).map((option, index: number) => (
-													<Option value={option} key={option + index}>
-														{option}
-													</Option>
-												))}
-											</Select>
-										) : field.type === "select" && !field.domainDepended ? (
-											<Select
-												placeholder={field.placeholder}
-												key={"select-" + action + "-" + index}
-												onChange={(
-													_event: React.SyntheticEvent | null,
-													newValue: string | null
-												) => handleFieldChange(field.name, newValue as string)}
-											>
-												{(field.options as string[]).map(
-													(option, index: number) => (
+								INITIATE_FIELDS[action as keyof typeof INITIATE_FIELDS].map(
+									(field, index) => (
+										<>
+											{field.type === "text" ? (
+												<Input
+													fullWidth
+													placeholder={field.placeholder}
+													key={"input-" + action + "-" + index}
+													onChange={(e) =>
+														handleFieldChange(field.name, e.target.value)
+													}
+												/>
+											) : field.type === "select" &&
+											  (field as SELECT_FIELD).domainDepended &&
+											  (field as SELECT_FIELD).options[
+													domain as keyof SELECT_OPTIONS
+											  ] ? (
+												<Select
+													placeholder={field.placeholder}
+													key={"select-" + action + "-" + index}
+													onChange={(
+														_event: React.SyntheticEvent | null,
+														newValue: string | null
+													) =>
+														handleFieldChange(field.name, newValue as string)
+													}
+												>
+													{(
+														(field as SELECT_FIELD).options[
+															domain as keyof SELECT_OPTIONS
+														] as string[]
+													).map((option, index: number) => (
 														<Option value={option} key={option + index}>
 															{option}
 														</Option>
-													)
-												)}
-											</Select>
-										) : (
-											<></>
-										)}
-									</>
-								))}
+													))}
+												</Select>
+											) : field.type === "select" && !field.domainDepended ? (
+												<Select
+													placeholder={field.placeholder}
+													key={"select-" + action + "-" + index}
+													onChange={(
+														_event: React.SyntheticEvent | null,
+														newValue: string | null
+													) =>
+														handleFieldChange(field.name, newValue as string)
+													}
+												>
+													{(field.options as string[]).map(
+														(option, index: number) => (
+															<Option value={option} key={option + index}>
+																{option}
+															</Option>
+														)
+													)}
+												</Select>
+											) : (
+												<></>
+											)}
+										</>
+									)
+								)}
 						</Stack>
 					</Grow>
 				</Stack>

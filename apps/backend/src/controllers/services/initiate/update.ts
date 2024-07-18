@@ -1,193 +1,268 @@
 import { NextFunction, Request, Response } from "express";
-import {
-  send_nack,
-  createAuthHeader,
-  redis,
-  redisFetchToServer,
-  B2B_BAP_MOCKSERVER_URL,
-  MOCKSERVER_ID,
-  Stop,
-  Fulfillment,
-  send_response,
-  Item,
-} from "../../../lib/utils";
-import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
-import { selectController } from "../bpp/select";
+import fs from "fs";
+import path from "path";
+import YAML from "yaml";
+import { v4 as uuidv4 } from "uuid";
+import {
+	send_nack,
+	createAuthHeader,
+	redis,
+	redisFetchToServer,
+	AGRI_EQUIPMENT_BPP_MOCKSERVER_URL,
+	AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH,
+} from "../../../lib/utils";
+import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
+import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 
 export const initiateUpdateController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
+	req: Request,
+	res: Response,
+	next: NextFunction
 ) => {
-  try {
-    const { scenario, transactionId } = req.body;
-    // const transactionKeys = await redis.keys(`${transactionId}-*`);
-    // const ifTransactionExist = transactionKeys.filter((e) =>
-    // 	e.includes("on_confirm-to-server")
-    // );
-    // if (ifTransactionExist.length === 0) {
-    // 	return res.status(400).json({
-    // 		message: {
-    // 			ack: {
-    // 				status: "NACK",
-    // 			},
-    // 		},
-    // 		error: {
-    // 			message: "On Confirm doesn't exist",
-    // 		},
-    // 	});
-    // }
+	try {
+		let { scenario, update_target, transactionId } = req.body;
+		const on_confirm = await redisFetchToServer(
+			ON_ACTION_KEY.ON_CONFIRM,
+			transactionId
+		);
+		if (!on_confirm) {
+			return send_nack(res, ERROR_MESSAGES.ON_CONFIRM_DOES_NOT_EXISTED);
+		}
+		on_confirm.context.bpp_uri = AGRI_EQUIPMENT_BPP_MOCKSERVER_URL;
+		// update_target = update_target ? update_target : "payments"
 
-    // const transaction = await redis.mget(ifTransactionExist);
-    // const parsedTransaction = transaction.map((ele) => {
-    // 	return JSON.parse(ele as string);
-    // });
-    const on_confirm = await redisFetchToServer("on_confirm", transactionId);
-    if (!on_confirm) {
-      return send_nack(res, "On Confirm doesn't exist");
-    }
-    //on_select to fetch items for reschedule
-    const on_select = await redisFetchToServer("on_select", transactionId);
+		let { context, message } = on_confirm;
+		const timestamp = new Date().toISOString();
+		context.action = "update";
+		context.timestamp = timestamp;
+		let responseMessage: any;
+		// Need to reconstruct this logic
 
-    const { context, message } = on_confirm;
-    const timestamp = new Date().toISOString();
-    context.action = "update";
-    context.timestamp = timestamp;
+		scenario = update_target ? update_target : "payments";
 
-    let responseMessage;
-    switch (scenario) {
-      case "payments":
-        responseMessage = requoteRequest(message);
-        break;
-      case "reschedule":
-        responseMessage = rescheduleRequest(
-          message,
-          on_select?.message?.order?.items ?? []
-        );
-        break;
-      default:
-        responseMessage = requoteRequest(message);
-        break;
-    }
-    const update = {
-      context,
-      message: responseMessage,
-    };
-    const header = await createAuthHeader(update);
+		if (scenario === "payments") {
+			//FETCH ON UPDATE IF UPDATE PAYMENT FLOW COME
+			const on_update = await redisFetchToServer(
+				ON_ACTION_KEY.ON_UPDATE,
+				transactionId
+			);
+			if (!on_update) {
+				return send_nack(res, ERROR_MESSAGES.ON_SEARCH_DOES_NOT_EXISTED);
+			}
+			message = on_update.message;
+		}
 
-    try {
-      await redis.set(
-        `${transactionId}-update-from-server`,
-        JSON.stringify({ request: { ...update } })
-      );
-      const response = await axios.post(`${context.bpp_uri}/update`, update, {
-        headers: {
-          // "X-Gateway-Authorization": header,
-          authorization: header,
-        },
-      });
+		switch (scenario) {
+			case "payments":
+				responseMessage = updatePaymentController(message, update_target);
+				break;
+			case "fulfillments":
+				responseMessage = rescheduleRequest(message, update_target);
+				break;
+			case "items":
+				responseMessage = modifyItemsRequest(message, update_target);
+				break;
+			default:
+				responseMessage = requoteRequest(message, update_target);
+				break;
+		}
 
-      await redis.set(
-        `${transactionId}-update-from-server`,
-        JSON.stringify({
-          request: { ...update },
-          response: {
-            response: response.data,
-            timestamp: new Date().toISOString(),
-          },
-        })
-      );
+		const update = {
+			context,
+			message: responseMessage,
+		};
 
-      return res.json({
-        message: {
-          ack: {
-            status: "ACK",
-          },
-        },
-        transactionId,
-      });
-    } catch (error) {
-      // console.log("ERROR", (error as any)?.response.data.error);
-      return next(error);
-    }
-  } catch (error) {
-    return next(error);
-  }
+		const header = await createAuthHeader(update);
+
+		await redis.set(
+			`${transactionId}-update-from-server`,
+			JSON.stringify({ request: { ...update } })
+		);
+		const response = await axios.post(
+			`${context.bpp_uri}/update?scenario=${scenario}`,
+			update,
+			{
+				headers: {
+					authorization: header,
+				},
+			}
+		);
+
+		await redis.set(
+			`${transactionId}-update-from-server`,
+			JSON.stringify({
+				request: { ...update },
+				response: {
+					response: response.data,
+					timestamp: new Date().toISOString(),
+				},
+			})
+		);
+		return res.json({
+			message: {
+				ack: {
+					status: "ACK",
+				},
+			},
+			transactionId,
+		});
+	} catch (error) {
+		return next(error);
+	}
 };
 
-function requoteRequest(message: any) {
-  let {
-    order: { items, payments, fulfillments, quote },
-  } = message;
-  items = items.map(
-    ({
-      id,
-      parent_item_id,
-      ...every
-    }: {
-      id: string;
-      parent_item_id: object;
-    }) => ({
-      ...every,
-      id,
-      parent_item_id,
-    })
-  );
-  fulfillments.map((itm: Fulfillment) => {
-    itm.state.descriptor.code = "Completed";
-  });
+function requoteRequest(message: any, update_target: string) {
+	let {
+		order: { items, payments, fulfillments, quote },
+	} = message;
 
-  const responseMessage = {
-    update_target: "payments",
-    order: {
-      id: message?.order?.id,
-      status: message?.order?.status,
-      provider: {
-        id: message?.order?.provider?.id,
-      },
-      items,
-      payments,
-      fulfillments: fulfillments?.map((itm: Fulfillment) => ({
-        ...itm,
-        stops: itm.stops?.map((stop: Stop) => ({
-          ...stop,
-        })),
-      })),
-      quote,
-    },
-  };
-  return responseMessage;
+	items = items.map(
+		({
+			id,
+			parent_item_id,
+			...every
+		}: {
+			id: string;
+			parent_item_id: object;
+		}) => ({
+			...every,
+			id,
+			parent_item_id,
+		})
+	);
+
+	fulfillments.map((itm: any) => {
+		itm.state.descriptor.code = "Completed";
+	});
+
+	const responseMessage = {
+		update_target:
+			update_target === "items"
+				? "fulfillments,items"
+				: update_target === "fulfillments"
+				? "fulfillments"
+				: "payments",
+		order: {
+			id: message.order.id,
+			provider: {
+				id: message.order.provider.id,
+			},
+			items,
+			payments,
+			fulfillments: fulfillments.map((itm: any) => ({
+				...itm,
+				stops: itm.stops.map((stop: any) => ({
+					...stop,
+				})),
+			})),
+			quote,
+		},
+	};
+	return responseMessage;
 }
 
-function rescheduleRequest(message: any, items: Item[]) {
-  let {
-    order: { payments, fulfillments, quote },
-  } = message;
+function rescheduleRequest(message: any, update_target: string) {
+	let {
+		order: { items, payments, fulfillments, quote },
+	} = message;
 
-  const responseMessage = {
-    update_target: "fulfillments",
-    order: {
-      id: message?.order?.id,
-      status: message?.order?.status,
-      provider: {
-        id: message.order?.provider?.id,
-        locations: message.order?.provider?.locations,
-      },
-      items,
-      payments,
-      fulfillments: fulfillments.map((itm: Fulfillment) => ({
-        ...itm,
-        stops: itm.stops.map((stop: Stop) => ({
-          ...stop,
-          time: {
-            label: stop.time?.label ? "selected" : undefined,
-            ...stop?.time,
-          },
-        })),
-      })),
-      quote,
-    },
-  };
-  return responseMessage;
+	items = items.map(
+		({
+			id,
+			parent_item_id,
+			...every
+		}: {
+			id: string;
+			parent_item_id: object;
+		}) => ({
+			...every,
+			id,
+			parent_item_id,
+		})
+	);
+
+	fulfillments.map((itm: any) => {
+		itm.state.descriptor.code = "Pending";
+	});
+
+	const responseMessage = {
+		update_target: "fulfillments",
+		order: {
+			id: message.order.id,
+			status: "Accepted",
+			provider: message.order.provider,
+			items,
+			payments,
+			fulfillments: fulfillments.map((itm: any) => ({
+				...itm,
+				stops: itm.stops.map((stop: any) => ({
+					...stop,
+				})),
+			})),
+			quote,
+		},
+	};
+	return responseMessage;
+}
+
+function updatePaymentController(message: any, update_target: string) {
+	let {
+		order: { items, payments, fulfillments, quote },
+	} = message;
+
+	payments = payments.map((ele: any) => {
+		ele.status = "PAID";
+		return ele;
+	});
+	const responseMessage = {
+		update_target,
+		order: {
+			id: message.order.id,
+			status: "Completed",
+			provider: message.order.provider,
+			items,
+			payments,
+			fulfillments: fulfillments.map((itm: any) => ({
+				...itm,
+				stops: itm.stops.map((stop: any) => ({
+					...stop,
+				})),
+			})),
+			quote,
+		},
+	};
+	return responseMessage;
+}
+
+function modifyItemsRequest(message: any, update_target: string){
+	let {
+		order: { items, payments, fulfillments, quote },
+	} = message;
+
+	//LOGIC CHANGED ACCORDING TO SANDBOX QUERIES
+	const file = fs.readFileSync(
+		path.join(
+			AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH,
+			"update/update_extend_renting_period.yaml"
+		)
+	);
+
+	const response = YAML.parse(file.toString());
+	// const updatedPackageQuantity = items.map((ele: any) => {
+	// 	ele.quantity.selected.count = 3; //Update quantity of tests
+	// 	return ele;
+	// });
+	const responseMessage = {
+		update_target: "items",
+		order: {
+			...response.value.message.order,
+			id: uuidv4(),
+			// items: [updatedPackageQuantity[0]],
+			payments,
+			quote,
+		},
+	};
+
+	return responseMessage;
 }

@@ -13,7 +13,6 @@ export const searchController = async (
 ) => {
   try {
     const domain = req.body.context.domain;
-
     var onSearch;
     switch (domain) {
       case "ONDC:RET1A":
@@ -95,6 +94,7 @@ export const searchController = async (
         onSearch = YAML.parse(file.toString());
         break;
     }
+    console.log("REACHED HERE!")
 
     return responseBuilder(
       res,

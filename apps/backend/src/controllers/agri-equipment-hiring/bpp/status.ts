@@ -1,198 +1,294 @@
 import { NextFunction, Request, Response } from "express";
-import { EQUIPMENT_HIRING_STATUS, EQUIPMENT_HIRING_STATUS_OBJECT, FULFILLMENT_LABELS, ORDER_STATUS } from "../../../lib/utils/apiConstants";
+
 import {
-	Fulfillment,
-	Stop,
-	redisExistFromServer,
-	redisFetchFromServer,
-	responseBuilder,
-	send_nack,
+  Fulfillment,
+  Stop,
+  redisExistFromServer,
+  redisFetchFromServer,
+  responseBuilder,
+  send_nack,
 } from "../../../lib/utils";
-import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
-import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
-
+import fs from "fs";
 export const statusController = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) => {
-	try {
-		let scenario: string = String(req.query.scenario) || "";
-		const { transaction_id } = req.body.context;
-		const on_confirm_data = await redisFetchFromServer(
-			ON_ACTION_KEY.ON_CONFIRM,
-			transaction_id
-		); 
+  try {
+    let scenario: string = String(req.query.scenario) || "";
+    const { transaction_id } = req.body.context;
 
-		if (!on_confirm_data) {
-			return send_nack(res, ERROR_MESSAGES.ON_CONFIRM_DOES_NOT_EXISTED);
-		}
+    const on_confirm_data = await redisFetchFromServer(
+      "on_confirm",
+      transaction_id
+    ); //from
+    if (!on_confirm_data) {
+      return send_nack(res, "on confirm doesn't exist");
+    }
 
-		const on_cancel_exist = await redisExistFromServer(
-			ON_ACTION_KEY.ON_CANCEL,
-			transaction_id
-		);
-		if (on_cancel_exist) {
-			scenario = "cancel";
-		}
-		return statusRequest(req, res, next, on_confirm_data, scenario);
-	} catch (error) {
-		return next(error);
-	}
+    const on_cancel_exist = await redisExistFromServer(
+      "on_cancel",
+      transaction_id
+    );
+    if (on_cancel_exist) {
+      scenario = "cancel";
+    }
+    // console.log("Senario ---", scenario);
+
+    return statusRequest(req, res, next, on_confirm_data, scenario);
+  } catch (error) {
+    return next(error);
+  }
 };
-
 const statusRequest = async (
-	req: Request,
-	res: Response,
-	next: NextFunction,
-	transaction: any,
-	scenario: string
+  req: Request,
+  res: Response,
+  next: NextFunction,
+  transaction: any,
+  scenario: string
 ) => {
-	try {
-		const { context, message } = transaction;
-		context.action = ON_ACTION_KEY.ON_STATUS;
+  try{
+  const { context, message } = transaction;
+  // modifying context
+  context.action = "on_status";
 
-		const on_status = await redisFetchFromServer(
-			ON_ACTION_KEY.ON_STATUS,
-			req.body.context.transaction_id
-		);
+  const timestamp = new Date().toISOString();
+  const responseMessage: any = {
+    order: {
+      id: message?.order?.id,
+      status: "In-progress",
+      provider: {
+        ...message?.order?.provider,
+        rateable: undefined,
+      },
+      items: message?.order?.items,
+      billing: { ...message.order?.billing, tax_id: undefined },
+      fulfillments: message.order?.fulfillments?.map(
+        (fulfillment: Fulfillment) => ({
+          ...fulfillment,
+          id: fulfillment.id,
+          state: {
+            descriptor: {
+              code: "At-Location",
+            },
+          },
+          stops: fulfillment.stops.map((stop: Stop) => {
+            const demoObj = {
+              ...stop,
+              id: undefined,
+              authorization: stop.authorization
+                ? { ...stop.authorization, status: "confirmed" }
+                : undefined,
+              person: stop.person ? stop.person : stop.customer?.person,
+            };
+            if (stop.type === "start") {
+              return {
+                ...demoObj,
+                location: {
+                  ...stop.location,
+                  descriptor: {
+                    ...stop.location?.descriptor,
+                    images: ["https://gf-integration/images/5.png"],
+                  },
+                },
+              };
+            }
+            return demoObj;
+          }),
+          rateable: undefined,
+        })
+      ),
+      quote: message?.order?.quote,
+      payments: message?.order?.payments,
+      documents: [
+        {
+          url: "https://invoice_url",
+          label: "INVOICE",
+        },
+      ],
+      created_at: message?.order?.created_at,
+      updated_at: message?.order?.updated_at,
+    },
+  };
+  switch (scenario) {
+    case "in-transit":
+      responseMessage.order.fulfillments?.forEach(
+        (fulfillment: Fulfillment) => {
+          fulfillment.state.descriptor.code = "In-Transit";
+          fulfillment.stops.forEach((stop: Stop) =>
+            stop?.authorization ? (stop.authorization = undefined) : undefined
+          );
+        }
+      );
+      break;
+    case "reached":
+      responseMessage.order.fulfillments?.forEach(
+        (fulfillment: Fulfillment) => {
+          fulfillment.stops.forEach((stop: Stop) =>
+            stop?.authorization
+              ? (stop.authorization = {
+                  ...stop.authorization,
+                  status: "valid",
+                })
+              : undefined
+          );
+        }
+      );
+      break;
+    case "completed":
+      console.log("come in completed")
+      responseMessage.order.status = "Completed";
+      responseMessage.order.fulfillments?.forEach(
+        (fulfillment: Fulfillment) => {
+          fulfillment.state.descriptor.code = "Completed";
+          fulfillment.stops.forEach((stop: Stop) =>
+            stop?.authorization ? (stop.authorization = undefined) : undefined
+          );
+        }
+      );
+      break;
+    case "cancel":
+      responseMessage.order.status = "Cancelled";
+      break;
+    default: //service started is the default case
+      break;
+  }
 
-		let next_status = scenario;
+  return responseBuilder(
+    res,
+    next,
+    req.body.context,
+    responseMessage,
+    `${req.body.context.bap_uri}${
+      req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+    }`,
+    `on_status`,
+    "services"
+  );
+}catch (error) {
+   next(error)
+}}
+// export const statusController = (req: Request, res: Response, next: NextFunction) => {
+// // 	const { scenario } = req.query
+// 	switch (scenario) {
+// 		case 'completed':
+// 			statusCompletedController(req, res, next)
+// 			break;
+// 		case 'in-transit':
+// 			statusInTransitController(req, res, next)
+// 			break;
+// 		case 'reached-re-otp':
+// 			statusReachedReOtpController(req, res, next)
+// 			break;
+// 		case 'reached':
+// 			statusReachedController(req, res, next)
+// 			break;
+// 		case 'service-started':
+// 			if (checkIfCustomized(req.body.message.providers[0].items)) {
+// 				// return onSelectServiceCustomizedController(req, res);
+// 			}
+// 			statusServiceStartedController(req, res, next)
+// 			break;
+// 		default:
+// 			statusCompletedController(req, res, next)//default senario : completed
+// 			break;
+// 	}
+// }
 
-		if (on_status) {
-			//UPDATE SCENARIO TO NEXT STATUS
-			const lastStatus = on_status?.message?.order?.fulfillments[0]?.state?.descriptor?.code;
-			//FIND NEXT STATUS
-			const lastStatusIndex = EQUIPMENT_HIRING_STATUS.indexOf(lastStatus);
+// const statusCompletedController = (req: Request, res: Response, next: NextFunction) => {
+// 	const { context } = req.body;
+// 	const file = fs.readFileSync(
+// 		path.join(SERVICES_EXAMPLES_PATH, "on_status/on_status_Completed.yaml")
+// 	);
+// 	const response = YAML.parse(file.toString());
+// 	return responseBuilder(
+// 		res,
+// 		next,
+// 		context,
+// 		response.value.message,
+// 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+// 		}`,
+// 		`on_status`,
+// 		"services"
+// 	);
+// };
 
-			if (lastStatus === 2) {
-				next_status = lastStatus;
-			}
-			if (
-				lastStatusIndex !== -1 &&
-				lastStatusIndex < EQUIPMENT_HIRING_STATUS.length - 1
-			) {
-				const nextStatusIndex = lastStatusIndex + 1;
-				next_status = EQUIPMENT_HIRING_STATUS[nextStatusIndex];
-			}
-		}
+// const statusInTransitController = (req: Request, res: Response, next: NextFunction) => {
+// 	const { context } = req.body;
+// 	const file = fs.readFileSync(
+// 		path.join(SERVICES_EXAMPLES_PATH, "on_status/on_status_In_Transit.yaml")
+// 	);
+// 	const response = YAML.parse(file.toString());
+// 	return responseBuilder(
+// 		res,
+// 		next,
+// 		context,
+// 		response.value.message,
+// 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+// 		}`,
+// 		`on_status`,
+// 		"services"
+// 	);
+// };
 
-		scenario = scenario ? scenario : next_status;
-		const responseMessage: any = {
-			order: {
-				id: message.order.id,
-				status: ORDER_STATUS.IN_PROGRESS,
-				provider: {
-					...message.order.provider,
-					rateable: undefined,
-				},
-				items: message.order.items,
-				billing: { ...message.order.billing, tax_id: undefined },
+// const statusReachedReOtpController = (req: Request, res: Response, next: NextFunction) => {
+// 	const { context } = req.body;
+// 	const file = fs.readFileSync(
+// 		path.join(SERVICES_EXAMPLES_PATH, "on_status/on_status_Reached_re-otp.yaml")
+// 	);
+// 	const response = YAML.parse(file.toString());
+// 	return responseBuilder(
+// 		res,
+// 		next,
+// 		context,
+// 		response.value.message,
+// 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+// 		}`,
+// 		`on_status`,
+// 		"services"
+// 	);
+// };
+// const statusReachedController = (
+// 	req: Request,
+// 	res: Response,
+// 	next: NextFunction
 
-				fulfillments: message.order.fulfillments.map(
-					(fulfillment: Fulfillment) => ({
-						...fulfillment,
-						id: fulfillment.id,
-						state: {
-							descriptor: {
-								code: EQUIPMENT_HIRING_STATUS_OBJECT.IN_TRANSIT,
-							},
-						},
+// ) => {
+// 	const { context } = req.body;
+// 	const file = fs.readFileSync(
+// 		path.join(SERVICES_EXAMPLES_PATH, "on_status/on_status_Reached.yaml")
+// 	);
+// 	const response = YAML.parse(file.toString());
+// 	return responseBuilder(
+// 		res,
+// 		next,
+// 		context,
+// 		response.value.message,
+// 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+// 		}`,
+// 		`on_status`,
+// 		"services"
+// 	);
+// };
 
-						stops: fulfillment.stops.map((stop: Stop) => {
-							const demoObj = {
-								...stop,
-								id: undefined,
-								authorization: stop.authorization
-									? { ...stop.authorization, status: FULFILLMENT_LABELS.CONFIRMED }
-									: undefined,
-								person: stop.person ? stop.person : stop.customer?.person,
-							};
-							if (stop.type === "start") {
-								return {
-									...demoObj,
-									location: {
-										...stop.location,
-										descriptor: {
-											...stop.location?.descriptor,
-											images: ["https://gf-integration/images/5.png"],
-										},
-									},
-								};
-							}
-							return demoObj;
-						}),
-						rateable: undefined,
-					})
-				),
-				quote: message.order.quote,
-				payments: message.order.payments,
-				documents: [
-					{
-						url: "https://invoice_url",
-						label: "INVOICE",
-					},
-				],
-				created_at: message.order.created_at,
-				updated_at: message.order.updated_at,
-			},
-		};
-		switch (scenario) {
-			case EQUIPMENT_HIRING_STATUS_OBJECT.IN_TRANSIT:
-				responseMessage.order.fulfillments.forEach(
-					(fulfillment: Fulfillment) => {
-						fulfillment.state.descriptor.code = EQUIPMENT_HIRING_STATUS_OBJECT.IN_TRANSIT;
-						fulfillment.stops.forEach((stop: Stop) =>
-							stop?.authorization ? (stop.authorization = undefined) : undefined
-						);
-					}
-				);
-				break;
-			case EQUIPMENT_HIRING_STATUS_OBJECT.AT_LOCATION:
-				responseMessage.order.fulfillments.forEach(
-					(fulfillment: Fulfillment) => {
-						fulfillment.state.descriptor.code = EQUIPMENT_HIRING_STATUS_OBJECT.AT_LOCATION;
-						fulfillment.stops.forEach((stop: Stop) =>
-							stop?.authorization
-								? (stop.authorization = {
-										...stop.authorization,
-										status: "valid",
-								  })
-								: undefined
-						);
-					}
-				);
-				break;
-			case EQUIPMENT_HIRING_STATUS_OBJECT.COMPLETED:
-				responseMessage.order.status = ORDER_STATUS.COMPLETED;
-				responseMessage.order.fulfillments.forEach(
-					(fulfillment: Fulfillment) => {
-						fulfillment.state.descriptor.code = EQUIPMENT_HIRING_STATUS_OBJECT.COMPLETED;
-						fulfillment.stops.forEach((stop: Stop) =>
-							stop?.authorization ? (stop.authorization = undefined) : undefined
-						);
-					}
-				);
-				break;			
-			case EQUIPMENT_HIRING_STATUS_OBJECT.CANCEL:
-				responseMessage.order.status = ORDER_STATUS.CANCELLED;
-				break;
-			default: //service started is the default case
-				break;
-		}
-
-		return responseBuilder(
-			res,
-			next,
-			req.body.context,
-			responseMessage,
-			`${req.body.context.bap_uri}${
-				req.body.context.bap_uri.endsWith("/") ? ON_ACTION_KEY.ON_STATUS : `/${ON_ACTION_KEY.ON_STATUS}`
-			}`,
-			`${ON_ACTION_KEY.ON_STATUS}`,
-			"agri-equipment-hiring"
-		);
-	} catch (error) {
-		next(error);
-	}
-};
+// const statusServiceStartedController = (
+// 	req: Request,
+// 	res: Response,
+// 	next: NextFunction
+// ) => {
+// 	const { context } = req.body;
+// 	const file = fs.readFileSync(
+// 		path.join(SERVICES_EXAMPLES_PATH, "on_status/on_status_Service_Started.yaml")
+// 	);
+// 	const response = YAML.parse(file.toString());
+// 	return responseBuilder(
+// 		res,
+// 		next,
+// 		context,
+// 		response.value.message,
+// 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+// 		}`,
+// 		`on_status`,
+// 		"services"
+// 	);
+// };
