@@ -189,7 +189,7 @@ export const onStatusSchema = {
 												type: "string",
 											},
 										},
-										required: ["label", "duration", "timestamp"],
+										required: ["label", "duration"],
 									},
 								},
 								required: ["id", "category_ids", "descriptor", "time"],
@@ -291,7 +291,7 @@ export const onStatusSchema = {
 												},
 												type: {
 													type: "string",
-													enum: ["start", "end"],
+													enum :["start","end"]
 												},
 												location: {
 													type: "object",
@@ -303,33 +303,47 @@ export const onStatusSchema = {
 															errorMessage:
 																"Incorrect gps value (minimum of six decimal places are required)",
 														},
-														area_code: {
-															type: "string",
-														},
-														map_url: {
-															type: "string",
-														},
 														address: {
 															type: "string",
 														},
 														city: {
-															type: "string",
+															type: "object",
+															properties: {
+																name: {
+																	type: "string",
+																},
+															},
+															required: ["name"],
 														},
 														state: {
-															type: "string",
+															type: "object",
+															properties: {
+																name: {
+																	type: "string",
+																},
+															},
+															required: ["name"],
 														},
 														country: {
+															type: "object",
+															properties: {
+																code: {
+																	type: "string",
+																},
+															},
+															required: ["code"],
+														},
+														area_code: {
 															type: "string",
 														},
 													},
 													required: [
 														"gps",
-														"area_code",
-														"map_url",
 														"address",
 														"city",
 														"state",
 														"country",
+														"area_code",
 													],
 												},
 												contact: {
@@ -343,25 +357,7 @@ export const onStatusSchema = {
 															type: "string",
 														},
 													},
-													required: ["phone", "email"],
-												},
-												authorization: {
-													type: "object",
-													properties: {
-														type: {
-															type: "string",
-														},
-														token: {
-															type: "string",
-														},
-														valid_from: {
-															type: "string",
-														},
-														valid_to: {
-															type: "string",
-														},
-													},
-													required: ["type", "token", "valid_from", "valid_to"],
+													required: ["phone"],
 												},
 												instructions: {
 													type: "object",
@@ -398,7 +394,7 @@ export const onStatusSchema = {
 													},
 													required: [
 														"short_desc",
-														"long_desc",
+														"long_desc"
 													],
 												},
 												time: {
@@ -425,7 +421,6 @@ export const onStatusSchema = {
 											},
 											required: [
 												"id",
-												"parent_stop_id",
 												"type",
 												"location",
 												"contact",

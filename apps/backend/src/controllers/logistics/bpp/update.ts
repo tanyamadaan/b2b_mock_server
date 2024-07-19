@@ -119,8 +119,7 @@ export const updateController = async (
 				(item: Item) => ({
 					...item,
 					time: {
-						label: "TAT",
-						duration: "PT45M",
+						...item.time,
 						timestamp: newTime.split("T")[0],
 					},
 				})

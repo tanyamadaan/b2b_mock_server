@@ -189,7 +189,7 @@ export const onCancelSchema = {
 												type: "string",
 											},
 										},
-										required: ["label", "duration", "timestamp"],
+										required: ["label", "duration"],
 									},
 								},
 								required: [

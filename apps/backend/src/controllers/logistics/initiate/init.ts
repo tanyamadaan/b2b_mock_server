@@ -75,6 +75,10 @@ export const initiateInitController = async (
 							descriptor: {
 								code: randomItem.descriptor?.code,
 							},
+							time: {
+								label: "TAT",
+								duration: "P4D",
+							},
 						},
 					],
 					fulfillments: [
