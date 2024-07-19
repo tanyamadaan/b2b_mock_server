@@ -3,6 +3,7 @@ import swaggerUi from "swagger-ui-express";
 import cron from "node-cron"; // Import node-cron
 
 import {
+	agriEquipmentHiriingRouter,
 	agriServiceRouter,
 	authRouter,
 	b2bRouter,
@@ -60,6 +61,8 @@ app.use("/b2b", errorHandlingWrapper(b2bRouter));
 app.use("/services", errorHandlingWrapper(servicesRouter));
 app.use("/agri-services", errorHandlingWrapper(agriServiceRouter));
 app.use("/healthcare-services", errorHandlingWrapper(healthCareServiceRouter));
+app.use("/agri-equipment-hiring", errorHandlingWrapper(agriEquipmentHiriingRouter))
+
 
 app.use("/detect_app_installation", (req: Request, res: Response) => {
 	const headers = req.headers;

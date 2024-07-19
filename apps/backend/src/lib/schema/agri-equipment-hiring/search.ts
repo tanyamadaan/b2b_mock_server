@@ -1,6 +1,5 @@
 import { SRV_FULFILLMENT_TYPE, GPS_PATTERN, SRV_PAYMENT_TYPE, PAYMENT_COLLECTEDBY, DOMAIN, VERSION } from "./constants";
 
-
 export const searchSchema = {
   $id: "searchSchema",
   type: "object",
@@ -98,21 +97,36 @@ export const searchSchema = {
                 },
               },
             },
-            category: {
-              type: "object",
-              properties: {
-                id: {
-                  type: "string",
-                },
-              },
-              required: ["id"],
-            },
+
             fulfillment: {
               type: "object",
               properties: {
                 type: {
                   type: "string",
                   enum: SRV_FULFILLMENT_TYPE
+                },
+                customer: {
+                  type: "object",
+                  properties: {
+                    person: {
+                      type: "object",
+                      properties: {
+                        name: {
+                          type: "string",
+                        },
+                      },
+                      required: ["name"],
+                    },
+                    contact: {
+                      type: "object",
+                      properties: {
+                        phone: {
+                          type: "string",
+                        },
+                      },
+                      required: ["phone"],
+                    },
+                  },
                 },
                 stops: {
                   type: "array",
@@ -152,7 +166,7 @@ export const searchSchema = {
                                 format: "date-time"
                               },
                             },
-                            required: ["start", "end"],
+                            required: ["start"],
                           },
                           days: {
                             type: "array",
@@ -170,6 +184,7 @@ export const searchSchema = {
               },
               required: ["type", "stops"],
             },
+
             payment: {
               type: "object",
               properties: {
@@ -184,6 +199,7 @@ export const searchSchema = {
               },
               required: ["type", "collected_by"],
             },
+
             tags: {
               type: "array",
               minItems: 1,
@@ -195,14 +211,14 @@ export const searchSchema = {
                     properties: {
                       code: {
                         type: "string",
-                        enum: ["BAP_Terms"]
+                        enum: ["BAP_TERMS","BAP_DETAILS","BAP_TYPE"]
                       },
                     },
                     required: ["code"],
                   },
                   list: {
                     type: "array",
-                    minItems: 2,
+                    // minItems: 2,
                     items: {
                       type: "object",
                       properties: {
@@ -211,7 +227,7 @@ export const searchSchema = {
                           properties: {
                             code: {
                               type: "string",
-                              enum:["finder_fee_type","finder_fee_amount"]
+                              enum:["FINDER_FEE_TYPE","FINDER_FEE_AMOUNT","BAP_TYPE"]
                             },
                           },
                           required: ["code"],
@@ -228,7 +244,7 @@ export const searchSchema = {
               },
             },
           },
-          required: [ "fulfillment", "payment", "tags"],
+          required: ["tags"],
         },
       },
       required: ["intent"],

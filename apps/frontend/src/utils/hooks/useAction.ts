@@ -56,7 +56,7 @@ export const useAction = () => {
 			}
 			setLogError(false);
 		} catch (error) {
-			// console.log("Error Occurred in LOG", error);
+			console.log("Error Occurred in LOG", error);
 			setLogError(true);
 			setAction(undefined);
 		}
