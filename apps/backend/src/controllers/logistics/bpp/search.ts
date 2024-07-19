@@ -7,8 +7,42 @@ import {
 	LOGISTICS_EXAMPLES_PATH,
 	MOCKSERVER_ID,
 	responseBuilder_logistics,
+	TimeObject,
 } from "../../../lib/utils";
 import { times } from "lodash";
+
+interface Item {
+	id: string;
+	parent_item_id: any;
+	category_ids: any;
+	fulfillment_ids: any;
+	descriptor: any;
+	price: any;
+	time: TimeObject;
+	tags?: any;
+}
+
+function addDays(date: Date, days: number): Date {
+	const result = new Date(date);
+	result.setDate(result.getDate() + days);
+	return result;
+}
+
+const today = new Date();
+
+function updateTimestamp(duration: string): string {
+	let daysToAdd = 0;
+
+	if (duration === "P4D") {
+		daysToAdd = 4;
+	} else if (duration === "P6D") {
+		daysToAdd = 6;
+	} else if (duration === "P7D") {
+		daysToAdd = 7;
+	}
+
+	return addDays(today, daysToAdd).toISOString();
+}
 
 export const searchController = async (
 	req: Request,
@@ -54,6 +88,38 @@ export const searchController = async (
 			action: "on_search",
 			timestamp: new Date().toISOString(),
 			bpp_id: MOCKSERVER_ID,
+		};
+		const updatedItems = onSearch.value.message.catalog.providers[0].items.map(
+			(item: Item) => ({
+				...item,
+				time: {
+					...item.time,
+					timestamp: updateTimestamp(item.time.duration),
+				},
+			})
+		);
+		const updatedCategories =
+			onSearch.value.message.catalog.providers[0].categories.map(
+				(category: any) => ({
+					...category,
+					time: {
+						...category.time,
+						timestamp: updateTimestamp(category.time.duration).split("T")[0],
+					},
+				})
+			);
+
+		onSearch.value.message = {
+			catalog: {
+				...onSearch.value.message.catalog,
+				providers: [
+					{
+						...onSearch.value.message.catalog.providers[0],
+						items: updatedItems,
+						categories: updatedCategories,
+					},
+				],
+			},
 		};
 		return responseBuilder_logistics(
 			res,

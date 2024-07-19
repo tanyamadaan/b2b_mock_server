@@ -12,21 +12,21 @@ import { v4 as uuidv4 } from "uuid";
 import { schedule } from "node-cron";
 
 const getFutureDates = (days: number): string[] => {
-  const dates: string[] = [];
-  const today = new Date();
+	const dates: string[] = [];
+	const today = new Date();
 
-  for (let i = 0; i < days; i++) {
-    const futureDate = new Date(today);
-    futureDate.setDate(today.getDate() + i);
+	for (let i = 0; i < days; i++) {
+		const futureDate = new Date(today);
+		futureDate.setDate(today.getDate() + i);
 
-    const year = futureDate.getFullYear();
-    const month = String(futureDate.getMonth() + 1).padStart(2, '0');
-    const day = String(futureDate.getDate()).padStart(2, '0');
+		const year = futureDate.getFullYear();
+		const month = String(futureDate.getMonth() + 1).padStart(2, "0");
+		const day = String(futureDate.getDate()).padStart(2, "0");
 
-    dates.push(`${year}-${month}-${day}`);
-  }
+		dates.push(`${year}-${month}-${day}`);
+	}
 
-  return dates;
+	return dates;
 };
 
 export const initiateSearchController = async (
@@ -68,44 +68,65 @@ export const initiateSearchController = async (
 		}
 		const transaction_id = uuidv4();
 		var newTime = new Date().toISOString();
+		var date = new Date();
+		var startTime = new Date();
+		startTime.setDate(startTime.getDate() + 1);
+		var endTime = new Date();
+		endTime.setDate(endTime.getDate() + 2);
 		search = search.value;
-    search = {
-      context: {
-        ...search.context,
-        timestamp: newTime,
-        location: {
-          ...search.context.location,
-          city: {
-            code: city,
-          },
-        },
-        transaction_id,
-        message_id: uuidv4(),
-        // bpp_id: MOCKSERVER_ID,
-        bpp_uri,
-        domain,
-        bap_id: MOCKSERVER_ID,
-        bap_uri: LOGISTICS_BAP_MOCKSERVER_URL,
-      },
-			message:{
-				intent:{
+		search = {
+			context: {
+				...search.context,
+				timestamp: newTime,
+				location: {
+					...search.context.location,
+					city: {
+						code: city,
+					},
+				},
+				transaction_id,
+				message_id: uuidv4(),
+				// bpp_id: MOCKSERVER_ID,
+				bpp_uri,
+				domain,
+				bap_id: MOCKSERVER_ID,
+				bap_uri: LOGISTICS_BAP_MOCKSERVER_URL,
+			},
+			message: {
+				intent: {
 					category: search.message.intent.category,
 					provider: {
 						...search.message.intent.provider,
-						time:{
+						time: {
 							days: search.message.intent.provider.time.days,
-							schedule:{
-								holidays:getFutureDates(2),
+							schedule: {
+								holidays: getFutureDates(2),
 							},
-							range : search.message.intent.provider.time.range,
-						}
+							range: search.message.intent.provider.time.range,
+						},
 					},
-					fulfillments : search.message.intent.fulfillments,
-					payment : search.message.intent.payment,
-					tags : search.message.intent.tags,
-				}
+					fulfillments: {
+						...search.message.intent.fulfillments,
+						stops: [
+							{
+								...search.message.intent.fulfillments.stops[0],
+								time: {
+									range: {
+										start: startTime.toISOString(),
+										end: endTime.toISOString(),
+									},
+								},
+							},
+							{
+								...search.message.intent.fulfillments.stops[1],
+							},
+						],
+					},
+					payment: search.message.intent.payment,
+					tags: search.message.intent.tags,
+				},
 			},
-    };
+		};
 		await send_response(res, next, search, transaction_id, "search");
 	} catch (error) {
 		return next(error);
