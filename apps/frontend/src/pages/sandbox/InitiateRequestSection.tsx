@@ -199,31 +199,44 @@ export const InitiateRequestSection = ({
 													}
 												/>
 											) : field.type === "select" ? (
-												<Select
-													placeholder={field.placeholder}
-													onChange={(
-														_event: React.SyntheticEvent | null,
-														newValue: string | null
-													) =>
-														handleFieldChange(field.name, newValue as string)
-													}
-												>
-													{field.name === "city" && domain === "logistics" ? (
-														formState.domain === "ONDC:LOG10" ? (
-															CITY_CODE.map((option, optionIndex) => (
-																<Option
-																	value={option}
-																	key={`${option}-${optionIndex}`}
-																>
-																	{option}
-																</Option>
-															))
-														) : (
-															<Option value="UN:SIN">UN:SIN</Option>
-														)
-													) : field.domainDepended ? (
-														((field.options as any)[domain] || []).map(
-															(option: string, optionIndex: number) => (
+												field.domainDepended ? (
+													(field.options as any)[domain] ? (
+														<Select
+															placeholder={field.placeholder}
+															onChange={(
+																_event: React.SyntheticEvent | null,
+																newValue: string | null
+															) =>
+																handleFieldChange(
+																	field.name,
+																	newValue as string
+																)
+															}
+														>
+															{((field.options as any)[domain] || []).map(
+																(option: string, optionIndex: number) => (
+																	<Option
+																		value={option}
+																		key={`${option}-${optionIndex}`}
+																	>
+																		{option}
+																	</Option>
+																)
+															)}
+														</Select>
+													) : null
+												) : (
+													<Select
+														placeholder={field.placeholder}
+														onChange={(
+															_event: React.SyntheticEvent | null,
+															newValue: string | null
+														) =>
+															handleFieldChange(field.name, newValue as string)
+														}
+													>
+														{(field.options as string[]).map(
+															(option, optionIndex) => (
 																<Option
 																	value={option}
 																	key={`${option}-${optionIndex}`}
@@ -231,20 +244,9 @@ export const InitiateRequestSection = ({
 																	{option}
 																</Option>
 															)
-														)
-													) : (
-														(field.options as string[]).map(
-															(option, optionIndex: number) => (
-																<Option
-																	value={option}
-																	key={`${option}-${optionIndex}`}
-																>
-																	{option}
-																</Option>
-															)
-														)
-													)}
-												</Select>
+														)}
+													</Select>
+												)
 											) : null}
 										</React.Fragment>
 									)
