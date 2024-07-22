@@ -53,3 +53,7 @@
 	path = apps/backend/domain-repos/@logistics/ONDC-LOG-Specifications
 	url = https://github.com/ONDC-Official/ONDC-LOG-Specifications.git
 	branch = draft-2.x
+[submodule "apps/backend/domain-repos/@logistics/ONDC-LGP-Specifications"]
+	path = apps/backend/domain-repos/@logistics/ONDC-LGP-Specifications
+	url = https://github.com/abhinavv245/ONDC-LGP-Specifications.git
+	branch = draft-2.x

@@ -33,14 +33,13 @@ export const initiateConfirmController = async (
 		var parsedTransaction = transaction.map((ele) => {
 			return JSON.parse(ele as string);
 		});
-
 		const onInit = parsedTransaction[0].request;
 		if (Object.keys(onInit).includes("error")) {
 			return send_nack(res, "On Init had errors");
 		}
 		transactionKeys = await redis.keys(`${transactionId}-*`);
 		ifTransactionExist = transactionKeys.filter((e) =>
-			e.includes("init-from-server")
+			e.includes("init-to-server")
 		);
 		if (ifTransactionExist.length === 0) {
 			return send_nack(res, "Init doesn't exist");
@@ -49,7 +48,7 @@ export const initiateConfirmController = async (
 		parsedTransaction = transaction.map((ele) => {
 			return JSON.parse(ele as string);
 		});
-		const Init = parsedTransaction[1].request;
+		const Init = parsedTransaction[0].request;
 		if (Object.keys(onInit).includes("error")) {
 			return send_nack(res, "Init had errors");
 		}
@@ -195,63 +194,6 @@ export const initiateConfirmController = async (
 										code: "Temp_Max",
 									},
 									value: "4",
-								},
-							],
-						},
-						{
-							descriptor: {
-								code: "BPP_Terms",
-							},
-							list: [
-								{
-									descriptor: {
-										code: "Max_Liability",
-									},
-									value: "2",
-								},
-								{
-									descriptor: {
-										code: "Max_Liability_Cap",
-									},
-									value: "10000",
-								},
-								{
-									descriptor: {
-										code: "Mandatory_Arbitration",
-									},
-									value: "false",
-								},
-								{
-									descriptor: {
-										code: "Court_Jurisdiction",
-									},
-									value: "Bengaluru",
-								},
-								{
-									descriptor: {
-										code: "Delay_Interest",
-									},
-									value: "1000",
-								},
-								{
-									descriptor: {
-										code: "Static_Terms",
-									},
-									value:
-										"https://github.com/ONDC-Official/protocol-network-extension/discussions/79",
-								},
-							],
-						},
-						{
-							descriptor: {
-								code: "BAP_Terms",
-							},
-							list: [
-								{
-									descriptor: {
-										code: "Accept_BPP_Terms",
-									},
-									value: "Y",
 								},
 							],
 						},

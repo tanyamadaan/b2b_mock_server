@@ -5,6 +5,7 @@ import {
 	responseBuilder,
 	responseBuilder_logistics,
 	LOGISTICS_EXAMPLES_PATH,
+	Item,
 } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
@@ -92,52 +93,55 @@ export const updateController = async (
 		}
 	} else {
 		try {
-			const { transaction_id } = req.body.context;
-			const transactionKeys = await redis.keys(`${transaction_id}-*`);
-
-			const update = req.body;
-			const message = update.message;
-			const { update_target, order } = message;
-			const { id, status, provider, items, fulfillments, updated_at } = order;
-			// checking on_confirm response exits or not
-			const ifTransactionExist = transactionKeys.filter((e) =>
+			const transactionId = req.body.context.transaction_id;
+			var transactionKeys = await redis.keys(`${transactionId}-*`);
+			var ifTransactionExist = transactionKeys.filter((e) =>
 				e.includes("on_confirm-from-server")
 			);
-
 			if (ifTransactionExist.length === 0) {
 				return send_nack(res, "On Confirm doesn't exist");
 			}
-
-			const transactionString = await redis.mget(ifTransactionExist);
-			let transactions = transactionString.map((str) => {
-				if (str) {
-					try {
-						return JSON.parse(str);
-					} catch (error) {
-						console.error("Error parsing JSON string:", str, error);
-						return null;
-					}
-				}
+			var transaction = await redis.mget(ifTransactionExist);
+			var parsedTransaction = transaction.map((ele) => {
+				return JSON.parse(ele as string);
 			});
-
-			let ts = new Date();
-			ts.setSeconds(ts.getSeconds() + 1);
-
+			const onConfirm = parsedTransaction[0].request;
+			if (Object.keys(onConfirm).includes("error")) {
+				return send_nack(res, "On Confirm had errors");
+			}
+			let newTime = new Date().toISOString();
+			let context = {
+				...req.body.context,
+				action: "on_update",
+				timestamp: newTime,
+			};
+			const updateItems: Item[] = onConfirm.message.order.items.map(
+				(item: Item) => ({
+					...item,
+					time: {
+						...item.time,
+						timestamp: newTime.split("T")[0],
+					},
+				})
+			);
 			let response = {
 				order: {
-					id: id,
+					id: onConfirm.message.order.id,
 					status: "In-progress",
-					provider: provider,
-					items: items,
-					fulfillments: fulfillments,
-					quote: transactions[0].request.message.quote,
-					updated_at: ts.toISOString(),
+					provider: onConfirm.message.order.provider,
+					items: updateItems,
+					fulfillments: onConfirm.message.order.fulfillments,
+					quote: onConfirm.message.order.quote,
+					updated_at: newTime,
+					billing: onConfirm.message.order.billing,
+					payments: onConfirm.message.order.payments,
+					tags: onConfirm.message.order.tags,
 				},
 			};
-			return responseBuilder(
+			return responseBuilder_logistics(
 				res,
 				next,
-				req.body.context,
+				context,
 				response,
 				`${req.body.context.bap_uri}${
 					req.body.context.bap_uri.endsWith("/") ? "on_update" : "/on_update"

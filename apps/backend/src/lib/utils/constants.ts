@@ -12,7 +12,7 @@ export const HEALTHCARE_SERVICES_EXAMPLES_PATH = "./domain-repos/@services/draft
 
 export const B2B_EXAMPLES_PATH = "./domain-repos/@retail-b2b/release-2.0.2/api/components/Examples/B2B"
 
-export const LOGISTICS_EXAMPLES_PATH = "./domain-repos/@logistics/ONDC-LOG-Specifications/api/components/Examples"
+export const LOGISTICS_EXAMPLES_PATH = "./domain-repos/@logistics/ONDC-LGP-Specifications/api/components/Examples"
 
 export const MOCKSERVER_ID = "mock.ondc.org/api";
 // export const B2B_BPP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/b2b/bpp`;

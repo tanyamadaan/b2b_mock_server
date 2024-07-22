@@ -103,6 +103,7 @@ export const initController = async (
 								category_ids: req.body.message.order.items[0].category_ids,
 								fulfillment_ids:
 									req.body.message.order.items[0].fulfillment_ids,
+								time: req.body.message.order.items[0].time,
 							},
 						],
 						fulfillments: req.body.message.order.fulfillments,

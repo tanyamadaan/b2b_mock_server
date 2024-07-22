@@ -189,7 +189,7 @@ export const onCancelSchema = {
 												type: "string",
 											},
 										},
-										required: ["label", "duration", "timestamp"],
+										required: ["label", "duration"],
 									},
 								},
 								required: [
@@ -232,7 +232,7 @@ export const onCancelSchema = {
 											},
 											title: {
 												type: "string",
-												enum : QUOTE_TITLE
+												enum: QUOTE_TITLE,
 											},
 											price: {
 												type: "object",
@@ -263,7 +263,7 @@ export const onCancelSchema = {
 									},
 									type: {
 										type: "string",
-										enum : FULFILLMENT_TYPES
+										enum: FULFILLMENT_TYPES,
 									},
 									state: {
 										type: "object",
@@ -273,7 +273,7 @@ export const onCancelSchema = {
 												properties: {
 													code: {
 														type: "string",
-														enum : ["Cancelled", "RTO-Initiated"]
+														enum: ["Cancelled", "RTO-Initiated"],
 													},
 												},
 												required: ["code"],
@@ -297,45 +297,58 @@ export const onCancelSchema = {
 												},
 												type: {
 													type: "string",
-													enum :["start","end"]
+													enum: ["start", "end"],
 												},
 												location: {
 													type: "object",
 													properties: {
 														gps: {
 															type: "string",
-															pattern:
-																"^(-?[0-9]{1,3}(?:.[0-9]{6,15})?),( )*?(-?[0-9]{1,3}(?:.[0-9]{6,15})?)$",
-															errorMessage:
-																"Incorrect gps value (minimum of six decimal places are required)",
-														},
-														area_code: {
-															type: "string",
-														},
-														map_url: {
-															type: "string",
 														},
 														address: {
 															type: "string",
 														},
 														city: {
-															type: "string",
+															type: "object",
+															properties: {
+																name: {
+																	type: "string",
+																},
+															},
+															required: ["name"],
 														},
 														state: {
-															type: "string",
+															type: "object",
+															properties: {
+																name: {
+																	type: "string",
+																},
+															},
+															required: ["name"],
 														},
 														country: {
+															type: "object",
+															properties: {
+																name: {
+																	type: "string",
+																},
+																code: {
+																	type: "string",
+																},
+															},
+															required: ["code"],
+														},
+														area_code: {
 															type: "string",
 														},
 													},
 													required: [
 														"gps",
-														"area_code",
-														"map_url",
 														"address",
 														"city",
 														"state",
 														"country",
+														"area_code",
 													],
 												},
 												contact: {
@@ -348,25 +361,7 @@ export const onCancelSchema = {
 															type: "string",
 														},
 													},
-													required: ["phone", "email"],
-												},
-												authorization: {
-													type: "object",
-													properties: {
-														type: {
-															type: "string",
-														},
-														token: {
-															type: "string",
-														},
-														valid_from: {
-															type: "string",
-														},
-														valid_to: {
-															type: "string",
-														},
-													},
-													required: ["type", "token", "valid_from", "valid_to"],
+													required: ["phone"],
 												},
 												instructions: {
 													type: "object",
@@ -389,17 +384,8 @@ export const onCancelSchema = {
 															},
 															required: ["content_type", "url"],
 														},
-														images: {
-															type: "array",
-															items: {
-																type: "string",
-															},
-														},
 													},
-													required: [
-														"short_desc",
-														"long_desc"
-													],
+													required: ["short_desc", "long_desc"],
 												},
 												time: {
 													type: "object",
@@ -422,6 +408,7 @@ export const onCancelSchema = {
 											},
 											required: [
 												"id",
+												"parent_stop_id",
 												"type",
 												"location",
 												"contact",
@@ -440,7 +427,7 @@ export const onCancelSchema = {
 													properties: {
 														code: {
 															type: "string",
-															enum: ["Delivery_Terms","RTO_Event"],
+															enum: ["Delivery_Terms", "RTO_Event"],
 														},
 													},
 													required: ["code"],
@@ -455,7 +442,7 @@ export const onCancelSchema = {
 																properties: {
 																	code: {
 																		type: "string",
-																		enum: DELIVERY_TERMS_TAGS
+																		enum: DELIVERY_TERMS_TAGS,
 																	},
 																},
 																required: ["code"],
@@ -521,7 +508,7 @@ export const onCancelSchema = {
 									},
 									collected_by: {
 										type: "string",
-										enum :["BAP","BPP"]
+										enum: ["BAP", "BPP"],
 									},
 									params: {
 										type: "object",
@@ -539,14 +526,11 @@ export const onCancelSchema = {
 												type: "string",
 											},
 										},
-										required: [
-											"amount",
-											"currency",
-										],
+										required: ["amount", "currency"],
 									},
 									type: {
 										type: "string",
-										enum : PAYMENT_TYPES
+										enum: PAYMENT_TYPES,
 									},
 									tags: {
 										type: "array",

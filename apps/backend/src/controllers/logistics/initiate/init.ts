@@ -36,21 +36,18 @@ export const initiateInitController = async (
 		if (Object.keys(request).includes("error")) {
 			return send_nack(res, "On Search had errors");
 		}
-		let bpp_uri = request.context.bpp_uri;
-		let city = request.context.location.city.code;
-		let domain = request.context.domain;
 		let init;
 		const providers = request.message.catalog.providers;
 		const items: Item[] = providers[0].items;
 
-		function getRandomItem<T>(array: T[]): T | undefined {
-			if (array.length === 0) return undefined;
-			const randomIndex = Math.floor(Math.random() * array.length);
-			return array[randomIndex];
-		}
+		const fulfillments = request.message.catalog.fulfillments;
 
-		let randomItem = getRandomItem(items);
-		if (!randomItem) {
+		const deliveryFulfillment = fulfillments.find((fulfillment: { id: string; type: string }) => fulfillment.type === "Delivery");
+		const deliveryID = deliveryFulfillment.id;
+		const itemWithDelivery = items.find(item => 
+			deliveryFulfillment ? item.fulfillment_ids.includes(deliveryID) : false
+		);
+		if (!itemWithDelivery) {
 			return send_nack(res, "No items available.");
 		}
 		init = {
@@ -69,11 +66,15 @@ export const initiateInitController = async (
 					},
 					items: [
 						{
-							id: randomItem.id,
-							category_ids: randomItem.category_ids,
-							fulfillment_ids: randomItem.fulfillment_ids,
+							id: itemWithDelivery.id,
+							category_ids: itemWithDelivery.category_ids,
+							fulfillment_ids: itemWithDelivery.fulfillment_ids,
 							descriptor: {
-								code: randomItem.descriptor?.code,
+								code: itemWithDelivery.descriptor?.code,
+							},
+							time: {
+								label: "TAT",
+								duration: "P4D",
 							},
 						},
 					],

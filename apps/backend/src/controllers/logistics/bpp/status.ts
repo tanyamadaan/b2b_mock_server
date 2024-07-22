@@ -16,6 +16,7 @@ import {
 	redisFetchFromServer,
 	responseBuilder_logistics,
 } from "../../../lib/utils";
+import { on } from "events";
 
 function getRandomFile(directory: string): string | null {
 	const files = fs.readdirSync(directory);
@@ -92,20 +93,73 @@ export const statusController = async (
 		}
 	} else {
 		try {
-			const scenario: string = String(req.query.scenario) || "";
-			const { transaction_id } = req.body.context;
-
-			const on_confirm = await redisFetchFromServer(
-				"on_confirm",
-				transaction_id
-			);
-			if (!on_confirm) {
-				return send_nack(res, "On Confirm doesn't exist");
+			const transactionId = req.body.context.transaction_id;
+			const onConfirm = await redisFetchFromServer("on_confirm", transactionId);
+			const onCancel = await redisFetchFromServer("on_cancel", transactionId);
+			const onUpdate = await redisFetchFromServer("on_update", transactionId);
+			var onStatus;
+			var newTime = new Date().toISOString();
+			if (onCancel != null) {
+				onStatus = {
+					context: {
+						...onCancel.context,
+						message_id: req.body.context.message_id,
+						timestamp: newTime,
+						action: "on_status",
+					},
+					message: {
+						...onCancel.message,
+					},
+				};
+			} else if (onUpdate != null) {
+				onStatus = {
+					context: {
+						...onUpdate.context,
+						message_id: req.body.context.message_id,
+						timestamp: newTime,
+						action: "on_status",
+					},
+					message: {
+						...onUpdate.message,
+					},
+				};
+			}else{
+				onStatus = {
+					context : {
+						...onConfirm.context,
+						message_id : req.body.context.message_id,
+						timestamp : newTime,
+						action : "on_status"
+					},
+					message : {
+						order:{
+							id: onConfirm.message.order.id,
+							status: "In-progress",
+							provider: onConfirm.message.order.provider,
+							items: onConfirm.message.order.items,
+							quote: onConfirm.message.order.quote,
+							fulfillments: onConfirm.message.order.fulfillments,
+							billing: onConfirm.message.order.billing,
+							payments: onConfirm.message.order.payments,
+							tags: onConfirm.message.order.tags,
+							updated_at: newTime
+						}
+					}
+				};
 			}
-
-			return statusRequest(req, res, next, on_confirm, scenario);
+			return responseBuilder_logistics(
+				res,
+				next,
+				onStatus.context,
+				onStatus.message,
+				`${req.body.context.bap_uri}${
+					req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+				}`,
+				`on_status`,
+				"logistics"
+			);
 		} catch (error) {
-			return next(error);
+			next(error);
 		}
 	}
 };
