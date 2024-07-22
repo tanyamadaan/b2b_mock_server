@@ -74,7 +74,7 @@ export const cancelController = async (
 		}
 	} else {
 		try {
-			const { transaction_id } = req.body.context;
+			const  transaction_id  = req.body.context.transaction_id;
 			const on_confirm = await redisFetchFromServer(
 				"on_confirm",
 				transaction_id
@@ -89,7 +89,6 @@ export const cancelController = async (
 			const parsedSearch = search.map((ele: any) => {
 				return JSON.parse(ele as string);
 			});
-			// console.log("Search ::", parsedSearch[0].request.message.catalog.providers)
 
 			const provider_id = on_confirm.message.order.provider.id;
 
@@ -137,7 +136,7 @@ const cancelRequest = async (
 			...transaction.message,
 			order: {
 				...transaction.message.order,
-				state: "Cancelled",
+				status: "Cancelled",
 				cancellation: {
 					cancelled_by: req.body.context.bap_id,
 					reason: {
@@ -205,7 +204,6 @@ const cancelRequest = async (
 								};
 							}
 						}),
-						rateable: undefined,
 					})
 				),
 				items: transaction.message.order.items.map((itm: Item) => ({
@@ -218,7 +216,7 @@ const cancelRequest = async (
 			},
 		};
 
-		return responseBuilder(
+		return responseBuilder_logistics(
 			res,
 			next,
 			context,

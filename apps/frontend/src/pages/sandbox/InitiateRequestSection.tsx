@@ -5,9 +5,9 @@ import Typography from "@mui/material/Typography";
 import { checker, INITIATE_FIELDS } from "../../utils";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
-
+import { CITY_CODE } from "../../utils/constants";
 import { Input, Option, Select, Button } from "@mui/joy";
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios, { AxiosError } from "axios";
 import Divider from "@mui/material/Divider";
 import Grow from "@mui/material/Grow";
@@ -17,7 +17,12 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 
 type InitiateRequestSectionProp = {
-	domain: "b2b" | "services" | "agri-services" | "healthcare-services" | "logistics";
+	domain:
+		| "b2b"
+		| "services"
+		| "agri-services"
+		| "healthcare-services"
+		| "logistics";
 };
 
 type SELECT_OPTIONS =
@@ -41,18 +46,16 @@ type SELECT_FIELD = {
 export const InitiateRequestSection = ({
 	domain,
 }: InitiateRequestSectionProp) => {
-
 	const { handleMessageToggle, setMessageType, setCopy } = useMessage();
 	const [action, setAction] = useState<string>();
 	const [renderActionFields, setRenderActionFields] = useState(false);
-	const [formState, setFormState] = useState<object>();
+	const [formState, setFormState] = useState<{ domain?: string }>({});
 	const [allowSubmission, setAllowSubmission] = useState<boolean>();
 
 	const handleActionSelection = (
 		_event: React.SyntheticEvent | null,
 		newValue: string | null
 	) => {
-
 		setRenderActionFields(false);
 		setAction(newValue as string);
 		setFormState({});
@@ -66,10 +69,12 @@ export const InitiateRequestSection = ({
 	useEffect(() => {
 		if (action) {
 			const keys = Object.keys(formState || {});
-			const formKeys = INITIATE_FIELDS[action as keyof typeof INITIATE_FIELDS].map((e) => e.name);
-			const scenarios = INITIATE_FIELDS[action as keyof typeof INITIATE_FIELDS].filter(
-				(e) => e.name === "scenario"
-			)[0];
+			const formKeys = INITIATE_FIELDS[
+				action as keyof typeof INITIATE_FIELDS
+			].map((e) => e.name);
+			const scenarios = INITIATE_FIELDS[
+				action as keyof typeof INITIATE_FIELDS
+			].filter((e) => e.name === "scenario")[0];
 
 			if (checker(keys, formKeys)) setAllowSubmission(true);
 			else if (
@@ -98,10 +103,17 @@ export const InitiateRequestSection = ({
 					},
 				}
 			);
-			if (response.data.message.ack.status === "ACK" || response.data.sync.message.ack.status === "ACK") {
+			if (
+				response.data.message.ack.status === "ACK" ||
+				response.data.sync.message.ack.status === "ACK"
+			) {
 				if (action === "search") {
 					handleMessageToggle(
-						`Your Transaction ID is: ${response.data.transaction_id ? response.data.transaction_id : response.data.async.context.transaction_id}`
+						`Your Transaction ID is: ${
+							response.data.transaction_id
+								? response.data.transaction_id
+								: response.data.async.context.transaction_id
+						}`
 					);
 					setMessageType("success");
 					setCopy(response.data.transaction_id);
@@ -117,12 +129,17 @@ export const InitiateRequestSection = ({
 				);
 				setMessageType("error");
 			}
-		} catch (error:any) {
+		} catch (error: any) {
 			setMessageType("error");
-			console.log("error.response?.data?.error?.message",error)
-			if (error instanceof AxiosError && error.response?.data?.error?.message.error?.message)
+			console.log("error.response?.data?.error?.message", error);
+			if (
+				error instanceof AxiosError &&
+				error.response?.data?.error?.message.error?.message
+			)
 				handleMessageToggle(
-					error.response?.data?.error?.message.error?.message === "string"?error.response?.data?.error?.message.error?.message:"Error Occurred while initiating request!"
+					error.response?.data?.error?.message.error?.message === "string"
+						? error.response?.data?.error?.message.error?.message
+						: "Error Occurred while initiating request!"
 				);
 			else handleMessageToggle("Error Occurred while initiating request!");
 		}
@@ -156,74 +173,82 @@ export const InitiateRequestSection = ({
 				</Box>
 				<Stack spacing={2} sx={{ my: 2 }}>
 					<Select placeholder="Select Action" onChange={handleActionSelection}>
-
-						{Object.keys(INITIATE_FIELDS).map((action, idx) => (
-							<Option value={action} key={"action-" + idx}>
-								{action}
-							</Option>
-
-						))}
+						{Object.keys(INITIATE_FIELDS)
+							.filter(
+								(action) => !(domain === "logistics" && action === "select")
+							)
+							.map((action, idx) => (
+								<Option value={action} key={"action-" + idx}>
+									{action}
+								</Option>
+							))}
 					</Select>
 					<Grow in={renderActionFields} timeout={500}>
 						<Stack spacing={2} sx={{ my: 2 }}>
 							<Divider />
 							{action &&
-								INITIATE_FIELDS[action as keyof typeof INITIATE_FIELDS].map((field, index) => (
-									<>
-										{field.type === "text" ? (
-											<Input
-												fullWidth
-												placeholder={field.placeholder}
-												key={"input-" + action + "-" + index}
-												onChange={(e) =>
-													handleFieldChange(field.name, e.target.value)
-												}
-											/>
-										) : field.type === "select" &&
-										  (field as SELECT_FIELD).domainDepended &&
-										  (field as SELECT_FIELD).options[
-												domain as keyof SELECT_OPTIONS
-										  ] ? (
-											<Select
-												placeholder={field.placeholder}
-												key={"select-" + action + "-" + index}
-												onChange={(
-													_event: React.SyntheticEvent | null,
-													newValue: string | null
-												) => handleFieldChange(field.name, newValue as string)}
-											>
-												{(
-													(field as SELECT_FIELD).options[
-														domain as keyof SELECT_OPTIONS
-													] as string[]
-												).map((option, index: number) => (
-													<Option value={option} key={option + index}>
-														{option}
-													</Option>
-												))}
-											</Select>
-										) : field.type === "select" && !field.domainDepended ? (
-											<Select
-												placeholder={field.placeholder}
-												key={"select-" + action + "-" + index}
-												onChange={(
-													_event: React.SyntheticEvent | null,
-													newValue: string | null
-												) => handleFieldChange(field.name, newValue as string)}
-											>
-												{(field.options as string[]).map(
-													(option, index: number) => (
-														<Option value={option} key={option + index}>
-															{option}
-														</Option>
-													)
-												)}
-											</Select>
-										) : (
-											<></>
-										)}
-									</>
-								))}
+								INITIATE_FIELDS[action as keyof typeof INITIATE_FIELDS].map(
+									(field, index) => (
+										<React.Fragment key={`field-${action}-${index}`}>
+											{field.type === "text" ? (
+												<Input
+													fullWidth
+													placeholder={field.placeholder}
+													onChange={(e) =>
+														handleFieldChange(field.name, e.target.value)
+													}
+												/>
+											) : field.type === "select" ? (
+												<Select
+													placeholder={field.placeholder}
+													onChange={(
+														_event: React.SyntheticEvent | null,
+														newValue: string | null
+													) =>
+														handleFieldChange(field.name, newValue as string)
+													}
+												>
+													{field.name === "city" && domain === "logistics" ? (
+														formState.domain === "ONDC:LOG10" ? (
+															CITY_CODE.map((option, optionIndex) => (
+																<Option
+																	value={option}
+																	key={`${option}-${optionIndex}`}
+																>
+																	{option}
+																</Option>
+															))
+														) : (
+															<Option value="UN:SIN">UN:SIN</Option>
+														)
+													) : field.domainDepended ? (
+														((field.options as any)[domain] || []).map(
+															(option: string, optionIndex: number) => (
+																<Option
+																	value={option}
+																	key={`${option}-${optionIndex}`}
+																>
+																	{option}
+																</Option>
+															)
+														)
+													) : (
+														(field.options as string[]).map(
+															(option, optionIndex: number) => (
+																<Option
+																	value={option}
+																	key={`${option}-${optionIndex}`}
+																>
+																	{option}
+																</Option>
+															)
+														)
+													)}
+												</Select>
+											) : null}
+										</React.Fragment>
+									)
+								)}
 						</Stack>
 					</Grow>
 				</Stack>
