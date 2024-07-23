@@ -353,7 +353,7 @@ export const onStatusSchema = {
                     },
                   },
                 },
-                required: ["id", "type", "tracking", "state", "stops"],
+                required: ["id", "type", "state", "stops"],
               },
             },
             quote: {

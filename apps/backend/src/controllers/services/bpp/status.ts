@@ -1,5 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import { EQUIPMENT_HIRING_STATUS, EQUIPMENT_HIRING_STATUS_OBJECT, FULFILLMENT_LABELS, ORDER_STATUS } from "../../../lib/utils/apiConstants";
+import {
+	AGRI_HEALTHCARE_STATUS,
+	AGRI_HEALTHCARE_STATUS_OBJECT,
+	EQUIPMENT_HIRING_STATUS,
+	FULFILLMENT_LABELS,
+	ORDER_STATUS,
+	SERVICES_DOMAINS,
+} from "../../../lib/utils/apiConstants";
 import {
 	Fulfillment,
 	Stop,
@@ -22,7 +29,7 @@ export const statusController = async (
 		const on_confirm_data = await redisFetchFromServer(
 			ON_ACTION_KEY.ON_CONFIRM,
 			transaction_id
-		); 
+		);
 
 		if (!on_confirm_data) {
 			return send_nack(res, ERROR_MESSAGES.ON_CONFIRM_DOES_NOT_EXISTED);
@@ -51,31 +58,57 @@ const statusRequest = async (
 	try {
 		const { context, message } = transaction;
 		context.action = ON_ACTION_KEY.ON_STATUS;
-
+		const domain = context?.domain;
 		const on_status = await redisFetchFromServer(
 			ON_ACTION_KEY.ON_STATUS,
 			req.body.context.transaction_id
 		);
 
+		console.log("scenario statusssssss",scenario)
 		let next_status = scenario;
 
 		if (on_status) {
 			//UPDATE SCENARIO TO NEXT STATUS
-			const lastStatus = on_status?.message?.order?.fulfillments[0]?.state?.descriptor?.code;
-			//FIND NEXT STATUS
-			const lastStatusIndex = EQUIPMENT_HIRING_STATUS.indexOf(lastStatus);
+			const lastStatus =
+				on_status?.message?.order?.fulfillments[0]?.state?.descriptor?.code;
 
-			if (lastStatus === 2) {
-				next_status = lastStatus;
-			}
-			if (
-				lastStatusIndex !== -1 &&
-				lastStatusIndex < EQUIPMENT_HIRING_STATUS.length - 1
-			) {
-				const nextStatusIndex = lastStatusIndex + 1;
-				next_status = EQUIPMENT_HIRING_STATUS[nextStatusIndex];
+			//FIND NEXT STATUS
+			let lastStatusIndex: any = 0;
+
+			switch (domain) {
+				case SERVICES_DOMAINS.SERVICES || SERVICES_DOMAINS.AGRI_EQUIPMENT:
+					lastStatusIndex = EQUIPMENT_HIRING_STATUS.indexOf(lastStatus);
+					if (lastStatusIndex === 2){
+						next_status = lastStatus;
+					}
+					if (
+						lastStatusIndex !== -1 &&
+						lastStatusIndex < EQUIPMENT_HIRING_STATUS.length - 1
+					) {
+						const nextStatusIndex = lastStatusIndex + 1;
+						next_status = EQUIPMENT_HIRING_STATUS[nextStatusIndex];
+					}
+
+					break;
+				default: //service started is the default case
+					lastStatusIndex = AGRI_HEALTHCARE_STATUS.indexOf(lastStatus);
+					console.log("healthcaresssssssssss")
+
+					if (lastStatus === 6) {
+						next_status = lastStatus;
+					}
+					if (
+						lastStatusIndex !== -1 &&
+						lastStatusIndex < AGRI_HEALTHCARE_STATUS.length - 1
+					) {
+						const nextStatusIndex = lastStatusIndex + 1;
+						next_status = AGRI_HEALTHCARE_STATUS[nextStatusIndex];
+					}
+					break;
 			}
 		}
+
+		console.log("domainssssssssssssss",domain,next_status)
 
 		scenario = scenario ? scenario : next_status;
 		const responseMessage: any = {
@@ -95,7 +128,7 @@ const statusRequest = async (
 						id: fulfillment.id,
 						state: {
 							descriptor: {
-								code: EQUIPMENT_HIRING_STATUS_OBJECT.IN_TRANSIT,
+								code: AGRI_HEALTHCARE_STATUS_OBJECT.IN_TRANSIT,
 							},
 						},
 
@@ -104,7 +137,10 @@ const statusRequest = async (
 								...stop,
 								id: undefined,
 								authorization: stop.authorization
-									? { ...stop.authorization, status: FULFILLMENT_LABELS.CONFIRMED }
+									? {
+											...stop.authorization,
+											status: FULFILLMENT_LABELS.CONFIRMED,
+									  }
 									: undefined,
 								person: stop.person ? stop.person : stop.customer?.person,
 							};
@@ -137,21 +173,24 @@ const statusRequest = async (
 				updated_at: message.order.updated_at,
 			},
 		};
+
 		switch (scenario) {
-			case EQUIPMENT_HIRING_STATUS_OBJECT.IN_TRANSIT:
+			case AGRI_HEALTHCARE_STATUS_OBJECT.IN_TRANSIT:
 				responseMessage.order.fulfillments.forEach(
 					(fulfillment: Fulfillment) => {
-						fulfillment.state.descriptor.code = EQUIPMENT_HIRING_STATUS_OBJECT.IN_TRANSIT;
+						fulfillment.state.descriptor.code =
+							AGRI_HEALTHCARE_STATUS_OBJECT.IN_TRANSIT;
 						fulfillment.stops.forEach((stop: Stop) =>
 							stop?.authorization ? (stop.authorization = undefined) : undefined
 						);
 					}
 				);
 				break;
-			case EQUIPMENT_HIRING_STATUS_OBJECT.AT_LOCATION:
+			case AGRI_HEALTHCARE_STATUS_OBJECT.AT_LOCATION:
 				responseMessage.order.fulfillments.forEach(
 					(fulfillment: Fulfillment) => {
-						fulfillment.state.descriptor.code = EQUIPMENT_HIRING_STATUS_OBJECT.AT_LOCATION;
+						fulfillment.state.descriptor.code =
+							AGRI_HEALTHCARE_STATUS_OBJECT.AT_LOCATION;
 						fulfillment.stops.forEach((stop: Stop) =>
 							stop?.authorization
 								? (stop.authorization = {
@@ -163,19 +202,61 @@ const statusRequest = async (
 					}
 				);
 				break;
-			case EQUIPMENT_HIRING_STATUS_OBJECT.COMPLETED:
-				responseMessage.order.status = ORDER_STATUS.COMPLETED;
+			case AGRI_HEALTHCARE_STATUS_OBJECT.COLLECTED_BY_AGENT:
 				responseMessage.order.fulfillments.forEach(
 					(fulfillment: Fulfillment) => {
-						fulfillment.state.descriptor.code = EQUIPMENT_HIRING_STATUS_OBJECT.COMPLETED;
+						fulfillment.state.descriptor.code =
+							AGRI_HEALTHCARE_STATUS_OBJECT.COLLECTED_BY_AGENT;
+					}
+				);
+				break;
+			case AGRI_HEALTHCARE_STATUS_OBJECT.RECEIVED_AT_LAB:
+				responseMessage.order.fulfillments.forEach(
+					(fulfillment: Fulfillment) => {
+						fulfillment.state.descriptor.code =
+							AGRI_HEALTHCARE_STATUS_OBJECT.RECEIVED_AT_LAB;
+					}
+				);
+				break;
+			case AGRI_HEALTHCARE_STATUS_OBJECT.TEST_COMPLETED:
+				responseMessage.order.fulfillments.forEach(
+					(fulfillment: Fulfillment) => {
+						fulfillment.state.descriptor.code =
+							AGRI_HEALTHCARE_STATUS_OBJECT.TEST_COMPLETED;
 						fulfillment.stops.forEach((stop: Stop) =>
 							stop?.authorization ? (stop.authorization = undefined) : undefined
 						);
 					}
 				);
-				break;			
-			case EQUIPMENT_HIRING_STATUS_OBJECT.CANCEL:
-				responseMessage.order.status = ORDER_STATUS.CANCELLED;
+				break;
+			case AGRI_HEALTHCARE_STATUS_OBJECT.REPORT_GENERATED:
+				responseMessage.order.fulfillments.forEach(
+					(fulfillment: Fulfillment) => {
+						fulfillment.state.descriptor.code =
+							AGRI_HEALTHCARE_STATUS_OBJECT.REPORT_GENERATED;
+					}
+				);
+				break;
+			case AGRI_HEALTHCARE_STATUS_OBJECT.REPORT_SHARED:
+				responseMessage.order.status = AGRI_HEALTHCARE_STATUS_OBJECT.COMPLETED;
+				responseMessage.order.fulfillments.forEach(
+					(fulfillment: Fulfillment) => {
+						fulfillment.state.descriptor.code =
+							AGRI_HEALTHCARE_STATUS_OBJECT.REPORT_SHARED;
+					}
+				);
+				break;
+			case AGRI_HEALTHCARE_STATUS_OBJECT.COMPLETED:
+				responseMessage.order.status = AGRI_HEALTHCARE_STATUS_OBJECT.COMPLETED;
+				responseMessage.order.fulfillments.forEach(
+					(fulfillment: Fulfillment) => {
+						fulfillment.state.descriptor.code =
+							AGRI_HEALTHCARE_STATUS_OBJECT.REPORT_SHARED;
+					}
+				);
+				break;
+			case AGRI_HEALTHCARE_STATUS_OBJECT.CANCEL:
+				responseMessage.order.status = "Cancelled";
 				break;
 			default: //service started is the default case
 				break;
@@ -187,10 +268,12 @@ const statusRequest = async (
 			req.body.context,
 			responseMessage,
 			`${req.body.context.bap_uri}${
-				req.body.context.bap_uri.endsWith("/") ? ON_ACTION_KEY.ON_STATUS : `/${ON_ACTION_KEY.ON_STATUS}`
+				req.body.context.bap_uri.endsWith("/")
+					? ON_ACTION_KEY.ON_STATUS
+					: `/${ON_ACTION_KEY.ON_STATUS}`
 			}`,
 			`${ON_ACTION_KEY.ON_STATUS}`,
-			"agri-equipment-hiring"
+			"services"
 		);
 	} catch (error) {
 		next(error);

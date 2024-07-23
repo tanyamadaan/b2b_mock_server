@@ -6,7 +6,6 @@ import { v4 as uuidv4 } from "uuid";
 import {
 	MOCKSERVER_ID,
 	send_response,
-	AGRI_EQUIPMENT_BAP_MOCKSERVER_URL,
 	AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH,
 	SERVICES_EXAMPLES_PATH,
 	HEALTHCARE_SERVICES_EXAMPLES_PATH,
@@ -91,6 +90,7 @@ export const initiateSearchController = async (
 			},
 		};
 		search.bpp_uri = bpp_uri;
+		console.log("searchhhhhhhhhhhhh",JSON.stringify(search))
 		await send_response(res, next, search, transaction_id, ACTTION_KEY.SEARCH);
 	} catch (error) {
 		return next(error);

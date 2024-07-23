@@ -8,6 +8,7 @@ import {
 	AGRI_SERVICES_SCENARIOS,
 	AGRI_EQUIPMENT_SERVICES_SCENARIOS,
 } from "openapi-specs/constants";
+import { SERVICE_DOMAINS, SERVICES_DOMAINS } from "../constants";
 // import { ALL_DOMAINS_FRONTEND } from "../constants";
 
 export const useAction = () => {
@@ -34,15 +35,19 @@ export const useAction = () => {
 
 			// setDomain(newDomain);
 
+			//DETACT DOMAIN FROM PAYLOAD
+			const servicesDomain = parsedLog?.context?.domain;
 			//DETACT DOMAIN
 			const allScenarios =
-				domain === "b2b"
-					? B2B_SCENARIOS
-					: domain === "services"
+				servicesDomain === SERVICES_DOMAINS.SERVICE
 					? SERVICES_SCENARIOS
-					: domain === "healthcare-services"
+					: servicesDomain === SERVICES_DOMAINS.HEALTHCARE_SERVICES
 					? HEALTHCARE_SERVICES_SCENARIOS
-					: AGRI_SERVICES_SCENARIOS;
+					: servicesDomain === SERVICES_DOMAINS.AGRI_SERVICES
+					? AGRI_SERVICES_SCENARIOS
+					: servicesDomain === SERVICES_DOMAINS.EQUIPMENT_HIRING_SERVICES
+					? AGRI_EQUIPMENT_SERVICES_SCENARIOS
+					: B2B_SCENARIOS;
 
 			if (!parsedLog.context!.action) setLogError(true);
 			const parsedAction = parsedLog.context.action;
@@ -57,7 +62,6 @@ export const useAction = () => {
 			}
 			setLogError(false);
 		} catch (error) {
-			// console.log("Error Occurred in LOG", error);
 			setLogError(true);
 			setAction(undefined);
 		}

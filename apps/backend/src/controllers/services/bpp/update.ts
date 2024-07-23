@@ -9,7 +9,7 @@ import {
 } from "../../../lib/utils";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
-import { FULFILLMENT_STATES } from "../../../lib/utils/apiConstants";
+import { FULFILLMENT_LABELS, FULFILLMENT_STATES } from "../../../lib/utils/apiConstants";
 
 export const updateController = async (
 	req: Request,
@@ -54,6 +54,9 @@ export const updateController = async (
 		req.body.on_confirm = on_confirm;
 
 		switch (scenario) {
+			case "reschedule":
+				updateRescheduleController(req, res, next);
+				break;
 			case "payments":
 				updatePaymentController(req, res, next);
 				break;
@@ -102,7 +105,7 @@ export const updateRequoteController = (
 					: `/${ON_ACTION_KEY.ON_UPDATE}`
 			}`,
 			`${ON_ACTION_KEY.ON_UPDATE}`,
-			"agri-equipment-hiring"
+			"services"
 		);
 	} catch (error) {
 		next(error);
@@ -184,7 +187,7 @@ export const updateRescheduleAndItemsController = (
 					: `/${ON_ACTION_KEY.ON_UPDATE}`
 			}`,
 			`${ON_ACTION_KEY.ON_UPDATE}`,
-			"agri-equipment-hiring"
+			"services"
 		);
 	} catch (error) {
 		next(error);
@@ -211,3 +214,38 @@ function updatePaymentObject(payments: any, quotePrice: any) {
 		console.log("error ocuured in payment object:", error);
 	}
 }
+
+
+export const updateRescheduleController = (req: Request, res: Response, next: NextFunction) => {
+	const {
+		context,
+		message: { order },
+	} = req.body;
+
+	const responseMessage = {
+		...order,
+		fulfillments: [
+			{
+				...order.fulfillments[0],
+				stops: order.fulfillments[0].stops.map((stop: any) => ({
+					...stop,
+					time:
+						stop.type === "end"
+							? { ...stop.time, label: FULFILLMENT_LABELS.CONFIRMED }
+							: stop.time,
+				})),
+			},
+		],
+	};
+
+	return responseBuilder(
+		res,
+		next,
+		context,
+		responseMessage,
+		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? ON_ACTION_KEY.ON_UPDATE : `/${ON_ACTION_KEY.ON_UPDATE}`
+		}`,
+		`${ON_ACTION_KEY.ON_UPDATE}`,
+		"services"
+	);
+};

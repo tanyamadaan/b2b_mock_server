@@ -119,7 +119,7 @@ const cancelRequest = async (
 					: `/${ON_ACTION_KEY.ON_CANCEL}`
 			}`,
 			`${ON_ACTION_KEY.ON_CANCEL}`,
-			"agri-equipment-hiring"
+			"services"
 		);
 	} catch (error) {
 		next(error);

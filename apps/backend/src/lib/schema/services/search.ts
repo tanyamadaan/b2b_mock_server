@@ -201,7 +201,7 @@ export const searchSchema = {
                   },
                   list: {
                     type: "array",
-                    minItems: 2,
+                    // minItems: 2,
                     items: {
                       type: "object",
                       properties: {

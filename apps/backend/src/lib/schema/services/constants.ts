@@ -4,7 +4,7 @@ export const DOMAIN = ["ONDC:SRV11","ONDC:SRV13","ONDC:SRV14","ONDC:SRV15"];
 
 export const SRV_FULFILLMENT_TYPE = ["Home-Service", "Store-Service","Seller-Fulfilled", "Buyer-Fulfilled"];
 
-export const SRV_INTENT_TAGS = ["finder_fee_type","finder_fee_amount","FINDER_FEE_TYPE","FINDER_FEE_AMOUNT","BAP_TYPE","BAP_TERMS"];
+export const SRV_INTENT_TAGS = ["finder_fee_type","finder_fee_amount","FINDER_FEE_TYPE","FINDER_FEE_AMOUNT","BAP_TYPE","BAP_Terms","BAP_TERMS","BAP_DETAILS"];
 
 export const SRV_PAYMENT_TYPE = [
 	"PRE-FULFILLMENT",
@@ -12,12 +12,17 @@ export const SRV_PAYMENT_TYPE = [
 	"POST-FULFILLMENT",
 ];
 
+
 export const SRV_FULFILLMENT_STATE = [
-	"Pending",
-	"At-Location",
-	"In-Transit",
-	"Completed",
-	"Cancelled",
+	"IN_TRANSIT",
+	"AT_LOCATION",
+	"COLLECTED_BY_AGENT",
+	"RECEIVED_AT_LAB",
+	"TEST_COMPLETED",
+	"REPORT_GENERATED",
+	"REPORT_SHARED",
+	"COMPLETED",
+	"cancel"
 ];
 
 export const SRV_ORDER_STATE = [

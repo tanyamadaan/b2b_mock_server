@@ -5,12 +5,13 @@ import _ from "lodash";
 import { isBefore, addDays } from "date-fns";
 import {
   MOCKSERVER_ID,
-  checkIfCustomized,
   send_response,
   send_nack,
   redisFetchToServer,
-  AGRI_EQUIPMENT_BAP_MOCKSERVER_URL,
+  SERVICES_BAP_MOCKSERVER_URL,
 } from "../../../lib/utils";
+import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
+import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 
 
 export const initiateSelectController = async (
@@ -20,13 +21,11 @@ export const initiateSelectController = async (
 ) => {
   try{
     const { transactionId } = req.body;
-    const on_search = await redisFetchToServer("on_search", transactionId);
+    const on_search = await redisFetchToServer(ON_ACTION_KEY.ON_SEARCH, transactionId);
     if (!on_search) {
-      return send_nack(res, "On Search doesn't exist")
+      return send_nack(res, ERROR_MESSAGES.ON_SEARCH_DOES_NOT_EXISTED)
     }
-    // on_search.context.bpp_uri = HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
     let scenario = "selection";
-    
     const items = on_search.message.catalog.providers[0]?.categories;
     let child_ids;
     if (items) {
@@ -207,7 +206,7 @@ const intializeRequest = async (
         timestamp: new Date().toISOString(),
         action: "select",
         bap_id: MOCKSERVER_ID,
-        bap_uri: AGRI_EQUIPMENT_BAP_MOCKSERVER_URL,
+        bap_uri: SERVICES_BAP_MOCKSERVER_URL,
         message_id: uuidv4(),
       },
       message: {

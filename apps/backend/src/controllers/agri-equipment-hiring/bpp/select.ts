@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
-
 import {
   SERVICES_EXAMPLES_PATH,
   responseBuilder,
@@ -33,14 +32,15 @@ export const selectController = async (
     }
     const providersItems = on_search?.message?.catalog?.providers[0]?.items;
     req.body.providersItems = providersItems;
-    switch (scenario) {
+
+    switch (scenario){
       // schedule_confirmed, schedule_rejected
-      case "schedule_confirmed":
-        if (checkIfCustomized(req.body.message?.order?.items)) {
-          return selectServiceCustomizationConfirmedController(req, res, next);
-        }
-        selectConsultationConfirmController(req, res, next);
-        break;
+      // case "schedule_confirmed":
+      //   if (checkIfCustomized(req.body.message?.order?.items)){
+      //     return selectServiceCustomizationConfirmedController(req, res, next);
+      //   }
+      //   selectConsultationConfirmController(req, res, next);
+      //   break;
       case "schedule_rejected ":
         selectConsultationRejectController(req, res, next);
         break;
@@ -328,22 +328,5 @@ const selectServiceCustomizationConfirmedController = async (
 // 		`on_select`,
 // 		"services"
 // 	);
-// };
+// }
 
-// const selectNackController = (req: Request, res: Response) => {
-// 	const { context } = req.body;
-// 	const file = fs.readFileSync(
-// 		path.join(SERVICES_EXAMPLES_PATH, "on_select/on_select_nack.yaml")
-// 	);
-// 	const response = YAML.parse(file.toString());
-
-// 	return responseBuilder(
-// 		res,
-// 		context,
-// 		response.value.message,
-// 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
-// 		}`,
-// 		`on_select`,
-// 		"services"
-// 	);
-// };

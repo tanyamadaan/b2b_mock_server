@@ -9,8 +9,8 @@ import {
 	createAuthHeader,
 	redis,
 	redisFetchToServer,
-	AGRI_EQUIPMENT_BPP_MOCKSERVER_URL,
 	AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH,
+	SERVICES_BPP_MOCKSERVER_URL,
 } from "../../../lib/utils";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
@@ -29,7 +29,7 @@ export const initiateUpdateController = async (
 		if (!on_confirm) {
 			return send_nack(res, ERROR_MESSAGES.ON_CONFIRM_DOES_NOT_EXISTED);
 		}
-		on_confirm.context.bpp_uri = AGRI_EQUIPMENT_BPP_MOCKSERVER_URL;
+		on_confirm.context.bpp_uri = SERVICES_BPP_MOCKSERVER_URL;
 		// update_target = update_target ? update_target : "payments"
 
 		let { context, message } = on_confirm;
@@ -41,14 +41,14 @@ export const initiateUpdateController = async (
 
 		scenario = update_target ? update_target : "payments";
 
-		if (scenario === "payments") {
+		if (scenario === "payments"){
 			//FETCH ON UPDATE IF UPDATE PAYMENT FLOW COME
 			const on_update = await redisFetchToServer(
 				ON_ACTION_KEY.ON_UPDATE,
 				transactionId
 			);
 			if (!on_update) {
-				return send_nack(res, ERROR_MESSAGES.ON_SEARCH_DOES_NOT_EXISTED);
+				return send_nack(res, ERROR_MESSAGES.ON_UPDATE_DOES_NOT_EXISTED);
 			}
 			message = on_update.message;
 		}

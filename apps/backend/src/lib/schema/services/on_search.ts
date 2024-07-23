@@ -173,7 +173,7 @@ export const onSearchSchema = {
                       name: {
                         type: "string",
                       },
-                      code: {
+                      codes: {
                         type: "string",
                       },
                       short_desc: {
@@ -197,7 +197,6 @@ export const onSearchSchema = {
                     },
                     required: [
                       "name",
-                      // "code",
                       "short_desc",
                       "long_desc",
                       "images",
@@ -488,7 +487,7 @@ export const onSearchSchema = {
                           },
                           required: [
                             "name",
-                            "code",
+                            // "code",
                             "short_desc",
                             "long_desc",
                             "images",
@@ -654,7 +653,7 @@ export const onSearchSchema = {
                                       type: "string",
                                     },
                                   },
-                                  required: ["descriptor", "value"],
+                                  required: ["descriptor"],
                                 },
                               },
                             },
@@ -778,11 +777,9 @@ export const onSearchSchema = {
                             },
                           },
                           required: [
-                            "name",
                             "code",
                             "short_desc",
                             "long_desc",
-                            // "images",
                           ],
                         },
                         location_ids: {
@@ -856,11 +853,11 @@ export const onSearchSchema = {
                                       type: "string",
                                     },
                                   },
-                                  required: ["descriptor", "value"],
+                                  required: ["value"],
                                 },
                               },
                             },
-                            required: ["descriptor", "list"],
+                            required: ["list"],
                           },
                         },
                       },
@@ -871,7 +868,7 @@ export const onSearchSchema = {
                         "category_ids",
                         "item_ids",
                         // "time",
-                        "tags"
+                        // "tags"
                       ],
                     },
                   },

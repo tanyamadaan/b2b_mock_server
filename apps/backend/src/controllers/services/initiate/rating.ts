@@ -2,11 +2,11 @@ import { NextFunction, Response, Request } from "express";
 import { v4 as uuidv4 } from "uuid";
 
 import {
-	AGRI_EQUIPMENT_BAP_MOCKSERVER_URL,
 	MOCKSERVER_ID,
 	redisFetchToServer,
 	send_nack,
 	send_response,
+	SERVICES_BAP_MOCKSERVER_URL,
 } from "../../../lib/utils";
 
 import {
@@ -59,7 +59,7 @@ const intializeRequest = async (
 				timestamp: new Date().toISOString(),
 				action: ACTTION_KEY.RATING,
 				bap_id: MOCKSERVER_ID,
-				bap_uri: AGRI_EQUIPMENT_BAP_MOCKSERVER_URL,
+				bap_uri: SERVICES_BAP_MOCKSERVER_URL,
 				message_id: uuidv4(),
 			},
 			message: {

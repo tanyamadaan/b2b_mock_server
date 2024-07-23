@@ -85,12 +85,6 @@ export const responseBuilder = async (
 	const bppURI =
 		domain === "b2b"
 			? B2B_BPP_MOCKSERVER_URL
-			: domain === "agri-services"
-			? AGRI_SERVICES_BPP_MOCKSERVER_URL
-			: domain === "healthcare-service"
-			? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
-			: domain === "agri-equipment-hiring"
-			? AGRI_EQUIPMENT_BPP_MOCKSERVER_URL
 			: SERVICES_BPP_MOCKSERVER_URL;
 
 	if (action.startsWith("on_")) {
@@ -125,7 +119,6 @@ export const responseBuilder = async (
 	}
 
 	const header = await createAuthHeader(async);
-
 	if (sandboxMode) {
 		if (action.startsWith("on_")) {
 			var log: TransactionType = {
@@ -208,6 +201,7 @@ export const responseBuilder = async (
 			},
 		});
 	} else {
+		console.log("mockkkkkkkkkkkkkkkkkk")
 		// if (action.startsWith("on_")) {
 		// 	var log: TransactionType = {
 		// 		request: async,

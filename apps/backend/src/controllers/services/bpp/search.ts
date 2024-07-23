@@ -19,6 +19,7 @@ export const searchController = (
 ) => {
 	try {
 		const domain = req.body.context.domain;
+		console.log("domainnnnnnnnnn",domain)
 		let onSearch, file;
 		const {
 			message: { intent },
@@ -37,17 +38,16 @@ export const searchController = (
 						}`
 					)
 				);
-				onSearch = YAML.parse(file.toString());
 				break;
 
 			case SERVICES_DOMAINS.HEALTHCARE_SERVICES:
+				console.log("healthcareeeeeeeeeee",)
 				file = fs.readFileSync(
 					path.join(
 						HEALTHCARE_SERVICES_EXAMPLES_PATH,
 						`on_search/${"on_search.yaml"}`
 					)
 				);
-				onSearch = YAML.parse(file.toString());
 				break;
 
 			case SERVICES_DOMAINS.AGRI_EQUIPMENT:
@@ -57,7 +57,6 @@ export const searchController = (
 						"on_search/on_search.yaml"
 					)
 				);
-				onSearch = YAML.parse(file.toString());
 				break;
 
 			case SERVICES_DOMAINS.AGRI_SERVICES:
@@ -73,19 +72,17 @@ export const searchController = (
 						}`
 					)
 				);
-				onSearch = YAML.parse(file.toString());
 				break;
 			default:
 				file = fs.readFileSync(
 					path.join(SERVICES_EXAMPLES_PATH, "on_search/on_search.yaml")
 				);
-				onSearch = YAML.parse(file.toString());
 				break;
 		}
+console.log("domainicityyyyyyyyyy",domain)
+		const response = YAML.parse(file.toString());		
+		console.log("responeeeeeeeeee",req.body.context)
 
-		const response = YAML.parse(file.toString());
-		console.log("onsearchcominggggggggggg",response);
-		
 		return responseBuilder(
 			res,
 			next,

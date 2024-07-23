@@ -7,6 +7,7 @@ type DomainContextType = {
 	domain: string;
 	setDomain: React.Dispatch<React.SetStateAction<string>>;
 };
+
 export const DomainContext = createContext<DomainContextType>({
 	domain: "",
 	setDomain: () => {},

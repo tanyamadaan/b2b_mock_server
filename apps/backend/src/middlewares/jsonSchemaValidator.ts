@@ -31,13 +31,17 @@ export const jsonSchemaValidator = ({
 }: JsonSchemaValidatorType) => {
 	if (domain === "b2b") {
 	return b2bSchemaValidator(action);
-	} else if(domain === "services"){
+	} else {
 		return srvSchemaValidator(action)
-	}else if(domain === "agri-services"){
-		return agriSrvSchemaValidator(action)
-	}else if(domain === "healthcare-service"){
-		return healthcareSrvSchemaValidator(action)
-	}else{
-		return agriEquipmentHiringSchemaValidator(action)
 	}
+	// else if(domain === "services"){
+	// 	return srvSchemaValidator(action)
+	// }
+	// else if(domain === "agri-services"){
+	// 	return agriSrvSchemaValidator(action)
+	// }else if(domain === "healthcare-service"){
+	// 	return healthcareSrvSchemaValidator(action)
+	// }else{
+	// 	return agriEquipmentHiringSchemaValidator(action)
+	// }
 };

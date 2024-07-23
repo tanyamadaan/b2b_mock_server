@@ -5,14 +5,18 @@ import {
 	send_nack,
 	redisFetchToServer,
 	redis,
-	AGRI_EQUIPMENT_BAP_MOCKSERVER_URL,
+	SERVICES_BAP_MOCKSERVER_URL,
 } from "../../../lib/utils";
 import { v4 as uuidv4 } from "uuid";
-import { EQUIPMENT_HIRING_STATUS } from "../../../lib/utils/apiConstants";
+import {
+	AGRI_HEALTHCARE_STATUS,
+	EQUIPMENT_HIRING_STATUS,
+	SERVICES_DOMAINS,
+} from "../../../lib/utils/apiConstants";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 
-const senarios: string[] = EQUIPMENT_HIRING_STATUS;
+let senarios: string[] = EQUIPMENT_HIRING_STATUS;
 
 export const initiateStatusController = async (
 	req: Request,
@@ -47,7 +51,7 @@ const intializeRequest = async (
 	try {
 		const { context } = transaction;
 		const { transaction_id } = context;
-    
+
 		const status = {
 			context: {
 				...context,
@@ -55,15 +59,27 @@ const intializeRequest = async (
 				timestamp: new Date().toISOString(),
 				action: "status",
 				bap_id: MOCKSERVER_ID,
-				bap_uri: AGRI_EQUIPMENT_BAP_MOCKSERVER_URL,
+				bap_uri: SERVICES_BAP_MOCKSERVER_URL,
 			},
 			message: {
 				order_id: transaction.message.order.id,
 			},
 		};
 
+		const domain = context?.domain;
+		switch (domain) {
+			case SERVICES_DOMAINS.SERVICES || SERVICES_DOMAINS.AGRI_EQUIPMENT:
+				senarios = EQUIPMENT_HIRING_STATUS;
+				break;
+			default: //service started is the default case
+				senarios = AGRI_HEALTHCARE_STATUS;
+				break;
+		}
+
 		// satus index is always witin boundary of senarios array
 		statusIndex = Math.min(Math.max(statusIndex, 0), senarios.length - 1);
+		console.log("senariossssssssssss",senarios,statusIndex)
+
 		await send_response(
 			res,
 			next,
@@ -72,6 +88,7 @@ const intializeRequest = async (
 			"status",
 			senarios[statusIndex]
 		);
+		
 	} catch (error) {
 		next(error);
 	}

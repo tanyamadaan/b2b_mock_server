@@ -26,17 +26,17 @@ export const initiateUpdateController = async (
     context.action = "update";
     context.timestamp = timestamp;
 
-    switch (scenario) {
-      case "requote":
-        var responseMessage = requoteRequest(message);
-        break;
-      case "reschedule":
-        // var responseMessage = rescheduleRequest(message)
-        break;
-      default:
-        var responseMessage = requoteRequest(message);
-        break;
-    }
+    // switch (scenario) {
+    //   case "requote":
+    //     var responseMessage = requoteRequest(message);
+    //     break;
+    //   case "reschedule":
+    //     // var responseMessage = rescheduleRequest(message)
+    //     break;
+    //   default:
+    //     var responseMessage = requoteRequest(message);
+    //     break;
+    // }
 
     const update = {
       context,

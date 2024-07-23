@@ -30,7 +30,7 @@ const onSearchSelectionController = (
 				context.bpp_uri.endsWith("/") ? "select" : "/select"
 			}`,
 			`select`,
-			"agri-equipment-hiring"
+			"services"
 		);
 	} catch (error) {
 		next(error);

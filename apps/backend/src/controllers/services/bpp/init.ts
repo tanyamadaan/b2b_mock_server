@@ -12,7 +12,6 @@ import {
 } from "../../../lib/utils";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
-import { SRV_PAYMENT_TYPE } from "../../../lib/schema/agri-equipment-hiring/constants";
 import { PAYMENT_TYPE } from "../../../lib/utils/apiConstants";
 
 export const initController = async (req: Request, res: Response, next: NextFunction) => {
@@ -37,6 +36,12 @@ export const initController = async (req: Request, res: Response, next: NextFunc
 		}
 
 		switch (scenario){
+
+			//SERVICES
+
+			
+
+			//EQUIPMENT HIRING 
 			case "availability_changes_during_the_transaction_journey":
 			initItemNotAvaliableController(req,res,next);
 			break;

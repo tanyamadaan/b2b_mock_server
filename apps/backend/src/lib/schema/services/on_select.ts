@@ -409,7 +409,7 @@ export const onSelectSchema = {
                                     type: "string",
                                   },
                                 },
-                                required: ["descriptor", "value"],
+                                required: ["descriptor"],
                               },
                             },
                           },
