@@ -1,16 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import {
-  B2B_BAP_MOCKSERVER_URL,
   MOCKSERVER_ID,
   send_response,
   send_nack,
-  createAuthHeader,
-  logger,
-  redis,
   Stop,
   redisFetchToServer,
+  B2C_BAP_MOCKSERVER_URL,
 } from "../../../lib/utils";
-import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
 export const initiateConfirmController = async (
@@ -66,7 +62,7 @@ const intializeRequest = async (
         timestamp,
         action: "confirm",
         bap_id: MOCKSERVER_ID,
-        bap_uri: B2B_BAP_MOCKSERVER_URL,
+        bap_uri: B2C_BAP_MOCKSERVER_URL,
         message_id: uuidv4(),
       },
       message: {

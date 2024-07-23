@@ -169,7 +169,7 @@ export const confirmSchema = {
 													properties: {
 														code: {
 															type: "string",
-															enum: ["BUYER_TERMS"],
+															// enum: ["BUYER_TERMS"],
 														},
 													},
 													required: ["code"],
@@ -184,7 +184,7 @@ export const confirmSchema = {
 																properties: {
 																	code: {
 																		type: "string",
-																		enum: ["ITEM_REQ", "PACKAGING_REQ"],
+																		// enum: ["ITEM_REQ", "PACKAGING_REQ"],
 																	},
 																},
 																required: ["code"],

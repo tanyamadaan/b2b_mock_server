@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import {
-  B2B_BAP_MOCKSERVER_URL,
+  B2C_BAP_MOCKSERVER_URL,
   MOCKSERVER_ID,
   send_response,
   send_nack,
@@ -67,7 +67,7 @@ const intializeRequest = async (
         timestamp: new Date().toISOString(),
         action: "status",
         bap_id: MOCKSERVER_ID,
-        bap_uri: B2B_BAP_MOCKSERVER_URL,
+        bap_uri: B2C_BAP_MOCKSERVER_URL,
       },
       message: {
         order_id: order.id,

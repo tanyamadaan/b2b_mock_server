@@ -1,16 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import {
-  B2B_BAP_MOCKSERVER_URL,
-  B2B_EXAMPLES_PATH,
   MOCKSERVER_ID,
   send_response,
-  createAuthHeader,
-  logger,
-  redis,
   B2C_EXAMPLES_PATH,
   B2C_BAP_MOCKSERVER_URL,
 } from "../../../lib/utils";
-import axios from "axios";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";

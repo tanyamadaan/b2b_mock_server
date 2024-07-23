@@ -6,6 +6,7 @@ import {
 	NEXT_ACTION,
 	HEALTHCARE_SERVICES_SCENARIOS,
 	AGRI_SERVICES_SCENARIOS,
+	B2C_SCENARIOS,
 } from "openapi-specs/constants";
 
 export const useAction = (domain: string) => {
@@ -18,6 +19,8 @@ export const useAction = (domain: string) => {
 	const allScenarios =
 		domain.toLowerCase() === "b2b"
 			? B2B_SCENARIOS
+			: domain.toLowerCase() === "b2c"
+				? B2C_SCENARIOS
 			: domain.toLowerCase() === "services"
 			? SERVICES_SCENARIOS
 			: domain.toLowerCase() === "healthcare-services"
