@@ -52,10 +52,11 @@ export const initiateConfirmController = async (
 		if (Object.keys(onInit).includes("error")) {
 			return send_nack(res, "Init had errors");
 		}
+		var newTime = new Date().toISOString();
 		let confirm = {
 			context: {
 				...Init.context,
-				timestamp: new Date().toISOString(),
+				timestamp: newTime,
 				action: "confirm",
 				message_id: uuidv4(),
 			},
@@ -198,8 +199,8 @@ export const initiateConfirmController = async (
 							],
 						},
 					],
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
+          created_at: newTime,
+          updated_at: newTime,
 				},
 			},
 		};

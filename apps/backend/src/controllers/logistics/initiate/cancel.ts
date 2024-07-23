@@ -16,7 +16,7 @@ export const initiateCancelController = async (
   next: NextFunction
 ) => {
   try {
-    const { transactionId, orderId, cancellationReasonId } = req.body;
+    const { transactionId, cancellationReasonId } = req.body;
     const on_confirm = await redisFetchFromServer("on_confirm", transactionId);
     if (!on_confirm) {
       return send_nack(res, "On Confirm doesn't exist");
@@ -30,8 +30,8 @@ export const initiateCancelController = async (
         action: "cancel",
       },
       message: {
-        order_id: orderId,
-        cancellation_reason_id: cancellationReasonId,
+        order_id: on_confirm.message.order.id,
+        cancellation_reason_id: cancellationReasonId.split(',')[1]?.trim(),
       },
     };
     await send_response(res, next, cancel, transactionId, "cancel");

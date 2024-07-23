@@ -50,12 +50,13 @@ export const initiateInitController = async (
 		if (!itemWithDelivery) {
 			return send_nack(res, "No items available.");
 		}
+		var newTime = new Date().toISOString()
 		init = {
 			context: {
 				...request.context,
 				action: "init",
 				bpp_id: MOCKSERVER_ID,
-				timestamp: new Date().toISOString(),
+				timestamp: newTime,
 				message_id: uuidv4(),
 			},
 			message: {
@@ -73,8 +74,8 @@ export const initiateInitController = async (
 								code: itemWithDelivery.descriptor?.code,
 							},
 							time: {
-								label: "TAT",
-								duration: "P4D",
+								label: itemWithDelivery.time?.label,
+								duration: itemWithDelivery.time?.duration,
 							},
 						},
 					],
@@ -137,7 +138,7 @@ export const initiateInitController = async (
 						phone: "9886098860",
 						email: "abcd.efgh@gmail.com",
 						time: {
-							timestamp: "2023-10-17T21:11:00.000Z",
+							timestamp: newTime,
 						},
 					},
 					payments: {

@@ -1,4 +1,4 @@
-/* eslint-disable no-mixed-spaces-and-tabs */
+import React, { useState, useEffect } from "react";
 import Fade from "@mui/material/Fade";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
@@ -7,7 +7,6 @@ import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import { CITY_CODE } from "../../utils/constants";
 import { Input, Option, Select, Button } from "@mui/joy";
-import React, { useState, useEffect } from "react";
 import axios, { AxiosError } from "axios";
 import Divider from "@mui/material/Divider";
 import Grow from "@mui/material/Grow";
@@ -28,7 +27,7 @@ type InitiateRequestSectionProp = {
 type SELECT_OPTIONS =
 	| string[]
 	| { b2b: string[]; services: string[]; agri_services: string[] }
-	| { b2b: string[]; services: string[]; agri_services: string[] }
+	| { b2b: string[]; services: string; agri_services: string[] }
 	| { services: string[] }
 	| { agri_services: string[] }
 	| { healthcare_services: string[] }
@@ -49,8 +48,8 @@ export const InitiateRequestSection = ({
 	const { handleMessageToggle, setMessageType, setCopy } = useMessage();
 	const [action, setAction] = useState<string>();
 	const [renderActionFields, setRenderActionFields] = useState(false);
-	const [formState, setFormState] = useState<{ domain?: string }>({});
-	const [allowSubmission, setAllowSubmission] = useState<boolean>();
+	const [formState, setFormState] = useState<{ [key: string]: any }>({});
+	const [allowSubmission, setAllowSubmission] = useState<boolean>(false);
 
 	const handleActionSelection = (
 		_event: React.SyntheticEvent | null,
@@ -66,6 +65,7 @@ export const InitiateRequestSection = ({
 	const handleFieldChange = (fieldName: string, value: string | object) => {
 		setFormState((prev) => ({ ...prev, [fieldName]: value }));
 	};
+
 	useEffect(() => {
 		if (action) {
 			const keys = Object.keys(formState || {});
@@ -75,8 +75,15 @@ export const InitiateRequestSection = ({
 			const scenarios = INITIATE_FIELDS[
 				action as keyof typeof INITIATE_FIELDS
 			].filter((e) => e.name === "scenario")[0];
+			console.log(formKeys);
+			console.log(keys);
+			const allRequiredKeysPresent = ['transactionId', 'cancellationReasonId']
+				.every(key => formKeys.includes(key));
+			if(domain === "logistics" && action === "cancel" && allRequiredKeysPresent) {
+				setAllowSubmission(true);
+			}
 
-			if (checker(keys, formKeys)) setAllowSubmission(true);
+			else if (checker(keys, formKeys)) setAllowSubmission(true);
 			else if (
 				checker(
 					keys,
@@ -118,7 +125,7 @@ export const InitiateRequestSection = ({
 					setMessageType("success");
 					setCopy(response.data.transaction_id);
 				} else {
-					handleMessageToggle("Request Initiated Successfully!`");
+					handleMessageToggle("Request Initiated Successfully!");
 					setMessageType("success");
 				}
 			} else if (response.data.error) {
@@ -144,15 +151,14 @@ export const InitiateRequestSection = ({
 			else handleMessageToggle("Error Occurred while initiating request!");
 		}
 	};
+
 	return (
 		<Fade in={true} timeout={2500}>
 			<Paper
 				sx={{
 					width: "100%",
-					// height: "100%",
 					p: 1,
 					px: 2,
-					// overflow: "hidden",
 				}}
 			>
 				<Box
@@ -188,19 +194,124 @@ export const InitiateRequestSection = ({
 							<Divider />
 							{action &&
 								INITIATE_FIELDS[action as keyof typeof INITIATE_FIELDS].map(
-									(field, index) => (
-										<React.Fragment key={`field-${action}-${index}`}>
-											{field.type === "text" ? (
-												<Input
-													fullWidth
-													placeholder={field.placeholder}
-													onChange={(e) =>
-														handleFieldChange(field.name, e.target.value)
-													}
-												/>
-											) : field.type === "select" ? (
-												field.domainDepended ? (
-													(field.options as any)[domain] ? (
+									(field, index) => {
+										// Skip rendering `orderId` if action is "cancel" and domain is "logistics"
+										if (
+											domain === "logistics" &&
+											action === "cancel" &&
+											field.name === "orderId"
+										) {
+											return null;
+										}
+
+										return (
+											<React.Fragment key={`field-${action}-${index}`}>
+												{field.type === "text" &&
+												field.name !== "cancellationReasonId" ? (
+													<Input
+														fullWidth
+														placeholder={field.placeholder}
+														key={"input-" + action + "-" + index}
+														onChange={(e) =>
+															handleFieldChange(field.name, e.target.value)
+														}
+													/>
+												) : field.type === "select" ||
+												  (field.type === "text" &&
+														field.name === "cancellationReasonId") ? (
+													field.domainDepended ? (
+														(() => {
+															const options = field.options as any;
+
+															// Special case for scenario field
+															if (field.name === "scenario") {
+																if (
+																	options &&
+																	domain in options &&
+																	Array.isArray(options[domain]) &&
+																	options[domain].length > 0
+																) {
+																	return (
+																		<Select
+																			placeholder={field.placeholder}
+																			onChange={(
+																				_event: React.SyntheticEvent | null,
+																				newValue: string | null
+																			) =>
+																				handleFieldChange(
+																					field.name,
+																					newValue as string
+																				)
+																			}
+																		>
+																			{options[domain].map(
+																				(
+																					option: string,
+																					optionIndex: number
+																				) => (
+																					<Option
+																						value={option}
+																						key={`${option}-${optionIndex}`}
+																					>
+																						{option}
+																					</Option>
+																				)
+																			)}
+																		</Select>
+																	);
+																}
+																return null; // Render null if domain doesn't exist in options or has no options
+															}
+
+															// For other domain-dependent fields
+															if (
+																options &&
+																options[domain] &&
+																Array.isArray(options[domain]) &&
+																options[domain].length > 0
+															) {
+																return (
+																	<Select
+																		placeholder={field.placeholder}
+																		onChange={(
+																			_event: React.SyntheticEvent | null,
+																			newValue: string | null
+																		) =>
+																			handleFieldChange(
+																				field.name,
+																				newValue as string
+																			)
+																		}
+																	>
+																		{options[domain].map(
+																			(option: string, optionIndex: number) => (
+																				<Option
+																					value={option}
+																					key={`${option}-${optionIndex}`}
+																				>
+																					{option}
+																				</Option>
+																			)
+																		)}
+																	</Select>
+																);
+															} else {
+																return (
+																	<Input
+																		fullWidth
+																		placeholder={field.placeholder}
+																		key={"input-" + action + "-" + index}
+																		onChange={(e) =>
+																			handleFieldChange(
+																				field.name,
+																				e.target.value
+																			)
+																		}
+																	/>
+																);
+															}
+														})()
+													) : (
 														<Select
 															placeholder={field.placeholder}
 															onChange={(
@@ -213,43 +324,38 @@ export const InitiateRequestSection = ({
 																)
 															}
 														>
-															{((field.options as any)[domain] || []).map(
-																(option: string, optionIndex: number) => (
-																	<Option
-																		value={option}
-																		key={`${option}-${optionIndex}`}
-																	>
-																		{option}
-																	</Option>
+															{field.name === "city" &&
+															domain === "logistics" ? (
+																formState.domain === "ONDC:LOG10" ? (
+																	CITY_CODE.map((option, optionIndex) => (
+																		<Option
+																			value={option}
+																			key={`${option}-${optionIndex}`}
+																		>
+																			{option}
+																		</Option>
+																	))
+																) : (
+																	<Option value="UN:SIN">UN:SIN</Option>
 																)
-															)}
+															) : Array.isArray(field.options) ? (
+																field.options.map(
+																	(option, optionIndex: number) => (
+																		<Option
+																			value={option}
+																			key={`${option}-${optionIndex}`}
+																		>
+																			{option}
+																		</Option>
+																	)
+																)
+															) : null}
 														</Select>
-													) : null
-												) : (
-													<Select
-														placeholder={field.placeholder}
-														onChange={(
-															_event: React.SyntheticEvent | null,
-															newValue: string | null
-														) =>
-															handleFieldChange(field.name, newValue as string)
-														}
-													>
-														{(field.options as string[]).map(
-															(option, optionIndex) => (
-																<Option
-																	value={option}
-																	key={`${option}-${optionIndex}`}
-																>
-																	{option}
-																</Option>
-															)
-														)}
-													</Select>
-												)
-											) : null}
-										</React.Fragment>
-									)
+													)
+												) : null}
+											</React.Fragment>
+										);
+									}
 								)}
 						</Stack>
 					</Grow>

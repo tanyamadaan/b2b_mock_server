@@ -83,11 +83,13 @@ export const searchController = async (
 				onSearch = YAML.parse(file.toString());
 				break;
 		}
+		var newTime = new Date().toISOString();
 		req.body.context = {
 			...req.body.context,
 			action: "on_search",
-			timestamp: new Date().toISOString(),
+			timestamp: newTime,
 			bpp_id: MOCKSERVER_ID,
+			bpp_uri: "http://localhost:3000/logistics/bpp",
 		};
 		const updatedItems = onSearch.value.message.catalog.providers[0].items.map(
 			(item: Item) => ({
@@ -119,6 +121,40 @@ export const searchController = async (
 						categories: updatedCategories,
 					},
 				],
+				descriptor: {
+					...onSearch.value.message.catalog.descriptor,
+					tags: [
+						{
+							descriptor: {
+								code: "BPP_Terms",
+							},
+							list: [
+								{
+									descriptor: {
+										code: "Static_Terms",
+									},
+									value: "",
+								},
+								{
+									descriptor: {
+										code: "Static_Terms_New",
+									},
+									value:
+										"https://github.com/ONDC-Official/NP-Static-Terms/lspNP_LSP/1.0/tc.pdf",
+								},
+								{
+									descriptor: {
+										code: "Effective_Date",
+									},
+									value: newTime,
+								},
+							],
+						},
+						{
+							...onSearch.value.message.catalog.descriptor.tags[1],
+						},
+					],
+				},
 			},
 		};
 		return responseBuilder_logistics(

@@ -3,7 +3,8 @@ import { B2B_SCENARIOS } from "openapi-specs/constants";
 export const SUPPORTED_DOMAINS = [
 	"B2B",
 	"SERVICES",
-	"AGRI SERVICES","HEALTHCARE SERVICES",
+	"AGRI SERVICES",
+	"HEALTHCARE SERVICES",
 	"LOGISTICS",
 ];
 
@@ -80,7 +81,7 @@ export const INITIATE_FIELDS = {
 				services: SERVICES_DOMAINS,
 				"agri-services": AGRI_SERVICES_DOMAINS,
 				"healthcare-services": HEALTHCARE_SERVICES_DOMAINS,
-				logistics: LOGISTICS_DOMAINS
+				logistics: LOGISTICS_DOMAINS,
 			},
 		},
 		{
@@ -167,8 +168,14 @@ export const INITIATE_FIELDS = {
 			name: "update_target",
 			placeholder: "Update Target",
 			type: "select",
-			domainDepended: false,
-			options: ["payments","fulfillments","items"],
+			domainDepended: true,
+			options: {
+				services: ["payments", "fulfillments", "items"],
+				logistics: ["fulfillments"],
+				b2b: ["payments", "fulfillments", "items"],
+				"agri-services": ["payments", "fulfillments", "items"],
+				"healthcare-services": ["payments", "fulfillments", "items"],
+			},
 		},
 	],
 	cancel: [
@@ -186,6 +193,10 @@ export const INITIATE_FIELDS = {
 			name: "cancellationReasonId",
 			placeholder: "Enter Your Cancellation Reason ID",
 			type: "text",
+			domainDepended: true,
+			options: {
+				logistics: ["TAT Breach, 007"], // Follow this format if new options are added.
+			},
 		},
 		{
 			name: "scenario",

@@ -134,7 +134,7 @@ export const statusController = async (
 					message : {
 						order:{
 							id: onConfirm.message.order.id,
-							status: "In-progress",
+							status: "Accepted",
 							provider: onConfirm.message.order.provider,
 							items: onConfirm.message.order.items,
 							quote: onConfirm.message.order.quote,
