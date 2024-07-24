@@ -95,6 +95,12 @@ export const InitiateRequestSection = ({
 		setFormState({});
 		setAllowSubmission(false);
 		setTimeout(() => setRenderActionFields(true), 500);
+		if (domain === "logistics") {
+			setTransactionId("");
+			setShowCatalogSelect(false);
+			setMatchingItems([]);
+			setSelectedItemId("");
+		}
 	};
 	const handleFieldChange = (fieldName: string, value: string | object) => {
 		setFormState((prev) => ({ ...prev, [fieldName]: value }));
@@ -256,9 +262,10 @@ export const InitiateRequestSection = ({
 											if (index > 0) return <></>;
 
 											return (
-												<React.Fragment key={-index}>
+												<React.Fragment key={"react-" + action + "-" + index}>
 													<Input
 														type="text"
+														key={"input-" + action + "-" + index}
 														value={transactionId}
 														placeholder={field.placeholder}
 														onChange={(e) => {
