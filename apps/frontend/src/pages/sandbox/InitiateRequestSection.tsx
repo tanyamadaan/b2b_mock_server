@@ -14,7 +14,7 @@ import { useMessage } from "../../utils/hooks";
 import HelpOutlineTwoToneIcon from "@mui/icons-material/HelpOutlineTwoTone";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-
+import { Item } from "../../../../backend/src/lib/utils/interfaces";
 type InitiateRequestSectionProp = {
 	domain:
 		| "b2b"
@@ -34,14 +34,6 @@ type SELECT_OPTIONS =
 	| { logistics: string[] }
 	| object;
 
-type SELECT_FIELD = {
-	name: string;
-	placeholder: string;
-	type: string;
-	domainDepended: boolean;
-	options: SELECT_OPTIONS;
-};
-
 export const InitiateRequestSection = ({
 	domain,
 }: InitiateRequestSectionProp) => {
@@ -50,6 +42,49 @@ export const InitiateRequestSection = ({
 	const [renderActionFields, setRenderActionFields] = useState(false);
 	const [formState, setFormState] = useState<{ [key: string]: any }>({});
 	const [allowSubmission, setAllowSubmission] = useState<boolean>(false);
+	const [transactionId, setTransactionId] = useState<string>("");
+	const [showCatalogSelect, setShowCatalogSelect] = useState<boolean>(false);
+	const [matchingItems, setMatchingItems] = useState<Item[]>([]);
+	const [selectedItemId, setSelectedItemId] = useState<string>("");
+
+	const handleSelectionChange = (
+		_event: React.SyntheticEvent | null,
+		newValue: string | null
+	) => {
+		setSelectedItemId(newValue as string | "");
+		setFormState((prev) => ({ ...prev, ["itemID"]: newValue }));
+		console.log(`Selected item ID: ${newValue}`);
+	};
+
+	const handleTransactionIdSubmit = async () => {
+		try {
+			const response = await axios.post<{
+				message: { matchingItems: Item[] };
+			}>(
+				`${
+					import.meta.env.VITE_SERVER_URL
+				}/${domain.toLowerCase()}/getCatalog/?mode=mock`,
+				{ transactionId },
+				{
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			);
+
+			if (response.data && response.data.message) {
+				setMatchingItems(response.data.message.matchingItems);
+				setShowCatalogSelect(true);
+			} else {
+				// Handle error or unexpected response
+				console.error("Unexpected response format:", response.data);
+			}
+		} catch (error) {
+			setShowCatalogSelect(false);
+			console.error("Error fetching catalog:", error);
+			// Handle error (e.g., show error message to user)
+		}
+	};
 
 	const handleActionSelection = (
 		_event: React.SyntheticEvent | null,
@@ -61,7 +96,6 @@ export const InitiateRequestSection = ({
 		setAllowSubmission(false);
 		setTimeout(() => setRenderActionFields(true), 500);
 	};
-
 	const handleFieldChange = (fieldName: string, value: string | object) => {
 		setFormState((prev) => ({ ...prev, [fieldName]: value }));
 	};
@@ -72,28 +106,43 @@ export const InitiateRequestSection = ({
 			const formKeys = INITIATE_FIELDS[
 				action as keyof typeof INITIATE_FIELDS
 			].map((e) => e.name);
+
 			const scenarios = INITIATE_FIELDS[
 				action as keyof typeof INITIATE_FIELDS
 			].filter((e) => e.name === "scenario")[0];
-			console.log(formKeys);
-			console.log(keys);
-			const allRequiredKeysPresent = ['transactionId', 'cancellationReasonId']
-				.every(key => formKeys.includes(key));
-			if(domain === "logistics" && action === "cancel" && allRequiredKeysPresent) {
-				setAllowSubmission(true);
-			}
+			const logisticsInitKeys = ["transactionId", "itemID"];
+			const logisticsCancelKeys = [
+				"transactionId",
+				"cancellationReasonId",
+			].every((key) => formKeys.includes(key));
 
-			else if (checker(keys, formKeys)) setAllowSubmission(true);
-			else if (
+			if (domain === "logistics" && action === "init") {
+				// Check if both transactionId and itemID are present in formState
+				if (logisticsInitKeys.every((key) => key in formState)) {
+					setAllowSubmission(true);
+				} else {
+					setAllowSubmission(false);
+				}
+			} else if (
+				domain === "logistics" &&
+				action === "cancel" &&
+				logisticsCancelKeys
+			) {
+				setAllowSubmission(true);
+			} else if (checker(keys, formKeys)) {
+				setAllowSubmission(true);
+			} else if (
 				checker(
 					keys,
 					formKeys.filter((e) => e !== "scenario")
 				) &&
 				scenarios?.domainDepended &&
 				!scenarios.options[domain as keyof SELECT_OPTIONS]
-			)
+			) {
 				setAllowSubmission(true);
-			else setAllowSubmission(false);
+			} else {
+				setAllowSubmission(false);
+			}
 		}
 	}, [action, domain, formState]);
 
@@ -203,7 +252,55 @@ export const InitiateRequestSection = ({
 										) {
 											return null;
 										}
+										if (domain === "logistics" && action === "init") {
+											if (index > 0) return <></>;
 
+											return (
+												<React.Fragment key={-index}>
+													<Input
+														type="text"
+														value={transactionId}
+														placeholder={field.placeholder}
+														onChange={(e) => {
+															setTransactionId(
+																(e.target as HTMLInputElement).value
+															);
+															handleFieldChange(field.name, e.target.value);
+														}}
+													/>
+													<Button onClick={handleTransactionIdSubmit}>
+														Submit
+													</Button>
+													{showCatalogSelect && (
+														<React.Fragment>
+															<Select
+																id="matchingItemsDropdown"
+																value={selectedItemId || ""}
+																onChange={(
+																	_event: React.SyntheticEvent | null,
+																	newValue: string | null
+																) =>
+																	handleSelectionChange(
+																		_event,
+																		newValue as string
+																	)
+																}
+																placeholder="Select an item"
+															>
+																<Option value="" disabled>
+																	Select an item
+																</Option>
+																{matchingItems.map((item) => (
+																	<Option key={item.id} value={item.id}>
+																		{item.id}
+																	</Option>
+																))}
+															</Select>
+														</React.Fragment>
+													)}
+												</React.Fragment>
+											);
+										}
 										return (
 											<React.Fragment key={`field-${action}-${index}`}>
 												{field.type === "text" &&
