@@ -248,7 +248,9 @@ export const onSearchSchema = {
                         // required: [],
                       },
                     },
-                    required: ["label", "schedule"],
+                    required: ["label", 
+                      //"schedule"
+                    ],
                   },
                   locations: {
                     type: "array",
@@ -700,7 +702,9 @@ export const onSearchSchema = {
                               // required: ["holidays"],
                             },
                           },
-                          required: ["label", "schedule"],
+                          required: ["label", 
+                            //"schedule"
+                            ],
                         },
                         matched: {
                           type: "boolean",
@@ -718,7 +722,7 @@ export const onSearchSchema = {
                           // "creator",
                           "price",
                           "category_ids",
-                          "fulfillment_ids",
+                          // "fulfillment_ids",
                           "location_ids",
                           "payment_ids",
                           "cancellation_terms",
@@ -908,7 +912,8 @@ export const onSearchSchema = {
               },
             },
           },
-          required: ["fulfillments", "payments", "descriptor", "providers"],
+          required: [//"fulfillments",
+             "payments", "descriptor", "providers"],
         },
       },
       required: ["catalog"],

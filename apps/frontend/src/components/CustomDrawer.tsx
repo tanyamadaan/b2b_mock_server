@@ -68,7 +68,6 @@ const NavButton = ({
 	const navigate = useNavigate();
 	const location = useLocation();
 	const theme = useTheme();
-	console.log("TOOLTIP", link.name, disabledTooltip);
 	return (
 		<Grow in={render} timeout={1000} key={"nonnested-nav-" + index}>
 			<ListItem disablePadding key={index}>

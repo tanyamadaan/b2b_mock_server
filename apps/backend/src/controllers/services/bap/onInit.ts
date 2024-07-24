@@ -73,7 +73,7 @@ const onInitConsultationController = (req: Request, res: Response, next: NextFun
 			`${context.bpp_uri}${context.bpp_uri.endsWith("/") ? "confirm" : "/confirm"
 			}`,
 			`confirm`,
-			"agri-equipment-hiring"
+			"services"
 		);
 	}catch(error){
 		next(error)
@@ -133,7 +133,7 @@ const onInitServiceCustomizedController = (req: Request, res: Response, next: Ne
 		`${context.bpp_uri}${context.bpp_uri.endsWith("/") ? "confirm" : "/confirm"
 		}`,
 		`confirm`,
-		"agri-equipment-hiring"
+		"services"
 	);
 };
 

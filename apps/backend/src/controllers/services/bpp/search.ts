@@ -5,6 +5,7 @@ import YAML from "yaml";
 import {
 	AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH,
 	AGRI_SERVICES_EXAMPLES_PATH,
+	BID_AUCTION_SERVICES_EXAMPLES_PATH,
 	HEALTHCARE_SERVICES_EXAMPLES_PATH,
 	responseBuilder,
 	SERVICES_EXAMPLES_PATH,
@@ -18,8 +19,8 @@ export const searchController = (
 	next: NextFunction
 ) => {
 	try {
+		console.log("bpppppppppppppppsearchhhhhhhhhhh")
 		const domain = req.body.context.domain;
-		console.log("domainnnnnnnnnn",domain)
 		let onSearch, file;
 		const {
 			message: { intent },
@@ -41,7 +42,6 @@ export const searchController = (
 				break;
 
 			case SERVICES_DOMAINS.HEALTHCARE_SERVICES:
-				console.log("healthcareeeeeeeeeee",)
 				file = fs.readFileSync(
 					path.join(
 						HEALTHCARE_SERVICES_EXAMPLES_PATH,
@@ -58,7 +58,6 @@ export const searchController = (
 					)
 				);
 				break;
-
 			case SERVICES_DOMAINS.AGRI_SERVICES:
 				file = fs.readFileSync(
 					path.join(
@@ -73,15 +72,21 @@ export const searchController = (
 					)
 				);
 				break;
+				case SERVICES_DOMAINS.BID_ACTION_SERVICES:
+					file = fs.readFileSync(
+						path.join(
+							BID_AUCTION_SERVICES_EXAMPLES_PATH,
+							`on_search/on_search.yaml`
+						)
+					);
+					break;
 			default:
 				file = fs.readFileSync(
 					path.join(SERVICES_EXAMPLES_PATH, "on_search/on_search.yaml")
 				);
 				break;
 		}
-console.log("domainicityyyyyyyyyy",domain)
 		const response = YAML.parse(file.toString());		
-		console.log("responeeeeeeeeee",req.body.context)
 
 		return responseBuilder(
 			res,

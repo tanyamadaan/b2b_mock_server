@@ -11,6 +11,7 @@ import {
 	HEALTHCARE_SERVICES_EXAMPLES_PATH,
 	AGRI_SERVICES_EXAMPLES_PATH,
 	SERVICES_BAP_MOCKSERVER_URL,
+	BID_AUCTION_SERVICES_EXAMPLES_PATH,
 } from "../../../lib/utils";
 import { ACTTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { SERVICES_DOMAINS } from "../../../lib/utils/apiConstants";
@@ -58,9 +59,18 @@ export const initiateSearchController = async (
 				);
 				onSearch = YAML.parse(file.toString());
 				break;
+			case SERVICES_DOMAINS.BID_ACTION_SERVICES:
+				file = fs.readFileSync(
+					path.join(
+						BID_AUCTION_SERVICES_EXAMPLES_PATH,
+						"search/search_by_category.yaml"
+					)
+				);
+				onSearch = YAML.parse(file.toString());
+				break;
 			default:
 				file = fs.readFileSync(
-					path.join(SERVICES_EXAMPLES_PATH, "on_search/on_search.yaml")
+					path.join(SERVICES_EXAMPLES_PATH, "search/search_by_category.yaml")
 				);
 				onSearch = YAML.parse(file.toString());
 				break;
@@ -90,7 +100,6 @@ export const initiateSearchController = async (
 			},
 		};
 		search.bpp_uri = bpp_uri;
-		console.log("searchhhhhhhhhhhhh",JSON.stringify(search))
 		await send_response(res, next, search, transaction_id, ACTTION_KEY.SEARCH);
 	} catch (error) {
 		return next(error);

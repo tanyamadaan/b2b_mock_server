@@ -99,7 +99,7 @@ const onSelectConsultationController = (
 				req.body.context.bpp_uri.endsWith("/") ? "init" : "/init"
 			}`,
 			`init`,
-			"agri-equipment-hiring"
+			"services"
 		);
 	} catch (error) {
 		next(error);
@@ -198,6 +198,6 @@ const onSelectServiceCustomizedController = (
 			req.body.context.bpp_uri.endsWith("/") ? "init" : "/init"
 		}`,
 		`init`,
-		"agri-equipment-hiring"
+		"services"
 	);
 };

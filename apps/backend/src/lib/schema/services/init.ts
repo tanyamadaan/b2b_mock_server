@@ -168,7 +168,7 @@ export const initSchema = {
                 },
                 required: [
                   "id",
-                  "fulfillment_ids",
+                  // "fulfillment_ids",
                 ],
               },
             },
