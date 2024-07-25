@@ -16,6 +16,7 @@ import cors from "cors";
 import {
 	authSwagger,
 	b2bSwagger,
+	b2cSwagger,
 	miscSwagger,
 	requestParser,
 	servicesSwagger,
@@ -35,6 +36,7 @@ app.use(cors());
 app.use("/api-docs/auth", swaggerUi.serve, authSwagger("/api-docs/auth"));
 app.use("/api-docs/misc", swaggerUi.serve, miscSwagger("/api-docs/misc"));
 app.use("/api-docs/b2b", swaggerUi.serve, b2bSwagger("/api-docs/b2b"));
+app.use("/api-docs/b2c", swaggerUi.serve, b2cSwagger("/api-docs/b2c"));
 
 app.use(
 	"/api-docs/services",
@@ -66,7 +68,6 @@ app.use("/", miscRouter);
 
 app.use("/b2b", errorHandlingWrapper(b2bRouter));
 app.use("/b2c", errorHandlingWrapper(b2cRouter));
-
 app.use("/auth", errorHandlingWrapper(authRouter));
 app.use("/services", errorHandlingWrapper(servicesRouter));
 app.use("/agri-services", errorHandlingWrapper(agriServiceRouter));
