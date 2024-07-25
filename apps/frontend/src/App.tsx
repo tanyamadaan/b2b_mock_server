@@ -5,6 +5,7 @@ import {
 	AgriServicesSwagger,
 	AuthSwagger,
 	B2BSwagger,
+	B2CSwagger,
 	HealthCareServicesSwagger,
 	MiscSwagger,
 	ServicesSwagger,
@@ -120,7 +121,7 @@ const router = createBrowserRouter([
 					{ path: "b2b", Component: B2BSwagger },
 					{
 						path: "b2c",
-						Component: B2BSwagger,
+						Component: B2CSwagger,
 					},
 					{ path: "services", Component: ServicesSwagger },
 					{ path: "agri-services", Component: AgriServicesSwagger },
