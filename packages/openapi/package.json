@@ -16,7 +16,9 @@
     "./b2c.json": "./openapi/b2c/build/swagger.json",
     "./services.json": "./openapi/services/build/swagger.json",
     "./agri-services.json":"./openapi/agri-services/build/swagger.json",
-    "./healthcare-services.json":"./openapi/healthcare-services/build/swagger.json"
+    "./healthcare-services.json":"./openapi/healthcare-services/build/swagger.json",
+    "./agri-equipment-hiring.json":"./openapi/agri-equipment-hiring/build/swagger.json"
+
   },
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^11.5.4",

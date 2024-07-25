@@ -41,7 +41,6 @@ async function send_response(
 			headers: { ...headers },
 		});
 
-
 		await redis.set(
 			`${transaction_id}-${action}-from-server`,
 			JSON.stringify({

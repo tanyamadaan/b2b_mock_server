@@ -2,6 +2,7 @@ import axios from "axios";
 import { NextFunction, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import {
+	AGRI_EQUIPMENT_BPP_MOCKSERVER_URL,
 	AGRI_SERVICES_BPP_MOCKSERVER_URL,
 	B2B_BPP_MOCKSERVER_URL,
 	B2C_BPP_MOCKSERVER_URL,
@@ -64,7 +65,14 @@ export const responseBuilder = async (
 	message: object,
 	uri: string,
 	action: string,
-	domain: "b2b" | "b2c" | "services" | "agri-services" | "healthcare-service",
+	domain:
+		| "b2b"
+    | "b2c"
+		| "services"
+		| "agri-services"
+		| "healthcare-service"
+		| "agri-equipment-hiring",
+
 	error?: object | undefined
 ) => {
 	res.locals = {};
@@ -84,8 +92,9 @@ export const responseBuilder = async (
 			? AGRI_SERVICES_BPP_MOCKSERVER_URL
 			: domain === "healthcare-service"
 			? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
-			: domain === "b2c"
-			? B2C_BPP_MOCKSERVER_URL
+			: domain === "agri-equipment-hiring"
+			? AGRI_EQUIPMENT_BPP_MOCKSERVER_URL
+			:domain === "b2c"? B2C_BPP_MOCKSERVER_URL
 			: SERVICES_BPP_MOCKSERVER_URL;
 
 	if (action.startsWith("on_")) {
@@ -288,7 +297,12 @@ export const sendStatusAxiosCall = async (
 	message: object,
 	uri: string,
 	action: string,
-	domain: "b2b" | "services" | "agri-services" | "healthcare-service",
+	domain:
+		| "b2b"
+		| "services"
+		| "agri-services"
+		| "healthcare-service"
+		| "agri-equipment-hiring",
 	error?: object | undefined
 ) => {
 	let ts = new Date();
@@ -306,6 +320,8 @@ export const sendStatusAxiosCall = async (
 			? AGRI_SERVICES_BPP_MOCKSERVER_URL
 			: domain === "healthcare-service"
 			? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
+			: domain === "agri-equipment-hiring"
+			? AGRI_EQUIPMENT_BPP_MOCKSERVER_URL
 			: SERVICES_BPP_MOCKSERVER_URL;
 
 	async = {
@@ -720,7 +736,9 @@ export const quoteCreatorHealthCareService = (
 	items: Item[],
 	providersItems?: any,
 	offers?: any,
-	fulfillment_type?: string
+	fulfillment_type?: string,
+	service_name?: string,
+	action?:string
 ) => {
 	try {
 		//GET PACKAGE ITEMS
@@ -766,14 +784,15 @@ export const quoteCreatorHealthCareService = (
 
 		let breakup: any[] = [];
 
-		items.forEach((item) => {
+		items.forEach((item: any) => {
+			const quantity = item?.quantity?.selected?.count
+				? item?.quantity?.selected?.count
+				: Number(item?.quantity?.unitized?.measure?.value);
 			breakup.push({
 				title: item.title,
 				price: {
 					currency: "INR",
-					value: (
-						Number(item?.price?.value) * item?.quantity?.selected.count
-					).toString(),
+					value: (Number(item?.price?.value) * quantity).toString(),
 				},
 				tags: item?.tags,
 				item:
@@ -791,41 +810,64 @@ export const quoteCreatorHealthCareService = (
 
 		//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
 
-		//ADD STATIC TAX FOR ITEM ONE
-		breakup?.push({
-			title: "tax",
-			price: {
-				currency: "INR",
-				value: "10",
-			},
-			item: items[0],
-			tags: [
-				{
-					descriptor: {
-						code: "title",
-					},
-					list: [
-						{
-							descriptor: {
-								code: "type",
-							},
-							value: "tax",
-						},
-					],
+		//ADD STATIC TAX AND DISCOUNT FOR ITEM ONE
+		breakup?.push(
+			{
+				title: "tax",
+				price: {
+					currency: "INR",
+					value: "10",
 				},
-			],
-		});
+				item: items[0],
+				tags: [
+					{
+						descriptor: {
+							code: "title",
+						},
+						list: [
+							{
+								descriptor: {
+									code: "type",
+								},
+								value: "tax",
+							},
+						],
+					},
+				],
+			},
+			{
+				title: "discount",
+				price: {
+					currency: "INR",
+					value: "10",
+				},
+				item: items[0],
+				tags: [
+					{
+						descriptor: {
+							code: "title",
+						},
+						list: [
+							{
+								descriptor: {
+									code: "type",
+								},
+								value: "discount",
+							},
+						],
+					},
+				],
+			}
+		);
 
-		if (fulfillment_type === "Seller-Fulfilled") {
+		if (fulfillment_type === "Seller-Fulfilled" || service_name === "agri-equipment-hiring") {
 			breakup?.push({
 				title: "pickup_charge",
 				price: {
 					currency: "INR",
 					value: "149",
 				},
-				item: {
-					id: "I1",
-				},
+				item: items[0],
 				tags: [
 					{
 						descriptor: {
@@ -843,8 +885,33 @@ export const quoteCreatorHealthCareService = (
 				],
 			});
 		}
-		let totalPrice = 0;
 
+		if (service_name === "agri-equipment-hiring"){
+			breakup?.push({
+				title: "refundable_security",
+				price: {
+					currency: "INR",
+					value: "5000",
+				},
+				item: items[0],
+				tags: [
+					{
+						descriptor: {
+							code: "title",
+						},
+						list: [
+							{
+								descriptor: {
+									code: "type",
+								},
+								value: "refundable_security",
+							},
+						],
+					},
+				],
+			});
+		}
+		let totalPrice = 0;
 		breakup.forEach((entry) => {
 			const priceValue = parseFloat(entry?.price?.value);
 			if (!isNaN(priceValue)) {

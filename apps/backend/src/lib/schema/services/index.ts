@@ -35,6 +35,7 @@ export const srvSchemaValidator =
 			| "on_track"
 			| "cancel"
 			| "on_cancel"
+			| "rating"
 	) =>
 		(req: Request, res: Response, next: NextFunction) => {
 
