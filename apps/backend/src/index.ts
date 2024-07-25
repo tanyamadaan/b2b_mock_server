@@ -53,6 +53,12 @@ app.use(
 	healthcareServiceSwagger("/api-docs/healthcare-services")
 );
 
+app.use(
+	"/api-docs/healthcare-services",
+	swaggerUi.serve,
+	healthcareServiceSwagger("/api-docs/agri-equipment-services")
+);
+
 app.use(express.raw({ type: "*/*", limit: "1mb" }));
 app.use(requestParser);
 app.use("/", miscRouter);

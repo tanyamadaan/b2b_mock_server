@@ -22,6 +22,7 @@ import { HealthCareServicesSandbox } from "./pages/sandbox/domains/healthcare-se
 import Readme from "./pages/readme";
 import { AgriEquipmentServicesSandbox } from "./pages/sandbox/domains/agri-equipment-services";
 import { AgriEquipmentServicesMock } from "./pages/mock/domains/agri-equipment-services";
+import { AgriEquipmentHiringSwagger } from "./pages/swagger/domains/agri-equipment-hiring";
 
 // log
 
@@ -110,7 +111,7 @@ const router = createBrowserRouter([
 					{ path: "services", Component: ServicesSwagger },
 					{ path: "agri-services", Component: AgriServicesSwagger },
 					{ path: "healthcare-services", Component: HealthCareServicesSwagger },
-					{ path: "agri-equipment-services", Component: HealthCareServicesSwagger },
+					{ path: "agri-equipment-services", Component: AgriEquipmentHiringSwagger },
 					{ path: "auth", Component: AuthSwagger },
 					{ path: "misc", Component: MiscSwagger },
 				],
