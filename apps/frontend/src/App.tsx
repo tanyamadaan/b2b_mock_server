@@ -23,6 +23,8 @@ import Readme from "./pages/readme";
 import { AgriEquipmentServicesSandbox } from "./pages/sandbox/domains/agri-equipment-services";
 import { AgriEquipmentServicesMock } from "./pages/mock/domains/agri-equipment-services";
 import { AgriEquipmentHiringSwagger } from "./pages/swagger/domains/agri-equipment-hiring";
+import { B2CMock } from "./pages/mock/domains/b2c";
+import { B2CSandbox } from "./pages/sandbox/domains/b2c";
 
 // log
 
@@ -56,6 +58,10 @@ const router = createBrowserRouter([
 						Component: B2BMock,
 					},
 					{
+						path: "b2c",
+						Component: B2CMock,
+					},
+					{
 						path: "services",
 						Component: ServicesMock,
 					},
@@ -86,6 +92,10 @@ const router = createBrowserRouter([
 						Component: B2BSandbox,
 					},
 					{
+						path: "b2c",
+						Component: B2CSandbox,
+					},
+					{
 						path: "services",
 						Component: ServicesSandbox,
 					},
@@ -108,6 +118,10 @@ const router = createBrowserRouter([
 				Component: Swagger,
 				children: [
 					{ path: "b2b", Component: B2BSwagger },
+					{
+						path: "b2c",
+						Component: B2BSwagger,
+					},
 					{ path: "services", Component: ServicesSwagger },
 					{ path: "agri-services", Component: AgriServicesSwagger },
 					{ path: "healthcare-services", Component: HealthCareServicesSwagger },

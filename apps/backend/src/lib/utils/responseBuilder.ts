@@ -5,6 +5,7 @@ import {
 	AGRI_EQUIPMENT_BPP_MOCKSERVER_URL,
 	AGRI_SERVICES_BPP_MOCKSERVER_URL,
 	B2B_BPP_MOCKSERVER_URL,
+	B2C_BPP_MOCKSERVER_URL,
 	HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL,
 	MOCKSERVER_ID,
 	SERVICES_BPP_MOCKSERVER_URL,
@@ -66,10 +67,12 @@ export const responseBuilder = async (
 	action: string,
 	domain:
 		| "b2b"
+    | "b2c"
 		| "services"
 		| "agri-services"
 		| "healthcare-service"
 		| "agri-equipment-hiring",
+
 	error?: object | undefined
 ) => {
 	res.locals = {};
@@ -91,6 +94,7 @@ export const responseBuilder = async (
 			? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
 			: domain === "agri-equipment-hiring"
 			? AGRI_EQUIPMENT_BPP_MOCKSERVER_URL
+			:domain === "b2c"? B2C_BPP_MOCKSERVER_URL
 			: SERVICES_BPP_MOCKSERVER_URL;
 
 	if (action.startsWith("on_")) {
