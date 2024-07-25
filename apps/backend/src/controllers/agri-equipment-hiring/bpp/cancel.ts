@@ -7,7 +7,10 @@ import {
 } from "../../../lib/utils";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
-import { ORDER_CACELLED_BY, ORDER_STATUS } from "../../../lib/utils/apiConstants";
+import {
+	ORDER_CACELLED_BY,
+	ORDER_STATUS,
+} from "../../../lib/utils/apiConstants";
 
 export const cancelController = async (
 	req: Request,
@@ -60,7 +63,10 @@ const cancelRequest = async (
 ) => {
 	try {
 		const { context } = req.body;
-		const updatedFulfillments = updateFulfillments(transaction.message.order.fulfillments, ON_ACTION_KEY?.ON_CANCEL);
+		const updatedFulfillments = updateFulfillments(
+			transaction.message.order.fulfillments,
+			ON_ACTION_KEY?.ON_CANCEL
+		);
 
 		const responseMessage = {
 			order: {
@@ -90,23 +96,8 @@ const cancelRequest = async (
 				})),
 
 				quote: transaction.message.order.quote,
-
 				fulfillments: updatedFulfillments,
-				// transaction.message.order.fulfillments.map(
-				// 	(fulfillment: any) => ({
-				// 		...fulfillment,
-				// 		state: {
-				// 			...fulfillment.state,
-				// 			descriptor: {
-				// 				code: "Cancelled",
-				// 			},
-				// 		},
-				// 		rateable: undefined,
-				// 	})
-				// ),
-
 				billing: transaction.message.order.billing,
-
 				payments: transaction.message.order.payments.map((itm: any) => ({
 					...itm,
 					tags: itm.tags.filter(

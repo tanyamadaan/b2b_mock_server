@@ -53,6 +53,10 @@ export const AGRI_SERVICES_DOMAINS = [
 export const HEALTHCARE_SERVICES_DOMAINS = [
 	"ONDC:SRV13",
 ]
+
+export const AGRI_EQUIPMENT_SERVICES_DOMAINS = [
+	"ONDC:SRV15",
+]
 export const CITY_CODE = [
 	"std:080",
 	"std:011"
@@ -75,6 +79,7 @@ export const INITIATE_FIELDS = {
 				"services": SERVICES_DOMAINS,
 				"agri-services": AGRI_SERVICES_DOMAINS,
 				"healthcare-services": HEALTHCARE_SERVICES_DOMAINS,
+				"agri-equipment-hiring": AGRI_EQUIPMENT_SERVICES_DOMAINS,
 			},
 		},
 		{
@@ -98,6 +103,8 @@ export const INITIATE_FIELDS = {
 			domainDepended: true,
 			options: {
 				b2b: B2B_SCENARIOS["select"].map((each) => each.scenario),
+			  // "agri-equipment-hiring": A,
+
 				// services: SERVICES_SCENARIOS["select"].map((each) => each.scenario),
 			},
 		},
@@ -161,8 +168,14 @@ export const INITIATE_FIELDS = {
 			name: "update_target",
 			placeholder: "Update Target",
 			type: "select",
-			domainDepended: false,
-			options: ["payments","fulfillments","items"],
+			domainDepended: true,
+			options: {
+				"b2b":["payments"],
+				"services": ["payments"],
+				"agri-services": ["payments","fulfillments"],
+				"healthcare-services": ["payments","fulfillments","items"],
+				"agri-equipment-hiring": ["payments","items"]
+			},
 		},
 	],
 	cancel: [

@@ -158,9 +158,7 @@ export const onUpdateSchema = {
                 },
                 required: [
                   "id",
-                  // "parent_item_id",
                   "fulfillment_ids",
-                  // "location_ids",
                 ],
               },
             },
@@ -197,7 +195,6 @@ export const onUpdateSchema = {
                     required: [
                       "amount",
                       "currency",
-                      "transaction_id",
                       "bank_account_number",
                       "virtual_payment_address",
                     ],

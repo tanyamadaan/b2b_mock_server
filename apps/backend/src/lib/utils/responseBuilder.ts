@@ -604,7 +604,8 @@ export const quoteCreatorHealthCareService = (
 	providersItems?: any,
 	offers?: any,
 	fulfillment_type?: string,
-	service_name?: string
+	service_name?: string,
+	action?:string
 ) => {
 	try {
 		//GET PACKAGE ITEMS
@@ -650,14 +651,15 @@ export const quoteCreatorHealthCareService = (
 
 		let breakup: any[] = [];
 
-		items.forEach((item) => {
+		items.forEach((item: any) => {
+			const quantity = item?.quantity?.selected?.count
+				? item?.quantity?.selected?.count
+				: Number(item?.quantity?.unitized?.measure?.value);
 			breakup.push({
 				title: item.title,
 				price: {
 					currency: "INR",
-					value: (
-						Number(item?.price?.value) * item?.quantity?.selected.count
-					).toString(),
+					value: (Number(item?.price?.value) * quantity).toString(),
 				},
 				tags: item?.tags,
 				item:
@@ -725,7 +727,7 @@ export const quoteCreatorHealthCareService = (
 			}
 		);
 
-		if (fulfillment_type === "Seller-Fulfilled") {
+		if (fulfillment_type === "Seller-Fulfilled" || service_name === "agri-equipment-hiring") {
 			breakup?.push({
 				title: "pickup_charge",
 				price: {
@@ -751,7 +753,7 @@ export const quoteCreatorHealthCareService = (
 			});
 		}
 
-		if (service_name === "agri-equipment-hiring") {
+		if (service_name === "agri-equipment-hiring"){
 			breakup?.push({
 				title: "refundable_security",
 				price: {
@@ -776,9 +778,7 @@ export const quoteCreatorHealthCareService = (
 				],
 			});
 		}
-
 		let totalPrice = 0;
-
 		breakup.forEach((entry) => {
 			const priceValue = parseFloat(entry?.price?.value);
 			if (!isNaN(priceValue)) {
