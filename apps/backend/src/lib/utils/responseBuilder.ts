@@ -211,6 +211,7 @@ export const responseBuilder = async (
 				const logIndex = transactionKeys.filter((e) =>
 					e.includes("on_status-to-server")
 				).length;
+
 				await redis.set(
 					`${
 						(async.context! as any).transaction_id
@@ -234,6 +235,7 @@ export const responseBuilder = async (
 					timestamp: new Date().toISOString(),
 					response: response.data,
 				};
+
 				await redis.set(
 					`${(async.context! as any).transaction_id}-${action}-from-server`,
 					JSON.stringify(log)
@@ -260,10 +262,25 @@ export const responseBuilder = async (
 					`${(async.context! as any).transaction_id}-${action}-from-server`,
 					JSON.stringify(log)
 				);
+
 				return next(error);
 			}
 		}
 
+		logger.info({
+			type: "response",
+			action: action,
+			transaction_id: (reqContext as any).transaction_id,
+			message: { sync: { message: { ack: { status: "ACK" } } } },
+		});
+		return res.json({
+			message: {
+				ack: {
+					status: "ACK",
+				},
+			},
+		});
+		
 		// logger.info({
 		// 	type: "response",
 		// 	action: action,

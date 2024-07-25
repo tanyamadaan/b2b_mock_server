@@ -9,7 +9,9 @@ import {
 } from "../../../lib/utils";
 import { v4 as uuidv4 } from "uuid";
 import {
+	AGRI_HEALTH_STATUS,
 	AGRI_HEALTHCARE_STATUS,
+	BID_AUCTION_STATUS,
 	EQUIPMENT_HIRING_STATUS,
 	SERVICES_DOMAINS,
 } from "../../../lib/utils/apiConstants";
@@ -31,7 +33,7 @@ export const initiateStatusController = async (
 			transactionId
 		);
 		if (!on_confirm) {
-			return send_nack(res, ERROR_MESSAGES.ON_INIT_DOES_NOT_EXISTED);
+			return send_nack(res, ERROR_MESSAGES.ON_CONFIRM_DOES_NOT_EXISTED);
 		}
 		const statusIndex = transactionKeys.filter((e) =>
 			e.includes("-status-to-server")
@@ -65,20 +67,24 @@ const intializeRequest = async (
 				order_id: transaction.message.order.id,
 			},
 		};
-
 		const domain = context?.domain;
 		switch (domain) {
-			case SERVICES_DOMAINS.SERVICES || SERVICES_DOMAINS.AGRI_EQUIPMENT:
+			case SERVICES_DOMAINS.SERVICES:
 				senarios = EQUIPMENT_HIRING_STATUS;
 				break;
+				case SERVICES_DOMAINS.AGRI_EQUIPMENT:
+				senarios = EQUIPMENT_HIRING_STATUS;
+				break;
+			case SERVICES_DOMAINS.BID_ACTION_SERVICES:
+				senarios = BID_AUCTION_STATUS;
+				break;
 			default: //service started is the default case
-				senarios = AGRI_HEALTHCARE_STATUS;
+				senarios = AGRI_HEALTH_STATUS;
 				break;
 		}
 
 		// satus index is always witin boundary of senarios array
 		statusIndex = Math.min(Math.max(statusIndex, 0), senarios.length - 1);
-		console.log("senariossssssssssss",senarios,statusIndex)
 
 		await send_response(
 			res,

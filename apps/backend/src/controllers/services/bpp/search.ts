@@ -19,7 +19,6 @@ export const searchController = (
 	next: NextFunction
 ) => {
 	try {
-		console.log("bpppppppppppppppsearchhhhhhhhhhh")
 		const domain = req.body.context.domain;
 		let onSearch, file;
 		const {

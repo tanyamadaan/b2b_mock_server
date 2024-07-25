@@ -31,7 +31,6 @@ export const MockRequestSection = () => {
 		scenario: string;
 	}>();
 	const { domain } = useDomain();
-	console.log("domainnnnnnnnnnn",domain)
 	const { action, detectAction, logError, scenarios } = useAction();
 	const { setAsyncResponse, setSyncResponse } = useMock();
 
@@ -71,7 +70,6 @@ export const MockRequestSection = () => {
 					"Content-Type": "application/json",
 				},
 			});
-			console.log("RESPONSE", response);
 			setSyncResponse(response.data.sync);
 
 			setAsyncResponse(response.data.async || {});

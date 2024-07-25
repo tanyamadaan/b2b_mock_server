@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import {
 	AGRI_HEALTHCARE_STATUS,
 	AGRI_HEALTHCARE_STATUS_OBJECT,
+	BID_AUCTION_STATUS,
 	EQUIPMENT_HIRING_STATUS,
 	FULFILLMENT_LABELS,
 	ORDER_STATUS,
@@ -63,8 +64,6 @@ const statusRequest = async (
 			ON_ACTION_KEY.ON_STATUS,
 			req.body.context.transaction_id
 		);
-
-		console.log("scenario statusssssss",scenario)
 		let next_status = scenario;
 
 		if (on_status) {
@@ -74,11 +73,10 @@ const statusRequest = async (
 
 			//FIND NEXT STATUS
 			let lastStatusIndex: any = 0;
-
 			switch (domain) {
 				case SERVICES_DOMAINS.SERVICES || SERVICES_DOMAINS.AGRI_EQUIPMENT:
 					lastStatusIndex = EQUIPMENT_HIRING_STATUS.indexOf(lastStatus);
-					if (lastStatusIndex === 2){
+					if (lastStatusIndex === 2) {
 						next_status = lastStatus;
 					}
 					if (
@@ -88,12 +86,22 @@ const statusRequest = async (
 						const nextStatusIndex = lastStatusIndex + 1;
 						next_status = EQUIPMENT_HIRING_STATUS[nextStatusIndex];
 					}
-
+					break;
+				case SERVICES_DOMAINS.BID_ACTION_SERVICES:
+					lastStatusIndex = BID_AUCTION_STATUS.indexOf(lastStatus);
+					if (lastStatusIndex === 1) {
+						next_status = lastStatus;
+					}
+					if (
+						lastStatusIndex !== -1 &&
+						lastStatusIndex < BID_AUCTION_STATUS.length - 1
+					) {
+						const nextStatusIndex = lastStatusIndex + 1;
+						next_status = BID_AUCTION_STATUS[nextStatusIndex];
+					}
 					break;
 				default: //service started is the default case
 					lastStatusIndex = AGRI_HEALTHCARE_STATUS.indexOf(lastStatus);
-					console.log("healthcaresssssssssss")
-
 					if (lastStatus === 6) {
 						next_status = lastStatus;
 					}
@@ -107,10 +115,8 @@ const statusRequest = async (
 					break;
 			}
 		}
-
-		console.log("domainssssssssssssss",domain,next_status)
-
 		scenario = scenario ? scenario : next_status;
+
 		const responseMessage: any = {
 			order: {
 				id: message.order.id,
@@ -144,7 +150,7 @@ const statusRequest = async (
 									: undefined,
 								person: stop.person ? stop.person : stop.customer?.person,
 							};
-							if (stop.type === "start") {
+							if (stop.type === "start"){
 								return {
 									...demoObj,
 									location: {
@@ -252,6 +258,15 @@ const statusRequest = async (
 					(fulfillment: Fulfillment) => {
 						fulfillment.state.descriptor.code =
 							AGRI_HEALTHCARE_STATUS_OBJECT.REPORT_SHARED;
+					}
+				);
+				break;
+			case AGRI_HEALTHCARE_STATUS_OBJECT.PLACED:
+				// responseMessage.order.status = AGRI_HEALTHCARE_STATUS_OBJECT.COMPLETED;
+				responseMessage.order.fulfillments.forEach(
+					(fulfillment: Fulfillment) => {
+						fulfillment.state.descriptor.code =
+							AGRI_HEALTHCARE_STATUS_OBJECT.PLACED;
 					}
 				);
 				break;

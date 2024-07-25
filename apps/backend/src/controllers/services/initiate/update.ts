@@ -206,7 +206,7 @@ function rescheduleRequest(message: any, update_target: string) {
 	return responseMessage;
 }
 
-function updatePaymentController(message: any, update_target: string) {
+function updatePaymentController(message: any, update_target: string){
 	let {
 		order: { items, payments, fulfillments, quote },
 	} = message;
@@ -215,6 +215,7 @@ function updatePaymentController(message: any, update_target: string) {
 		ele.status = "PAID";
 		return ele;
 	});
+
 	const responseMessage = {
 		update_target,
 		order: {
@@ -247,18 +248,18 @@ function modifyItemsRequest(message: any, update_target: string){
 			"update/update_extend_renting_period.yaml"
 		)
 	);
-
 	const response = YAML.parse(file.toString());
-	// const updatedPackageQuantity = items.map((ele: any) => {
-	// 	ele.quantity.selected.count = 3; //Update quantity of tests
-	// 	return ele;
-	// });
+	const updatedPackageQuantity = items.map((ele: any) => {
+		ele.quantity.selected.count = 3; //Update quantity of tests
+		return ele;
+	});
+
 	const responseMessage = {
 		update_target: "items",
 		order: {
 			...response.value.message.order,
 			id: uuidv4(),
-			// items: [updatedPackageQuantity[0]],
+			items: [updatedPackageQuantity[0]],
 			payments,
 			quote,
 		},

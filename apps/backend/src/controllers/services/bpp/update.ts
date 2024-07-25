@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import {
 	quoteCreatorHealthCareService,
+	quoteCreatorService,
 	redisFetchToServer,
 	responseBuilder,
 	send_nack,
@@ -9,7 +10,11 @@ import {
 } from "../../../lib/utils";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
-import { FULFILLMENT_LABELS, FULFILLMENT_STATES } from "../../../lib/utils/apiConstants";
+import {
+	FULFILLMENT_LABELS,
+	FULFILLMENT_STATES,
+	SERVICES_DOMAINS,
+} from "../../../lib/utils/apiConstants";
 
 export const updateController = async (
 	req: Request,
@@ -143,27 +148,55 @@ export const updateRescheduleAndItemsController = (
 			providersItems,
 		} = req.body;
 
+		const domain = context?.domain;
 		//Add total quantity of items using coming request and on_confirm order
 
-		//on_confirm items selected 
-		const on_confirm_quantity = on_confirm?.message?.order?.items[0]?.quantity?.selected?.count
-		const update_item_quantity = Number(order?.items[0]?.quantity?.unitized?.measure?.value);
+		//on_confirm items selected
+		const on_confirm_quantity =
+			on_confirm?.message?.order?.items[0]?.quantity?.selected?.count;
 
-		order.items[0].quantity.unitized.measure.value = on_confirm_quantity + update_item_quantity;
+		const update_item_quantity = Number(
+			order?.items[0]?.quantity?.unitized?.measure?.value?order?.items[0]?.quantity?.unitized?.measure?.value:"2"
+		);
+
+		if(order?.items[0]?.quantity?.unitized?.measure?.value){
+			order.items[0].quantity.unitized.measure.value =
+			on_confirm_quantity + update_item_quantity;
+		}
 		
 		//UPDATE PAYMENT OBJECT AND QUOTE ACCORDING TO ITEMS AND PERSONS
-		const quote = quoteCreatorHealthCareService(
-			order?.items,
-			providersItems?.items,
-			providersItems?.offers,
-			order?.fulfillments[0]?.type,
-			"agri-equipment-hiring",
-		);
+		const quote =
+			domain === SERVICES_DOMAINS.SERVICES
+				? quoteCreatorService(order?.items, providersItems?.items)
+				: domain === SERVICES_DOMAINS.BID_ACTION_SERVICES
+				? quoteCreatorHealthCareService(
+						order?.items,
+						providersItems?.items,
+						"",
+						order?.fulfillments[0]?.type,
+						"bid_auction_service"
+				  )
+				: domain === SERVICES_DOMAINS.AGRI_EQUIPMENT
+				? quoteCreatorHealthCareService(
+						order?.items,
+						providersItems?.items,
+						providersItems?.offers,
+						order?.fulfillments[0]?.type,
+						"agri-equipment-hiring"
+				  )
+				: quoteCreatorHealthCareService(
+						order?.items,
+						providersItems?.items,
+						"",
+						order?.fulfillments[0]?.type
+				  );
 
 		//UPDATE PAYMENT OBJECT ACCORDING TO QUANTITY
 		const updatedPaymentObj = updatePaymentObject(
 			order?.payments,
-			(update_item_quantity*parseFloat(order.items[0]?.price?.value)).toString()
+			(
+				update_item_quantity * parseFloat(order.items[0]?.price?.value)
+			).toString()
 		);
 
 		const responseMessage = {
@@ -198,7 +231,7 @@ export const updateRescheduleAndItemsController = (
 function updatePaymentObject(payments: any, quotePrice: any) {
 	try {
 		//GET TOTAL AMOUNT OF PAYMENT
-	
+
 		payments.push({
 			...payments[0],
 			id: "PY2",
@@ -215,8 +248,11 @@ function updatePaymentObject(payments: any, quotePrice: any) {
 	}
 }
 
-
-export const updateRescheduleController = (req: Request, res: Response, next: NextFunction) => {
+export const updateRescheduleController = (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	const {
 		context,
 		message: { order },
@@ -243,7 +279,10 @@ export const updateRescheduleController = (req: Request, res: Response, next: Ne
 		next,
 		context,
 		responseMessage,
-		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? ON_ACTION_KEY.ON_UPDATE : `/${ON_ACTION_KEY.ON_UPDATE}`
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/")
+				? ON_ACTION_KEY.ON_UPDATE
+				: `/${ON_ACTION_KEY.ON_UPDATE}`
 		}`,
 		`${ON_ACTION_KEY.ON_UPDATE}`,
 		"services"

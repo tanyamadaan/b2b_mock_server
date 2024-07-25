@@ -208,7 +208,7 @@ export const InitiateRequestSection = () => {
 														</Option>
 													))}
 												</Select>
-											) : field.type === "select" && !field.domainDepended ? (
+											) : field.type === "select" && !field.domainDepended ?(
 												<Select
 													placeholder={field.placeholder}
 													key={"select-" + action + "-" + index}
