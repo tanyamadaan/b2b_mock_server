@@ -1,23 +1,18 @@
 import { NextFunction, Request, Response } from "express";
 import {
-  B2B_BAP_MOCKSERVER_URL,
-  B2B_EXAMPLES_PATH,
+  B2C_BAP_MOCKSERVER_URL,
   MOCKSERVER_ID,
   send_nack,
   send_response,
-  createAuthHeader,
-  logger,
-  redis,
   redisFetchToServer,
+  B2C_EXAMPLES_PATH,
 } from "../../../lib/utils";
-import axios from "axios";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
-
 import { v4 as uuidv4 } from "uuid";
-import { set } from "lodash";
-import { AxiosError } from "axios";
+import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
+import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 
 export const initiateSelectController = async (
   req: Request,
@@ -26,23 +21,9 @@ export const initiateSelectController = async (
 ) => {
   try {
     const { scenario, transactionId } = req.body;
-
-    // const transactionKeys = await redis.keys(`${transactionId}-*`);
-    // const ifTransactionExist = transactionKeys.filter((e) =>
-    // 	e.includes("on_search-to-server")
-    // );
-
-    // if (ifTransactionExist.length === 0) {
-    // 	send_nack(res,"On Search doesn't exist")
-    // }
-    // const transaction = await redis.mget(ifTransactionExist);
-    // const parsedTransaction = transaction.map((ele) => {
-    // 	return JSON.parse(ele as string);
-    // });
-
-    const on_search = await redisFetchToServer("on_search", transactionId);
+    const on_search = await redisFetchToServer(ON_ACTION_KEY.ON_SEARCH, transactionId);
     if (!on_search) {
-      return send_nack(res, "On Search doesn't exist");
+      return send_nack(res, ERROR_MESSAGES.ON_SEARCH_DOES_NOT_EXISTED);
     }
     return intializeRequest(res, next, on_search, scenario);
   } catch (error) {
@@ -61,7 +42,7 @@ const intializeRequest = async (
     const { transaction_id } = context;
 
     const file = fs.readFileSync(
-      path.join(B2B_EXAMPLES_PATH, "select/select_domestic.yaml")
+      path.join(B2C_EXAMPLES_PATH, "select/select_exports.yaml")
     );
     const response = YAML.parse(file.toString());
 
@@ -76,7 +57,7 @@ const intializeRequest = async (
         message_id: uuidv4(),
         ttl: scenario === "rfq" ? "P1D" : "PT30S",
         bap_id: MOCKSERVER_ID,
-        bap_uri: B2B_BAP_MOCKSERVER_URL,
+        bap_uri: B2C_BAP_MOCKSERVER_URL,
       },
       message: {
         order: {
@@ -120,56 +101,6 @@ const intializeRequest = async (
       "select",
       (scenario = scenario)
     );
-    // const header = await createAuthHeader(select);
-    // try {
-    // 	await redis.set(
-    // 		`${transaction_id}-select-from-server`,
-    // 		JSON.stringify({ request: { ...select } })
-    // 	);
-    // 	const response = await axios.post(
-    // 		`${context.bpp_uri}/select?scenario=${scenario}`,
-    // 		select,
-    // 		{
-    // 			headers: {
-    // 				// "X-Gateway-Authorization": header,
-    // 				authorization: header,
-    // 			},
-    // 		}
-    // 	);
-
-    // 	await redis.set(
-    // 		`${transaction_id}-select-from-server`,
-    // 		JSON.stringify({
-    // 			request: { ...select },
-    // 			response: {
-    // 				response: response.data,
-    // 				timestamp: new Date().toISOString(),
-    // 			},
-    // 		})
-    // 	);
-
-    // 	return res.json({
-    // 		message: {
-    // 			ack: {
-    // 				status: "ACK",
-    // 			},
-    // 		},
-    // 		transaction_id,
-    // 	});
-    // } catch (error) {
-    // 	await redis.set(
-    // 		`${transaction_id}-select-from-server`,
-    // 		JSON.stringify({
-    // 			request: { ...select },
-    // 			response: {
-    // 				response: error instanceof AxiosError ? error.response : error,
-    // 				timestamp: new Date().toISOString(),
-    // 			},
-    // 		})
-    // 	);
-
-    // 	return next(error);
-    // }
   } catch (err) {
     next(err);
   }

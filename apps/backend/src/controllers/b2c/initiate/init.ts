@@ -1,17 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import {
-  B2B_BAP_MOCKSERVER_URL,
-  B2B_EXAMPLES_PATH,
+  B2C_BAP_MOCKSERVER_URL,
   MOCKSERVER_ID,
   send_response,
   send_nack,
-  createAuthHeader,
-  logger,
   redis,
   Payment,
   Fulfillment,
+  B2C_EXAMPLES_PATH,
 } from "../../../lib/utils";
-import axios from "axios";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
@@ -67,7 +64,7 @@ const intializeRequest = async (
     const { transaction_id } = context;
 
     const file = fs.readFileSync(
-      path.join(B2B_EXAMPLES_PATH, "init/init_domestic.yaml")
+      path.join(B2C_EXAMPLES_PATH, "init/init_exports.yaml")
     );
     const response = YAML.parse(file.toString());
 
@@ -99,7 +96,7 @@ const intializeRequest = async (
         timestamp: new Date().toISOString(),
         action: "init",
         bap_id: MOCKSERVER_ID,
-        bap_uri: B2B_BAP_MOCKSERVER_URL,
+        bap_uri: B2C_BAP_MOCKSERVER_URL,
         // bpp_id: MOCKSERVER_ID,
         // bpp_uri,
         ttl: "PT30S",

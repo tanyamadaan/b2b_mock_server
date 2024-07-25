@@ -436,7 +436,7 @@ export const selectSchema = {
 						},
 					},
 					additionalProperties: false,
-					required: ["provider", "items", "fulfillments", "payments", "tags"],
+					required: ["provider", "items", "fulfillments", "payments"],
 				},
 			},
 			required: ["order"],

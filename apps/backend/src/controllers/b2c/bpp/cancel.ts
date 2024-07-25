@@ -20,19 +20,6 @@ export const cancelController = async (
 ) => {
   try {
     const { transaction_id } = req.body.context;
-
-    // const transactionKeys = await redis.keys(`${transaction_id}-*`);
-    // const ifTransactionExist = transactionKeys.filter((e) =>
-    // 	e.includes("on_confirm-from-server")
-    // );
-
-    // if (ifTransactionExist.length === 0) {
-    // 	send_nack(res,"On Confirm doesn't exist")
-    // }
-    // const transaction = await redis.mget(ifTransactionExist);
-    // const parsedTransaction = transaction.map((ele: any) => {
-    // 	return JSON.parse(ele as string);
-    // });
     const on_confirm = await redisFetchFromServer("on_confirm", transaction_id);
     if (!on_confirm) {
       return send_nack(res, "On Confirm doesn't exist");
@@ -179,7 +166,7 @@ const cancelRequest = async (
         req.body.context.bap_uri.endsWith("/") ? "on_cancel" : "/on_cancel"
       }`,
       `on_cancel`,
-      "b2b"
+      "b2c"
     );
   } catch (error) {
     next(error);

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import {
-  B2B_BAP_MOCKSERVER_URL,
+  B2C_BAP_MOCKSERVER_URL,
   send_response,
   MOCKSERVER_ID,
   redis,
@@ -104,7 +104,7 @@ async function intializeRequest(
         timestamp,
         action: "update",
         bap_id: MOCKSERVER_ID,
-        bap_uri: B2B_BAP_MOCKSERVER_URL,
+        bap_uri: B2C_BAP_MOCKSERVER_URL,
         message_id: uuidv4(),
       },
       message: {
