@@ -20,6 +20,9 @@ import { B2BSandbox, ServicesSandbox } from "./pages/sandbox/domains";
 import { AgriServicesSandbox } from "./pages/sandbox/domains/agri-services";
 import { HealthCareServicesSandbox } from "./pages/sandbox/domains/healthcare-services";
 import Readme from "./pages/readme";
+import { AgriEquipmentServicesSandbox } from "./pages/sandbox/domains/agri-equipment-services";
+import { AgriEquipmentServicesMock } from "./pages/mock/domains/agri-equipment-services";
+import { AgriEquipmentHiringSwagger } from "./pages/swagger/domains/agri-equipment-hiring";
 import { B2CMock } from "./pages/mock/domains/b2c";
 import { B2CSandbox } from "./pages/sandbox/domains/b2c";
 
@@ -70,6 +73,10 @@ const router = createBrowserRouter([
 						path: "healthcare-services",
 						Component: HealthCareServicesMock,
 					},
+					{
+						path:"agri-equipment-services",
+						Component:AgriEquipmentServicesMock
+					}
 				],
 			},
 			{
@@ -100,6 +107,10 @@ const router = createBrowserRouter([
 						path: "healthcare-services",
 						Component: HealthCareServicesSandbox,
 					},
+					{
+						path: "agri-equipment-services",
+						Component: AgriEquipmentServicesSandbox,
+					},
 				],
 			},
 			{
@@ -114,6 +125,7 @@ const router = createBrowserRouter([
 					{ path: "services", Component: ServicesSwagger },
 					{ path: "agri-services", Component: AgriServicesSwagger },
 					{ path: "healthcare-services", Component: HealthCareServicesSwagger },
+					{ path: "agri-equipment-services", Component: AgriEquipmentHiringSwagger },
 					{ path: "auth", Component: AuthSwagger },
 					{ path: "misc", Component: MiscSwagger },
 				],

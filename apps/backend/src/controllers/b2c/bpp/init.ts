@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import {
-  quoteCreator,
   responseBuilder,
-  B2B_EXAMPLES_PATH,
   redis,
   send_nack,
   Item,
   Fulfillment,
   Breakup,
+  quoteCreatorB2c,
+  B2C_EXAMPLES_PATH,
 } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
@@ -57,6 +57,7 @@ export const initController = async (
     });
 
     const providers = parsedTransaction[0].request.message.catalog.providers;
+    req.body.providersItems = providers[0];
     const item_id_name: Item_id_name[] = providers.map((pro: any) => {
       const mappedItems = pro.items.map((item: Item) => ({
         id: item.id,
@@ -66,19 +67,8 @@ export const initController = async (
     });
 
     req.body.item_arr = item_id_name.flat();
-
-    // const { scenario } = req.query;
-    // switch (scenario) {
-    // case "default":
-    // 	initDomesticController(req, res);
-    // 	break;
-    // // case "reject-rfq":
-    // // 	initRejectRfq(req, res);
-    // // 	break;
-    // default:
     initDomesticController(req, res, next);
-    // 		break;
-    // }
+   
   } catch (error) {
     return next(error);
   }
@@ -90,12 +80,12 @@ const initDomesticController = (
   next: NextFunction
 ) => {
   try {
-    const { context, message } = req.body;
-    const { items, fulfillments, tags, billing, ...remainingMessage } =
+    const { context, message,providersItems} = req.body;
+    const { items, fulfillments, billing, ...remainingMessage } =
       message.order;
 
     const file = fs.readFileSync(
-      path.join(B2B_EXAMPLES_PATH, "on_init/on_init_domestic.yaml")
+      path.join(B2C_EXAMPLES_PATH, "on_init/on_init_exports.yaml")
     );
 
     const response = YAML.parse(file.toString());
@@ -130,7 +120,6 @@ const initDomesticController = (
           tracking: true,
         })),
         tags: [
-          ...tags,
           {
             descriptor: {
               code: "bpp_terms",
@@ -176,7 +165,7 @@ const initDomesticController = (
           ...each,
           ...staticPaymentInfo,
         })),
-        quote: quoteCreator(items),
+        quote: quoteCreatorB2c(message?.order?.items,providersItems?.items),
       },
     };
 
@@ -211,7 +200,7 @@ const initDomesticController = (
         req.body.context.bap_uri.endsWith("/") ? "on_init" : "/on_init"
       }`,
       `on_init`,
-      "b2b"
+      "b2c"
     );
   } catch (error) {
     next(error);

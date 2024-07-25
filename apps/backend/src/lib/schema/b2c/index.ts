@@ -37,6 +37,7 @@ export const b2cSchemaValidator =
 			| "on_track"
 			| "cancel"
 			| "on_cancel"
+			| "rating"
 	) =>
 	(req: Request, res: Response, next: NextFunction) => {
 		const ajv = new Ajv({

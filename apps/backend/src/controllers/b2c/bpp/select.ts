@@ -1,13 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import {
-  quoteCreator,
   responseBuilder,
   redis,
   send_nack,
   Item,
   Quantity,
   Breakup,
+  quoteCreatorB2c,
 } from "../../../lib/utils";
+import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 interface Item_id_name {
   id: string;
   name: string;
@@ -35,7 +36,7 @@ export const selectController = async (
       ifFromTransactionExist.length === 0 &&
       ifToTransactionExist.length === 0
     ) {
-      return send_nack(res, "On Search doesn't exist");
+      return send_nack(res, ERROR_MESSAGES.ON_SEARCH_DOES_NOT_EXISTED);
     }
     const transaction = await redis.mget(
       ifFromTransactionExist.length > 0
@@ -47,6 +48,8 @@ export const selectController = async (
     });
 
     const providers = parsedTransaction[0].request.message.catalog.providers;
+    req.body.providersItems = providers[0];
+
     const item_id_name: Item_id_name[] = providers.map((pro: any) => {
       const mappedItems = pro.items.map((item: Item) => ({
         id: item.id,
@@ -61,6 +64,7 @@ export const selectController = async (
       const item = req.body.item_arr.find(
         (item: Item_id_name) => item.id == itm.id
       );
+
       if (
         "selected" in itm.quantity &&
         itm.quantity.selected.count > item.available_qty
@@ -83,9 +87,6 @@ export const selectController = async (
     });
 
     switch (scenario) {
-      case "default":
-        selectDomesticController(req, res, next);
-        break;
       case "non-serviceable":
         selectNonServiceableController(req, res, next);
         break;
@@ -107,7 +108,7 @@ export const selectDomesticController = (
   next: NextFunction
 ) => {
   try {
-    const { context, message } = req.body;
+    const { context, message,providersItems} = req.body;
     const { ttl, ...provider } = message.order.provider;
 
     var responseMessage = {
@@ -141,7 +142,8 @@ export const selectDomesticController = (
             },
           })
         ),
-        quote: quoteCreator(message.order.items),
+        quote: quoteCreatorB2c(message?.order?.items,providersItems?.items),
+
       },
     };
     try {
@@ -167,7 +169,7 @@ export const selectDomesticController = (
         req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
       }`,
       `on_select`,
-      "b2b"
+      "b2c"
     );
   } catch (error) {
     next(error);
@@ -180,13 +182,13 @@ export const selectNonServiceableController = (
   next: NextFunction
 ) => {
   try {
-    const { context, message } = req.body;
+    const { context, message,providersItems } = req.body;
     const { ttl, ...provider } = message.order.provider;
 
     var responseMessage = {
       order: {
         provider,
-        payments: message.order.payments[0],
+        payments: [message.order.payments[0]],
         items: message.order.items.map(
           ({
             location_ids,
@@ -214,7 +216,7 @@ export const selectNonServiceableController = (
             },
           })
         ),
-        quote: quoteCreator(message.order.items),
+        quote: quoteCreatorB2c(message?.order?.items,providersItems?.items),
       },
     };
     return responseBuilder(
@@ -226,7 +228,7 @@ export const selectNonServiceableController = (
         req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
       }`,
       `on_select`,
-      "b2b",
+      "b2c",
       {
         type: "DOMAIN-ERROR",
         code: "30009",
@@ -244,13 +246,13 @@ export const selectQuantityUnavailableController = (
   next: NextFunction
 ) => {
   try {
-    const { context, message } = req.body;
+    const { context, message,providersItems } = req.body;
     const { ttl, ...provider } = message.order.provider;
 
     var responseMessage = {
       order: {
         provider,
-        payments: message.order.payments[0],
+        payments: [message.order.payments[0]],
         items: message.order.items.map(
           ({
             location_ids,
@@ -278,7 +280,7 @@ export const selectQuantityUnavailableController = (
             },
           })
         ),
-        quote: quoteCreator(message.order.items),
+        quote:quoteCreatorB2c(message?.order?.items,providersItems?.items),
       },
     };
     return responseBuilder(
@@ -290,7 +292,7 @@ export const selectQuantityUnavailableController = (
         req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
       }`,
       `on_select`,
-      "b2b",
+      "b2c",
       {
         type: "DOMAIN-ERROR",
         code: "40002",

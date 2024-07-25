@@ -289,7 +289,7 @@ const statusRequest = async (
         req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
       }`,
       `on_status`,
-      "b2b"
+      "b2c"
     );
   } catch (error) {
     next(error);
