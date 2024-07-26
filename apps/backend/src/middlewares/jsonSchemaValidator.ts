@@ -2,7 +2,6 @@ import { b2bSchemaValidator } from "../lib/schema/b2b";
 import { srvSchemaValidator } from "../lib/schema/services";
 import { b2cSchemaValidator } from "../lib/schema/b2c";
 
-
 type JsonSchemaValidatorType = {
 	domain: "b2b" | "b2c" | "services";
 

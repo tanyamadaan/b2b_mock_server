@@ -628,6 +628,7 @@ export const quoteCreatorB2c = (items: Item[], providersItems?: any) => {
 
 	return result;
 };
+
 export const quoteCreatorAgriService = (
 	items: Item[],
 	providersItems?: any
@@ -753,6 +754,7 @@ export const quoteCreatorHealthCareService = (
 	action?: string
 ) => {
 	try {
+		
 		//GET PACKAGE ITEMS
 		//get price from on_search
 		items.forEach((item) => {
@@ -955,9 +957,14 @@ export const quoteCreatorHealthCareService = (
 		}
 		let totalPrice = 0;
 		breakup.forEach((entry) => {
+			console.log("entryyyyyyyyyyyyyyyyyyyyy",entry)
 			const priceValue = parseFloat(entry?.price?.value);
 			if (!isNaN(priceValue)) {
-				totalPrice += priceValue;
+				if(entry?.title === 'discount'){
+					totalPrice -= priceValue;
+				}else{
+					totalPrice += priceValue;
+				}
 			}
 		});
 
