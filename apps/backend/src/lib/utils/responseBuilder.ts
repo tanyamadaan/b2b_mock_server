@@ -5,6 +5,7 @@ import {
 	AGRI_EQUIPMENT_BPP_MOCKSERVER_URL,
 	AGRI_SERVICES_BPP_MOCKSERVER_URL,
 	B2B_BPP_MOCKSERVER_URL,
+	B2C_BPP_MOCKSERVER_URL,
 	HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL,
 	MOCKSERVER_ID,
 	SERVICES_BPP_MOCKSERVER_URL,
@@ -67,10 +68,12 @@ export const responseBuilder = async (
 	action: string,
 	domain:
 		| "b2b"
+		| "b2c"
 		| "services"
 		| "agri-services"
 		| "healthcare-service"
 		| "agri-equipment-hiring",
+
 	error?: object | undefined
 ) => {
 	res.locals = {};
@@ -84,7 +87,11 @@ export const responseBuilder = async (
 	};
 
 	const bppURI =
-		domain === "b2b" ? B2B_BPP_MOCKSERVER_URL : SERVICES_BPP_MOCKSERVER_URL;
+		domain === "b2b"
+			? B2B_BPP_MOCKSERVER_URL
+			: domain === "b2c"
+			? B2C_BPP_MOCKSERVER_URL
+			: SERVICES_BPP_MOCKSERVER_URL;
 
 	if (action.startsWith("on_")) {
 		async = {
@@ -280,7 +287,7 @@ export const responseBuilder = async (
 				},
 			},
 		});
-		
+
 		// logger.info({
 		// 	type: "response",
 		// 	action: action,
@@ -429,6 +436,7 @@ export const quoteCreator = (items: Item[]) => {
 			},
 		},
 	];
+
 	const chargesOnItem = [
 		{
 			"@ondc/org/item_id": "I1",
@@ -449,6 +457,7 @@ export const quoteCreator = (items: Item[]) => {
 			},
 		},
 	];
+
 	items.forEach((item: any) => {
 		breakup = [
 			...breakup,
@@ -472,6 +481,7 @@ export const quoteCreator = (items: Item[]) => {
 				},
 			},
 		];
+
 		item.fulfillment_ids.forEach((eachId: string) => {
 			breakup = [
 				...breakup,
@@ -482,6 +492,7 @@ export const quoteCreator = (items: Item[]) => {
 			];
 		});
 	});
+
 	return {
 		breakup,
 		price: {
@@ -492,6 +503,131 @@ export const quoteCreator = (items: Item[]) => {
 	};
 };
 
+//B2C QUOTE CREATOR WITH DYNAMIC ITEMS AND PRICE
+export const quoteCreatorB2c = (items: Item[], providersItems?: any) => {
+	//get price from on_search
+	let breakup: any[] = [];
+	const chargesOnFulfillment = [
+		{
+			"@ondc/org/item_id": "F1",
+			title: "Delivery charges",
+			"@ondc/org/title_type": "delivery",
+			price: {
+				currency: "INR",
+				value: "2.00",
+			},
+		},
+		{
+			"@ondc/org/item_id": "F1",
+			title: "Packing charges",
+			"@ondc/org/title_type": "packing",
+			price: {
+				currency: "INR",
+				value: "5.00",
+			},
+		},
+		{
+			"@ondc/org/item_id": "F1",
+			title: "Convenience Fee",
+			"@ondc/org/title_type": "misc",
+			price: {
+				currency: "INR",
+				value: "1.00",
+			},
+		},
+	];
+
+	const chargesOnItem = [
+		{
+			"@ondc/org/item_id": "I1",
+			title: "Tax",
+			"@ondc/org/title_type": "tax",
+			price: {
+				currency: "INR",
+				value: "0.00",
+			},
+		},
+		{
+			"@ondc/org/item_id": "I1",
+			title: "Discount",
+			"@ondc/org/title_type": "discount",
+			price: {
+				currency: "INR",
+				value: "-3.00",
+			},
+		},
+	];
+
+	items.forEach((item) => {
+		// Find the corresponding item in the second array
+		if (providersItems) {
+			const matchingItem = providersItems.find(
+				(secondItem: { id: string }) => secondItem?.id === item?.id
+			);
+			// If a matching item is found, update the price in the items array
+			if (matchingItem) {
+				item.title = matchingItem?.descriptor?.name;
+				item.price = matchingItem?.price;
+				item.tags = matchingItem?.tags;
+			}
+		}
+	});
+
+	items.forEach((item) => {
+		breakup = [
+			...chargesOnItem,
+			{
+				title: item.title,
+				"@ondc/org/item_id": item.id,
+				"@ondc/org/item_quantity": {
+					count: item.quantity.selected.count,
+				},
+				"@ondc/org/title_type": "item",
+				price: {
+					currency: "INR",
+					value: (
+						Number(item?.price?.value) * item?.quantity?.selected?.count
+					).toString(),
+				},
+				tags: item.tags,
+				item: {
+					id: item.id,
+					price: item.price,
+					quantity: item.quantity ? item.quantity : undefined,
+				},
+			},
+		];
+		item.fulfillment_ids.forEach((eachId: string) => {
+			breakup = [
+				...breakup,
+				...chargesOnFulfillment.map((each) => ({
+					...each,
+					"@ondc/org/item_id": eachId,
+				})),
+			];
+		});
+	});
+
+	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
+	let totalPrice = 0;
+	breakup.forEach((entry) => {
+		const priceValue = parseFloat(entry.price.value);
+		if (!isNaN(priceValue)) {
+			totalPrice += priceValue;
+		}
+	});
+
+	const result = {
+		breakup,
+		price: {
+			currency: "INR",
+			value: totalPrice.toFixed(2),
+		},
+		ttl: "P1D",
+	};
+
+	return result;
+};
 export const quoteCreatorAgriService = (
 	items: Item[],
 	providersItems?: any

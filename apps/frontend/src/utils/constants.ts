@@ -54,6 +54,11 @@ export const B2B_DOMAINS = [
 	"ONDC:RET14",
 ];
 
+export const B2C_DOMAINS = [
+	"ONDC:RET10",
+	"ONDC:RET12"
+]
+
 export const SERVICE_DOMAINS = [
 	"ONDC:SRV11",
 	"ONDC:SRV13",
@@ -72,6 +77,7 @@ export const SERVICES_DOMAINS = {
 
 export const ALL_DOMAINS = {
 	"B2B": B2B_DOMAINS,
+	"B2C":B2C_DOMAINS,
 	"Services": SERVICE_DOMAINS
 };
 
@@ -93,7 +99,8 @@ export const INITIATE_FIELDS = {
 			domainDepended: true,
 			options: {
 				b2b: B2B_DOMAINS,
-				services: SERVICE_DOMAINS
+				services: SERVICE_DOMAINS,
+				b2c:B2C_DOMAINS,
 			},
 		},
 

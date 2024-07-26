@@ -21,11 +21,12 @@ import Tooltip from "@mui/material/Tooltip";
 
 type SELECT_OPTIONS =
 	| string[]
-	| { b2b: string[]; services: string[]; agri_services: string[] }
-	| { b2b: string[]; services: string[]; agri_services: string[] }
+	| { b2b: string[]; services: string[]; agri_services: string[]; b2c: string[]}
+	| { b2b: string[]; services: string[]; agri_services: string[]; b2c: string[] }
 	| { services: string[] }
 	| { agri_services: string[] }
 	| { healthcare_services: string[] }
+	| {b2c: string[]}
 	| object;
 
 type SELECT_FIELD = {
