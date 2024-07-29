@@ -122,11 +122,11 @@ export const InitiateRequestSection = () => {
 				error instanceof AxiosError &&
 				error.response?.data?.error?.message.error?.message
 			){
-				console.log("iferrorrrrrrr",error.response?.data)
+				console.log("messageeeeeeeeeeeeeee", error.response?.data?.error?.message?.error?.message[0]?.message)
 				handleMessageToggle(
 					error.response?.data?.error?.message?error.response?.data?.error?.message:
-					error.response?.data?.error?.message.error?.message === "string"
-						? error.response?.data?.error?.message.error?.message
+					(error.response?.data?.error?.message.error?.message) === "string"
+						? error.response?.data?.error?.message.error?.message:error.response?.data?.error?.message?.error?.message.length>0?error.response?.data?.error?.message?.error?.message[0]?.message
 						: "Error Occurred while initiating request!"
 				);
 			}	
