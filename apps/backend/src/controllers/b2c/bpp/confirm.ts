@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import {
   responseBuilder,
-  B2B_EXAMPLES_PATH,
   Fulfillment,
+  B2C_EXAMPLES_PATH,
 } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
@@ -16,9 +16,6 @@ export const confirmController = (
   try {
     const { scenario } = req.query;
     switch (scenario) {
-      case "default":
-        confirmDomesticController(req, res, next);
-        break;
       case "cancelled":
         confirmDomesticRejected(req, res, next);
         break;
@@ -44,7 +41,7 @@ const confirmDomesticController = (
     end.setHours(end.getHours() + 2);
 
     const file = fs.readFileSync(
-      path.join(B2B_EXAMPLES_PATH, "on_confirm/on_confirm_domestic.yaml")
+      path.join(B2C_EXAMPLES_PATH, "on_confirm/on_confirm_exports.yaml")
     );
 
     const response = YAML.parse(file.toString());
@@ -90,7 +87,7 @@ const confirmDomesticController = (
         req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
       }`,
       `on_confirm`,
-      "b2b"
+      "b2c"
     );
   } catch (error) {
     return next(error);
@@ -110,7 +107,7 @@ const confirmDomesticRejected = (
     end.setHours(end.getHours() + 2);
 
     const file = fs.readFileSync(
-      path.join(B2B_EXAMPLES_PATH, "on_confirm/on_confirm_domestic.yaml")
+      path.join(B2C_EXAMPLES_PATH, "on_confirm/on_confirm_exports.yaml")
     );
 
     const response = YAML.parse(file.toString());
@@ -156,7 +153,7 @@ const confirmDomesticRejected = (
         req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
       }`,
       `on_confirm`,
-      "b2b",
+      "b2c",
       {
         type: "DOMAIN-ERROR",
         code: "30019",

@@ -5,7 +5,6 @@ import Typography from "@mui/material/Typography";
 import { checker, INITIATE_FIELDS } from "../../utils";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
-
 import { Input, Option, Select, Button } from "@mui/joy";
 import { useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
@@ -17,7 +16,7 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 
 type InitiateRequestSectionProp = {
-	domain: "b2b" | "services" | "agri-services" | "healthcare-services" | "b2c";
+	domain: "b2b" |"b2c"| "services" | "agri-services" | "healthcare-services" | "agri-equipment-hiring";
 };
 
 type SELECT_OPTIONS =

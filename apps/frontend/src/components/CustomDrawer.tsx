@@ -65,7 +65,12 @@ const DOMAIN_NAVS = [
 		path: "/agri-services",
 		children: NAV_LINKS,
 	},
-
+	{
+		name: "Agri Equipment Services",
+		nested: true,
+		path: "/agri-equipment-services",
+		children: NAV_LINKS,
+	},
 	{
 		name: "Healthcare Services",
 		nested: true,

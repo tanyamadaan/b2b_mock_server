@@ -13,14 +13,17 @@ export const SERVICES_DOMAINS = {
 };
 
 export const ORDER_STATUS = {
-	ACCEPTED:"Accepted",
-	CANCELLED: "Cancelled"
-}
+	IN_PROGRESS:"In-progress",
+	CREATED: "Created",
+	ACCEPTED: "Accepted",
+	CANCELLED: "Cancelled",
+	COMPLETED:"Completed"
+};
 
 export const ORDER_CACELLED_BY = {
 	CONSUMER: "CONSUMER",
-	MERCHANT: "MERCHANT"
-}
+	MERCHANT: "MERCHANT",
+};
 
 export const AGRI_HEALTHCARE_STATUS = [
 	"IN_TRANSIT",
@@ -40,6 +43,19 @@ export const AGRI_HEALTHCARE_STATUS_OBJECT = {
 	TEST_COMPLETED: "TEST_COMPLETED",
 	REPORT_GENERATED: "REPORT_GENERATED",
 	REPORT_SHARED: "REPORT_SHARED",
+};
+
+export const EQUIPMENT_HIRING_STATUS = [
+	"IN_TRANSIT",
+	"AT_LOCATION",
+	"COMPLETED",
+]
+
+export const EQUIPMENT_HIRING_STATUS_OBJECT = {
+	IN_TRANSIT: "IN_TRANSIT",
+	AT_LOCATION: "AT_LOCATION",
+	COMPLETED: "COMPLETED",
+	CANCEL:"cancel"
 };
 
 export const FULFILLMENT_TYPES = {
@@ -64,6 +80,17 @@ export const SCENARIO = {
 	MULTI_COLLECTION: "multi_collection",
 };
 
+export const PAYMENT_STATUS = {
+	PAID: "PAID",
+	NON_PAID: "NON-PAID",
+};
+
+export const PAYMENT_TYPE = {
+	PRE_FULFILLMENT:"PRE-FULFILLMENT",
+	ON_FULFILLMENT:"ON-FULFILLMENT",
+	POST_FULFILLMENT:"POST-FULFILLMENT",
+}
+
 export const BILLING_DETAILS = {
 	name: "ONDC buyer",
 	address:
@@ -79,6 +106,25 @@ export const BILLING_DETAILS = {
 	phone: "9886098860",
 };
 
+export const TIME_AVALIABLITY = {
+		label: "validity",
+		range: {
+			start: "2024-06-09T00:00:00.000Z",
+			end: "2024-06-19T00:00:00.000Z",
+		},
+		days: "01,04,05",
+		schedule: {
+			frequency: "PT1H",
+			holidays: ["2024-06-11", "2024-06-18"],
+			times: [
+				"2024-06-09T22:00:00.000Z",
+				"2024-06-09T23:00:00.000Z",
+				"2024-06-10T00:00:00.000Z",
+				"2024-06-10T01:00:00.000Z",
+				"2024-06-10T02:00:00.000Z",
+			],
+		},
+};
 export const FULFILLMENT_START = {
 	location: {
 		id: "L1",
@@ -95,11 +141,10 @@ export const FULFILLMENT_START = {
 
 	person: {
 		name: "Kishan",
-	}
+	},
 };
 
 export const FULFILLMENT_END = {
-
 	location: {
 		gps: "12.974002,77.613458",
 		address: "My House #, My buildin",
@@ -209,5 +254,5 @@ export const FULFILLMENT_END = {
 				],
 			},
 		],
-	}
+	},
 };
