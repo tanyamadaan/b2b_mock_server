@@ -13,16 +13,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import Typography from "@mui/material/Typography";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import AccordionDetails from "@mui/material/AccordionDetails";
 import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { ALL_DOMAINS } from "../utils";
 import { FormControl, InputLabel, MenuItem, Tooltip } from "@mui/material";
-import { useAction, useDomain } from "../utils/hooks";
+import {useDomain } from "../utils/hooks";
 
 const drawerWidth = 200;
 const NAV_LINKS = [
@@ -131,7 +127,6 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 		setMobileOpen((prevState) => !prevState);
 	};
 	const handleDomain = (event: SelectChangeEvent) => {
-		console.log("SETTING DOMAIN:", event.target.value.toLowerCase());
 		setDomain(event.target.value.toLowerCase());
 	};
 	const drawer = (

@@ -2,13 +2,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Layout } from "./layout/Layout";
 import { Analyse, Landing, Mock, Sandbox, Sign, Swagger } from "./pages";
 import {
-	AgriServicesSwagger,
-	AuthSwagger,
-	B2BSwagger,
-	B2CSwagger,
-	HealthCareServicesSwagger,
 	MiscSwagger,
-	ServicesSwagger,
 } from "./pages/swagger/domains";
 import {
 	AnalyseProvider,
@@ -29,7 +23,6 @@ import { HealthCareServicesSandbox } from "./pages/sandbox/domains/healthcare-se
 import Readme from "./pages/readme";
 import { AgriEquipmentServicesSandbox } from "./pages/sandbox/domains/agri-equipment-services";
 import { AgriEquipmentServicesMock } from "./pages/mock/domains/agri-equipment-services";
-import { AgriEquipmentHiringSwagger } from "./pages/swagger/domains/agri-equipment-hiring";
 import { B2CMock } from "./pages/mock/domains/b2c";
 import { B2CSandbox } from "./pages/sandbox/domains/b2c";
 
