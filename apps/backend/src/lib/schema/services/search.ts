@@ -63,6 +63,10 @@ export const searchSchema = {
           type: "string",
           const: "PT30S"
         },
+        ss: {
+          type: "string",
+          const: "PT30S"
+        },
       },
       required: [
         "domain",
@@ -75,6 +79,7 @@ export const searchSchema = {
         "message_id",
         "timestamp",
         "ttl",
+        "ss"
       ],
     },
     message: {

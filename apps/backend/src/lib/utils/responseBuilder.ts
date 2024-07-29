@@ -90,8 +90,8 @@ export const responseBuilder = async (
 		domain === "b2b"
 			? B2B_BPP_MOCKSERVER_URL
 			: domain === "b2c"
-			? B2C_BPP_MOCKSERVER_URL
-			: SERVICES_BPP_MOCKSERVER_URL;
+				? B2C_BPP_MOCKSERVER_URL
+				: SERVICES_BPP_MOCKSERVER_URL;
 
 	if (action.startsWith("on_")) {
 		async = {
@@ -139,8 +139,7 @@ export const responseBuilder = async (
 				).length;
 
 				await redis.set(
-					`${
-						(async.context! as any).transaction_id
+					`${(async.context! as any).transaction_id
 					}-${logIndex}-${action}-from-server`,
 					JSON.stringify(log)
 				);
@@ -171,15 +170,15 @@ export const responseBuilder = async (
 					error instanceof AxiosError
 						? error?.response?.data
 						: {
-								message: {
-									ack: {
-										status: "NACK",
-									},
+							message: {
+								ack: {
+									status: "NACK",
 								},
-								error: {
-									message: error,
-								},
-						  };
+							},
+							error: {
+								message: error,
+							},
+						};
 				log.response = {
 					timestamp: new Date().toISOString(),
 					response: response,
@@ -220,8 +219,7 @@ export const responseBuilder = async (
 				).length;
 
 				await redis.set(
-					`${
-						(async.context! as any).transaction_id
+					`${(async.context! as any).transaction_id
 					}-${logIndex}-${action}-from-server`,
 					JSON.stringify(log)
 				);
@@ -252,15 +250,15 @@ export const responseBuilder = async (
 					error instanceof AxiosError
 						? error?.response?.data
 						: {
-								message: {
-									ack: {
-										status: "NACK",
-									},
+							message: {
+								ack: {
+									status: "NACK",
 								},
-								error: {
-									message: error,
-								},
-						  };
+							},
+							error: {
+								message: error,
+							},
+						};
 				log.response = {
 					timestamp: new Date().toISOString(),
 					response: response,
@@ -329,12 +327,12 @@ export const sendStatusAxiosCall = async (
 		domain === "b2b"
 			? B2B_BPP_MOCKSERVER_URL
 			: domain === "agri-services"
-			? AGRI_SERVICES_BPP_MOCKSERVER_URL
-			: domain === "healthcare-service"
-			? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
-			: domain === "agri-equipment-hiring"
-			? AGRI_EQUIPMENT_BPP_MOCKSERVER_URL
-			: SERVICES_BPP_MOCKSERVER_URL;
+				? AGRI_SERVICES_BPP_MOCKSERVER_URL
+				: domain === "healthcare-service"
+					? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
+					: domain === "agri-equipment-hiring"
+						? AGRI_EQUIPMENT_BPP_MOCKSERVER_URL
+						: SERVICES_BPP_MOCKSERVER_URL;
 
 	async = {
 		...async,
@@ -376,15 +374,15 @@ export const sendStatusAxiosCall = async (
 				error instanceof AxiosError
 					? error?.response?.data
 					: {
-							message: {
-								ack: {
-									status: "NACK",
-								},
+						message: {
+							ack: {
+								status: "NACK",
 							},
-							error: {
-								message: error,
-							},
-					  };
+						},
+						error: {
+							message: error,
+						},
+					};
 			log.response = {
 				timestamp: new Date().toISOString(),
 				response: response,
@@ -664,13 +662,13 @@ export const quoteCreatorAgriService = (
 			item:
 				item.title === "tax"
 					? {
-							id: item.id,
-					  }
+						id: item.id,
+					}
 					: {
-							id: item.id,
-							price: item.price,
-							quantity: item.quantity ? item.quantity : undefined,
-					  },
+						id: item.id,
+						price: item.price,
+						quantity: item.quantity ? item.quantity : undefined,
+					},
 		});
 	});
 
@@ -754,7 +752,7 @@ export const quoteCreatorHealthCareService = (
 	action?: string
 ) => {
 	try {
-		
+
 		//GET PACKAGE ITEMS
 		//get price from on_search
 		items.forEach((item) => {
@@ -812,13 +810,13 @@ export const quoteCreatorHealthCareService = (
 				item:
 					item.title === "tax"
 						? {
-								id: item?.id,
-						  }
+							id: item?.id,
+						}
 						: {
-								id: item?.id,
-								price: item?.price,
-								quantity: item?.quantity ? item?.quantity : undefined,
-						  },
+							id: item?.id,
+							price: item?.price,
+							quantity: item?.quantity ? item?.quantity : undefined,
+						},
 			});
 		});
 
@@ -955,14 +953,15 @@ export const quoteCreatorHealthCareService = (
 				],
 			});
 		}
+		
 		let totalPrice = 0;
 		breakup.forEach((entry) => {
-			console.log("entryyyyyyyyyyyyyyyyyyyyy",entry)
 			const priceValue = parseFloat(entry?.price?.value);
+
 			if (!isNaN(priceValue)) {
-				if(entry?.title === 'discount'){
+				if (entry?.title === 'discount') {
 					totalPrice -= priceValue;
-				}else{
+				} else {
 					totalPrice += priceValue;
 				}
 			}
