@@ -158,7 +158,7 @@ const intializeRequest = async (
       items = items.filter((itm: Item) => {
         let flag = 0;
         itm?.category_ids?.forEach((id: string) => {
-          if (id in count_cat && count_cat[id] < 1) {
+          if (id in count_cat && count_cat[id] < 2) {
             count_cat[id]++;
             flag = 1;
           }
