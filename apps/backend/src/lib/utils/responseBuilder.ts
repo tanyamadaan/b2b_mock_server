@@ -279,11 +279,14 @@ export const responseBuilder = async (
 			message: { sync: { message: { ack: { status: "ACK" } } } },
 		});
 		return res.json({
-			message: {
-				ack: {
-					status: "ACK",
+			sync: {
+				message: {
+					ack: {
+						status: "ACK",
+					},
 				},
 			},
+			async,
 		});
 
 		// logger.info({

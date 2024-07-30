@@ -64,7 +64,6 @@ app.use("/b2b", errorHandlingWrapper(b2bRouter));
 app.use("/b2c", errorHandlingWrapper(b2cRouter));
 app.use("/auth", errorHandlingWrapper(authRouter));
 app.use("/services", errorHandlingWrapper(servicesRouter));
-
 app.use("/detect_app_installation", (req: Request, res: Response) => {
 	const headers = req.headers;
 	return res.json({
