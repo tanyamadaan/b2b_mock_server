@@ -20,7 +20,6 @@ export const initiateConfirmController = async (
 		const { scenario, transactionId } = req.body;
 		const on_search = await redisFetchToServer(ON_ACTION_KEY.ON_SEARCH, transactionId);
 		const providersItems = on_search?.message?.catalog?.providers[0]?.items;
-		// req.body.providersItems = providersItems
 		const on_init = await redisFetchToServer(ON_ACTION_KEY.ON_INIT, transactionId)
 		if (!on_init) {
 			return send_nack(res, ERROR_MESSAGES.ON_INIT_DOES_NOT_EXISTED)
