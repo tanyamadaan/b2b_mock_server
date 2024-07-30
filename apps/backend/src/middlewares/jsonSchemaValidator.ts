@@ -3,9 +3,12 @@ import { srvSchemaValidator } from "../lib/schema/services";
 import {agriSrvSchemaValidator} from "../lib/schema/agri-services"
 import {healthcareSrvSchemaValidator} from "../lib/schema/healthcare-services"
 import { agriEquipmentHiringSchemaValidator } from "../lib/schema/agri-equipment-hiring";
+import { b2cSchemaValidator } from "../lib/schema/b2c";
+
 
 type JsonSchemaValidatorType = {
-	domain: "b2b" | "services" | "agri-services" | "healthcare-service" | "agri-equipment-hiring";
+	domain: "b2b" | "b2c" | "services" | "agri-services" | "healthcare-service" | "agri-equipment-hiring";
+
 	action:
 		| "search"
 		| "on_search"
@@ -31,7 +34,10 @@ export const jsonSchemaValidator = ({
 }: JsonSchemaValidatorType) => {
 	if (domain === "b2b") {
 	return b2bSchemaValidator(action);
-	} else if(domain === "services"){
+	}else if(domain === "b2c"){
+		return b2cSchemaValidator(action);
+	}
+	else if(domain === "services"){
 		return srvSchemaValidator(action)
 	}else if(domain === "agri-services"){
 		return agriSrvSchemaValidator(action)

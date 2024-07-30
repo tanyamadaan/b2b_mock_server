@@ -15,17 +15,18 @@ import HelpOutlineTwoToneIcon from "@mui/icons-material/HelpOutlineTwoTone";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 
-// type InitiateRequestSectionProp = {
-// 	domain: "b2b" | "services" | "agri-services" | "healthcare-services";
-// };
+type InitiateRequestSectionProp = {
+	domain: "b2b" |"b2c"| "services" | "agri-services" | "healthcare-services" | "agri-equipment-hiring";
+};
 
 type SELECT_OPTIONS =
 	| string[]
-	| { b2b: string[]; services: string[]; agri_services: string[] }
-	| { b2b: string[]; services: string[]; agri_services: string[] }
+	| { b2b: string[]; services: string[]; agri_services: string[]; b2c: string[]}
+	| { b2b: string[]; services: string[]; agri_services: string[]; b2c: string[] }
 	| { services: string[] }
 	| { agri_services: string[] }
 	| { healthcare_services: string[] }
+	| {b2c: string[]}
 	| object;
 
 type SELECT_FIELD = {

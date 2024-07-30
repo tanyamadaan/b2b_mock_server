@@ -45,6 +45,7 @@ export const selectController = async (
     const parsedTransaction = transaction.map((ele) => {
       return JSON.parse(ele as string);
     });
+    
 
     const providers = parsedTransaction[0].request.message.catalog.providers;
     const item_id_name: Item_id_name[] = providers.map((pro: any) => {

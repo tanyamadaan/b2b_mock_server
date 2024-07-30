@@ -51,8 +51,13 @@ export const B2B_DOMAINS = [
 	"ONDC:RET10",
 	"ONDC:RET12",
 	"ONDC:RET13",
-	"ONDC:RET14",
-];
+	"ONDC:RET14"
+]
+
+export const B2C_DOMAINS = [
+	"ONDC:RET10",
+	"ONDC:RET12"
+]
 
 export const SERVICE_DOMAINS = [
 	"ONDC:SRV11",
@@ -60,11 +65,18 @@ export const SERVICE_DOMAINS = [
 	"ONDC:SRV14",
 ];
 
+export const AGRI_EQUIPMENT_SERVICES_DOMAINS = [
+	"ONDC:SRV15",
+]
+
 export const ALL_DOMAINS = {
 	"B2B": B2B_DOMAINS,
+	"B2C": B2C_DOMAINS,
 	"Services": SERVICE_DOMAINS,
-	"Heathcare Services": SERVICE_DOMAINS
+	"Heathcare Services": SERVICE_DOMAINS,
+	"Agri Equipment Services": AGRI_EQUIPMENT_SERVICES_DOMAINS
 };
+
 
 export const CITY_CODE = ["std:080", "std:011"];
 
@@ -83,8 +95,10 @@ export const INITIATE_FIELDS = {
 			type: "select",
 			domainDepended: true,
 			options: {
-				b2b: B2B_DOMAINS,
-				services: SERVICE_DOMAINS
+				"b2b": B2B_DOMAINS,
+				"services": SERVICE_DOMAINS,
+				"agri-services": AGRI_EQUIPMENT_SERVICES_DOMAINS,
+				"healthcare-services": HEALTHCARE_SERVICES_DOMAINS,
 			},
 		},
 
@@ -110,6 +124,8 @@ export const INITIATE_FIELDS = {
 			domainDepended: true,
 			options: {
 				b2b: B2B_SCENARIOS["select"].map((each) => each.scenario),
+			  // "agri-equipment-hiring": A,
+
 				// services: SERVICES_SCENARIOS["select"].map((each) => each.scenario),
 			},
 		},
@@ -177,8 +193,14 @@ export const INITIATE_FIELDS = {
 			name: "update_target",
 			placeholder: "Update Target",
 			type: "select",
-			domainDepended: false,
-			options: ["payments", "fulfillments", "items"],
+			domainDepended: true,
+			options: {
+				"b2b":["payments"],
+				"services": ["payments"],
+				"agri-services": ["payments","fulfillments"],
+				"healthcare-services": ["payments","fulfillments","items"],
+				"agri-equipment-hiring": ["payments","items"]
+			},
 		},
 	],
 

@@ -5,6 +5,7 @@ import {
 	AgriServicesSwagger,
 	AuthSwagger,
 	B2BSwagger,
+	B2CSwagger,
 	HealthCareServicesSwagger,
 	MiscSwagger,
 	ServicesSwagger,
@@ -26,6 +27,11 @@ import { B2BSandbox, ServicesSandbox } from "./pages/sandbox/domains";
 import { AgriServicesSandbox } from "./pages/sandbox/domains/agri-services";
 import { HealthCareServicesSandbox } from "./pages/sandbox/domains/healthcare-services";
 import Readme from "./pages/readme";
+import { AgriEquipmentServicesSandbox } from "./pages/sandbox/domains/agri-equipment-services";
+import { AgriEquipmentServicesMock } from "./pages/mock/domains/agri-equipment-services";
+import { AgriEquipmentHiringSwagger } from "./pages/swagger/domains/agri-equipment-hiring";
+import { B2CMock } from "./pages/mock/domains/b2c";
+import { B2CSandbox } from "./pages/sandbox/domains/b2c";
 
 // log
 
@@ -59,6 +65,10 @@ const router = createBrowserRouter([
 						Component: B2BMock,
 					},
 					{
+						path: "b2c",
+						Component: B2CMock,
+					},
+					{
 						path: "services",
 						Component: ServicesMock,
 					},
@@ -70,6 +80,10 @@ const router = createBrowserRouter([
 						path: "healthcare-services",
 						Component: HealthCareServicesMock,
 					},
+					{
+						path:"agri-equipment-services",
+						Component:AgriEquipmentServicesMock
+					}
 				],
 			},
 			{
@@ -85,6 +99,10 @@ const router = createBrowserRouter([
 						Component: B2BSandbox,
 					},
 					{
+						path: "b2c",
+						Component: B2CSandbox,
+					},
+					{
 						path: "services",
 						Component: ServicesSandbox,
 					},
@@ -96,6 +114,10 @@ const router = createBrowserRouter([
 						path: "healthcare-services",
 						Component: HealthCareServicesSandbox,
 					},
+					{
+						path: "agri-equipment-services",
+						Component: AgriEquipmentServicesSandbox,
+					},
 				],
 			},
 			{
@@ -105,14 +127,19 @@ const router = createBrowserRouter([
 			{
 				path: "/swagger",
 				Component: Swagger,
-				// children: [
-				// 	{ path: "b2b", Component: B2BSwagger },
-				// 	{ path: "services", Component: ServicesSwagger },
-				// 	{ path: "agri-services", Component: AgriServicesSwagger },
-				// 	{ path: "healthcare-services", Component: HealthCareServicesSwagger },
-				// 	{ path: "auth", Component: AuthSwagger },
-				// 	{ path: "misc", Component: MiscSwagger },
-				// ],
+				children: [
+					{ path: "b2b", Component: B2BSwagger },
+					{
+						path: "b2c",
+						Component: B2CSwagger,
+					},
+					{ path: "services", Component: ServicesSwagger },
+					{ path: "agri-services", Component: AgriServicesSwagger },
+					{ path: "healthcare-services", Component: HealthCareServicesSwagger },
+					{ path: "agri-equipment-services", Component: AgriEquipmentHiringSwagger },
+					{ path: "auth", Component: AuthSwagger },
+					{ path: "misc", Component: MiscSwagger },
+				],
 			},
 			{
 				path: "/analyse",

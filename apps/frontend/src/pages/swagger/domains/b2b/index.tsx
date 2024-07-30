@@ -5,8 +5,6 @@ import swaggerSpec from "openapi-specs/retail-b2b.json";
 import { SwaggerDownloadButton } from "../../../../components";
 
 export const B2BSwagger = () => {
-
-
 	return (
 		<>
 			<Toolbar
