@@ -79,7 +79,7 @@ const router = createBrowserRouter([
 					{
 						path:"agri-equipment-services",
 						Component:AgriEquipmentServicesMock
-					}
+					},
 					{
 						path: "logistics",
 						Component: LogisticsMock
