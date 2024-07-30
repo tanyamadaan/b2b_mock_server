@@ -62,11 +62,7 @@ export const searchSchema = {
         ttl: {
           type: "string",
           const: "PT30S"
-        },
-        ss: {
-          type: "string",
-          const: "PT30S"
-        },
+        }
       },
       required: [
         "domain",
@@ -78,8 +74,7 @@ export const searchSchema = {
         "transaction_id",
         "message_id",
         "timestamp",
-        "ttl",
-        "ss"
+        "ttl"
       ],
     },
     message: {

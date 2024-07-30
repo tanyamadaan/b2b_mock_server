@@ -15,18 +15,21 @@ import HelpOutlineTwoToneIcon from "@mui/icons-material/HelpOutlineTwoTone";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 
-// type InitiateRequestSectionProp = {
-// 	domain: "b2b" | "services" | "agri-services" | "healthcare-services";
-// };
 
 type SELECT_OPTIONS =
 	| string[]
-	| { b2b: string[]; services: string[]; agri_services: string[]; b2c: string[]}
-	| { b2b: string[]; services: string[]; agri_services: string[]; b2c: string[] }
+	| {
+			b2b: string[];
+			services: string[];
+			b2c: string[];
+	  }
+	| {
+			b2b: string[];
+			services: string[];
+			b2c: string[];
+	  }
 	| { services: string[] }
-	| { agri_services: string[] }
-	| { healthcare_services: string[] }
-	| {b2c: string[]}
+	| { b2c: string[] }
 	| object;
 
 type SELECT_FIELD = {
@@ -121,19 +124,21 @@ export const InitiateRequestSection = () => {
 			if (
 				error instanceof AxiosError &&
 				error.response?.data?.error?.message.error?.message
-			){
-				console.log("messageeeeeeeeeeeeeee", error.response?.data?.error?.message?.error?.message[0]?.message)
+			) {
 				handleMessageToggle(
-					error.response?.data?.error?.message?error.response?.data?.error?.message:
-					(error.response?.data?.error?.message.error?.message) === "string"
-						? error.response?.data?.error?.message.error?.message:error.response?.data?.error?.message?.error?.message.length>0?error.response?.data?.error?.message?.error?.message[0]?.message
+					error.response?.data?.error?.message.error?.message === "string"
+						? error.response?.data?.error?.message.error?.message
+						: error.response?.data?.error?.message?.error?.message.length > 0
+						? `${error.response?.data?.error?.message?.error?.message[0]?.message} in ${error.response?.data?.error?.message?.error?.message[0]?.details}`
 						: "Error Occurred while initiating request!"
 				);
-			}	
-			else{
-				console.log("elseerrorrrrrrr",error.response?.data)
-			handleMessageToggle(error.response?.data?.error?.message?error.response?.data?.error?.message:"Error Occurred while initiating request!");
-			} 
+			} else {
+				handleMessageToggle(
+					error.response?.data?.error?.message
+						? error.response?.data?.error?.message
+						: "Error Occurred while initiating request!"
+				);
+			}
 		}
 	};
 
@@ -215,7 +220,7 @@ export const InitiateRequestSection = () => {
 														</Option>
 													))}
 												</Select>
-											) : field.type === "select" && !field.domainDepended ?(
+											) : field.type === "select" && !field.domainDepended ? (
 												<Select
 													placeholder={field.placeholder}
 													key={"select-" + action + "-" + index}
