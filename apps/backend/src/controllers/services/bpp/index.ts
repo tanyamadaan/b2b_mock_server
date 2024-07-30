@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { searchController } from "./search";
-
 import { initController } from "./init";
 import { selectController } from "./select";
 import { confirmController } from "./confirm";
@@ -8,6 +7,7 @@ import { statusController } from "./status";
 import { updateController } from "./update";
 import { cancelController } from "./cancel";
 import { jsonSchemaValidator, redisRetriever } from "../../../middlewares";
+import { ratingController } from "./rating";
 
 export const bppRouter = Router();
 
@@ -45,15 +45,24 @@ bppRouter.post(
 	redisRetriever,
 	updateController
 );
+
 bppRouter.post(
 	"/status",
 	jsonSchemaValidator({ domain: "services", action: "status" }),
 	redisRetriever,
 	statusController
 );
+
 bppRouter.post(
 	"/cancel",
 	jsonSchemaValidator({ domain: "services", action: "cancel" }),
 	redisRetriever,
 	cancelController
+);
+
+bppRouter.post(
+	"/rating",
+	jsonSchemaValidator({ domain: "services", action: "rating" }),
+	redisRetriever,
+	ratingController
 );
