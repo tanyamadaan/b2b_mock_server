@@ -26,7 +26,7 @@ type AllActions =
   | "on_cancel"
 	| "rating";
 
-type LogisticsActions = Exclude<AllActions, "select" | "on_select">;
+type LogisticsActions = Exclude<AllActions, "select" | "on_select" | "rating">;
 
 type Domain = "b2b" |"b2c"| "services" | "agri-services" | "healthcare-service" | "logistics" |"agri-equipment-hiring";
 

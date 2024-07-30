@@ -24,7 +24,7 @@ export const MOCKSERVER_ID = "mock.ondc.org/api";
 export const B2B_BPP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}b2b/bpp`;
 export const B2B_BAP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}b2b/bap`;
 export const B2C_BPP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}b2c/bpp`;
-
+export const B2C_BAP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}b2c/bap`;
 export const LOGISTICS_BPP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/logistics/bpp`;
 export const LOGISTICS_BAP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/logistics/bap`;
 // export const SERVICES_BPP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/services/bpp`;
