@@ -37,6 +37,7 @@ export const b2bSchemaValidator =
 			| "on_track"
 			| "cancel"
 			| "on_cancel"
+			| "rating"
 	) =>
 	(req: Request, res: Response, next: NextFunction) => {
 		const ajv = new Ajv({
@@ -92,10 +93,10 @@ export const b2bSchemaValidator =
 				validate = ajv.compile(onUpdateSchema);
 				break;
 			case "cancel":
-				validate = ajv.compile(cancelSchema)
+				validate = ajv.compile(cancelSchema);
 				break;
 			case "on_cancel":
-				validate = ajv.compile(onCancelSchema)
+				validate = ajv.compile(onCancelSchema);
 				break;
 			default:
 				res.status(400).json({
@@ -133,7 +134,7 @@ export const b2bSchemaValidator =
 									? ` (${params.additionalProperty})`
 									: ""
 							}`,
-							details: instancePath
+							details: instancePath,
 						})
 					),
 				},

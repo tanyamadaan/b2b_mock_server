@@ -57,12 +57,26 @@ export const B2B_DOMAINS = [
 
 export const LOGISTICS_DOMAINS = ["ONDC:LOG10", "ONDC:LOG11"];
 
+export const B2C_DOMAINS = [
+	"ONDC:RET10",
+	"ONDC:RET12"
+]
+
 export const SERVICES_DOMAINS = ["ONDC:SRV11"];
 
 export const AGRI_SERVICES_DOMAINS = ["ONDC:SRV14"];
 
-export const HEALTHCARE_SERVICES_DOMAINS = ["ONDC:SRV13"];
-export const CITY_CODE = ["std:080", "std:011"];
+export const HEALTHCARE_SERVICES_DOMAINS = [
+	"ONDC:SRV13",
+]
+
+export const AGRI_EQUIPMENT_SERVICES_DOMAINS = [
+	"ONDC:SRV15",
+]
+export const CITY_CODE = [
+	"std:080",
+	"std:011"
+]
 
 export const INITIATE_FIELDS = {
 	search: [
@@ -77,11 +91,13 @@ export const INITIATE_FIELDS = {
 			type: "select",
 			domainDepended: true,
 			options: {
-				b2b: B2B_DOMAINS,
-				services: SERVICES_DOMAINS,
+				"b2b": B2B_DOMAINS,
+				"b2c":B2C_DOMAINS,
+				"services": SERVICES_DOMAINS,
 				"agri-services": AGRI_SERVICES_DOMAINS,
 				"healthcare-services": HEALTHCARE_SERVICES_DOMAINS,
-				logistics: LOGISTICS_DOMAINS,
+				"agri-equipment-hiring": AGRI_EQUIPMENT_SERVICES_DOMAINS,
+				"logistics": LOGISTICS_DOMAINS,
 			},
 		},
 		{
@@ -105,6 +121,8 @@ export const INITIATE_FIELDS = {
 			domainDepended: true,
 			options: {
 				b2b: B2B_SCENARIOS["select"].map((each) => each.scenario),
+			  // "agri-equipment-hiring": A,
+
 				// services: SERVICES_SCENARIOS["select"].map((each) => each.scenario),
 			},
 		},
@@ -170,11 +188,12 @@ export const INITIATE_FIELDS = {
 			type: "select",
 			domainDepended: true,
 			options: {
-				services: ["payments", "fulfillments", "items"],
-				logistics: ["fulfillments"],
-				b2b: ["payments", "fulfillments", "items"],
-				"agri-services": ["payments", "fulfillments", "items"],
-				"healthcare-services": ["payments", "fulfillments", "items"],
+				"b2b":["payments"],
+				"services": ["payments"],
+				"logistics": ["fulfillments"],
+				"agri-services": ["payments","fulfillments"],
+				"healthcare-services": ["payments","fulfillments","items"],
+				"agri-equipment-hiring": ["payments","items"]
 			},
 		},
 	],

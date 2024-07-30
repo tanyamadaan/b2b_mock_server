@@ -3,6 +3,7 @@ import swaggerUi from "swagger-ui-express";
 import cron from "node-cron"; // Import node-cron
 
 import {
+	agriEquipmentHiriingRouter,
 	agriServiceRouter,
 	authRouter,
 	b2bRouter,
@@ -16,6 +17,7 @@ import cors from "cors";
 import {
 	authSwagger,
 	b2bSwagger,
+	b2cSwagger,
 	miscSwagger,
 	requestParser,
 	servicesSwagger,
@@ -25,6 +27,7 @@ import {
 	healthcareServiceSwagger,
 } from "./middlewares";
 import { sendUpsolicieatedOnStatus } from "./lib/utils/sendUpsolicieatedOnStatus";
+import { b2cRouter } from "./controllers/b2c";
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
@@ -34,6 +37,7 @@ app.use(cors());
 app.use("/api-docs/auth", swaggerUi.serve, authSwagger("/api-docs/auth"));
 app.use("/api-docs/misc", swaggerUi.serve, miscSwagger("/api-docs/misc"));
 app.use("/api-docs/b2b", swaggerUi.serve, b2bSwagger("/api-docs/b2b"));
+app.use("/api-docs/b2c", swaggerUi.serve, b2cSwagger("/api-docs/b2c"));
 
 app.use(
 	"/api-docs/services",
@@ -53,19 +57,25 @@ app.use(
 	healthcareServiceSwagger("/api-docs/healthcare-services")
 );
 
+app.use(
+	"/api-docs/healthcare-services",
+	swaggerUi.serve,
+	healthcareServiceSwagger("/api-docs/agri-equipment-services")
+);
+
 app.use(express.json());
 app.use(express.raw({ type: "*/*", limit: "1mb" }));
 app.use(requestParser);
 app.use("/", miscRouter);
 
 app.use("/b2b", errorHandlingWrapper(b2bRouter));
+app.use("/b2c", errorHandlingWrapper(b2cRouter));
 app.use("/auth", errorHandlingWrapper(authRouter));
 app.use("/services", errorHandlingWrapper(servicesRouter));
 app.use("/agri-services", errorHandlingWrapper(agriServiceRouter));
 app.use("/healthcare-services", errorHandlingWrapper(healthCareServiceRouter));
+app.use("/agri-equipment-hiring", errorHandlingWrapper(agriEquipmentHiriingRouter))
 app.use("/logistics", errorHandlingWrapper(logisticsRouter));
-app.use(globalErrorHandler);
-
 app.use("/detect_app_installation", (req: Request, res: Response) => {
 	const headers = req.headers;
 	return res.json({

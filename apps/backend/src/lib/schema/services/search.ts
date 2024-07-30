@@ -1,5 +1,6 @@
 import { SRV_FULFILLMENT_TYPE, GPS_PATTERN, SRV_PAYMENT_TYPE, PAYMENT_COLLECTEDBY, DOMAIN, VERSION } from "./constants";
 
+
 export const searchSchema = {
   $id: "searchSchema",
   type: "object",
