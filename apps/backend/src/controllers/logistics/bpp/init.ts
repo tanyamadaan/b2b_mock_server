@@ -88,10 +88,11 @@ export const initController = async (
 	} else {
 		try {
 			var context = req.body.context;
+			var newTime = new Date().toISOString();
 			let onInit = {
 				context: {
 					...context,
-					timestamp: new Date().toISOString(),
+					timestamp: newTime,
 					action: "on_init",
 				},
 				message: {
@@ -289,7 +290,7 @@ export const initController = async (
 					req.body.context.bap_uri.endsWith("/") ? "on_init" : "/on_init"
 				}`,
 				`on_init`,
-				"logistics",
+				"logistics"
 			);
 		} catch (error) {
 			next(error);

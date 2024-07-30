@@ -19,6 +19,7 @@ export const initiateInitController = async (
 	next: NextFunction
 ) => {
 	try {
+		console.log(req.body);
 		const { transactionId } = req.body;
 		const transactionKeys = await redis.keys(`${transactionId}-*`);
 		const ifTransactionExist = transactionKeys.filter((e) =>
@@ -39,23 +40,18 @@ export const initiateInitController = async (
 		let init;
 		const providers = request.message.catalog.providers;
 		const items: Item[] = providers[0].items;
+		const selectedItem = items.find((item) => item.id === req.body.itemID);
 
-		const fulfillments = request.message.catalog.fulfillments;
-
-		const deliveryFulfillment = fulfillments.find((fulfillment: { id: string; type: string }) => fulfillment.type === "Delivery");
-		const deliveryID = deliveryFulfillment.id;
-		const itemWithDelivery = items.find(item => 
-			deliveryFulfillment ? item.fulfillment_ids.includes(deliveryID) : false
-		);
-		if (!itemWithDelivery) {
+		if (!selectedItem) {
 			return send_nack(res, "No items available.");
 		}
+		var newTime = new Date().toISOString();
 		init = {
 			context: {
 				...request.context,
 				action: "init",
 				bpp_id: MOCKSERVER_ID,
-				timestamp: new Date().toISOString(),
+				timestamp: newTime,
 				message_id: uuidv4(),
 			},
 			message: {
@@ -66,15 +62,15 @@ export const initiateInitController = async (
 					},
 					items: [
 						{
-							id: itemWithDelivery.id,
-							category_ids: itemWithDelivery.category_ids,
-							fulfillment_ids: itemWithDelivery.fulfillment_ids,
+							id: selectedItem.id,
+							category_ids: selectedItem.category_ids,
+							fulfillment_ids: selectedItem.fulfillment_ids,
 							descriptor: {
-								code: itemWithDelivery.descriptor?.code,
+								code: selectedItem.descriptor?.code,
 							},
 							time: {
-								label: "TAT",
-								duration: "P4D",
+								label: selectedItem.time?.label,
+								duration: selectedItem.time?.duration,
 							},
 						},
 					],
@@ -137,7 +133,7 @@ export const initiateInitController = async (
 						phone: "9886098860",
 						email: "abcd.efgh@gmail.com",
 						time: {
-							timestamp: "2023-10-17T21:11:00.000Z",
+							timestamp: newTime,
 						},
 					},
 					payments: {

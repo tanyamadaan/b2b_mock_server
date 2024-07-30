@@ -93,6 +93,34 @@ export const updateController = async (
 		}
 	} else {
 		try {
+			const domain = req.body.context.domain;
+			let file: string;
+			// Determine the directory based on the domain
+			switch (domain) {
+				case "ONDC:LOG10":
+					file = path.join(
+						LOGISTICS_EXAMPLES_PATH,
+						"/B2B_Dom_Logistics_yaml/on_update/on_update_air_diff.yaml"
+					);
+					break;
+
+				case "ONDC:LOG11":
+					file = path.join(
+						LOGISTICS_EXAMPLES_PATH,
+						"/B2B_Int_Logistics_yaml/on_update/on_update_air.yaml"
+					);
+					break;
+
+				default:
+					// Fallback to the LOG10 directory if the domain is not recognized
+					file = path.join(
+						LOGISTICS_EXAMPLES_PATH,
+						"/B2B_Dom_Logistics_yaml/on_update/on_update_air_diff.yaml"
+					);
+					break;
+			}
+			const fileContent = fs.readFileSync(file, "utf8");
+			var mockOnUpdate = YAML.parse(fileContent);
 			const transactionId = req.body.context.transaction_id;
 			var transactionKeys = await redis.keys(`${transactionId}-*`);
 			var ifTransactionExist = transactionKeys.filter((e) =>
@@ -130,8 +158,8 @@ export const updateController = async (
 					status: "In-progress",
 					provider: onConfirm.message.order.provider,
 					items: updateItems,
-					fulfillments: onConfirm.message.order.fulfillments,
-					quote: onConfirm.message.order.quote,
+					fulfillments: mockOnUpdate.value.message.order.fulfillments,
+					quote: mockOnUpdate.value.message.order.quote,
 					updated_at: newTime,
 					billing: onConfirm.message.order.billing,
 					payments: onConfirm.message.order.payments,
