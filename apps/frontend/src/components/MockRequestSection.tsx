@@ -14,23 +14,24 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import { CurlDisplay } from ".";
-import { useAction, useMock } from "../utils/hooks";
+import { useAction, useDomain, useMock } from "../utils/hooks";
 import { URL_MAPPING } from "../utils";
 import axios, { AxiosError } from "axios";
 import { UserGuide } from "./UserGuideSection";
 
-type MockRequestSectionProp = {
-	domain: string;
-};
+// type MockRequestSectionProp = {
+// 	domain: string;
+// };
 
-export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
+export const MockRequestSection = () => {
 	const [log, setLog] = useState<string>();
 	const [showCurl, setShowCurl] = useState(false);
 	const [activeScenario, setActiveScenario] = useState<{
 		name: string;
 		scenario: string;
 	}>();
-	const { action, detectAction, logError, scenarios } = useAction(domain);
+	const { domain } = useDomain();
+	const { action, detectAction, logError, scenarios } = useAction();
 	const { setAsyncResponse, setSyncResponse } = useMock();
 
 	useEffect(() => {
@@ -40,9 +41,9 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		setAsyncResponse(undefined);
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
-	
+
 	const [curl, setCurl] = useState<string>();
 
 	const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -58,9 +59,6 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 		)}/${action}?mode=mock`;
 		if (activeScenario?.scenario)
 			url = url + `&scenario=${activeScenario?.scenario}`;
-
-		// console.log("Form Values", log, activeScenario, url);
-
 		setCurl(`curl -X POST \\
 		  ${url} \\
 		-H 'accept: application/json' \\
@@ -72,8 +70,9 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 					"Content-Type": "application/json",
 				},
 			});
-			console.log("RESPONSE", response)
+			console.log("RESPONSE", response);
 			setSyncResponse(response.data.sync);
+
 			setAsyncResponse(response.data.async || {});
 		} catch (error) {
 			console.log("ERROR Occured while pinging backend:", error);
@@ -92,7 +91,7 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 					elevation={5}
 				>
 					<Stack spacing={2} justifyContent="center" alignItems="center">
-						<Typography variant="h5">Domain: {domain}</Typography>
+						<Typography variant="h5">Mock Server</Typography>
 						<FormControl error={logError} sx={{ width: "100%" }}>
 							<Textarea
 								minRows={10}
@@ -140,14 +139,15 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 												},
 											},
 										}}
-
 										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 										// @ts-ignore
 										onChange={(
 											_event: React.SyntheticEvent | null,
 											newValue: object
 										) => {
-											setActiveScenario(newValue as { name: string; scenario: string; });
+											setActiveScenario(
+												newValue as { name: string; scenario: string }
+											);
 										}}
 										defaultValue={scenarios![0]}
 										disabled={scenarios?.length === 0}
@@ -180,7 +180,7 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 					</Stack>
 				</Paper>
 			</Fade>
-			<UserGuide domain={domain} />
+			<UserGuide />
 			<CurlDisplay slideIn={showCurl} curl={curl} />
 		</>
 	);

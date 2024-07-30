@@ -17,7 +17,6 @@ import DoneAllIcon from "@mui/icons-material/DoneAll";
 export const AsyncResponseSection = () => {
 	
 	const { asyncResponse } = useMock();
-	console.log("ASYNC RESPONSE", asyncResponse)
 	const [display, setDisplay] = useState(false);
 	const [copied, setCopied] = useState(false);
 	const showButton = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
