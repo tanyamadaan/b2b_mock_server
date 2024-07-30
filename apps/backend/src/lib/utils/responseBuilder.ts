@@ -2,8 +2,10 @@ import axios from "axios";
 import { NextFunction, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import {
+	AGRI_EQUIPMENT_BPP_MOCKSERVER_URL,
 	AGRI_SERVICES_BPP_MOCKSERVER_URL,
 	B2B_BPP_MOCKSERVER_URL,
+	B2C_BPP_MOCKSERVER_URL,
 	HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL,
 	LOGISTICS_BPP_MOCKSERVER_URL,
 	MOCKSERVER_ID,
@@ -66,10 +68,13 @@ export const responseBuilder = async (
 	action: string,
 	domain:
 		| "b2b"
+    | "b2c"
 		| "services"
 		| "agri-services"
 		| "healthcare-service"
+		| "agri-equipment-hiring"
 		| "logistics",
+
 	error?: object | undefined
 ) => {
 	res.locals = {};
@@ -88,6 +93,9 @@ export const responseBuilder = async (
 			? AGRI_SERVICES_BPP_MOCKSERVER_URL
 			: domain === "healthcare-service"
 			? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
+			: domain === "agri-equipment-hiring"
+			? AGRI_EQUIPMENT_BPP_MOCKSERVER_URL
+			:domain === "b2c"? B2C_BPP_MOCKSERVER_URL
 			: domain === "logistics"
 			? LOGISTICS_BPP_MOCKSERVER_URL
 			: SERVICES_BPP_MOCKSERVER_URL;
@@ -292,7 +300,12 @@ export const sendStatusAxiosCall = async (
 	message: object,
 	uri: string,
 	action: string,
-	domain: "b2b" | "services" | "agri-services" | "healthcare-service",
+	domain:
+		| "b2b"
+		| "services"
+		| "agri-services"
+		| "healthcare-service"
+		| "agri-equipment-hiring",
 	error?: object | undefined
 ) => {
 	let ts = new Date();
@@ -310,6 +323,8 @@ export const sendStatusAxiosCall = async (
 			? AGRI_SERVICES_BPP_MOCKSERVER_URL
 			: domain === "healthcare-service"
 			? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
+			: domain === "agri-equipment-hiring"
+			? AGRI_EQUIPMENT_BPP_MOCKSERVER_URL
 			: SERVICES_BPP_MOCKSERVER_URL;
 
 	async = {
@@ -412,6 +427,7 @@ export const quoteCreator = (items: Item[]) => {
 			},
 		},
 	];
+
 	const chargesOnItem = [
 		{
 			"@ondc/org/item_id": "I1",
@@ -432,6 +448,7 @@ export const quoteCreator = (items: Item[]) => {
 			},
 		},
 	];
+
 	items.forEach((item: any) => {
 		breakup = [
 			...breakup,
@@ -455,6 +472,7 @@ export const quoteCreator = (items: Item[]) => {
 				},
 			},
 		];
+
 		item.fulfillment_ids.forEach((eachId: string) => {
 			breakup = [
 				...breakup,
@@ -465,6 +483,7 @@ export const quoteCreator = (items: Item[]) => {
 			];
 		});
 	});
+
 	return {
 		breakup,
 		price: {
@@ -475,6 +494,131 @@ export const quoteCreator = (items: Item[]) => {
 	};
 };
 
+//B2C QUOTE CREATOR WITH DYNAMIC ITEMS AND PRICE
+export const quoteCreatorB2c = (items: Item[], providersItems?: any) => {
+	//get price from on_search
+	let breakup: any[] = [];
+	const chargesOnFulfillment = [
+		{
+			"@ondc/org/item_id": "F1",
+			title: "Delivery charges",
+			"@ondc/org/title_type": "delivery",
+			price: {
+				currency: "INR",
+				value: "2.00",
+			},
+		},
+		{
+			"@ondc/org/item_id": "F1",
+			title: "Packing charges",
+			"@ondc/org/title_type": "packing",
+			price: {
+				currency: "INR",
+				value: "5.00",
+			},
+		},
+		{
+			"@ondc/org/item_id": "F1",
+			title: "Convenience Fee",
+			"@ondc/org/title_type": "misc",
+			price: {
+				currency: "INR",
+				value: "1.00",
+			},
+		},
+	];
+
+	const chargesOnItem = [
+		{
+			"@ondc/org/item_id": "I1",
+			title: "Tax",
+			"@ondc/org/title_type": "tax",
+			price: {
+				currency: "INR",
+				value: "0.00",
+			},
+		},
+		{
+			"@ondc/org/item_id": "I1",
+			title: "Discount",
+			"@ondc/org/title_type": "discount",
+			price: {
+				currency: "INR",
+				value: "-3.00",
+			},
+		},
+	];
+
+	items.forEach((item) => {
+		// Find the corresponding item in the second array
+		if (providersItems) {
+			const matchingItem = providersItems.find(
+				(secondItem: { id: string }) => secondItem?.id === item?.id
+			);
+			// If a matching item is found, update the price in the items array
+			if (matchingItem) {
+				item.title = matchingItem?.descriptor?.name;
+				item.price = matchingItem?.price;
+				item.tags = matchingItem?.tags;
+			}
+		}
+	});
+
+	items.forEach((item) => {
+		breakup = [
+			...chargesOnItem,
+			{
+				title: item.title,
+				"@ondc/org/item_id": item.id,
+				"@ondc/org/item_quantity": {
+					count: item.quantity.selected.count,
+				},
+				"@ondc/org/title_type": "item",
+				price: {
+					currency: "INR",
+					value: (
+						Number(item?.price?.value) * item?.quantity?.selected?.count
+					).toString(),
+				},
+				tags: item.tags,
+				item: {
+					id: item.id,
+					price: item.price,
+					quantity: item.quantity ? item.quantity : undefined,
+				},
+			},
+		];
+		item.fulfillment_ids.forEach((eachId: string) => {
+			breakup = [
+				...breakup,
+				...chargesOnFulfillment.map((each) => ({
+					...each,
+					"@ondc/org/item_id": eachId,
+				})),
+			];
+		});
+	});
+
+	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
+	let totalPrice = 0;
+	breakup.forEach((entry) => {
+		const priceValue = parseFloat(entry.price.value);
+		if (!isNaN(priceValue)) {
+			totalPrice += priceValue;
+		}
+	});
+
+	const result = {
+		breakup,
+		price: {
+			currency: "INR",
+			value: totalPrice.toFixed(2),
+		},
+		ttl: "P1D",
+	};
+
+	return result;
+};
 export const quoteCreatorAgriService = (
 	items: Item[],
 	providersItems?: any
@@ -595,7 +739,9 @@ export const quoteCreatorHealthCareService = (
 	items: Item[],
 	providersItems?: any,
 	offers?: any,
-	fulfillment_type?: string
+	fulfillment_type?: string,
+	service_name?: string,
+	action?:string
 ) => {
 	try {
 		//GET PACKAGE ITEMS
@@ -641,14 +787,15 @@ export const quoteCreatorHealthCareService = (
 
 		let breakup: any[] = [];
 
-		items.forEach((item) => {
+		items.forEach((item: any) => {
+			const quantity = item?.quantity?.selected?.count
+				? item?.quantity?.selected?.count
+				: Number(item?.quantity?.unitized?.measure?.value);
 			breakup.push({
 				title: item.title,
 				price: {
 					currency: "INR",
-					value: (
-						Number(item?.price?.value) * item?.quantity?.selected.count
-					).toString(),
+					value: (Number(item?.price?.value) * quantity).toString(),
 				},
 				tags: item?.tags,
 				item:
@@ -666,41 +813,64 @@ export const quoteCreatorHealthCareService = (
 
 		//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
 
-		//ADD STATIC TAX FOR ITEM ONE
-		breakup?.push({
-			title: "tax",
-			price: {
-				currency: "INR",
-				value: "10",
-			},
-			item: items[0],
-			tags: [
-				{
-					descriptor: {
-						code: "title",
-					},
-					list: [
-						{
-							descriptor: {
-								code: "type",
-							},
-							value: "tax",
-						},
-					],
+		//ADD STATIC TAX AND DISCOUNT FOR ITEM ONE
+		breakup?.push(
+			{
+				title: "tax",
+				price: {
+					currency: "INR",
+					value: "10",
 				},
-			],
-		});
+				item: items[0],
+				tags: [
+					{
+						descriptor: {
+							code: "title",
+						},
+						list: [
+							{
+								descriptor: {
+									code: "type",
+								},
+								value: "tax",
+							},
+						],
+					},
+				],
+			},
+			{
+				title: "discount",
+				price: {
+					currency: "INR",
+					value: "10",
+				},
+				item: items[0],
+				tags: [
+					{
+						descriptor: {
+							code: "title",
+						},
+						list: [
+							{
+								descriptor: {
+									code: "type",
+								},
+								value: "discount",
+							},
+						],
+					},
+				],
+			}
+		);
 
-		if (fulfillment_type === "Seller-Fulfilled") {
+		if (fulfillment_type === "Seller-Fulfilled" || service_name === "agri-equipment-hiring") {
 			breakup?.push({
 				title: "pickup_charge",
 				price: {
 					currency: "INR",
 					value: "149",
 				},
-				item: {
-					id: "I1",
-				},
+				item: items[0],
 				tags: [
 					{
 						descriptor: {
@@ -718,8 +888,33 @@ export const quoteCreatorHealthCareService = (
 				],
 			});
 		}
-		let totalPrice = 0;
 
+		if (service_name === "agri-equipment-hiring"){
+			breakup?.push({
+				title: "refundable_security",
+				price: {
+					currency: "INR",
+					value: "5000",
+				},
+				item: items[0],
+				tags: [
+					{
+						descriptor: {
+							code: "title",
+						},
+						list: [
+							{
+								descriptor: {
+									code: "type",
+								},
+								value: "refundable_security",
+							},
+						],
+					},
+				],
+			});
+		}
+		let totalPrice = 0;
 		breakup.forEach((entry) => {
 			const priceValue = parseFloat(entry?.price?.value);
 			if (!isNaN(priceValue)) {
@@ -1046,9 +1241,9 @@ export const updateFulfillments = (
 								ele = {
 									...ele,
 									...FULFILLMENT_END,
-									time:{
+									time: {
 										...ele.time,
-										label:FULFILLMENT_LABELS.CONFIRMED
+										label: FULFILLMENT_LABELS.CONFIRMED,
 									},
 									person:
 										ele.customer && ele.customer.person

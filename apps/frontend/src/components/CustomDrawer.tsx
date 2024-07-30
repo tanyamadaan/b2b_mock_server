@@ -48,6 +48,12 @@ const DOMAIN_NAVS = [
 		children: NAV_LINKS,
 	},
 	{
+		name: "B2C",
+		nested: true,
+		path: "/b2c",
+		children: NAV_LINKS,
+	},
+	{
 		name: "Services",
 		nested: true,
 		path: "/services",
@@ -65,7 +71,12 @@ const DOMAIN_NAVS = [
 		path: "/agri-services",
 		children: NAV_LINKS,
 	},
-
+	{
+		name: "Agri Equipment Services",
+		nested: true,
+		path: "/agri-equipment-services",
+		children: NAV_LINKS,
+	},
 	{
 		name: "Healthcare Services",
 		nested: true,

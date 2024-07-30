@@ -4,7 +4,8 @@ export const ACTTION_KEY = {
   INIT:"init",
   CONFIRM:"confirm",
   CANCEL:"cancel",
-  UPDATE:"update"
+  UPDATE:"update",
+  RATING:"rating"
 }
 
 export const ON_ACTION_KEY = {

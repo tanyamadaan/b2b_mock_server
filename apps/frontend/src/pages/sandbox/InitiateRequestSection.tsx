@@ -5,7 +5,10 @@ import Typography from "@mui/material/Typography";
 import { checker, INITIATE_FIELDS } from "../../utils";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
+<<<<<<< HEAD
 import { CITY_CODE } from "../../utils/constants";
+=======
+>>>>>>> c2401a51f06310491b7bcb2fbe7c13aa1c047568
 import { Input, Option, Select, Button } from "@mui/joy";
 import axios, { AxiosError } from "axios";
 import Divider from "@mui/material/Divider";
@@ -16,22 +19,35 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import { Item } from "../../../../backend/src/lib/utils/interfaces";
 type InitiateRequestSectionProp = {
+<<<<<<< HEAD
 	domain:
 		| "b2b"
 		| "services"
 		| "agri-services"
 		| "healthcare-services"
 		| "logistics";
+=======
+	domain: "b2b" |"b2c"| "services" | "agri-services" | "healthcare-services" | "agri-equipment-hiring";
+>>>>>>> c2401a51f06310491b7bcb2fbe7c13aa1c047568
 };
 
 type SELECT_OPTIONS =
 	| string[]
+<<<<<<< HEAD
 	| { b2b: string[]; services: string[]; agri_services: string[] }
 	| { b2b: string[]; services: string; agri_services: string[] }
 	| { services: string[] }
 	| { agri_services: string[] }
 	| { healthcare_services: string[] }
 	| { logistics: string[] }
+=======
+	| { b2b: string[]; services: string[]; agri_services: string[]; b2c: string[]}
+	| { b2b: string[]; services: string[]; agri_services: string[]; b2c: string[] }
+	| { services: string[] }
+	| { agri_services: string[] }
+	| { healthcare_services: string[] }
+	| {b2c: string[]}
+>>>>>>> c2401a51f06310491b7bcb2fbe7c13aa1c047568
 	| object;
 
 export const InitiateRequestSection = ({
@@ -193,11 +209,15 @@ export const InitiateRequestSection = ({
 			}
 		} catch (error: any) {
 			setMessageType("error");
+<<<<<<< HEAD
 			console.log("error.response?.data?.error?.message", error);
 			if (
 				error instanceof AxiosError &&
 				error.response?.data?.error?.message.error?.message
 			)
+=======
+						if (error instanceof AxiosError && error.response?.data?.error?.message.error?.message)
+>>>>>>> c2401a51f06310491b7bcb2fbe7c13aa1c047568
 				handleMessageToggle(
 					error.response?.data?.error?.message.error?.message === "string"
 						? error.response?.data?.error?.message.error?.message
