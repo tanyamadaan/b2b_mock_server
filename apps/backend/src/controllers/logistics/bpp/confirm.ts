@@ -92,10 +92,11 @@ export const confirmController = async (
 		endstartDate.setDate(startstartDate.getDate() + 7);
 		let endendDate = new Date();
 		endendDate.setMinutes(startstartDate.getDate() + 30); 
+		var newTime = new Date().toISOString();
 		let onConfirm = {
 			context: {
 				...req.body.context,
-				timestamp: new Date().toISOString(),
+				timestamp: newTime,
 				action: "on_confirm",
 			},
 			message: {
@@ -224,8 +225,8 @@ export const confirmController = async (
 					billing: req.body.message.order.billing,
 					payments: req.body.message.order.payments,
 					tags: req.body.message.order.tags,
-					created_at: new Date().toISOString(),
-					updated_at: new Date().toISOString(),
+					created_at: req.body.message.order.created_at,
+					updated_at: newTime,
 				},
 			},
 		};

@@ -17,7 +17,7 @@ const getFutureDates = (days: number): string[] => {
 
 	for (let i = 0; i < days; i++) {
 		const futureDate = new Date(today);
-		futureDate.setDate(today.getDate() + i);
+		futureDate.setDate(today.getDate() + 4 + i);
 
 		const year = futureDate.getFullYear();
 		const month = String(futureDate.getMonth() + 1).padStart(2, "0");
@@ -75,6 +75,7 @@ export const initiateSearchController = async (
 		endTime.setDate(endTime.getDate() + 2);
 		search = search.value;
 		search = {
+			...search,
 			context: {
 				...search.context,
 				timestamp: newTime,
@@ -87,7 +88,6 @@ export const initiateSearchController = async (
 				transaction_id,
 				message_id: uuidv4(),
 				// bpp_id: MOCKSERVER_ID,
-				bpp_uri,
 				domain,
 				bap_id: MOCKSERVER_ID,
 				bap_uri: LOGISTICS_BAP_MOCKSERVER_URL,
@@ -127,7 +127,7 @@ export const initiateSearchController = async (
 				},
 			},
 		};
-		await send_response(res, next, search, transaction_id, "search");
+		await send_response(res, next, search, transaction_id, "search", "", bpp_uri);
 	} catch (error) {
 		return next(error);
 	}
