@@ -31,14 +31,13 @@ export const searchController = (
 				file = fs.readFileSync(
 					path.join(
 						SERVICES_EXAMPLES_PATH,
-						`on_search/${"on_search_customized.yaml"}`
-
-						// `on_search/${
-						// 	id === "SRV11-1041"
-						// 		?
-						// 		"on_search_customized.yaml"
-						// 		: "on_search.yaml"
-						// }`
+						// `on_search/${"on_search_customized.yaml"}`
+						`on_search/${
+							id === "SRV11-1041"
+								?
+								"on_search_customized.yaml"
+								: "on_search.yaml"
+						}`
 					)
 				);
 				break;
