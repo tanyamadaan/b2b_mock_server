@@ -18,7 +18,7 @@ import AppBar from "@mui/material/AppBar";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { ALL_DOMAINS } from "../utils";
 import { FormControl, InputLabel, MenuItem, Tooltip } from "@mui/material";
-import {useDomain } from "../utils/hooks";
+import { useDomain } from "../utils/hooks";
 
 const drawerWidth = 200;
 const NAV_LINKS = [
@@ -37,6 +37,7 @@ const NAV_LINKS = [
 		nested: false,
 		path: "/sandbox",
 	},
+
 ];
 
 type NavButtonProps = {
@@ -69,7 +70,7 @@ const NavButton = ({
 			<ListItem disablePadding key={index}>
 				{disabledTooltip?.show ? (
 					<Tooltip title={disabledTooltip?.text}>
-						<Box sx={{ width: "100%"}}>
+						<Box sx={{ width: "100%" }}>
 							<ListItemButton
 								disabled={disabled}
 								onClick={() => navigate(link.path)}
@@ -169,9 +170,9 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 							disabledTooltip={
 								domain.length === 0
 									? {
-											show: true,
-											text: "Select Domain to get started",
-									  }
+										show: true,
+										text: "Select Domain to get started",
+									}
 									: undefined
 							}
 						/>
@@ -180,6 +181,38 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 				))}
 			</List>
 			<Divider />
+			<NavButton
+				link={{
+					name: "Sign Check",
+					nested: false,
+					path: "/sign-check",
+				}}
+				render={mobileOpen}
+			/>
+			<NavButton
+				link={{
+					name: "Analyse Transaction",
+					nested: false,
+					path: "/analyse",
+				}}
+				render={mobileOpen}
+			/>
+			<NavButton
+				link={{
+					name: "Misc. Swagger",
+					nested: false,
+					path: "/swagger/misc",
+				}}
+				render={mobileOpen}
+			/>
+			<NavButton
+				link={{
+					name: "User Guide",
+					nested: false,
+					path: "/user-guide",
+				}}
+				render={mobileOpen}
+			/>
 		</div>
 	);
 

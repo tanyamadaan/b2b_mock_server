@@ -84,6 +84,7 @@ export const ALL_DOMAINS = {
 
 export const CITY_CODE = ["std:080", "std:011"];
 
+export const B2C_CITY_CODE = ["UN:SIN"]
 export const INITIATE_FIELDS = {
 	search: [
 		{
@@ -109,8 +110,12 @@ export const INITIATE_FIELDS = {
 			name: "city",
 			placeholder: "Select A City",
 			type: "select",
-			domainDepended: false,
-			options: CITY_CODE,
+			domainDepended: true,
+			options: {
+				b2b: CITY_CODE,
+				services: CITY_CODE,
+				b2c:B2C_CITY_CODE,
+			},
 		},
 	],
 
