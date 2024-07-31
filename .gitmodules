@@ -28,7 +28,6 @@
 	url = https://github.com/ONDC-Official/ONDC-SRV-Specifications
 	branch = draft-agri_services
 
-
 [submodule "apps/backend/domain-repos/@services/draft-healthcare-services"]
 	path = apps/backend/domain-repos/@services/draft-healthcare-services
 	url = https://github.com/ONDC-Official/ONDC-SRV-Specifications
@@ -53,6 +52,7 @@
 	path = apps/backend/domain-repos/@services/draft-agri_bids_and_auction
 	url = https://github.com/ONDC-Official/ONDC-SRV-Specifications
 	branch = draft-agri_bids_and_auction
+
 [submodule "packages/openapi/domain-repos/@services/draft-agri_bids_and_auction"]
 	path = packages/openapi/domain-repos/@services/draft-agri_bids_and_auction
 	url = https://github.com/ONDC-Official/ONDC-SRV-Specifications

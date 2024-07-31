@@ -31,11 +31,14 @@ export const searchController = (
 				file = fs.readFileSync(
 					path.join(
 						SERVICES_EXAMPLES_PATH,
-						`on_search/${
-							id === "SRV11-1041"
-								? "on_search_customized.yaml"
-								: "on_search.yaml"
-						}`
+						`on_search/${"on_search_customized.yaml"}`
+
+						// `on_search/${
+						// 	id === "SRV11-1041"
+						// 		?
+						// 		"on_search_customized.yaml"
+						// 		: "on_search.yaml"
+						// }`
 					)
 				);
 				break;
@@ -71,21 +74,21 @@ export const searchController = (
 					)
 				);
 				break;
-				case SERVICES_DOMAINS.BID_ACTION_SERVICES:
-					file = fs.readFileSync(
-						path.join(
-							BID_AUCTION_SERVICES_EXAMPLES_PATH,
-							`on_search/on_search.yaml`
-						)
-					);
-					break;
+			case SERVICES_DOMAINS.BID_ACTION_SERVICES:
+				file = fs.readFileSync(
+					path.join(
+						BID_AUCTION_SERVICES_EXAMPLES_PATH,
+						`on_search/on_search.yaml`
+					)
+				);
+				break;
 			default:
 				file = fs.readFileSync(
 					path.join(SERVICES_EXAMPLES_PATH, "on_search/on_search.yaml")
 				);
 				break;
 		}
-		const response = YAML.parse(file.toString());		
+		const response = YAML.parse(file.toString());
 
 		return responseBuilder(
 			res,
