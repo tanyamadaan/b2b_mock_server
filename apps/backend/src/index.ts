@@ -3,15 +3,11 @@ import swaggerUi from "swagger-ui-express";
 import cron from "node-cron"; // Import node-cron
 
 import {
-	agriEquipmentHiriingRouter,
-	agriServiceRouter,
 	authRouter,
 	b2bRouter,
-	healthCareServiceRouter,
 	miscRouter,
 	servicesRouter,
 } from "./controllers";
-
 import cors from "cors";
 import {
 	authSwagger,
@@ -25,7 +21,6 @@ import {
 	errorHandlingWrapper,
 	healthcareServiceSwagger,
 } from "./middlewares";
-import { sendUpsolicieatedOnStatus } from "./lib/utils/sendUpsolicieatedOnStatus";
 import { b2cRouter } from "./controllers/b2c";
 
 const app: Express = express();
@@ -65,31 +60,30 @@ app.use(
 app.use(express.raw({ type: "*/*", limit: "1mb" }));
 app.use(requestParser);
 app.use("/", miscRouter);
-
 app.use("/b2b", errorHandlingWrapper(b2bRouter));
 app.use("/b2c", errorHandlingWrapper(b2cRouter));
 app.use("/auth", errorHandlingWrapper(authRouter));
 app.use("/services", errorHandlingWrapper(servicesRouter));
-app.use("/agri-services", errorHandlingWrapper(agriServiceRouter));
-app.use("/healthcare-services", errorHandlingWrapper(healthCareServiceRouter));
-app.use("/agri-equipment-hiring", errorHandlingWrapper(agriEquipmentHiriingRouter))
 app.use("/detect_app_installation", (req: Request, res: Response) => {
 	const headers = req.headers;
 	return res.json({
 		headers: headers,
 	});
 });
+
 app.use(globalErrorHandler);
 
-//Schedule the function to run every 30 seconds using node-cron
-cron.schedule("*/30 * * * * *", async () => {
-	try {
-		await sendUpsolicieatedOnStatus();
-	} catch (error) {
-		console.log("error occured in cron");
-	}
-});
+// //Schedule the function to run every 30 seconds using node-cron
+// cron.schedule("*/30 * * * * *", async () => {
+// 	try {
+// 		await sendUpsolicieatedOnStatus();
+// 	} catch (error) {
+// 		console.log("error occured in cron");
+// 	}
+// });
 
 app.listen(port, () => {
 	console.log(`[server]: Server is running at http://localhost:${port}`);
 });
+
+export default app
