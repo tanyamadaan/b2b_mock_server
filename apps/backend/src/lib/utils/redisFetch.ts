@@ -1,6 +1,5 @@
 import { AGRI_HEALTHCARE_STATUS, SERVICES_DOMAINS } from "./apiConstants";
 import { redis } from "./redis"
-
 async function redisFetchToServer(action: string, transaction_id: string) {
   const transactionKeys = await redis.keys(`${transaction_id}-*`);
   

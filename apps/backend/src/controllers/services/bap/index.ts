@@ -23,7 +23,6 @@ bapRouter.post(
 	redisRetriever,
 	onInitController
 );
-
 bapRouter.post(
 	"/on_select",
 	jsonSchemaValidator({ domain: "services", action: "on_select" }),

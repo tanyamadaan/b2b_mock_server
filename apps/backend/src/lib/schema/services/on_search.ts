@@ -173,7 +173,7 @@ export const onSearchSchema = {
                       name: {
                         type: "string",
                       },
-                      codes: {
+                      code: {
                         type: "string",
                       },
                       short_desc: {
@@ -197,6 +197,7 @@ export const onSearchSchema = {
                     },
                     required: [
                       "name",
+                      "code",
                       "short_desc",
                       "long_desc",
                       "images",
@@ -245,12 +246,10 @@ export const onSearchSchema = {
                             },
                           },
                         },
-                        // required: [],
+                        required: [],
                       },
                     },
-                    required: ["label", 
-                      //"schedule"
-                    ],
+                    required: ["label", "schedule"],
                   },
                   locations: {
                     type: "array",
@@ -489,7 +488,7 @@ export const onSearchSchema = {
                           },
                           required: [
                             "name",
-                            // "code",
+                            "code",
                             "short_desc",
                             "long_desc",
                             "images",
@@ -655,7 +654,7 @@ export const onSearchSchema = {
                                       type: "string",
                                     },
                                   },
-                                  required: ["descriptor"],
+                                  required: ["descriptor", "value"],
                                 },
                               },
                             },
@@ -702,9 +701,7 @@ export const onSearchSchema = {
                               // required: ["holidays"],
                             },
                           },
-                          required: ["label", 
-                            //"schedule"
-                            ],
+                          required: ["label", "schedule"],
                         },
                         matched: {
                           type: "boolean",
@@ -722,12 +719,12 @@ export const onSearchSchema = {
                           // "creator",
                           "price",
                           "category_ids",
-                          // "fulfillment_ids",
+                          "fulfillment_ids",
                           "location_ids",
                           "payment_ids",
                           "cancellation_terms",
                           "tags",
-                          // "time",
+                          "time",
                           "matched",
                           "recommended",
                         ],
@@ -781,9 +778,11 @@ export const onSearchSchema = {
                             },
                           },
                           required: [
+                            "name",
                             "code",
                             "short_desc",
                             "long_desc",
+                            // "images",
                           ],
                         },
                         location_ids: {
@@ -857,11 +856,11 @@ export const onSearchSchema = {
                                       type: "string",
                                     },
                                   },
-                                  required: ["value"],
+                                  required: ["descriptor", "value"],
                                 },
                               },
                             },
-                            required: ["list"],
+                            required: ["descriptor", "list"],
                           },
                         },
                       },
@@ -871,8 +870,8 @@ export const onSearchSchema = {
                         "location_ids",
                         "category_ids",
                         "item_ids",
-                        // "time",
-                        // "tags"
+                        "time",
+                        "tags"
                       ],
                     },
                   },
@@ -903,7 +902,7 @@ export const onSearchSchema = {
                   "descriptor",
                   "rating",
                   // "ttl",
-                  // "time",
+                  "time",
                   "locations",
                   "tags",
                   "items",
@@ -912,8 +911,7 @@ export const onSearchSchema = {
               },
             },
           },
-          required: [//"fulfillments",
-             "payments", "descriptor", "providers"],
+          required: ["fulfillments", "payments", "descriptor", "providers"],
         },
       },
       required: ["catalog"],

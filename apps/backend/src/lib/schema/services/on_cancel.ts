@@ -197,6 +197,7 @@ export const onCancelSchema = {
                 },
                 required: [
                   "id",
+                  "parent_item_id",
                   "fulfillment_ids",
                   "quantity",
                 ],
@@ -388,7 +389,7 @@ export const onCancelSchema = {
                     },
                   },
                 },
-                required: ["id", "type", "state", "stops"],
+                required: ["id", "type", "tracking", "state", "stops"],
               },
             },
             quote: {
@@ -493,7 +494,7 @@ export const onCancelSchema = {
                                     type: "string",
                                   },
                                 },
-                                required: ["descriptor"],
+                                required: ["descriptor", "value"],
                               },
                             },
                           },

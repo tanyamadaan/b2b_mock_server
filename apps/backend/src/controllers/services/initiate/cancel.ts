@@ -1,56 +1,110 @@
 import { NextFunction, Request, Response } from "express";
-import { v4 as uuidv4 } from "uuid";
 import {
-	send_response,
-	send_nack,
-	redisFetchToServer,
+  send_response,
+  send_nack,
+  createAuthHeader,
+  redis,
+  logger,
+  redisFetchToServer,
+  redisExistToServer,
 } from "../../../lib/utils";
-import { ACTTION_KEY, ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
-import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
-
+import axios, { AxiosError } from "axios";
+import { v4 as uuidv4 } from "uuid";
 
 export const initiateCancelController = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) => {
-	try{
-		const { transactionId, orderId, cancellationReasonId } = req.body;
-		const on_confirm = await redisFetchToServer(ON_ACTION_KEY.ON_CONFIRM, transactionId);
-		if (!on_confirm) {
-			return send_nack(res, ERROR_MESSAGES.ON_CONFIRM_DOES_NOT_EXISTED)
-		}
-		return intializeRequest(res, next, on_confirm, orderId, cancellationReasonId);
-	}catch(error){
-		return next(error)
-	}
-	
+  try {
+    const { transactionId, orderId, cancellationReasonId } = req.body;
+    // const transactionKeys = await redis.keys(`${transactionId}-*`);
+
+    const on_confirm = await redisFetchToServer("on_confirm", transactionId);
+    if (!on_confirm) {
+      return send_nack(res, "On Confirm doesn't exist");
+    }
+    // console.log("parsedTransaction:::: ", parsedTransaction[0]);
+    return intializeRequest(
+      res,
+      next,
+      on_confirm,
+      orderId,
+      cancellationReasonId
+    );
+  } catch (error) {
+    return next(error);
+  }
 };
 
 const intializeRequest = async (
-	res: Response,
-	next: NextFunction,
-	transaction: any,
-	order_id: string,
-	cancellation_reason_id: string
+  res: Response,
+  next: NextFunction,
+  transaction: any,
+  order_id: string,
+  cancellation_reason_id: string
 ) => {
-	try{
-		const { context } = transaction;
-		let scenario = "ack"
-		const cancel = {
-			context: {
-				...context,
-				action: ACTTION_KEY.CANCEL,
-				message_id: uuidv4(),
-			},
-			message: {
-				order_id,
-				cancellation_reason_id,
-			},
-		};
-		await send_response(res, next, cancel, context.transaction_id, ACTTION_KEY.CANCEL, scenario = scenario);
-	}catch(error){
-		next(error)
-	}
+try{
+  const { context } = transaction;
+  let scenario = "ack";
+  const cancel = {
+    context: {
+      ...context,
+      action: "cancel",
+      message_id: uuidv4(),
+    },
+    message: {
+      order_id,
+      cancellation_reason_id,
+    },
+  };
+  await send_response(
+    res,
+    next,
+    cancel,
+    context.transaction_id,
+    "cancel",
+    (scenario = scenario)
+  );}
+  catch (error) {
+    return next(error)
+  }
+  // const header = await createAuthHeader(cancel);
+  // try {
+  // 	await redis.set(
+  // 		`${context.transaction_id}-cancel-from-server`,
+  // 		JSON.stringify({ request: { ...cancel } })
+  // 	);
+  // 	const response = await axios.post(
+  // 		`${context.bpp_uri}/cancel?scenario=ack`,
+  // 		cancel,
+  // 		{
+  // 			headers: {
+  // 				// "X-Gateway-Authorization": header,
+  // 				authorization: header,
+  // 			},
+  // 		}
+  // 	);
+  // 	await redis.set(
+  // 		`${context.transaction_id}-cancel-from-server`,
+  // 		JSON.stringify({
+  // 			request: { ...cancel },
+  // 			response: {
+  // 				response: response.data,
+  // 				timestamp: new Date().toISOString(),
+  // 			},
+  // 		})
+  // 	);
 
+  // 	return res.json({
+  // 		message: {
+  // 			ack: {
+  // 				status: "ACK",
+  // 			},
+  // 		},
+  // 		transaction_id: context.transaction_id,
+  // 	});
+  // } catch (error) {
+  // 	return next(error);
+  // }
 };

@@ -1,4 +1,5 @@
-import { SRV_FULFILLMENT_TYPE, GPS_PATTERN, SRV_PAYMENT_TYPE, PAYMENT_COLLECTEDBY, DOMAIN, VERSION, SRV_INTENT_TAGS } from "./constants";
+import { SRV_FULFILLMENT_TYPE, GPS_PATTERN, SRV_PAYMENT_TYPE, PAYMENT_COLLECTEDBY, DOMAIN, VERSION } from "./constants";
+
 
 export const searchSchema = {
   $id: "searchSchema",
@@ -62,7 +63,7 @@ export const searchSchema = {
         ttl: {
           type: "string",
           const: "PT30S"
-        }
+        },
       },
       required: [
         "domain",
@@ -74,7 +75,7 @@ export const searchSchema = {
         "transaction_id",
         "message_id",
         "timestamp",
-        "ttl"
+        "ttl",
       ],
     },
     message: {
@@ -151,7 +152,7 @@ export const searchSchema = {
                                 format: "date-time"
                               },
                             },
-                            required: ["start"],
+                            required: ["start", "end"],
                           },
                           days: {
                             type: "array",
@@ -194,14 +195,14 @@ export const searchSchema = {
                     properties: {
                       code: {
                         type: "string",
-                        enum: SRV_INTENT_TAGS
+                        enum: ["BAP_Terms"]
                       },
                     },
                     required: ["code"],
                   },
                   list: {
                     type: "array",
-                    // minItems: 2,
+                    minItems: 2,
                     items: {
                       type: "object",
                       properties: {
@@ -210,7 +211,7 @@ export const searchSchema = {
                           properties: {
                             code: {
                               type: "string",
-                              enum:SRV_INTENT_TAGS
+                              enum:["finder_fee_type","finder_fee_amount"]
                             },
                           },
                           required: ["code"],
@@ -227,8 +228,7 @@ export const searchSchema = {
               },
             },
           },
-          required: [ //"fulfillment",
-             "payment", "tags"],
+          required: [ "fulfillment", "payment", "tags"],
         },
       },
       required: ["intent"],
