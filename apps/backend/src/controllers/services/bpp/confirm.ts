@@ -1,76 +1,114 @@
 import { NextFunction, Request, Response } from "express";
-import { checkIfCustomized, redisFetchFromServer, responseBuilder, send_nack, Stop, updateFulfillments } from "../../../lib/utils";
-import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
-import { ORDER_STATUS } from "../../../lib/utils/apiConstants";
-import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
+import {
+  SERVICES_EXAMPLES_PATH,
+  Stop,
+  checkIfCustomized,
+  responseBuilder,
+} from "../../../lib/utils";
 
 export const confirmController = (
-	req: Request,
-	res: Response,
-	next: NextFunction
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) => {
-	try {
-		if (checkIfCustomized(req.body.message.order?.items)) {
+  try {
+    if (checkIfCustomized(req.body.message.order?.items)) {
       return confirmServiceCustomizationController(req, res, next);
     }
-    confirmConsultationController(req, res, next);	} catch (error) {
-		return next(error);
-	}
+    confirmConsultationController(req, res, next);
+  } catch (error) {
+    return next(error);
+  }
 };
 
-export const confirmConsultationController = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
+export const confirmConsultationController = (
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) => {
-	try {
-		const {
-			context,
-			message: { order },
-		} = req.body;
+  try {
+    const {
+      context,
+      message: { order },
+    } = req.body;
+    const { fulfillments } = order;
 
-		const on_init = await redisFetchFromServer(ON_ACTION_KEY.ON_INIT, context?.transaction_id);
-
-		if (on_init && on_init?.error) {
-			return send_nack(res, on_init?.error?.message?on_init?.error?.message:ERROR_MESSAGES.ON_INIT_DOES_NOT_EXISTED)
-		}
-
-		if (!on_init) {
-			return send_nack(res, ERROR_MESSAGES.ON_INIT_DOES_NOT_EXISTED)
-		}
-
-		const { fulfillments } = order;
-		const updatedFulfillments = updateFulfillments(
-			fulfillments,
-			ON_ACTION_KEY?.ON_CONFIRM
-		);
-
-		const responseMessage = {
-			order: {
-				...order,
-				status: ORDER_STATUS.ACCEPTED,
-				fulfillments: updatedFulfillments,
-				provider: {
-					...order.provider,
-					rateable: true,
-				},
-			},
-		};
-
-		return responseBuilder(
-			res,
-			next,
-			context,
-			responseMessage,
-			`${req.body.context.bap_uri}${
-				req.body.context.bap_uri.endsWith("/") ? ON_ACTION_KEY.ON_CONFIRM : `/${ON_ACTION_KEY.ON_CONFIRM}`
-			}`,
-			`${ON_ACTION_KEY.ON_CONFIRM}`,
-			"services"
-		);
-	} catch (error) {
-		next(error);
-	}
+    const rangeStart = new Date().setHours(new Date().getHours() + 2);
+    const rangeEnd = new Date().setHours(new Date().getHours() + 3);
+    
+    fulfillments[0].stops.splice(0, 0, {
+      type: "start",
+      location: {
+        id: "L10", // provider location Id
+        descriptor: {
+          name: "ABC Store", // provider desceriptor
+        },
+        gps: "12.956399,77.636803", //provider gps
+      },
+      time: {
+        range: {
+          start: new Date(rangeStart).toISOString(), //"2023-11-16T09:30:00Z" // add 2 hour from context timestamp
+          end: new Date(rangeEnd).toISOString(), // add 1 hour from start timestamp
+        },
+      },
+      contact: {
+        phone: "9886098860",
+        email: "nobody@nomail.com",
+      },
+      person: {
+        name: "Kishan",
+      },
+    });
+    const responseMessage = {
+      order: {
+        ...order,
+        status: "Accepted",
+        fulfillments: [
+          {
+            ...fulfillments[0],
+            state: {
+              descriptor: {
+                code: "Pending",
+              },
+            },
+            stops: fulfillments[0]?.stops?.map((itm: Stop) => {
+              let person;
+              if (itm.person) {
+                person = itm.person;
+              } else {
+                person =
+                  itm.customer && itm.customer.person
+                    ? itm.customer.person
+                    : undefined;
+              }
+              return {
+                ...itm,
+                person: person,
+              };
+            }),
+            rateable: true,
+          },
+        ],
+        provider: {
+          ...order?.provider,
+          rateable: true,
+        },
+      },
+    };
+    return responseBuilder(
+      res,
+      next,
+      context,
+      responseMessage,
+      `${req.body.context.bap_uri}${
+        req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
+      }`,
+      `on_confirm`,
+      "services"
+    );
+  } catch (error) {
+    return next(error);
+  }
 };
 
 export const confirmServiceCustomizationController = (
@@ -84,6 +122,9 @@ export const confirmServiceCustomizationController = (
       message: { order },
     } = req.body;
     const { fulfillments } = order;
+
+    //   const rangeStart = new Date().setHours(new Date().getHours() + 2);
+    //   const rangeEnd = new Date().setHours(new Date().getHours() + 3);
     const timestamp = new Date();
     const end_time = new Date(timestamp.getTime() + 30 * 60 * 1000);
     // const fulfillments = response.value.message.order.fulfillments
@@ -165,3 +206,20 @@ export const confirmServiceCustomizationController = (
     return next(error);
   }
 };
+
+// const confirmServiceController = (req: Request, res: Response) => {
+// 	const { context } = req.body;
+// 	const file = fs.readFileSync(
+// 		path.join(SERVICES_EXAMPLES_PATH, "on_confirm/on_confirm_service.yaml")
+// 	);
+// 	const response = YAML.parse(file.toString());
+// 	return responseBuilder(
+// 		res,
+// 		context,
+// 		response.value.message,
+// 		`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
+// 		}`,
+// 		`on_confirm`,
+// 		"services"
+// 	);
+// };

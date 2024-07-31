@@ -152,7 +152,7 @@ export const selectSchema = {
                   }
                 }
                 },
-                required: ["id","location_ids","quantity"],
+                required: ["id", "parent_item_id", "location_ids","quantity"],
               },
             },
             fulfillments: {

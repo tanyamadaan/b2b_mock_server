@@ -435,15 +435,6 @@ export const AGRI_SERVICES_SCENARIOS = {
 	],
 };
 
-export const BID_AUCTION_SCENARIOS = {
-	on_status: [
-		{
-			name: "Placed",
-			scenario: "Placed",
-		},
-	]
-};
-
 export const AGRI_EQUIPMENT_SERVICES_SCENARIOS = {
 	on_select: [
 		{

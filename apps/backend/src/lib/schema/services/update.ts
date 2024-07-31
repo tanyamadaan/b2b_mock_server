@@ -99,7 +99,7 @@ export const updateSchema = {
       properties: {
         update_target: {
           type: "string",
-          enum: ["payments","fulfillments","fulfillments,items","items"],
+          enum: ["payments", "fulfillments"],
         },
         order: {
           type: "object",
@@ -162,7 +162,7 @@ export const updateSchema = {
                 //   "fulfillment_ids",
                 //   "location_ids",
                 // ],
-                required: ["id","fulfillment_ids"],
+                required: ["id", "parent_item_id", "fulfillment_ids"],
               },
             },
             payments: {
@@ -467,7 +467,7 @@ export const updateSchema = {
                                     type: "string",
                                   },
                                 },
-                                required: ["descriptor"],
+                                required: ["descriptor", "value"],
                               },
                             },
                           },

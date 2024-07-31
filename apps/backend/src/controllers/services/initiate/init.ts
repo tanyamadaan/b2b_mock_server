@@ -1,123 +1,176 @@
 import { NextFunction, Request, Response } from "express";
-import { v4 as uuidv4 } from "uuid";
 import {
-	MOCKSERVER_ID,
-	send_response,
-	send_nack,
-	redisFetchToServer,
-	SERVICES_BAP_MOCKSERVER_URL,
+  MOCKSERVER_ID,
+  SERVICES_BAP_MOCKSERVER_URL,
+  checkIfCustomized,
+  send_response,
+  send_nack,
+  createAuthHeader,
+  logger,
+  redis,
+  redisFetchToServer,
 } from "../../../lib/utils";
-import {
-	ACTTION_KEY,
-	ON_ACTION_KEY,
-} from "../../../lib/utils/actionOnActionKeys";
-import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
-import { BILLING_DETAILS } from "../../../lib/utils/apiConstants";
+import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
 
 export const initiateInitController = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) => {
-	try {
-		const { scenario, transactionId } = req.body;
-		const on_select = await redisFetchToServer(
-			ON_ACTION_KEY.ON_SELECT,
-			transactionId
-		);
-		if (!on_select) {
-			return send_nack(res, ERROR_MESSAGES.ON_SELECT_DOES_NOT_EXISTED);
-		}
-		if (Object.keys(on_select).includes("error")) {
-			return send_nack(res, ERROR_MESSAGES.ON_SELECT_DOES_NOT_EXISTED);
-		}
-		return intializeRequest(res, next, on_select, scenario);
-	} catch (error) {
-		return next(error);
-	}
+  try {
+    const { scenario, transactionId } = req.body;
+
+    const on_select = await redisFetchToServer("on_select", transactionId);
+    if (Object.keys(on_select).includes("error")) {
+      return send_nack(res, "On Select had errors");
+    }
+
+    if (!on_select) {
+      return send_nack(res, "On Select doesn't exist");
+    }
+
+    // const request = parsedTransaction[0].request;
+
+    return intializeRequest(res, next, on_select, scenario);
+  } catch (error) {
+    return next(error);
+  }
 };
 
 const intializeRequest = async (
-	res: Response,
-	next: NextFunction,
-	transaction: any,
-	scenario: string
+  res: Response,
+  next: NextFunction,
+  transaction: any,
+  scenario: string
 ) => {
-	try {
-		const {
-			context,
-			message: {
-				order: { provider, fulfillments, quote },
-			},
-		} = transaction;
-		let { payments, items } = transaction.message.order;
-		const { id, type, stops } = fulfillments[0];
-		const { id: parent_item_id, location_ids, ...item } = items[0];
+  try {
+    const {
+      context,
+      message: {
+        order: { provider, fulfillments, quote },
+      },
+    } = transaction;
+    let { payments, items } = transaction.message.order;
+    const { id, type, stops } = fulfillments[0];
+    const { id: parent_item_id, location_ids, ...item } = items[0];
+    const { transaction_id } = context;
 
-		items = items.map(
-			({ location_ids, ...items }: { location_ids: any }) => items
-		);
+    const customized = checkIfCustomized(items);
+    // console.log("Customized ", customized)
+    //get item_id with quantity
 
-		const init = {
-			context: {
-				...context,
-				timestamp: new Date().toISOString(),
-				action: ACTTION_KEY.INIT,
-				bap_id: MOCKSERVER_ID,
-				bap_uri: SERVICES_BAP_MOCKSERVER_URL,
-				message_id: uuidv4(),
-			},
-			message: {
-				order: {
-					provider: {
-						...provider,
-						locations: [{ id: uuidv4() }],
-					},
-					items,
-					billing: BILLING_DETAILS,
-					fulfillments: [
-						{
-							id,
-							type,
-							stops: [
-								{
-									...stops[0],
-									id: undefined,
-									location: {
-										gps: "12.974002,77.613458",
-										address: "My House #, My buildin",
-										city: {
-											name: "Bengaluru",
-										},
-										country: {
-											code: "IND",
-										},
-										area_code: "560001",
-										state: {
-											name: "Karnataka",
-										},
-									},
-									contact: {
-										phone: "9886098860",
-									},
-									time: stops[0].time,
-								},
-							],
-						},
-					],
-					payments,
-				},
-			},
-		};
-		await send_response(
-			res,
-			next,
-			init,
-			context.transaction_id,
-			ACTTION_KEY.INIT,
-			(scenario = scenario)
-		);
-	} catch (error) {
-		next(error);
-	}
+    if (customized) {
+      // items = items.map((e: { quantity: any; }) => (Object.keys(e).includes("quantity") ? {...e, quantity: {...e.quantity,
+      // 	measure: {
+      // 		unit: "unit",
+      // 		value: "1",
+      // 	},}}: e))
+    } else {
+      items = items?.map(
+        ({ location_ids, ...items }: { location_ids: string[] }) => items
+      );
+    }
+
+    // console.log("ITEMS BEING SENT:::", items)
+
+    const init = {
+      context: {
+        ...context,
+        timestamp: new Date().toISOString(),
+        action: "init",
+        bap_id: MOCKSERVER_ID,
+        bap_uri: SERVICES_BAP_MOCKSERVER_URL,
+        message_id: uuidv4(),
+      },
+      message: {
+        order: {
+          provider: {
+            ...provider,
+            locations: [{ id: uuidv4() }],
+          },
+          items,
+          billing: {
+            name: "ONDC buyer",
+            address:
+              "22, Mahatma Gandhi Rd, Craig Park Layout, Ashok Nagar, Bengaluru, Karnataka 560001",
+            state: {
+              name: "Karnataka",
+            },
+            city: {
+              name: "Bengaluru",
+            },
+            tax_id: "XXXXXXXXXXXXXXX",
+            email: "nobody@nomail.com",
+            phone: "9886098860",
+          },
+          fulfillments: [
+            {
+              id,
+              type,
+              stops: [
+                {
+                  ...stops[0],
+                  id: customized ? stops[0].id : undefined,
+                  location: {
+                    gps: "12.974002,77.613458",
+                    address: "My House #, My buildin",
+                    city: {
+                      name: "Bengaluru",
+                    },
+                    country: {
+                      code: "IND",
+                    },
+                    area_code: "560001",
+                    state: {
+                      name: "Karnataka",
+                    },
+                  },
+                  contact: {
+                    phone: "9886098860",
+                  },
+                  time: stops[0]?.time,
+                },
+              ],
+            },
+          ],
+          payments,
+        },
+      },
+    };
+    await send_response(
+      res,
+      next,
+      init,
+      context.transaction_id,
+      "init",
+      (scenario = scenario)
+    );
+    // const header = await createAuthHeader(init);
+    // try {
+    // 	await redis.set(
+    // 		`${transaction_id}-init-from-server`,
+    // 		JSON.stringify({ request: { ...init } })
+    // 	);
+    // 	await axios.post(`${context.bpp_uri}/init?scenario=${scenario}`, init, {
+    // 		headers: {
+    // 			// "X-Gateway-Authorization": header,
+    // 			authorization: header,
+    // 		},
+    // 	});
+
+    // 	return res.json({
+    // 		message: {
+    // 			ack: {
+    // 				status: "ACK",
+    // 			},
+    // 		},
+    // 		transaction_id,
+    // 	});
+    // } catch (error) {
+    // 	return next(error)
+    // }
+  } catch (error) {
+    return next(error);
+  }
 };

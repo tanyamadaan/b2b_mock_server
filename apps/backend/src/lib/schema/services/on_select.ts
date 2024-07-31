@@ -187,7 +187,7 @@ export const onSelectSchema = {
                   },
                 },
                 required: [
-                  // "fulfillment_ids",
+                  "fulfillment_ids",
                   "id",
                   "location_ids",
                   "quantity"
@@ -409,7 +409,7 @@ export const onSelectSchema = {
                                     type: "string",
                                   },
                                 },
-                                required: ["descriptor"],
+                                required: ["descriptor", "value"],
                               },
                             },
                           },
@@ -444,9 +444,7 @@ export const onSelectSchema = {
               },
             },
           },
-          required: ["provider", "items", "fulfillments", 
-            //"quote", 
-            "payments"],
+          required: ["provider", "items", "fulfillments", "quote", "payments"],
         },
       },
       required: ["order"],

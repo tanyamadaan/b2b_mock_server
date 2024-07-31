@@ -175,7 +175,8 @@ export const confirmSchema = {
                 },
                 required: [
                   "id",
-                  // "fulfillment_ids",
+                  "parent_item_id",
+                  "fulfillment_ids",
                   "quantity",
                 ],
               },
@@ -354,7 +355,7 @@ export const confirmSchema = {
                     },
                   },
                 },
-                required: ["id", "type", "stops"],
+                required: ["id", "type", "tracking", "stops"],
               },
             },
             quote: {
@@ -557,7 +558,7 @@ export const confirmSchema = {
                       type: "string",
                     },
                   },
-                  required: ["submission_id", "status"],
+                  required: ["url", "mimetype", "submission_id", "status"],
                 },
               },
               required: ["form"],

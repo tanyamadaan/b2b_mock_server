@@ -11,7 +11,6 @@ export const SwaggerDownloadButton = ({
 	swaggerYaml,
 	fileName,
 }: DownloadButtonProps) => {
-	
 	const handleDownload = () => {
 		const yamlContent = jsYaml.dump(swaggerYaml);
 		const blob = new Blob([yamlContent], { type: "text/yaml" });

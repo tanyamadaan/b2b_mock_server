@@ -22,7 +22,6 @@ import {
 	FULFILLMENT_STATES,
 	FULFILLMENT_TYPES,
 	SCENARIO,
-	SERVICES_DOMAINS,
 } from "./apiConstants";
 
 interface TagDescriptor {
@@ -68,7 +67,7 @@ export const responseBuilder = async (
 	action: string,
 	domain:
 		| "b2b"
-		| "b2c"
+    | "b2c"
 		| "services"
 		| "agri-services"
 		| "healthcare-service"
@@ -89,9 +88,14 @@ export const responseBuilder = async (
 	const bppURI =
 		domain === "b2b"
 			? B2B_BPP_MOCKSERVER_URL
-			: domain === "b2c"
-				? B2C_BPP_MOCKSERVER_URL
-				: SERVICES_BPP_MOCKSERVER_URL;
+			: domain === "agri-services"
+			? AGRI_SERVICES_BPP_MOCKSERVER_URL
+			: domain === "healthcare-service"
+			? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
+			: domain === "agri-equipment-hiring"
+			? AGRI_EQUIPMENT_BPP_MOCKSERVER_URL
+			:domain === "b2c"? B2C_BPP_MOCKSERVER_URL
+			: SERVICES_BPP_MOCKSERVER_URL;
 
 	if (action.startsWith("on_")) {
 		async = {
@@ -125,6 +129,7 @@ export const responseBuilder = async (
 	}
 
 	const header = await createAuthHeader(async);
+
 	if (sandboxMode) {
 		if (action.startsWith("on_")) {
 			var log: TransactionType = {
@@ -139,7 +144,8 @@ export const responseBuilder = async (
 				).length;
 
 				await redis.set(
-					`${(async.context! as any).transaction_id
+					`${
+						(async.context! as any).transaction_id
 					}-${logIndex}-${action}-from-server`,
 					JSON.stringify(log)
 				);
@@ -170,15 +176,15 @@ export const responseBuilder = async (
 					error instanceof AxiosError
 						? error?.response?.data
 						: {
-							message: {
-								ack: {
-									status: "NACK",
+								message: {
+									ack: {
+										status: "NACK",
+									},
 								},
-							},
-							error: {
-								message: error,
-							},
-						};
+								error: {
+									message: error,
+								},
+						  };
 				log.response = {
 					timestamp: new Date().toISOString(),
 					response: response,
@@ -217,9 +223,9 @@ export const responseBuilder = async (
 				const logIndex = transactionKeys.filter((e) =>
 					e.includes("on_status-to-server")
 				).length;
-
 				await redis.set(
-					`${(async.context! as any).transaction_id
+					`${
+						(async.context! as any).transaction_id
 					}-${logIndex}-${action}-from-server`,
 					JSON.stringify(log)
 				);
@@ -240,7 +246,6 @@ export const responseBuilder = async (
 					timestamp: new Date().toISOString(),
 					response: response.data,
 				};
-
 				await redis.set(
 					`${(async.context! as any).transaction_id}-${action}-from-server`,
 					JSON.stringify(log)
@@ -250,15 +255,15 @@ export const responseBuilder = async (
 					error instanceof AxiosError
 						? error?.response?.data
 						: {
-							message: {
-								ack: {
-									status: "NACK",
+								message: {
+									ack: {
+										status: "NACK",
+									},
 								},
-							},
-							error: {
-								message: error,
-							},
-						};
+								error: {
+									message: error,
+								},
+						  };
 				log.response = {
 					timestamp: new Date().toISOString(),
 					response: response,
@@ -267,7 +272,6 @@ export const responseBuilder = async (
 					`${(async.context! as any).transaction_id}-${action}-from-server`,
 					JSON.stringify(log)
 				);
-
 				return next(error);
 			}
 		}
@@ -279,29 +283,12 @@ export const responseBuilder = async (
 			message: { sync: { message: { ack: { status: "ACK" } } } },
 		});
 		return res.json({
-			sync: {
-				message: {
-					ack: {
-						status: "ACK",
-					},
+			message: {
+				ack: {
+					status: "ACK",
 				},
 			},
-			async,
 		});
-
-		// logger.info({
-		// 	type: "response",
-		// 	action: action,
-		// 	transaction_id: (reqContext as any).transaction_id,
-		// 	message: { sync: { message: { ack: { status: "ACK" } } } },
-		// });
-		// return res.json({
-		// 	message: {
-		// 		ack: {
-		// 			status: "ACK",
-		// 		},
-		// 	},
-		// });
 	}
 };
 
@@ -330,12 +317,12 @@ export const sendStatusAxiosCall = async (
 		domain === "b2b"
 			? B2B_BPP_MOCKSERVER_URL
 			: domain === "agri-services"
-				? AGRI_SERVICES_BPP_MOCKSERVER_URL
-				: domain === "healthcare-service"
-					? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
-					: domain === "agri-equipment-hiring"
-						? AGRI_EQUIPMENT_BPP_MOCKSERVER_URL
-						: SERVICES_BPP_MOCKSERVER_URL;
+			? AGRI_SERVICES_BPP_MOCKSERVER_URL
+			: domain === "healthcare-service"
+			? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
+			: domain === "agri-equipment-hiring"
+			? AGRI_EQUIPMENT_BPP_MOCKSERVER_URL
+			: SERVICES_BPP_MOCKSERVER_URL;
 
 	async = {
 		...async,
@@ -377,15 +364,15 @@ export const sendStatusAxiosCall = async (
 				error instanceof AxiosError
 					? error?.response?.data
 					: {
-						message: {
-							ack: {
-								status: "NACK",
+							message: {
+								ack: {
+									status: "NACK",
+								},
 							},
-						},
-						error: {
-							message: error,
-						},
-					};
+							error: {
+								message: error,
+							},
+					  };
 			log.response = {
 				timestamp: new Date().toISOString(),
 				response: response,
@@ -629,7 +616,6 @@ export const quoteCreatorB2c = (items: Item[], providersItems?: any) => {
 
 	return result;
 };
-
 export const quoteCreatorAgriService = (
 	items: Item[],
 	providersItems?: any
@@ -665,13 +651,13 @@ export const quoteCreatorAgriService = (
 			item:
 				item.title === "tax"
 					? {
-						id: item.id,
-					}
+							id: item.id,
+					  }
 					: {
-						id: item.id,
-						price: item.price,
-						quantity: item.quantity ? item.quantity : undefined,
-					},
+							id: item.id,
+							price: item.price,
+							quantity: item.quantity ? item.quantity : undefined,
+					  },
 		});
 	});
 
@@ -752,10 +738,9 @@ export const quoteCreatorHealthCareService = (
 	offers?: any,
 	fulfillment_type?: string,
 	service_name?: string,
-	action?: string
+	action?:string
 ) => {
 	try {
-
 		//GET PACKAGE ITEMS
 		//get price from on_search
 		items.forEach((item) => {
@@ -813,13 +798,13 @@ export const quoteCreatorHealthCareService = (
 				item:
 					item.title === "tax"
 						? {
-							id: item?.id,
-						}
+								id: item?.id,
+						  }
 						: {
-							id: item?.id,
-							price: item?.price,
-							quantity: item?.quantity ? item?.quantity : undefined,
-						},
+								id: item?.id,
+								price: item?.price,
+								quantity: item?.quantity ? item?.quantity : undefined,
+						  },
 			});
 		});
 
@@ -875,11 +860,7 @@ export const quoteCreatorHealthCareService = (
 			}
 		);
 
-		if (
-			(fulfillment_type && fulfillment_type === "Seller-Fulfilled") ||
-			service_name === "agri-equipment-hiring" ||
-			service_name !== "bid_auction_service"
-		) {
+		if (fulfillment_type === "Seller-Fulfilled" || service_name === "agri-equipment-hiring") {
 			breakup?.push({
 				title: "pickup_charge",
 				price: {
@@ -905,7 +886,7 @@ export const quoteCreatorHealthCareService = (
 			});
 		}
 
-		if (service_name === "agri-equipment-hiring") {
+		if (service_name === "agri-equipment-hiring"){
 			breakup?.push({
 				title: "refundable_security",
 				price: {
@@ -930,43 +911,11 @@ export const quoteCreatorHealthCareService = (
 				],
 			});
 		}
-
-		if (service_name === "bid_auction_service") {
-			breakup?.push({
-				title: "earnest_money_deposit",
-				price: {
-					currency: "INR",
-					value: "5000.00",
-				},
-				item: items[0],
-				tags: [
-					{
-						descriptor: {
-							code: "TITLE",
-						},
-						list: [
-							{
-								descriptor: {
-									code: "type",
-								},
-								value: "earnest_money_deposit",
-							},
-						],
-					},
-				],
-			});
-		}
-		
 		let totalPrice = 0;
 		breakup.forEach((entry) => {
 			const priceValue = parseFloat(entry?.price?.value);
-
 			if (!isNaN(priceValue)) {
-				if (entry?.title === 'discount') {
-					totalPrice -= priceValue;
-				} else {
-					totalPrice += priceValue;
-				}
+				totalPrice += priceValue;
 			}
 		});
 
@@ -1225,8 +1174,7 @@ export const checkSelectedItems = async (data: any) => {
 export const updateFulfillments = (
 	fulfillments?: any,
 	action?: string,
-	scenario?: string,
-	domain?: string
+	scenario?: string
 ) => {
 	try {
 		// Update fulfillments according to actions
@@ -1240,8 +1188,9 @@ export const updateFulfillments = (
 			return updatedFulfillments; // Return empty if fulfillments is not provided or empty
 		}
 
-		let fulfillmentObj: any = {
+		const fulfillmentObj = {
 			id: "F1",
+			type: FULFILLMENT_TYPES.SELLER_FULFILLED,
 			tracking: false,
 			state: {
 				descriptor: {
@@ -1253,13 +1202,6 @@ export const updateFulfillments = (
 				return ele;
 			}),
 		};
-
-		if (domain !== SERVICES_DOMAINS.BID_ACTION_SERVICES) {
-			fulfillmentObj = {
-				...fulfillmentObj,
-				type: FULFILLMENT_TYPES.SELLER_FULFILLED,
-			};
-		}
 
 		switch (action) {
 			case ON_ACTION_KEY.ON_SELECT:

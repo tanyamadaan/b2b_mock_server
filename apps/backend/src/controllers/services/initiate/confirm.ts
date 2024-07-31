@@ -1,133 +1,144 @@
 import { NextFunction, Request, Response } from "express";
-import { v4 as uuidv4 } from "uuid";
 import {
-	MOCKSERVER_ID,
-	send_response,
-	send_nack,
-	redisFetchToServer,
-	SERVICES_BAP_MOCKSERVER_URL,
+  SERVICES_BAP_MOCKSERVER_URL,
+  MOCKSERVER_ID,
+  checkIfCustomized,
+  send_response,
+  send_nack,
+  redisFetchToServer,
+  Stop,
 } from "../../../lib/utils";
-import { ACTTION_KEY, ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
-import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
-import { ORDER_STATUS, PAYMENT_STATUS } from "../../../lib/utils/apiConstants";
+import { v4 as uuidv4 } from "uuid";
 
 export const initiateConfirmController = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) => {
-	try{
-		const { scenario, transactionId } = req.body;
-		const on_search = await redisFetchToServer(ON_ACTION_KEY.ON_SEARCH, transactionId);
-		const providersItems = on_search?.message?.catalog?.providers[0]?.items;
-		const on_init = await redisFetchToServer(ON_ACTION_KEY.ON_INIT, transactionId)
-		if (!on_init) {
-			return send_nack(res, ERROR_MESSAGES.ON_INIT_DOES_NOT_EXISTED)
-		}
-		return intializeRequest(res, next, on_init, scenario, providersItems);
-	}catch(error){
-		return next(error)
-	}
-	
+  try {
+    const { scenario, transactionId } = req.body;
+   
+    const on_init = await redisFetchToServer("on_init", transactionId);
+    if (!on_init) {
+      return send_nack(res, "On Init doesn't exist");
+    }
+    return intializeRequest(res, next, on_init, scenario);
+  } catch (error) {
+    return next(error);
+  }
 };
 
 const intializeRequest = async (
-	res: Response,
-	next: NextFunction,
-	transaction: any,
-	scenario: string,
-	providersItems: any
+  res: Response,
+  next: NextFunction,
+  transaction: any,
+  scenario: string
 ) => {
-	try{
-		const {
-			context,
-			message: {
-				order: {
-					provider,
-					locations,
-					payments,
-					fulfillments,
-					xinput,
-					items,
-				},
-			},
-		} = transaction;
-		const { transaction_id } = context;
-		const { stops, ...remainingfulfillments } = fulfillments[0];
-	
-		const timestamp = new Date().toISOString();
+  try {
+    const {
+      context,
+      message: {
+        order: {
+          provider,
+          locations,
+          payments,
+          fulfillments,
+          xinput,
+          items,
+          quote,
+        },
+      },
+    } = transaction;
+    const { transaction_id } = context;
+    const { stops, ...remainingfulfillments } = fulfillments[0];
 
-		const confirm = {
-			context: {
-				...context,
-				timestamp: new Date().toISOString(),
-				action: ACTTION_KEY.CONFIRM,
-				bap_id: MOCKSERVER_ID,
-				bap_uri: SERVICES_BAP_MOCKSERVER_URL,
-				message_id: uuidv4()
-			},
-			message: {
-				order: {
-					...transaction.message.order,
-					id: uuidv4(),
-					status: ORDER_STATUS.CREATED,
-					provider: {
-						...provider,
-						locations,
-					},
-					fulfillments: [
-						{
-							...remainingfulfillments,
-							stops: stops.map((stop: any) => {
-								return {
-									...stop,
-									contact: {
-										...stop.contact,
-										email: stop.contact && stop.contact.email ? stop.contact.email : "nobody@nomail.com"
-									},
-									customer: {
-										person: {
-											name: "Ramu",
-										},
-									},
-									tags: undefined
-								};
-							}),
-						},
-					],
-					payments: [
-						{
-							...payments[0],
-							params: {
-								...payments[0].params,
-								transaction_id: uuidv4(),
-							},
-							status: PAYMENT_STATUS.PAID,
-						},
-						{
-							...payments[1],
-							params: {
-								...payments[1].params,
-								transaction_id: uuidv4(),
-							},
-							status: PAYMENT_STATUS.NON_PAID,
-						},
-					],
-					created_at: timestamp,
-					updated_at: timestamp,
-					xinput: {
-						...xinput,
-						form: {
-							...xinput?.form,
-							submission_id: uuidv4(),
-							status: "SUCCESS",
-						}
-					},
-				},
-			},
-		};
-		await send_response(res, next, confirm, transaction_id, "confirm", scenario = scenario);
-	}catch(error){
-		next(error)
-	}
+    const timestamp = new Date().toISOString();
+
+    const customized = checkIfCustomized(items);
+    // console.log("Xinput ::", xinput)
+    const confirm = {
+      context: {
+        ...context,
+        timestamp: new Date().toISOString(),
+        action: "confirm",
+        bap_id: MOCKSERVER_ID,
+        bap_uri: SERVICES_BAP_MOCKSERVER_URL,
+        message_id: uuidv4(),
+      },
+      message: {
+        order: {
+          ...transaction.message.order,
+          id: uuidv4(),
+          status: "Created",
+          provider: {
+            ...provider,
+            locations,
+          },
+          items,
+          fulfillments: [
+            {
+              ...remainingfulfillments,
+              stops: stops?.map((stop: Stop) => {
+                return {
+                  ...stop,
+                  contact: {
+                    ...stop?.contact,
+                    email:
+                      stop.contact && stop.contact.email
+                        ? stop.contact.email
+                        : "nobody@nomail.com",
+                  },
+                  customer: {
+                    person: {
+                      name: "Ramu",
+                    },
+                  },
+                  tags: undefined,
+                };
+              }),
+            },
+          ],
+          quote: quote,
+          payments: [
+            {
+              //hardcoded transaction_id
+              ...payments[0],
+              params: {
+                ...payments[0].params,
+                transaction_id: "xxxxxxxx",
+              },
+              status: "PAID",
+            },
+          ],
+          created_at: timestamp,
+          updated_at: timestamp,
+          xinput: {
+            ...xinput,
+            form: {
+              ...xinput?.form,
+              submission_id: "xxxxxxxxxx",
+              status: "SUCCESS",
+            },
+          },
+        },
+      },
+    };
+    confirm.message.order.quote.breakup?.forEach((itm: any) => {
+      itm.item.quantity = {
+        selected: {
+          count: 3,
+        },
+      };
+    });
+    await send_response(
+      res,
+      next,
+      confirm,
+      transaction_id,
+      "confirm",
+      (scenario = scenario)
+    );
+  } catch (error) {
+    next(error);
+  }
 };
