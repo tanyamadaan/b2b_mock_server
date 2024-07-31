@@ -986,6 +986,7 @@ export const quoteCreatorHealthCareService = (
 };
 
 export const quoteCommon = (items: Item[], providersItems?: any) => {
+
 	//get price from on_search
 	items.forEach((item) => {
 		// Find the corresponding item in the second array

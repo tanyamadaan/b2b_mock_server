@@ -88,6 +88,7 @@ const selectConsultationConfirmController = (
 						ON_ACTION_KEY?.ON_SELECT
 				  );
 
+		console.log("providersItemsssssssssssssss",providersItems)
 		const responseMessage = {
 			order: {
 				provider,
