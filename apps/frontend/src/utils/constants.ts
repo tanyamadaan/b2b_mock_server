@@ -6,6 +6,8 @@ export const SUPPORTED_DOMAINS = [
 	"SERVICES",
 	"AGRI SERVICES",
 	"HEALTHCARE SERVICES",
+	"AGRI EQUIPMENT HIRING",
+	"BID AND AUCTION"
 ];
 
 export const USER_GUIDE_LINK =
@@ -66,6 +68,14 @@ export const SERVICE_DOMAINS = [
 	"ONDC:SRV14",
 	"ONDC:SRV15",
 	"ONDC:SRV18",
+];
+
+export const SERVICE_DOMAINS_OBJECT = [
+{lable:"ONDC:SRV11-Services",value:"ONDC:SRV11"},
+{lable:"ONDC:SRV13-Healthcare Services",value:"ONDC:SRV13"},
+{lable:"ONDC:SRV14-Agri Services",value:"ONDC:SRV14"},
+{lable:"ONDC:SRV15-Agri Equipment Hiring Services",value:"ONDC:SRV15"},
+{lable:"ONDC:SRV18-Bid And Auction Services",value:"ONDC:SRV18"}
 ];
 
 export const SERVICES_DOMAINS = {

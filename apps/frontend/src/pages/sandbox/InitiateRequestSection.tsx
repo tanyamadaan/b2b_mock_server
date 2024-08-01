@@ -182,6 +182,7 @@ export const InitiateRequestSection = () => {
 					<Grow in={renderActionFields} timeout={500}>
 						<Stack spacing={2} sx={{ my: 2 }}>
 							<Divider />
+
 							{action &&
 								INITIATE_FIELDS[action as keyof typeof INITIATE_FIELDS].map(
 									(field, index) => (
@@ -220,7 +221,8 @@ export const InitiateRequestSection = () => {
 														</Option>
 													))}
 												</Select>
-											) : field.type === "select" && !field.domainDepended ? (
+											) 
+											: field.type === "select" && !field.domainDepended ? (
 												<Select
 													placeholder={field.placeholder}
 													key={"select-" + action + "-" + index}
