@@ -6,6 +6,8 @@ export const SUPPORTED_DOMAINS = [
 	"SERVICES",
 	"AGRI SERVICES",
 	"HEALTHCARE SERVICES",
+	"AGRI EQUIPMENT HIRING",
+	"BID AND AUCTION"
 ];
 
 export const USER_GUIDE_LINK =
@@ -68,17 +70,25 @@ export const SERVICE_DOMAINS = [
 	"ONDC:SRV18",
 ];
 
+export const SERVICE_DOMAINS_OBJECT = [
+	{ lable: "ONDC:SRV11-Services", value: "ONDC:SRV11" },
+	{ lable: "ONDC:SRV13-Healthcare Services", value: "ONDC:SRV13" },
+	{ lable: "ONDC:SRV14-Agri Services", value: "ONDC:SRV14" },
+	{ lable: "ONDC:SRV15-Agri Equipment Hiring Services", value: "ONDC:SRV15" },
+	{ lable: "ONDC:SRV18-Bid And Auction Services", value: "ONDC:SRV18" }
+];
+
 export const SERVICES_DOMAINS = {
-	SERVICE:"ONDC:SRV11",
-	HEALTHCARE_SERVICES:"ONDC:SRV13",
-	AGRI_SERVICES:"ONDC:SRV14",
-	EQUIPMENT_HIRING_SERVICES:"ONDC:SRV15",
-	BID_AUCTION_SERVICE:"ONDC:SRV18"
+	SERVICE: "ONDC:SRV11",
+	HEALTHCARE_SERVICES: "ONDC:SRV13",
+	AGRI_SERVICES: "ONDC:SRV14",
+	EQUIPMENT_HIRING_SERVICES: "ONDC:SRV15",
+	BID_AUCTION_SERVICE: "ONDC:SRV18"
 }
 
 export const ALL_DOMAINS = {
 	"B2B": B2B_DOMAINS,
-	"B2C":B2C_DOMAINS,
+	"B2C": B2C_DOMAINS,
 	"Services": SERVICE_DOMAINS
 };
 
@@ -102,7 +112,7 @@ export const INITIATE_FIELDS = {
 			options: {
 				b2b: B2B_DOMAINS,
 				services: SERVICE_DOMAINS,
-				b2c:B2C_DOMAINS,
+				b2c: B2C_DOMAINS,
 			},
 		},
 
@@ -114,7 +124,7 @@ export const INITIATE_FIELDS = {
 			options: {
 				b2b: CITY_CODE,
 				services: CITY_CODE,
-				b2c:B2C_CITY_CODE,
+				b2c: B2C_CITY_CODE,
 			},
 		},
 	],
@@ -132,7 +142,7 @@ export const INITIATE_FIELDS = {
 			domainDepended: true,
 			options: {
 				b2b: B2B_SCENARIOS["select"].map((each) => each.scenario),
-			  // "agri-equipment-hiring": A,
+				// "agri-equipment-hiring": A,
 
 				// services: SERVICES_SCENARIOS["select"].map((each) => each.scenario),
 			},

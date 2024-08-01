@@ -45,7 +45,7 @@ export const Landing = () => {
 					style={{
 						display: "flex",
 						justifyContent: "flex-start",
-						height: "80%",
+						height: "100%",
 					}}
 					maxWidth="xl"
 				>
