@@ -9,180 +9,117 @@ import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
 import useTheme from "@mui/material/styles/useTheme";
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import Typography from "@mui/material/Typography";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import AccordionDetails from "@mui/material/AccordionDetails";
 import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { ALL_DOMAINS } from "../utils";
+import { FormControl, InputLabel, MenuItem, Tooltip } from "@mui/material";
+import { useDomain } from "../utils/hooks";
 
 const drawerWidth = 200;
 const NAV_LINKS = [
 	{
+		name: "Swagger",
+		nested: false,
+		path: "/swagger",
+	},
+	{
 		name: "Mock Server",
+		nested: false,
 		path: "/mock",
 	},
 	{
 		name: "Sandbox",
+		nested: false,
 		path: "/sandbox",
 	},
-	{
-		name: "Swagger",
-		path: "/swagger",
-	},
+
 ];
-const DOMAIN_NAVS = [
-	{
-		name: "Home",
-		nested: false,
-		path: "/",
-	},
-	{
-		name: "B2B",
-		nested: true,
-		path: "/b2b",
-		children: NAV_LINKS,
-	},
-	{
-		name: "B2C",
-		nested: true,
-		path: "/b2c",
-		children: NAV_LINKS,
-	},
-	{
-		name: "Services",
-		nested: true,
-		path: "/services",
-		children: NAV_LINKS,
-	},
-	{
-		name: "Agriculture Services",
-		nested: true,
-		path: "/agri-services",
-		children: NAV_LINKS,
-	},
-	{
-		name: "Agri Equipment Services",
-		nested: true,
-		path: "/agri-equipment-services",
-		children: NAV_LINKS,
-	},
-	{
-		name: "Healthcare Services",
-		nested: true,
-		path: "/healthcare-services",
-		children: NAV_LINKS,
-	},
-	{
-		name: "Sign Check",
-		nested: false,
-		path: "/sign-check",
-		// path: "/swagger/auth",
-	},
-	{
-		name: "Analyse Transaction",
-		nested: false,
-		path: "/analyse",
-	},
-	{
-		name: "Misc. Swagger",
-		nested: false,
-		path: "/swagger/misc"
-	},
-	{
-		name: "User Guide",
-		nested: false,
-		path: "/user-guide"
-	}
-];
-type CustomDrawerProps = {
-	children: React.ReactNode;
+
+type NavButtonProps = {
+	render: boolean;
+	index?: string | number;
+	link: {
+		name: string;
+		nested: boolean;
+		path: string;
+	};
+	disabled?: boolean;
+	disabledTooltip?: {
+		show: boolean;
+		text: string;
+	};
 };
 
-type NestedMenuProps = {
-	id: string;
-	name: string;
-	childPath: { name: string; path: string }[] | undefined;
-	parentPath: string;
-	growIn: boolean
-};
-
-const NestedMenu = ({ id, name, childPath, parentPath, growIn }: NestedMenuProps) => {
-	const theme = useTheme();
+const NavButton = ({
+	render,
+	index,
+	link,
+	disabled,
+	disabledTooltip,
+}: NavButtonProps) => {
 	const navigate = useNavigate();
-	const [accordionOpened, setAccordionOpened] = React.useState(false);
+	const location = useLocation();
+	const theme = useTheme();
 	return (
-		<Grow in={growIn} timeout={1000} key={"nested-nav-" + id}>
-			<Accordion
-				sx={{
-					my: 0,
-					bgcolor: theme.palette.primary.dark,
-					color: theme.palette.primary.contrastText,
-					"&.Mui-selected": {
-						backgroundColor: theme.palette.primary.main,
-					},
-				}}
-				square={true}
-				disableGutters={true}
-				elevation={0}
-				onChange={(_event, expanded) => setAccordionOpened(expanded)}
-			>
-				<AccordionSummary
-					expandIcon={
-						<ArrowDropDownIcon
-							sx={{ color: theme.palette.primary.contrastText }}
-						/>
-					}
-					aria-controls="panel2-content"
-					id={id}
-				>
-					<Typography>{name}</Typography>
-				</AccordionSummary>
-				<AccordionDetails
-					sx={{
-						bgcolor: theme.palette.grey[100],
-						color: theme.palette.getContrastText(theme.palette.grey[100]),
-						p: 0,
-					}}
-				>
-					<List sx={{ py: 0 }}>
-						{childPath?.map((link, index) => (
-							<Grow in={accordionOpened} timeout={800} key={id + index}>
-								<ListItem key={index} disablePadding>
-									<ListItemButton
-										onClick={() => navigate(link.path + parentPath)}
-										selected={location.pathname === link.path + parentPath}
-										sx={{
-											"&.Mui-selected": {
-												backgroundColor: theme.palette.primary.light,
-												color: theme.palette.getContrastText(
-													theme.palette.primary.light
-												),
-											},
-										}}
-									>
-										<ListItemText
-											primary={link.name}
-											sx={{ textAlign: "center" }}
-										/>
-									</ListItemButton>
-								</ListItem>
-							</Grow>
-						))}
-					</List>
-				</AccordionDetails>
-			</Accordion>
+		<Grow in={render} timeout={1000} key={"nonnested-nav-" + index}>
+			<ListItem disablePadding key={index}>
+				{disabledTooltip?.show ? (
+					<Tooltip title={disabledTooltip?.text}>
+						<Box sx={{ width: "100%" }}>
+							<ListItemButton
+								disabled={disabled}
+								onClick={() => navigate(link.path)}
+								selected={location.pathname === link.path}
+								sx={{
+									bgcolor: theme.palette.primary.dark,
+									color: theme.palette.primary.contrastText,
+									"&.Mui-selected": {
+										backgroundColor: theme.palette.primary.light,
+									},
+									"&:hover": {
+										color: theme.palette.common.black,
+									},
+								}}
+							>
+								<ListItemText primary={link.name} />
+							</ListItemButton>
+						</Box>
+					</Tooltip>
+				) : (
+					<ListItemButton
+						disabled={disabled}
+						onClick={() => navigate(link.path)}
+						selected={location.pathname === link.path}
+						sx={{
+							bgcolor: theme.palette.primary.dark,
+							color: theme.palette.primary.contrastText,
+							"&.Mui-selected": {
+								backgroundColor: theme.palette.primary.light,
+							},
+							"&:hover": {
+								color: theme.palette.common.black,
+							},
+						}}
+					>
+						<ListItemText primary={link.name} />
+					</ListItemButton>
+				)}
+			</ListItem>
 		</Grow>
 	);
 };
 
+type CustomDrawerProps = {
+	children: React.ReactNode;
+};
+
 export const CustomDrawer = ({ children }: CustomDrawerProps) => {
-	const navigate = useNavigate();
-	const location = useLocation();
+	const { domain, setDomain } = useDomain();
 	const theme = useTheme();
 	const [mobileOpen, setMobileOpen] = React.useState(false);
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -190,52 +127,92 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 	const handleDrawerToggle = () => {
 		setMobileOpen((prevState) => !prevState);
 	};
+	const handleDomain = (event: SelectChangeEvent) => {
+		setDomain(event.target.value.toLowerCase());
+	};
 	const drawer = (
 		<div>
 			<Toolbar />
 			<Divider />
+			<NavButton
+				link={{
+					name: "Home",
+					nested: false,
+					path: "/",
+				}}
+				render={mobileOpen}
+			/>
+
+			<Divider />
+			<FormControl fullWidth sx={{ my: 1 }}>
+				<InputLabel id="select-domain-label">Select Domain</InputLabel>
+				<Select
+					labelId="select-domain-label"
+					label="Domain"
+					onChange={handleDomain}
+				>
+					{Object.keys(ALL_DOMAINS).map((domain: string, key: number) => (
+						<MenuItem key={domain + key} value={domain}>
+							{domain}
+						</MenuItem>
+					))}
+				</Select>
+			</FormControl>
+			<Divider />
 			<List>
-				{DOMAIN_NAVS.map((link, index) => (
+				{NAV_LINKS.map((link, index) => (
 					<>
-						{link.nested ? (
-							<NestedMenu
-								name={link.name}
-								childPath={link.children}
-								parentPath={link.path}
-								id={"nav-nested-menu-" + index}
-								growIn={mobileOpen}
-							/>
-						) : (
-							<Grow
-								in={mobileOpen}
-								timeout={1000}
-								key={"nonnested-nav-" + index}
-							>
-								<ListItem disablePadding key={index}>
-									<ListItemButton
-										onClick={() => navigate(link.path)}
-										selected={location.pathname === link.path}
-										sx={{
-											bgcolor: theme.palette.primary.dark,
-											color: theme.palette.primary.contrastText,
-											"&.Mui-selected": {
-												backgroundColor: theme.palette.primary.light,
-											},
-											"&:hover": {
-												color: theme.palette.common.black,
-											},
-										}}
-									>
-										<ListItemText primary={link.name} />
-									</ListItemButton>
-								</ListItem>
-							</Grow>
-						)}
+						<NavButton
+							link={link}
+							index={index}
+							render={mobileOpen}
+							disabled={domain.length === 0}
+							disabledTooltip={
+								domain.length === 0
+									? {
+										show: true,
+										text: "Select Domain to get started",
+									}
+									: undefined
+							}
+						/>
 						<Divider />
 					</>
 				))}
 			</List>
 			<Divider />
+			<NavButton
+				link={{
+					name: "Sign Check",
+					nested: false,
+					path: "/sign-check",
+				}}
+				render={mobileOpen}
+			/>
+			<NavButton
+				link={{
+					name: "Analyse Transaction",
+					nested: false,
+					path: "/analyse",
+				}}
+				render={mobileOpen}
+			/>
+			<NavButton
+				link={{
+					name: "Misc. Swagger",
+					nested: false,
+					path: "/swagger/misc",
+				}}
+				render={mobileOpen}
+			/>
+			<NavButton
+				link={{
+					name: "User Guide",
+					nested: false,
+					path: "/user-guide",
+				}}
+				render={mobileOpen}
+			/>
 		</div>
 	);
 
