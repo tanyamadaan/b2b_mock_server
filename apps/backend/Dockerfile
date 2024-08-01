@@ -33,4 +33,4 @@ COPY --from=build /app/prisma /app/prisma
 EXPOSE 3000
 
 # Command to run your application
-CMD ["node", "index.js"]
+CMD ["node", "--max_old_space_size=4096","index.js"]

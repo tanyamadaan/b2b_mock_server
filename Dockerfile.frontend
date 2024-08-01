@@ -25,4 +25,4 @@ RUN npx turbo run build --filter=frontend
 
 EXPOSE 5173
 
-CMD ["turbo", "run", "preview"]
+CMD ["node", "--max_old_space_size=4096", "node_modules/.bin/turbo", "run", "preview"]
