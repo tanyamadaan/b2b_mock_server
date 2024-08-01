@@ -4,9 +4,9 @@
 	"private": false,
 	"packageManager": "npm@9.2.0",
 	"scripts": {
-		"dev": "turbo run dev",
-		"ec2": "turbo run ec2",
-		"test": "turbo run test"
+		"dev": "node --max-old-space-size=8192 node_modules/.bin/turbo run dev",
+		"ec2": "node --max-old-space-size=8192 node_modules/.bin/turbo run ec2",
+		"test":"node --max-old-space-size=8192 node_modules/.bin/turbo run test"
 	},
 	"workspaces": [
 		"apps/*",
