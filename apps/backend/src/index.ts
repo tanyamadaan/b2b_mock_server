@@ -25,6 +25,7 @@ import { b2cRouter } from "./controllers/b2c";
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
+console.log(process.env.NODE_OPTIONS);
 
 app.use(cors());
 
