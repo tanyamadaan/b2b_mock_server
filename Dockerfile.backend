@@ -1,0 +1,44 @@
+FROM node:20-alpine AS BASE
+
+FROM base AS pruner
+RUN apk add --no-cache libc6-compat
+RUN apk update
+# Set working directory
+WORKDIR /app
+RUN npm install global turbo
+COPY . .
+RUN npx turbo prune backend --docker
+
+FROM base AS builder
+RUN apk add --no-cache libc6-compat
+RUN apk update
+WORKDIR /app
+ 
+# First install the dependencies (as they change less often)
+COPY .gitignore .gitignore
+COPY --from=pruner /app/out/json/ .
+COPY --from=pruner /app/out/package-lock.json ./package-lock.json
+RUN npm ci
+COPY --from=pruner /app/out/full/ .
+
+# Generate the Prisma Client
+RUN npx prisma generate
+
+# Builds the Express Project
+RUN npx turbo run build --filter=backend
+
+FROM base AS ondc-mock-api
+
+WORKDIR /app
+
+# Copy only the necessary files from the build environment
+COPY --from=builder /app/dist /app
+COPY --from=builder /app/src/openapi /app/openapi
+COPY --from=builder /app/node_modules /app/node_modules
+COPY --from=builder /app/prisma /app/prisma
+
+# Expose the port your app will run on
+EXPOSE 3000
+
+# Command to run your application
+CMD ["node", "--max_old_space_size=4096","index.js"]

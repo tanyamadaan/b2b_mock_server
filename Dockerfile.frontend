@@ -1,6 +1,6 @@
-FROM node:20-alpine AS BASE
+FROM node:20-alpine AS base
 
-FROM base AS builder
+FROM base AS pruner
 RUN apk add --no-cache libc6-compat
 RUN apk update
 # Set working directory
@@ -10,19 +10,29 @@ COPY . .
 RUN npx turbo prune frontend --docker
 
 
-FROM base AS ondc-mock-server-frontend
+FROM base AS builder
 RUN apk add --no-cache libc6-compat
 RUN apk update
 WORKDIR /app
  
 # First install the dependencies (as they change less often)
 COPY .gitignore .gitignore
-COPY --from=builder /app/out/json/ .
-COPY --from=builder /app/out/package-lock.json ./package-lock.json
-RUN npm ci --force
-COPY --from=builder /app/out/full/ .
-RUN npx turbo run build --filter=frontend
+COPY --from=pruner /app/out/json/ .
+COPY --from=pruner /app/out/package-lock.json ./package-lock.json
+RUN npm i --force
+COPY --from=pruner /app/out/full/ .
+ENV NODE_OPTIONS=--max_old_space_size=4096
+RUN npm run build --workspace=frontend
 
-EXPOSE 5173
 
-CMD ["node", "--max_old_space_size=4096", "node_modules/.bin/turbo", "run", "preview"]
+# Stage 2: Production Image
+FROM nginx:alpine AS ondc-mock-web
+
+# Copy the build output to the nginx html directory
+COPY --from=builder /app/apps/frontend/dist /usr/share/nginx/html
+
+# Expose port 80
+EXPOSE 80
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
