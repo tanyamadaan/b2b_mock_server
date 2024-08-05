@@ -4,9 +4,9 @@
 	"private": false,
 	"packageManager": "npm@9.2.0",
 	"scripts": {
-		"dev": "node --max-old-space-size=8192 node_modules/.bin/turbo run dev",
-		"ec2": "node --max-old-space-size=8192 node_modules/.bin/turbo run ec2",
-		"test":"node --max-old-space-size=8192 node_modules/.bin/turbo run test"
+		"dev": "NODE_OPTIONS='--max-old-space-size=4096' turbo run dev",
+		"ec2": "NODE_OPTIONS='--max-old-space-size=4096' turbo run ec2",
+		"test":"NODE_OPTIONS='--max-old-space-size=4096' turbo run test"
 	},
 	"workspaces": [
 		"apps/*",
@@ -14,9 +14,5 @@
 	],
 	"devDependencies": {
 		"turbo": "^1.12.4"
-	},
-	"dependencies": {
-		"@esbuild/linux-x64": "^0.23.0",
-		"@rollup/rollup-linux-x64-gnu": "^4.19.1"
 	}
 }
