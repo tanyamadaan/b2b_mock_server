@@ -1,4 +1,4 @@
-FROM node:20-alpine AS BASE
+FROM node:20-alpine AS base
 
 FROM base AS pruner
 RUN apk add --no-cache libc6-compat
@@ -32,7 +32,7 @@ FROM base AS ondc-mock-api
 WORKDIR /app
 
 # Copy only the necessary files from the build environment
-COPY --from=builder /app/dist /app
+COPY --from=builder /app/apps/backend/dist /app
 COPY --from=builder /app/src/openapi /app/openapi
 COPY --from=builder /app/node_modules /app/node_modules
 COPY --from=builder /app/prisma /app/prisma
