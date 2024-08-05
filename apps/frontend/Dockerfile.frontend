@@ -1,8 +1,8 @@
 FROM node:20-alpine AS base
 
 FROM base AS pruner
-RUN apk add --no-cache libc6-compat
 RUN apk update
+RUN apk add --no-cache libc6-compat
 # Set working directory
 WORKDIR /app
 RUN npm install global turbo
@@ -11,22 +11,25 @@ RUN npx turbo prune frontend --docker
 
 
 FROM base AS builder
-RUN apk add --no-cache libc6-compat
 RUN apk update
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
- 
-# First install the dependencies (as they change less often)
+
 COPY .gitignore .gitignore
 COPY --from=pruner /app/out/json/ .
 COPY --from=pruner /app/out/package-lock.json ./package-lock.json
 RUN npm i --force
 COPY --from=pruner /app/out/full/ .
+COPY turbo.json turbo.json
 ENV NODE_OPTIONS=--max_old_space_size=4096
-RUN npm run build --workspace=frontend
+RUN npm run build -- --filter=frontend
 
 
 # Stage 2: Production Image
 FROM nginx:alpine AS ondc-mock-web
+RUN addgroup --system --gid 1001 vite
+RUN adduser --system --uid 1001 react
+USER react
 
 # Copy the build output to the nginx html directory
 COPY --from=builder /app/apps/frontend/dist /usr/share/nginx/html
