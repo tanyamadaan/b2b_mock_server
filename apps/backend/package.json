@@ -8,7 +8,7 @@
 		"test:backend": "npm run test",
 		"test": "jest --watchAll  --detectOpenHandles",
 		"dev": "nodemon ./src/index.ts",
-		"db:up": "docker compose up -f ../../docker-compose.yml -d db redis",
+		"db:up": "docker compose -f ../../docker-compose.yml up -d db redis",
 		"db:migrate:dev": "prisma migrate dev",
 		"build": "tsc"
 	},
@@ -49,6 +49,7 @@
 		"@apidevtools/swagger-cli": "^4.0.4",
 		"@types/express": "^4.17.21",
 		"@types/jest": "^29.5.12",
+		"@types/lodash": "^4.17.7",
 		"@types/node": "^20.10.5",
 		"@types/node-cron": "^3.0.11",
 		"@types/supertest": "^6.0.2",
