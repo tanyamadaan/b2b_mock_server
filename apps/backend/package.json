@@ -8,7 +8,7 @@
 		"test:backend": "npm run test",
 		"test": "jest --watchAll  --detectOpenHandles",
 		"dev": "nodemon ./src/index.ts",
-		"db:up": "docker compose -f ../../docker-compose.yml up -d db redis",
+		"db:up": "docker compose -f ../../docker-compose.yml -d up db redis",
 		"db:migrate:dev": "prisma migrate dev",
 		"build": "tsc"
 	},
@@ -60,6 +60,7 @@
 		"supertest": "^7.0.0",
 		"ts-jest": "^29.1.5",
 		"ts-node": "^10.9.2",
+		"tsc-alias": "^1.8.10",
 		"typescript": "^5.3.3"
 	}
 }
