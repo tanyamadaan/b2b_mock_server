@@ -87,6 +87,8 @@ services:
     build:
       context: .
       dockerfile: ./apps/frontend/Dockerfile.frontend
+    env_file:
+      - ./apps/frontend/.env
     # environment:
     #   - VITE_SERVER_URL=${VITE_SERVER_URL}
     #   - MOCKSERVER_ID=${MOCKSERVER_ID}
