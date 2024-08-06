@@ -21,7 +21,7 @@ RUN npm ci --force
 COPY --from=pruner /app/out/full/ .
 
 # Generate the Prisma Client
-RUN npx prisma generate
+RUN npx prisma generate --schema=./apps/backend/prisma/schema/prisma
 
 # Builds the Express Project
 ENV NODE_OPTIONS=--max_old_space_size=4096

@@ -4,12 +4,17 @@
   "module": "es2022",
   "description": "Contains the generated OpenAPI Specs.",
   "scripts": {
-    "swagger:gen": "ts-node generateSwagger.ts"
+    "swagger:gen": "ts-node generateSwagger.ts",
+    "build": "tsc",
+    "dev": "tsc --watch"
   },
   "author": "Abhik Banerjee",
   "license": "ISC",
   "exports": {
-    "./constants": "./constants.ts",
+    "./constants": {
+      "types": "./constants.ts",
+      "default": "./dist/constants.js"
+    },
     "./auth.json": "./openapi/auth/openapi.json",
     "./misc.json": "./openapi/misc/openapi.json",
     "./retail-b2b.json": "./openapi/retail-b2b/build/swagger.json",
