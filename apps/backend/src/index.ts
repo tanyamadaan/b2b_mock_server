@@ -23,6 +23,14 @@ import {
 } from "./middlewares";
 import { b2cRouter } from "./controllers/b2c";
 
+// import memwatch from 'memwatch-next';
+
+// // Set up memwatch to listen for memory leaks
+// memwatch.on('leak', (info) => {
+//   console.log('Memory leak detected:', info);
+// });
+
+
 const app: Express = express();
 const port = process.env.PORT || 3000;
 
@@ -70,7 +78,6 @@ app.use("/detect_app_installation", (req: Request, res: Response) => {
 		headers: headers,
 	});
 });
-
 app.use(globalErrorHandler);
 
 // //Schedule the function to run every 30 seconds using node-cron

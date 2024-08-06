@@ -98,7 +98,7 @@ value:
                 name: Liver
                 code: LIVER
             - id: C3
-              descriptor:/
+              descriptor:
                 name: Kidney
                 code: KIDNEY
             - id: C4
