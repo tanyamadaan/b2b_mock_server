@@ -11,6 +11,8 @@ RUN npx turbo prune backend --docker
 FROM base AS builder
 RUN apk update
 RUN apk add --no-cache libc6-compat
+RUN apk update && apk upgrade && \
+    apk add --no-cache bash git openssh
 WORKDIR /app
  
 # First install the dependencies (as they change less often)
@@ -24,6 +26,7 @@ COPY --from=pruner /app/out/full/ .
 # Generate the Prisma Client
 RUN npx prisma generate --schema=./apps/backend/prisma/schema.prisma
 
+RUN git submodule update --init
 # Builds the Express Project
 ENV NODE_OPTIONS=--max_old_space_size=4096
 RUN npm run build

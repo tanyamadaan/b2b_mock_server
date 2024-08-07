@@ -10,7 +10,7 @@ COPY . .
 RUN npx turbo prune backend --docker
 
 
-FROM base AS runner
+FROM base AS ondc-mock-db-setup
 RUN apk update
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
@@ -20,10 +20,10 @@ COPY .gitignore .gitignore
 COPY --from=pruner /app/out/json/ .
 COPY --from=pruner /app/out/package-lock.json ./package-lock.json
 RUN npm i --force
-COPY --from=pruner /app/out/full/ .
+COPY --from=pruner /app/out/full/apps/backend .
 
 # Generate the Prisma Client
-RUN npx prisma generate --schema=./apps/backend/prisma/schema.prisma
+RUN npx prisma generate
 
 # Builds the Express Project
 # RUN npm run build
