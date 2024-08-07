@@ -14,7 +14,7 @@ import { useDomain, useMessage } from "../../utils/hooks";
 import HelpOutlineTwoToneIcon from "@mui/icons-material/HelpOutlineTwoTone";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-
+import { useVersion } from "../../utils/hooks/useVersion";
 
 type SELECT_OPTIONS =
 	| string[]
@@ -43,10 +43,13 @@ type SELECT_FIELD = {
 export const InitiateRequestSection = () => {
 	const { handleMessageToggle, setMessageType, setCopy } = useMessage();
 	const [action, setAction] = useState<string>();
-	const { domain } = useDomain();
+	const { domain,setDomain } = useDomain();
+	const { version} = useVersion();
 	const [renderActionFields, setRenderActionFields] = useState(false);
 	const [formState, setFormState] = useState<object>();
 	const [allowSubmission, setAllowSubmission] = useState<boolean>();
+
+	console.log("domainnnnnnnnnnnnnn", domain);
 
 	const handleActionSelection = (
 		_event: React.SyntheticEvent | null,
@@ -66,9 +69,11 @@ export const InitiateRequestSection = () => {
 	useEffect(() => {
 		if (action) {
 			const keys = Object.keys(formState || {});
+
 			const formKeys = INITIATE_FIELDS[
 				action as keyof typeof INITIATE_FIELDS
 			].map((e) => e.name);
+
 			const scenarios = INITIATE_FIELDS[
 				action as keyof typeof INITIATE_FIELDS
 			].filter((e) => e.name === "scenario")[0];
@@ -100,7 +105,7 @@ export const InitiateRequestSection = () => {
 					},
 				}
 			);
-			if (response.data.message.ack.status === "ACK") {
+			if (response.data.message.ack.status === "ACK"){
 				if (action === "search") {
 					handleMessageToggle(
 						`Your Transaction ID is: ${response.data.transaction_id}`
@@ -195,7 +200,8 @@ export const InitiateRequestSection = () => {
 														handleFieldChange(field.name, e.target.value)
 													}
 												/>
-											) : field.type === "select" &&
+											) 
+											: field.type === "select" &&
 											  (field as SELECT_FIELD).domainDepended &&
 											  (field as SELECT_FIELD).options[
 													domain as keyof SELECT_OPTIONS
@@ -220,7 +226,8 @@ export const InitiateRequestSection = () => {
 														</Option>
 													))}
 												</Select>
-											) : field.type === "select" && !field.domainDepended ? (
+											) 
+											: field.type === "select" && !field.domainDepended ? (
 												<Select
 													placeholder={field.placeholder}
 													key={"select-" + action + "-" + index}
