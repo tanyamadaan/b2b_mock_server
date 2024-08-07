@@ -30,8 +30,8 @@ services:
 
   base:
     build: 
-      context: .
-      dockerfile: ./apps/backend/Dockerfile.dbsetup
+      context: ./apps/backend
+      dockerfile: Dockerfile.dbsetup
     env_file:
       - ./apps/backend/.env
     image: ondc-mock-setup
@@ -64,6 +64,7 @@ services:
     build: 
       context: .
       dockerfile: ./apps/backend/Dockerfile.backend
+    # extends: base
     ports:
       - "3000:${PORT:-3000}"
     env_file:
@@ -80,6 +81,7 @@ services:
     depends_on:
       - db
       - initDb
+      - redis
     networks:
       - ondc
 
