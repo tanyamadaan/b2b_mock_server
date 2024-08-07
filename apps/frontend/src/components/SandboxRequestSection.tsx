@@ -28,9 +28,7 @@ export const SandboxRequestSection = () => {
 		name: string;
 		scenario: string;
 	}>();
-	const { domain } = useDomain();
-	console.log("domainnnnnnnnnnn",domain)
-	
+	const { domain } = useDomain();	
 	const { action, detectAction, logError, scenarios } = useAction();
 
 	const { setSyncResponse } = useSandbox();
