@@ -1,20 +1,29 @@
 # Use an official Node.js runtime as a base image
-FROM node:20-alpine AS build
+FROM node:20-alpine AS base
 
-# Set the working directory in the container
+FROM base AS pruner
+RUN apk update
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
-
-# Copy package.json and package-lock.json to the working directory
-COPY package*.json ./
-
-# Install app dependencies
-RUN npm ci
-
-# Copy the application code to the container
+RUN npm install global turbo
 COPY . .
+RUN npx turbo prune backend --docker
+
+
+FROM base AS runner
+RUN apk update
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+ 
+# First install the dependencies (as they change less often)
+COPY .gitignore .gitignore
+COPY --from=pruner /app/out/json/ .
+COPY --from=pruner /app/out/package-lock.json ./package-lock.json
+RUN npm i --force
+COPY --from=pruner /app/out/full/ .
 
 # Generate the Prisma Client
-RUN npx prisma generate
+RUN npx prisma generate --schema=./apps/backend/prisma/schema.prisma
 
 # Builds the Express Project
 # RUN npm run build
