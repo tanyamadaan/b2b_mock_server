@@ -17,10 +17,18 @@ export const initiateSearchController = async (
 	next: NextFunction
 ) => {
 	try {
-		const { bpp_uri, city, domain } = req.body;
-		let file: any = fs.readFileSync(
-			path.join(B2C_EXAMPLES_PATH, "search/search_by_item.yaml")
-		);		
+		const { bpp_uri, city, domain, version } = req.body;
+		let file: any = "";
+		switch (version) {
+			case "b2c":
+				file = fs.readFileSync(
+					path.join(B2C_EXAMPLES_PATH, "search/search_by_item.yaml")
+				);
+			case "b2b":
+				file = fs.readFileSync(
+					path.join(B2B_EXAMPLES_PATH, "search/search_by_item.yaml")
+				);
+		}
 
 		let search = YAML.parse(file.toString());
 		search = search.value;
@@ -44,6 +52,7 @@ export const initiateSearchController = async (
 			},
 		};
 		search.bpp_uri = bpp_uri;
+    search.version = version;
 		await send_response(res, next, search, transaction_id, "search");
 	} catch (error) {
 		return next(error);

@@ -17,10 +17,10 @@ export const initiateSearchController = async (
 ) => {
   try {
     const { bpp_uri, city, domain } = req.body;
-    var file = fs.readFileSync(
+    const file = fs.readFileSync(
       path.join(B2B_EXAMPLES_PATH, "search/search_by_category.yaml")
     );
-    var search = YAML.parse(file.toString());
+    let search = YAML.parse(file.toString());
     search = search.value;
     const transaction_id = uuidv4();
     search = {

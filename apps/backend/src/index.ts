@@ -21,6 +21,7 @@ import {
 	errorHandlingWrapper,
 	healthcareServiceSwagger,
 } from "./middlewares";
+import { retailRouter } from "./controllers/retail";
 import { b2cRouter } from "./controllers/b2c";
 
 // import memwatch from 'memwatch-next';
@@ -70,6 +71,7 @@ app.use(requestParser);
 app.use("/", miscRouter);
 app.use("/b2b", errorHandlingWrapper(b2bRouter));
 app.use("/b2c", errorHandlingWrapper(b2cRouter));
+app.use("/retail", errorHandlingWrapper(retailRouter));
 app.use("/auth", errorHandlingWrapper(authRouter));
 app.use("/services", errorHandlingWrapper(servicesRouter));
 app.use("/detect_app_installation", (req: Request, res: Response) => {

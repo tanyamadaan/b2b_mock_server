@@ -72,7 +72,8 @@ export const responseBuilder = async (
 		| "services"
 		| "agri-services"
 		| "healthcare-service"
-		| "agri-equipment-hiring",
+		| "agri-equipment-hiring"
+		| "retail",
 
 	error?: object | undefined
 ) => {
