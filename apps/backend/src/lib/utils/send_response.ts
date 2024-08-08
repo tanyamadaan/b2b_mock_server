@@ -13,7 +13,8 @@ async function send_response(
 	res_obj: any,
 	transaction_id: string,
 	action: string,
-	scenario: string = ""
+	scenario: string = "",
+	version:any = ""
 ) {
 	try {
 		const { context } = res_obj;
@@ -36,7 +37,7 @@ async function send_response(
 			headers["X-Gateway-Authorization"] = header;
 		}
 
-		const uri = `${bpp_uri}/${action}${scenario ? `?scenario=${scenario}` : ""}`
+		const uri = `${bpp_uri}/${action}${scenario ? `?scenario=${scenario}` : ""}${version ? `?version=${version}` : ""}`
 		const response = await axios.post(uri, res_obj, {
 			headers: { ...headers },
 		});

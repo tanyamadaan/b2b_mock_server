@@ -13,48 +13,48 @@ export const bppRouter = Router();
 
 bppRouter.post(
 	"/search",
-	jsonSchemaValidator({ domain: "b2c", action: "search" }),
+	jsonSchemaValidator({ domain: "retail", action: "search" }),
 	redisRetriever,
 	searchController
 );
 
 bppRouter.post(
 	"/init",
-	jsonSchemaValidator({ domain: "b2c", action: "init" }),
+	jsonSchemaValidator({ domain: "retail", action: "init" }),
 	redisRetriever,
 	initController
 );
 
 bppRouter.post(
 	"/select",
-	jsonSchemaValidator({ domain: "b2c", action: "select" }),
+	jsonSchemaValidator({ domain: "retail", action: "select" }),
 	redisRetriever,
 	selectController
 );
 
 bppRouter.post(
 	"/confirm",
-	jsonSchemaValidator({ domain: "b2c", action: "confirm" }),
+	jsonSchemaValidator({ domain: "retail", action: "confirm" }),
 	redisRetriever,
 	confirmController
 );
 
 bppRouter.post(
 	"/update",
-	jsonSchemaValidator({ domain: "b2c", action: "update" }),
+	jsonSchemaValidator({ domain: "retail", action: "update" }),
 	redisRetriever,
 	updateController
 );
 bppRouter.post(
 	"/status",
-	jsonSchemaValidator({ domain: "b2c", action: "status" }),
+	jsonSchemaValidator({ domain: "retail", action: "status" }),
 	redisRetriever,
 	statusController
 );
 
 bppRouter.post(
 	"/cancel",
-	jsonSchemaValidator({domain: "b2c", action: "cancel"}),
+	jsonSchemaValidator({domain: "retail", action: "cancel"}),
 	redisRetriever,
 	cancelController
 )

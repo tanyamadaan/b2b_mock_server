@@ -59,6 +59,7 @@ export const MockRequestSection = () => {
 		)}/${action}?mode=mock`;
 		if (activeScenario?.scenario)
 			url = url + `&scenario=${activeScenario?.scenario}`;
+		
 		setCurl(`curl -X POST \\
 		  ${url} \\
 		-H 'accept: application/json' \\

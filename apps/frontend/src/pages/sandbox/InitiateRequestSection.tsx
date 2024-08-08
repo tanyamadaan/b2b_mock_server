@@ -14,7 +14,6 @@ import { useDomain, useMessage } from "../../utils/hooks";
 import HelpOutlineTwoToneIcon from "@mui/icons-material/HelpOutlineTwoTone";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import { useVersion } from "../../utils/hooks/useVersion";
 
 type SELECT_OPTIONS =
 	| string[]
@@ -43,13 +42,11 @@ type SELECT_FIELD = {
 export const InitiateRequestSection = () => {
 	const { handleMessageToggle, setMessageType, setCopy } = useMessage();
 	const [action, setAction] = useState<string>();
-	const { domain,setDomain } = useDomain();
-	const { version} = useVersion();
+	const { domain } = useDomain();
+	const [version,setVersion] = useState<string>();
 	const [renderActionFields, setRenderActionFields] = useState(false);
-	const [formState, setFormState] = useState<object>();
+	const [formState, setFormState] = useState<any>();
 	const [allowSubmission, setAllowSubmission] = useState<boolean>();
-
-	console.log("domainnnnnnnnnnnnnn", domain);
 
 	const handleActionSelection = (
 		_event: React.SyntheticEvent | null,
@@ -62,8 +59,12 @@ export const InitiateRequestSection = () => {
 		setTimeout(() => setRenderActionFields(true), 500);
 	};
 
-	const handleFieldChange = (fieldName: string, value: string | object) => {
-		setFormState((prev) => ({ ...prev, [fieldName]: value }));
+	console.log("actionnnnnnn",action,version)
+	const handleFieldChange = (fieldName: string, value: string) => {
+		if(fieldName === "version"){
+			setVersion(value as string)
+		}
+		setFormState((prev: any) => ({ ...prev, [fieldName]: value }));
 	};
 
 	useEffect(() => {
@@ -90,14 +91,14 @@ export const InitiateRequestSection = () => {
 				setAllowSubmission(true);
 			else setAllowSubmission(false);
 		}
-	}, [action, domain, formState]);
+	}, [action, domain, formState,version]);
 
 	const handleSubmit = async () => {
 		try {
 			const response = await axios.post(
 				`${
 					import.meta.env.VITE_SERVER_URL
-				}/${domain}/initiate/${action}?mode=mock`,
+				}/${domain}/initiate/${action}?mode=mock&version=${version}`,
 				formState,
 				{
 					headers: {

@@ -84,7 +84,7 @@ const onSearchDomesticController = (
         context.bpp_uri.endsWith("/") ? "select" : "/select"
       }`,
       `select`,
-      "b2b"
+      "retail"
     );
   } catch (error) {
     next(error);
@@ -145,7 +145,7 @@ const onSearchDomesticNonRfqController = (
         context.bpp_uri.endsWith("/") ? "select" : "/select"
       }`,
       `select`,
-      "b2b"
+      "retail"
     );
   } catch (error) {
     next(error);
@@ -172,7 +172,7 @@ const onSearchBAPchatController = (
         req.body.context.bpp_uri.endsWith("/") ? "select" : "/select"
       }`,
       `select`,
-      "b2b"
+      "retail"
     );
   } catch (error) {
     next(error);

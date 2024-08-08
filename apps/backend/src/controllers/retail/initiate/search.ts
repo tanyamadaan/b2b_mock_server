@@ -5,6 +5,7 @@ import {
 	B2C_EXAMPLES_PATH,
 	B2C_BAP_MOCKSERVER_URL,
 	B2B_EXAMPLES_PATH,
+	RETAIL_BAP_MOCKSERVER_URL,
 } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
@@ -17,7 +18,7 @@ export const initiateSearchController = async (
 	next: NextFunction
 ) => {
 	try {
-		const { bpp_uri, city, domain, version } = req.body;
+		const { bpp_uri, city, domain,version } = req.body;
 		let file: any = "";
 		switch (version) {
 			case "b2c":
@@ -48,12 +49,11 @@ export const initiateSearchController = async (
 				message_id: uuidv4(),
 				domain,
 				bap_id: MOCKSERVER_ID,
-				bap_uri: B2C_BAP_MOCKSERVER_URL,
+				bap_uri: RETAIL_BAP_MOCKSERVER_URL,
 			},
 		};
 		search.bpp_uri = bpp_uri;
-    search.version = version;
-		await send_response(res, next, search, transaction_id, "search");
+		await send_response(res, next, search, transaction_id, "search","",version);
 	} catch (error) {
 		return next(error);
 	}

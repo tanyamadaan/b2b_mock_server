@@ -20,7 +20,7 @@ export const selectController = async (
   next: NextFunction
 ) => {
   try {
-    const { scenario } = req.query;
+    const { scenario, version} = req.query;
     const { transaction_id } = req.body.context;
 
     const transactionKeys = await redis.keys(`${transaction_id}-*`);
@@ -73,16 +73,6 @@ export const selectController = async (
           res,
           `Required Quantity for Item:${item.name} is unavailable.`
         );
-        // return res.status(400).json({
-        // 	message: {
-        // 		ack: {
-        // 			status: "NACK",
-        // 		},
-        // 	},
-        // 	error: {
-        // 		message: `Required Quantity for Item:${item.name} is unavailable.`,
-        // 	},
-        // });
       }
     });
 

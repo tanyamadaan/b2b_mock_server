@@ -155,7 +155,7 @@ export const INITIATE_FIELDS = {
 			type: "select",
 			domainDepended: true,
 			options: {
-				b2b: B2B_SCENARIOS["select"].map((each) => each.scenario),
+				// retail: B2B_SCENARIOS["select"].map((each) => each.scenario),
 				// "agri-equipment-hiring": A,
 
 				// services: SERVICES_SCENARIOS["select"].map((each) => each.scenario),
@@ -175,7 +175,7 @@ export const INITIATE_FIELDS = {
 			type: "select",
 			domainDepended: true,
 			options: {
-				b2b: B2B_SCENARIOS["init"].map((each) => each.scenario),
+				retail: B2B_SCENARIOS["init"].map((each) => each.scenario),
 				// services: SERVICES_SCENARIOS["init"].map((each) => each.scenario),
 			},
 		},
