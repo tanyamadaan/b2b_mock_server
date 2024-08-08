@@ -752,7 +752,7 @@ export const quoteCreatorHealthCareService = (
 	offers?: any,
 	fulfillment_type?: string,
 	service_name?: string,
-	action?: string
+	scenario?:string
 ) => {
 	try {
 
@@ -931,7 +931,31 @@ export const quoteCreatorHealthCareService = (
 			});
 		}
 
-		if (service_name === "bid_auction_service") {
+		if(service_name === "bid_auction_service" && scenario === "participation_fee"){
+			breakup =[{
+				title: "earnest_money_deposit",
+				price: {
+					currency: "INR",
+					value: "5000.00",
+				},
+				item: items[0],
+				tags: [
+					{
+						descriptor: {
+							code: "TITLE",
+						},
+						list: [
+							{
+								descriptor: {
+									code: "type",
+								},
+								value: "earnest_money_deposit",
+							},
+						],
+					},
+				],
+		}];
+		}else if(service_name === "bid_auction_service" && scenario === "bid_placement"){
 			breakup?.push({
 				title: "earnest_money_deposit",
 				price: {
@@ -969,7 +993,7 @@ export const quoteCreatorHealthCareService = (
 				}
 			}
 		});
-
+		
 		const result = {
 			breakup,
 			price: {

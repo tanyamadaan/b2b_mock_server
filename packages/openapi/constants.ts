@@ -95,6 +95,7 @@ export const B2B_SCENARIOS = {
 		},
 	],
 };
+
 export const B2C_SCENARIOS = {
 	on_select: [
 		{
@@ -247,13 +248,13 @@ export const HEALTHCARE_SERVICES_SCENARIOS = {
 	// ],
 	on_select: [
 		{
-			name:"Multi Collection",
-			scenario:"multi_collection"
+			name: "Multi Collection",
+			scenario: "multi_collection",
 		},
 		{
-			name:"Default",
-			scenario:"default"
-		}
+			name: "Default",
+			scenario: "default",
+		},
 	],
 	// init: [
 	// 	{
@@ -261,8 +262,7 @@ export const HEALTHCARE_SERVICES_SCENARIOS = {
 	// 		scenario: "service",
 	// 	},
 	// ],
-	on_init: [
-	],
+	on_init: [],
 	// confirm: [
 	// 	{
 	// 		name: "Service",
@@ -363,8 +363,7 @@ export const AGRI_SERVICES_SCENARIOS = {
 	// 		scenario: "service",
 	// 	},
 	// ],
-	on_init: [
-	],
+	on_init: [],
 	// confirm: [
 	// 	{
 	// 		name: "Service",
@@ -422,7 +421,7 @@ export const AGRI_SERVICES_SCENARIOS = {
 			scenario: "payments",
 		},
 	],
-	
+
 	on_cancel: [
 		// {
 		// 	name: "ACK",
@@ -436,7 +435,7 @@ export const AGRI_SERVICES_SCENARIOS = {
 };
 
 export const BID_AUCTION_SCENARIOS = {
-	on_init:[
+	on_init: [
 		{
 			name: "Default",
 			scenario: "default",
@@ -448,14 +447,14 @@ export const BID_AUCTION_SCENARIOS = {
 		{
 			name: "Participation Fee",
 			scenario: "participation_fee",
-		}
+		},
 	],
 	on_status: [
 		{
 			name: "Placed",
 			scenario: "Placed",
 		},
-	]
+	],
 };
 
 export const AGRI_EQUIPMENT_SERVICES_SCENARIOS = {
@@ -469,11 +468,11 @@ export const AGRI_EQUIPMENT_SERVICES_SCENARIOS = {
 			scenario: "no_equipment_avaliable",
 		},
 		{
-			name:"Know the land's acres but unsure of the usage hours",
-			scenario:"know_the_lands_acres_but_unsure_of_the_usage_hours"
-		}
+			name: "Know the land's acres but unsure of the usage hours",
+			scenario: "know_the_lands_acres_but_unsure_of_the_usage_hours",
+		},
 	],
-	
+
 	on_init: [
 		{
 			name: "Default",
@@ -505,12 +504,12 @@ export const AGRI_EQUIPMENT_SERVICES_SCENARIOS = {
 			name: "Reached",
 			scenario: "AT_LOCATION",
 		},
-		
+
 		{
 			name: "Completed",
 			scenario: "COMPLETED",
-		}
-	],	
+		},
+	],
 
 	on_update: [
 		{
