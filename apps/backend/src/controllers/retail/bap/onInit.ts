@@ -88,7 +88,7 @@ export const onInitController = (
         context.bpp_uri.endsWith("/") ? "confirm" : "/confirm"
       }`,
       `confirm`,
-      "b2b"
+      "retail"
     );
   } catch (error) {
     return next(error);

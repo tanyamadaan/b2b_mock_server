@@ -506,7 +506,6 @@ export const initSchema = {
 						"billing",
 						"fulfillments",
 						"payments",
-						"tags",
 					],
 				},
 			},

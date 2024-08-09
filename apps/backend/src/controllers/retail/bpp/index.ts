@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { searchController } from "./search";
-
 import { initController } from "./init";
 import { selectController } from "./select";
 import { confirmController } from "./confirm";

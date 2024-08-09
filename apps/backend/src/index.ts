@@ -25,7 +25,6 @@ import { retailRouter } from "./controllers/retail";
 import { b2cRouter } from "./controllers/b2c";
 
 // import memwatch from 'memwatch-next';
-
 // // Set up memwatch to listen for memory leaks
 // memwatch.on('leak', (info) => {
 //   console.log('Memory leak detected:', info);
@@ -34,7 +33,6 @@ import { b2cRouter } from "./controllers/b2c";
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
-
 app.use(cors());
 
 app.use("/api-docs/auth", swaggerUi.serve, authSwagger("/api-docs/auth"));

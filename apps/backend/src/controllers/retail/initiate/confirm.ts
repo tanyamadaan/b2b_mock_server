@@ -6,6 +6,7 @@ import {
   Stop,
   redisFetchToServer,
   B2C_BAP_MOCKSERVER_URL,
+  RETAIL_BAP_MOCKSERVER_URL,
 } from "../../../lib/utils";
 import { v4 as uuidv4 } from "uuid";
 
@@ -15,6 +16,7 @@ export const initiateConfirmController = async (
   next: NextFunction
 ) => {
   try {
+    const {version} = req.query;
     const { scenario, transactionId } = req.body;
 
     // const transactionKeys = await redis.keys(`${transactionId}-*`);
@@ -34,7 +36,7 @@ export const initiateConfirmController = async (
       return send_nack(res, "On Init doesn't exist");
     }
     // console.log("parsedTransaction:::: ", parsedTransaction[0]);
-    return intializeRequest(res, next, on_init, scenario);
+    return intializeRequest(res, next, on_init, scenario, version);
   } catch (error) {
     return next(error);
   }
@@ -44,7 +46,8 @@ const intializeRequest = async (
   res: Response,
   next: NextFunction,
   transaction: any,
-  scenario: string
+  scenario: string,
+  version:any
 ) => {
   try {
     const {
@@ -62,7 +65,7 @@ const intializeRequest = async (
         timestamp,
         action: "confirm",
         bap_id: MOCKSERVER_ID,
-        bap_uri: B2C_BAP_MOCKSERVER_URL,
+        bap_uri: RETAIL_BAP_MOCKSERVER_URL,
         message_id: uuidv4(),
       },
       message: {

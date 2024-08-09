@@ -7,6 +7,7 @@ import {
   send_nack,
   createAuthHeader,
   redisFetchToServer,
+  RETAIL_BAP_MOCKSERVER_URL,
 } from "../../../lib/utils";
 import { v4 as uuidv4 } from "uuid";
 
@@ -104,7 +105,7 @@ async function intializeRequest(
         timestamp,
         action: "update",
         bap_id: MOCKSERVER_ID,
-        bap_uri: B2C_BAP_MOCKSERVER_URL,
+        bap_uri: RETAIL_BAP_MOCKSERVER_URL,
         message_id: uuidv4(),
       },
       message: {

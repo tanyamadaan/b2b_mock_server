@@ -743,7 +743,7 @@ export const onCancelSchema = {
             },
             tags: {
               type: "array",
-              minItems: 3,
+              // minItems: 3,
               items: {
                 type: "object",
                 properties: {

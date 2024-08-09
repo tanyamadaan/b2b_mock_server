@@ -19,6 +19,7 @@ export const statusController = async (
 	next: NextFunction
 ) => {
 	try {
+		const {version} = req.query;
 		const scenario: string = String(req.query.scenario) || "";
 		const { transaction_id } = req.body.context;
 		const on_confirm = await redisFetchFromServer(
@@ -28,7 +29,7 @@ export const statusController = async (
 		if (!on_confirm) {
 			return send_nack(res, ERROR_MESSAGES.ON_CONFIRM_DOES_NOT_EXISTED);
 		}
-		return statusRequest(req, res, next, on_confirm, scenario);
+		return statusRequest(req, res, next, on_confirm, scenario,version);
 	} catch (error) {
 		return next(error);
 	}
@@ -39,9 +40,11 @@ const statusRequest = async (
 	res: Response,
 	next: NextFunction,
 	transaction: any,
-	scenario: string
+	scenario: string,
+	version:any
 ) => {
 	try {
+
 		const timestamp = new Date().toISOString();
 		const responseMessage: any = {
 			order: {
@@ -230,7 +233,7 @@ const statusRequest = async (
 				req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
 			}`,
 			`on_status`,
-			"b2c"
+			"retail"
 		);
 	} catch (error) {
 		next(error);

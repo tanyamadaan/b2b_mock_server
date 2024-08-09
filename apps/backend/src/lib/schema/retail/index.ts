@@ -18,7 +18,7 @@ import { TransactionType } from "../../utils";
 import { cancelSchema } from "./cancel";
 import { onCancelSchema } from "./on_cancel";
 
-export const b2bSchemaValidator =
+export const retailSchemaValidator =
 	(
 		schema:
 			| "search"
@@ -114,7 +114,6 @@ export const b2bSchemaValidator =
 		}
 
 		isValid = validate(req.body);
-		// console.log('isValid::::: ', isValid)
 		if (!isValid) {
 			res.status(400).json({
 				message: {
@@ -143,39 +142,3 @@ export const b2bSchemaValidator =
 		}
 		next();
 	};
-
-// export const masterSchemaValidator = (
-// 	_req: Request,
-// 	res: Response,
-// 	next: NextFunction
-// ) => {
-// 	const ajv = new Ajv({
-// 		allErrors: true,
-// 		strict: false,
-// 		strictRequired: false,
-// 		strictTypes: false,
-// 		$data: true,
-// 	});
-// 	addFormats(ajv);
-
-// 	require("ajv-errors")(ajv);
-// 	var validate = ajv
-// 		.addSchema(searchSchema)
-// 		.addSchema(onSearchSchema)
-// 		.addSchema(selectSchema)
-// 		.addSchema(onSelectSchema)
-// 		.addSchema(initSchema)
-// 		.addSchema(onInitSchema)
-// 		.addSchema(confirmSchema)
-// 		.addSchema(onConfirmSchema)
-// 		.addSchema(updateSchema)
-// 		.addSchema(onUpdateSchema)
-// 		.addSchema(statusSchema)
-// 		.addSchema(onStatusSchema)
-// 		.compile(masterSchema);
-
-// 	const transaction: TransactionType = res.locals.logs;
-// 	const isValid = validate(transaction.logs);
-// 	if (!isValid) console.log("[TRANSACTION ERROR]::", validate.errors);
-// 	next();
-// };

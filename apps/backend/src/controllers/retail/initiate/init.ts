@@ -8,6 +8,8 @@ import {
   Payment,
   Fulfillment,
   B2C_EXAMPLES_PATH,
+  B2B_EXAMPLES_PATH,
+  RETAIL_BAP_MOCKSERVER_URL,
 } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
@@ -20,6 +22,7 @@ export const initiateInitController = async (
   next: NextFunction
 ) => {
   try {
+    const { version } = req.query;
     const { scenario, transactionId } = req.body;
 
     const transactionKeys = await redis.keys(`${transactionId}-*`);
@@ -41,7 +44,7 @@ export const initiateInitController = async (
     }
 
     // console.log("parsedTransaction:::: ", parsedTransaction[0]);
-    return intializeRequest(res, next, request, scenario);
+    return intializeRequest(res, next, request, scenario,version);
   } catch (error) {
     return next(error);
   }
@@ -51,7 +54,8 @@ const intializeRequest = async (
   res: Response,
   next: NextFunction,
   transaction: any,
-  scenario: string
+  scenario: string,
+  version:any
 ) => {
   try {
     const {
@@ -63,9 +67,17 @@ const intializeRequest = async (
     let { payments } = transaction.message.order;
     const { transaction_id } = context;
 
-    const file = fs.readFileSync(
-      path.join(B2C_EXAMPLES_PATH, "init/init_exports.yaml")
-    );
+    let file:any;
+    if(version === "b2c"){
+      file = fs.readFileSync(
+        path.join(B2C_EXAMPLES_PATH, "init/init_exports.yaml")
+      );
+    }else{
+      file = fs.readFileSync(
+        path.join(B2B_EXAMPLES_PATH, "init/init_domestic.yaml")
+      );
+    }
+   
     const response = YAML.parse(file.toString());
 
     payments = payments.map((payment: Payment) => {
@@ -96,7 +108,7 @@ const intializeRequest = async (
         timestamp: new Date().toISOString(),
         action: "init",
         bap_id: MOCKSERVER_ID,
-        bap_uri: B2C_BAP_MOCKSERVER_URL,
+        bap_uri: RETAIL_BAP_MOCKSERVER_URL,
         // bpp_id: MOCKSERVER_ID,
         // bpp_uri,
         ttl: "PT30S",
@@ -121,47 +133,9 @@ const intializeRequest = async (
       init,
       transaction_id,
       "init",
-      (scenario = scenario)
+      (scenario = scenario),
+      version
     );
-    // const header = await createAuthHeader(init);
-    // try {
-    // 	await redis.set(
-    // 		`${transaction_id}-init-from-server`,
-    // 		JSON.stringify({ request: { ...init } })
-    // 	);
-    // 	const response = await axios.post(
-    // 		`${context.bpp_uri}/init?scenario=${scenario}`,
-    // 		init,
-    // 		{
-    // 			headers: {
-    // 				// "X-Gateway-Authorization": header,
-    // 				authorization: header,
-    // 			},
-    // 		}
-    // 	);
-
-    // 	await redis.set(
-    // 		`${transaction_id}-init-from-server`,
-    // 		JSON.stringify({
-    // 			request: { ...init },
-    // 			response: {
-    // 				response: response.data,
-    // 				timestamp: new Date().toISOString(),
-    // 			},
-    // 		})
-    // 	);
-
-    // 	return res.json({
-    // 		message: {
-    // 			ack: {
-    // 				status: "ACK",
-    // 			},
-    // 		},
-    // 		transaction_id,
-    // 	});
-    // } catch (error) {
-    // 	return next(error);
-    // }
   } catch (error) {
     next(error);
   }

@@ -7,6 +7,7 @@ import {
 	redisFetchToServer,
 	B2C_EXAMPLES_PATH,
   B2B_EXAMPLES_PATH,
+	RETAIL_BAP_MOCKSERVER_URL,
 } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
@@ -74,7 +75,7 @@ const intializeRequest = async (
 				message_id: uuidv4(),
 				ttl: scenario === "rfq" ? "P1D" : "PT30S",
 				bap_id: MOCKSERVER_ID,
-				bap_uri: B2C_BAP_MOCKSERVER_URL,
+				bap_uri: RETAIL_BAP_MOCKSERVER_URL,
 			},
 			message: {
 				order: {
@@ -116,7 +117,8 @@ const intializeRequest = async (
 			select,
 			transaction_id,
 			"select",
-			(scenario = scenario)
+			(scenario = scenario),
+			version
 		);
 	} catch (err) {
 		next(err);

@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import {
   responseBuilder,
   send_nack,
-  B2B_EXAMPLES_PATH,
   redis,
   Stop,
   Fulfillment,
@@ -166,7 +165,7 @@ const cancelRequest = async (
         req.body.context.bap_uri.endsWith("/") ? "on_cancel" : "/on_cancel"
       }`,
       `on_cancel`,
-      "b2c"
+      "retail"
     );
   } catch (error) {
     next(error);

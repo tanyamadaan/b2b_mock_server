@@ -87,7 +87,7 @@ const confirmDomesticController = (
         req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
       }`,
       `on_confirm`,
-      "b2c"
+      "retail"
     );
   } catch (error) {
     return next(error);
@@ -153,7 +153,7 @@ const confirmDomesticRejected = (
         req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
       }`,
       `on_confirm`,
-      "b2c",
+      "retail",
       {
         type: "DOMAIN-ERROR",
         code: "30019",

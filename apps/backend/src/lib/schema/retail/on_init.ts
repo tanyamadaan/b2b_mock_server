@@ -162,7 +162,7 @@ export const onInitSchema = {
 													properties: {
 														code: {
 															type: "string",
-															enum: ["BUYER_TERMS"],
+															// enum: ["BUYER_TERMS"],
 														},
 													},
 													required: ["code"],
@@ -177,7 +177,7 @@ export const onInitSchema = {
 																properties: {
 																	code: {
 																		type: "string",
-																		enum: ["ITEM_REQ", "PACKAGING_REQ"],
+																		// enum: ["ITEM_REQ", "PACKAGING_REQ"],
 																	},
 																},
 																required: ["code"],
@@ -694,7 +694,6 @@ export const onInitSchema = {
 						"fulfillments",
 						"quote",
 						"payments",
-						"tags",
 					],
 				},
 			},

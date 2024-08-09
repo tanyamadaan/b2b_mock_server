@@ -5,6 +5,7 @@ import {
 	send_response,
 	send_nack,
 	redis,
+	RETAIL_BAP_MOCKSERVER_URL,
 } from "../../../lib/utils";
 import { v4 as uuidv4 } from "uuid";
 import { B2C_STATUS } from "../../../lib/utils/apiConstants";
@@ -16,6 +17,8 @@ export const initiateStatusController = async (
 	next: NextFunction
 ) => {
 	try {
+		
+		const {version} = req.query;
 		const { scenario, transactionId } = req.body;
 
 		const transactionKeys = await redis.keys(`${transactionId}-*`);
@@ -40,7 +43,8 @@ export const initiateStatusController = async (
 			res,
 			next,
 			parsedTransaction[0].request,
-			statusIndex
+			statusIndex,
+			version
 		);
 	} catch (error) {
 		return next(error);
@@ -51,7 +55,8 @@ const intializeRequest = async (
 	res: Response,
 	next: NextFunction,
 	transaction: any,
-	statusIndex: number
+	statusIndex: number,
+	version:any
 ) => {
 	try {
 		const {
@@ -69,7 +74,7 @@ const intializeRequest = async (
 				timestamp: new Date().toISOString(),
 				action: "status",
 				bap_id: MOCKSERVER_ID,
-				bap_uri: B2C_BAP_MOCKSERVER_URL,
+				bap_uri: RETAIL_BAP_MOCKSERVER_URL,
 			},
 			message: {
 				order_id: order.id,
@@ -85,7 +90,8 @@ const intializeRequest = async (
 			status,
 			transaction_id,
 			"status",
-			senarios[statusIndex]
+			senarios[statusIndex],
+			version
 		);
 	} catch (error) {
 		next(error);

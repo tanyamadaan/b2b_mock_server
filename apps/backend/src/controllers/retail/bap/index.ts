@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { jsonSchemaValidator, redisRetriever } from "../../../middlewares";
-
 import { onSearchController } from "./onSearch";
 import { onInitController } from "./onInit";
 import { onSelectController } from "./onSelect";

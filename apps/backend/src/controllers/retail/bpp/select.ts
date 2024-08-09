@@ -7,6 +7,7 @@ import {
   Quantity,
   Breakup,
   quoteCreatorB2c,
+  quoteCreator,
 } from "../../../lib/utils";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 interface Item_id_name {
@@ -21,6 +22,8 @@ export const selectController = async (
 ) => {
   try {
     const { scenario, version} = req.query;
+    console.log("versionnnnnnnnn",version)
+
     const { transaction_id } = req.body.context;
 
     const transactionKeys = await redis.keys(`${transaction_id}-*`);
@@ -98,6 +101,7 @@ export const selectDomesticController = (
   next: NextFunction
 ) => {
   try {
+    const {version} = req.query;
     const { context, message,providersItems} = req.body;
     const { ttl, ...provider } = message.order.provider;
 
@@ -132,7 +136,7 @@ export const selectDomesticController = (
             },
           })
         ),
-        quote: quoteCreatorB2c(message?.order?.items,providersItems?.items),
+        quote:version === "b2c"?quoteCreatorB2c(message?.order?.items,providersItems?.items):quoteCreator(message.order.items),
 
       },
     };
@@ -159,7 +163,7 @@ export const selectDomesticController = (
         req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
       }`,
       `on_select`,
-      "b2c"
+      "retail"
     );
   } catch (error) {
     next(error);
@@ -172,6 +176,7 @@ export const selectNonServiceableController = (
   next: NextFunction
 ) => {
   try {
+    const {version} = req.query;
     const { context, message,providersItems } = req.body;
     const { ttl, ...provider } = message.order.provider;
 
@@ -206,7 +211,7 @@ export const selectNonServiceableController = (
             },
           })
         ),
-        quote: quoteCreatorB2c(message?.order?.items,providersItems?.items),
+        quote: version === "b2c"?quoteCreatorB2c(message?.order?.items,providersItems?.items):quoteCreator(message.order.items),
       },
     };
     return responseBuilder(
@@ -218,7 +223,7 @@ export const selectNonServiceableController = (
         req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
       }`,
       `on_select`,
-      "b2c",
+      "retail",
       {
         type: "DOMAIN-ERROR",
         code: "30009",
@@ -236,6 +241,7 @@ export const selectQuantityUnavailableController = (
   next: NextFunction
 ) => {
   try {
+    const {version} = req.query;
     const { context, message,providersItems } = req.body;
     const { ttl, ...provider } = message.order.provider;
 
@@ -270,7 +276,7 @@ export const selectQuantityUnavailableController = (
             },
           })
         ),
-        quote:quoteCreatorB2c(message?.order?.items,providersItems?.items),
+        quote:version === "b2c"?quoteCreatorB2c(message?.order?.items,providersItems?.items):quoteCreator(message.order.items),
       },
     };
     return responseBuilder(
@@ -282,7 +288,7 @@ export const selectQuantityUnavailableController = (
         req.body.context.bap_uri.endsWith("/") ? "on_select" : "/on_select"
       }`,
       `on_select`,
-      "b2c",
+      "retail",
       {
         type: "DOMAIN-ERROR",
         code: "40002",

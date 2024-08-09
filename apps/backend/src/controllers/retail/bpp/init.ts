@@ -8,6 +8,7 @@ import {
   Breakup,
   quoteCreatorB2c,
   B2C_EXAMPLES_PATH,
+  B2B_EXAMPLES_PATH,
 } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
@@ -80,13 +81,22 @@ const initDomesticController = (
   next: NextFunction
 ) => {
   try {
+    const {version} = req.query;
     const { context, message,providersItems} = req.body;
     const { items, fulfillments, billing, ...remainingMessage } =
       message.order;
 
-    const file = fs.readFileSync(
-      path.join(B2C_EXAMPLES_PATH, "on_init/on_init_exports.yaml")
-    );
+    let file:any
+    if(version === "b2c"){
+      file = fs.readFileSync(
+        path.join(B2C_EXAMPLES_PATH, "on_init/on_init_exports.yaml")
+      );
+    }else{
+      file = fs.readFileSync(
+        path.join(B2B_EXAMPLES_PATH, "on_init/on_init_domestic.yaml")
+      );
+    }
+  
 
     const response = YAML.parse(file.toString());
     let { type, collected_by, ...staticPaymentInfo } =
@@ -200,7 +210,7 @@ const initDomesticController = (
         req.body.context.bap_uri.endsWith("/") ? "on_init" : "/on_init"
       }`,
       `on_init`,
-      "b2c"
+      "retail"
     );
   } catch (error) {
     next(error);
