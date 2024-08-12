@@ -95,6 +95,7 @@ export const B2B_SCENARIOS = {
 		},
 	],
 };
+
 export const B2C_SCENARIOS = {
 	on_select: [
 		{

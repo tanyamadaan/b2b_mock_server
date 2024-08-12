@@ -36,6 +36,7 @@ type SELECT_FIELD = {
 	placeholder: string;
 	type: string;
 	domainDepended: boolean;
+	versionDepended: boolean;
 	options: SELECT_OPTIONS;
 };
 
@@ -43,7 +44,10 @@ export const InitiateRequestSection = () => {
 	const { handleMessageToggle, setMessageType, setCopy } = useMessage();
 	const [action, setAction] = useState<string>();
 	const { domain } = useDomain();
-	const [version,setVersion] = useState<string>();
+	const [domainOptions, setDomainOptions] = useState<string[]>([]);
+	const [scenarioOptions, setScenarioOptions] = useState<string[]>([]);
+	const [cityOptions, setCityOptions] = useState<string[]>([]);
+	const [version, setVersion] = useState<string>("services");
 	const [renderActionFields, setRenderActionFields] = useState(false);
 	const [formState, setFormState] = useState<any>();
 	const [allowSubmission, setAllowSubmission] = useState<boolean>();
@@ -59,10 +63,29 @@ export const InitiateRequestSection = () => {
 		setTimeout(() => setRenderActionFields(true), 500);
 	};
 
-	console.log("actionnnnnnn",action,version)
 	const handleFieldChange = (fieldName: string, value: string) => {
-		if(fieldName === "version"){
-			setVersion(value as string)
+		if (fieldName === "version") {
+			setVersion(value as string);
+			/****Write the logic for changes the domain options based on version selection */
+			const newDomainOptions =
+				INITIATE_FIELDS.search.find((field) => field.name === "domain")
+					?.options[version] || [];
+
+			setDomainOptions(newDomainOptions as string[]);
+
+			const newCityOptions =
+				INITIATE_FIELDS.search.find((field) => field.name === "city")?.options[
+					version
+				] || [];
+
+			setCityOptions(newCityOptions as string[]);
+
+			const newScenarioOption =
+				INITIATE_FIELDS.select.find((field) => field.name === "scenario")
+					?.options[version] || [];
+
+			console.log("newScenarioOption", version, newScenarioOption);
+			setScenarioOptions(newScenarioOption as string[]);
 		}
 		setFormState((prev: any) => ({ ...prev, [fieldName]: value }));
 	};
@@ -70,7 +93,6 @@ export const InitiateRequestSection = () => {
 	useEffect(() => {
 		if (action) {
 			const keys = Object.keys(formState || {});
-
 			const formKeys = INITIATE_FIELDS[
 				action as keyof typeof INITIATE_FIELDS
 			].map((e) => e.name);
@@ -91,7 +113,26 @@ export const InitiateRequestSection = () => {
 				setAllowSubmission(true);
 			else setAllowSubmission(false);
 		}
-	}, [action, domain, formState,version]);
+		const newDomainOptions =
+			INITIATE_FIELDS.search.find((field) => field.name === "domain")?.options[
+				version
+			] || [];
+
+		setDomainOptions(newDomainOptions as string[]);
+
+		const newCityOptions =
+			INITIATE_FIELDS.search.find((field) => field.name === "city")?.options[
+				version
+			] || [];
+
+		setCityOptions(newCityOptions as string[]);
+
+		const newScenarioOption =
+			INITIATE_FIELDS.select.find((field) => field.name === "scenario")
+				?.options[version] || [];
+
+		setScenarioOptions(newScenarioOption as string[]);
+	}, [action, domain, formState, version]);
 
 	const handleSubmit = async () => {
 		try {
@@ -106,7 +147,7 @@ export const InitiateRequestSection = () => {
 					},
 				}
 			);
-			if (response.data.message.ack.status === "ACK"){
+			if (response.data.message.ack.status === "ACK") {
 				if (action === "search") {
 					handleMessageToggle(
 						`Your Transaction ID is: ${response.data.transaction_id}`
@@ -201,8 +242,7 @@ export const InitiateRequestSection = () => {
 														handleFieldChange(field.name, e.target.value)
 													}
 												/>
-											) 
-											: field.type === "select" &&
+											) : field.type === "select" &&
 											  (field as SELECT_FIELD).domainDepended &&
 											  (field as SELECT_FIELD).options[
 													domain as keyof SELECT_OPTIONS
@@ -217,18 +257,46 @@ export const InitiateRequestSection = () => {
 														handleFieldChange(field.name, newValue as string)
 													}
 												>
-													{(
-														(field as SELECT_FIELD).options[
-															domain as keyof SELECT_OPTIONS
-														] as string[]
-													).map((option, index: number) => (
-														<Option value={option} key={option + index}>
-															{option}
-														</Option>
-													))}
+													{field.name === "domain" && domain === "retail" ? (
+														<>
+															{domainOptions.map((option, index: number) => (
+																<Option value={option} key={option + index}>
+																	{option}
+																</Option>
+															))}
+														</>
+													) : field.name === "city" && domain === "retail" ? (
+														<>
+															{cityOptions.map((option, index: number) => (
+																<Option value={option} key={option + index}>
+																	{option}
+																</Option>
+															))}
+														</>
+													) : field.name === "scenario" &&
+													  domain === "retail" ? (
+														<>
+															{scenarioOptions.map((option, index: number) => (
+																<Option value={option} key={option + index}>
+																	{option}
+																</Option>
+															))}
+														</>
+													) : (
+														<>
+															{(
+																(field as SELECT_FIELD).options[
+																	domain as keyof SELECT_OPTIONS
+																] as string[]
+															).map((option, index: number) => (
+																<Option value={option} key={option + index}>
+																	{option}
+																</Option>
+															))}
+														</>
+													)}
 												</Select>
-											) 
-											: field.type === "select" && !field.domainDepended ? (
+											) : field.type === "select" && !field.domainDepended ? (
 												<Select
 													placeholder={field.placeholder}
 													key={"select-" + action + "-" + index}
