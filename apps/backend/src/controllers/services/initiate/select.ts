@@ -6,17 +6,13 @@ import {
   send_response,
   send_nack,
   redisFetchToServer,
-  createAuthHeader,
-  logger,
-  redis,
   Item,
   Category,
   Tag,
   TagItem,
 } from "../../../lib/utils";
-import axios, { AxiosError } from "axios";
 import { v4 as uuidv4 } from "uuid";
-import { set, eq, isEmpty, min, keys } from "lodash";
+import { set, eq, isEmpty } from "lodash";
 import _ from "lodash";
 import { isBefore, addDays } from "date-fns";
 
@@ -37,21 +33,6 @@ export const initiateSelectController = async (
     if (checkIfCustomized(on_search.message.catalog?.providers?.[0]?.items)) {
       scenario = "customization";
     }
-
-    // const items = on_search.message.catalog.providers[0]?.categories;
-    // let child_ids;
-    // if (items) {
-    //   const parent_id = items.find(
-    //     (ele: any) => ele.descriptor.code === "MEAL"
-    //   )?.id;
-    //   child_ids = items.reduce((acc: string[], ele: any) => {
-    //     if (ele.parent_category_id === parent_id) {
-    //       acc.push(ele.id);
-    //     }
-    //     return acc;
-    //   }, []);
-    // }
-    // req.body.child_ids = child_ids;
     return intializeRequest(req, res, next, on_search, scenario);
   } catch (error) {
     return next(error);
@@ -138,11 +119,6 @@ const intializeRequest = async (
       endDate = new Date(start);
       endDate.setUTCHours(start.getUTCHours() + frequency);
 
-      // console.log(
-      //   "-----Required Categories to include------",
-      //   required_categories
-      // );
-
       const count_cat: { [key: string]: number } = {};
       required_categories.forEach((cat: string) => {
         count_cat[cat] = 0;
@@ -158,7 +134,7 @@ const intializeRequest = async (
       items = items.filter((itm: Item) => {
         let flag = 0;
         itm?.category_ids?.forEach((id: string) => {
-          if (id in count_cat && count_cat[id] < 1) {
+          if (id in count_cat && count_cat[id] < 2) {
             count_cat[id]++;
             flag = 1;
           }
@@ -168,30 +144,7 @@ const intializeRequest = async (
         }
         return false;
       });
-      // console.log("Items selected ::", items);
-      // if (req.body.child_ids) {
-      //   // items = items.filter(item => item.category_ids.includes(req.body.child_ids[0])).slice(0,1);
-      //   const new_items: any[] = [];
-      //   let count = 0;
-      //   let index = 0;
-      //   while (index < items.length && count < 2) {
-      //     if (items[index].category_ids.includes(req.body.child_ids[0])) {
-      //       if (
-      //         new_items.length > 0 &&
-      //         new_items[0].parent_item_id !== items[index].parent_item_id
-      //       ) {
-      //         continue;
-      //       }
-      //       new_items.push(items[index]);
-      //       count++;
-      //     }
-      //     index++;
-      //   }
-      //   const parent_item = items.find(
-      //     (item: any) => item.id === new_items[0].parent_item_id
-      //   );
-      //   items = [parent_item, ...new_items];
-      // }
+     
       const { id: item_id, parent_item_id, location_ids } = parent_item;
       items = [
         {
@@ -249,7 +202,6 @@ const intializeRequest = async (
         )?.[0],
       ];
     }
-    // console.log("Items::", items, "Senario::", scenario)
 
     const select = {
       context: {

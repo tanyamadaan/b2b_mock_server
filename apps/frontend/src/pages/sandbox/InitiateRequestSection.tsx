@@ -10,10 +10,11 @@ import { Input, Option, Select, Button } from "@mui/joy";
 import axios, { AxiosError } from "axios";
 import Divider from "@mui/material/Divider";
 import Grow from "@mui/material/Grow";
-import { useMessage } from "../../utils/hooks";
+import { useDomain, useMessage } from "../../utils/hooks";
 import HelpOutlineTwoToneIcon from "@mui/icons-material/HelpOutlineTwoTone";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
+
 import { Item } from "../../../../backend/src/lib/utils/interfaces";
 type InitiateRequestSectionProp = {
 	domain: "b2b" |"b2c"| "services" | "agri-services" | "healthcare-services" | "agri-equipment-hiring"|"logistics";
@@ -21,20 +22,25 @@ type InitiateRequestSectionProp = {
 
 type SELECT_OPTIONS =
 	| string[]
-	| { b2b: string[]; services: string[]; agri_services: string[] }
-	| { b2b: string[]; services: string; agri_services: string[] }
+	| { b2b: string[]; services: string[]; b2c: string[]}
+	| { b2b: string[]; services: string[]; b2c: string[] }
 	| { services: string[] }
-	| { agri_services: string[] }
-	| { healthcare_services: string[] }
 	| { logistics: string[] }
 	| {b2c: string[]}
 	| object;
 
-export const InitiateRequestSection = ({
-	domain,
-}: InitiateRequestSectionProp) => {
+type SELECT_FIELD = {
+	name: string;
+	placeholder: string;
+	type: string;
+	domainDepended: boolean;
+	options: SELECT_OPTIONS;
+};
+
+export const InitiateRequestSection = () => {
 	const { handleMessageToggle, setMessageType, setCopy } = useMessage();
 	const [action, setAction] = useState<string>();
+	const { domain } = useDomain();
 	const [renderActionFields, setRenderActionFields] = useState(false);
 	const [formState, setFormState] = useState<{ [key: string]: any }>({});
 	const [allowSubmission, setAllowSubmission] = useState<boolean>(false);
@@ -153,7 +159,7 @@ export const InitiateRequestSection = ({
 			const response = await axios.post(
 				`${
 					import.meta.env.VITE_SERVER_URL
-				}/${domain.toLocaleLowerCase()}/initiate/${action}?mode=mock`,
+				}/${domain}/initiate/${action}?mode=mock`,
 				formState,
 				{
 					headers: {
@@ -189,17 +195,24 @@ export const InitiateRequestSection = ({
 			}
 		} catch (error: any) {
 			setMessageType("error");
-			console.log("error.response?.data?.error?.message", error);
 			if (
 				error instanceof AxiosError &&
 				error.response?.data?.error?.message.error?.message
-			)
+			) {
 				handleMessageToggle(
 					error.response?.data?.error?.message.error?.message === "string"
 						? error.response?.data?.error?.message.error?.message
+						: error.response?.data?.error?.message?.error?.message.length > 0
+						? `${error.response?.data?.error?.message?.error?.message[0]?.message} in ${error.response?.data?.error?.message?.error?.message[0]?.details}`
 						: "Error Occurred while initiating request!"
 				);
-			else handleMessageToggle("Error Occurred while initiating request!");
+			} else {
+				handleMessageToggle(
+					error.response?.data?.error?.message
+						? error.response?.data?.error?.message
+						: "Error Occurred while initiating request!"
+				);
+			}
 		}
 	};
 
@@ -228,6 +241,7 @@ export const InitiateRequestSection = ({
 						</IconButton>
 					</Tooltip>
 				</Box>
+
 				<Stack spacing={2} sx={{ my: 2 }}>
 					<Select placeholder="Select Action" onChange={handleActionSelection}>
 						{Object.keys(INITIATE_FIELDS)
@@ -240,6 +254,7 @@ export const InitiateRequestSection = ({
 								</Option>
 							))}
 					</Select>
+
 					<Grow in={renderActionFields} timeout={500}>
 						<Stack spacing={2} sx={{ my: 2 }}>
 							<Divider />

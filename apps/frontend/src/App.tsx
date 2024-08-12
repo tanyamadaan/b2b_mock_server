@@ -2,33 +2,24 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Layout } from "./layout/Layout";
 import { Analyse, Landing, Mock, Sandbox, Sign, Swagger } from "./pages";
 import {
-	AgriServicesSwagger,
-	AuthSwagger,
 	B2BSwagger,
-	B2CSwagger,
-	HealthCareServicesSwagger,
 	MiscSwagger,
 	ServicesSwagger,
 } from "./pages/swagger/domains";
 import {
 	AnalyseProvider,
+	DomainProvider,
 	MessageProvider,
 	MockProvider,
 	SandboxProvider,
 } from "./utils/context";
-import { AgriServicesMock, B2BMock, HealthCareServicesMock, ServicesMock } from "./pages/mock/domains";
-import { B2BSandbox, ServicesSandbox, LogisticsSandbox } from "./pages/sandbox/domains";
-import { AgriServicesSandbox } from "./pages/sandbox/domains/agri-services";
-import { HealthCareServicesSandbox } from "./pages/sandbox/domains/healthcare-services";
+import { B2BMock, ServicesMock } from "./pages/mock/domains";
+import { B2BSandbox, ServicesSandbox } from "./pages/sandbox/domains";
 import Readme from "./pages/readme";
-import { AgriEquipmentServicesSandbox } from "./pages/sandbox/domains/agri-equipment-services";
-import { AgriEquipmentServicesMock } from "./pages/mock/domains/agri-equipment-services";
-import { AgriEquipmentHiringSwagger } from "./pages/swagger/domains/agri-equipment-hiring";
 import { B2CMock } from "./pages/mock/domains/b2c";
 import { B2CSandbox } from "./pages/sandbox/domains/b2c";
 import { LogisticsMock } from "./pages/mock/domains/logistics";
 import { LogisticsSwagger } from "./pages/swagger/domains/logistics";
-
 // log
 
 const router = createBrowserRouter([
@@ -69,21 +60,9 @@ const router = createBrowserRouter([
 						Component: ServicesMock,
 					},
 					{
-						path: "agri-services",
-						Component: AgriServicesMock,
-					},
-					{
-						path: "healthcare-services",
-						Component: HealthCareServicesMock,
-					},
-					{
-						path:"agri-equipment-services",
-						Component:AgriEquipmentServicesMock
-					},
-					{
 						path: "logistics",
-						Component: LogisticsMock
-					}
+						Component: LogisticsMock,
+					},
 				],
 			},
 			{
@@ -107,39 +86,23 @@ const router = createBrowserRouter([
 						Component: ServicesSandbox,
 					},
 					{
-						path: "agri-services",
-						Component: AgriServicesSandbox,
-					},
-					{
-						path: "healthcare-services",
-						Component: HealthCareServicesSandbox,
-					},
-					{
-						path: "agri-equipment-services",
-						Component: AgriEquipmentServicesSandbox,
-					},
-					{
 						path: "logistics",
-						Component: LogisticsSandbox,
-					}
+						Component: LogisticsSwagger,
+					},
 				],
+			},
+			{
+				path: "/swagger/misc",
+				Component: MiscSwagger,
 			},
 			{
 				path: "/swagger",
 				Component: Swagger,
 				children: [
 					{ path: "b2b", Component: B2BSwagger },
-					{
-						path: "b2c",
-						Component: B2CSwagger,
-					},
+					{ path: "b2c", Component: B2BSwagger },
 					{ path: "services", Component: ServicesSwagger },
-					{ path: "agri-services", Component: AgriServicesSwagger },
-					{ path: "healthcare-services", Component: HealthCareServicesSwagger },
-					{ path: "agri-equipment-services", Component: AgriEquipmentHiringSwagger },
-					{ path: "auth", Component: AuthSwagger },
-					{ path: "misc", Component: MiscSwagger },
-					{ path: "logistics", Component: LogisticsSwagger}
+					{ path: "logistics", Component: LogisticsSwagger },
 				],
 			},
 			{
@@ -157,7 +120,9 @@ const router = createBrowserRouter([
 export default function App() {
 	return (
 		<MessageProvider>
-			<RouterProvider router={router} />
+			<DomainProvider>
+				<RouterProvider router={router} />
+			</DomainProvider>
 		</MessageProvider>
 	);
 }

@@ -2,9 +2,12 @@ import { B2B_SCENARIOS } from "openapi-specs/constants";
 
 export const SUPPORTED_DOMAINS = [
 	"B2B",
+	"B2C",
 	"SERVICES",
 	"AGRI SERVICES",
 	"HEALTHCARE SERVICES",
+	"AGRI EQUIPMENT HIRING",
+	"BID AND AUCTION",
 	"LOGISTICS",
 ];
 
@@ -52,32 +55,50 @@ export const B2B_DOMAINS = [
 	"ONDC:RET10",
 	"ONDC:RET12",
 	"ONDC:RET13",
-	"ONDC:RET14",
-];
+	"ONDC:RET14"
+]
 
 export const LOGISTICS_DOMAINS = ["ONDC:LOG10", "ONDC:LOG11"];
+
 
 export const B2C_DOMAINS = [
 	"ONDC:RET10",
 	"ONDC:RET12"
 ]
 
-export const SERVICES_DOMAINS = ["ONDC:SRV11"];
-
-export const AGRI_SERVICES_DOMAINS = ["ONDC:SRV14"];
-
-export const HEALTHCARE_SERVICES_DOMAINS = [
+export const SERVICE_DOMAINS = [
+	"ONDC:SRV11",
 	"ONDC:SRV13",
-]
-
-export const AGRI_EQUIPMENT_SERVICES_DOMAINS = [
+	"ONDC:SRV14",
 	"ONDC:SRV15",
-]
-export const CITY_CODE = [
-	"std:080",
-	"std:011"
-]
+	"ONDC:SRV18",
+];
 
+export const SERVICE_DOMAINS_OBJECT = [
+	{ lable: "ONDC:SRV11-Services", value: "ONDC:SRV11" },
+	{ lable: "ONDC:SRV13-Healthcare Services", value: "ONDC:SRV13" },
+	{ lable: "ONDC:SRV14-Agri Services", value: "ONDC:SRV14" },
+	{ lable: "ONDC:SRV15-Agri Equipment Hiring Services", value: "ONDC:SRV15" },
+	{ lable: "ONDC:SRV18-Bid And Auction Services", value: "ONDC:SRV18" }
+];
+
+export const SERVICES_DOMAINS = {
+	SERVICE: "ONDC:SRV11",
+	HEALTHCARE_SERVICES: "ONDC:SRV13",
+	AGRI_SERVICES: "ONDC:SRV14",
+	EQUIPMENT_HIRING_SERVICES: "ONDC:SRV15",
+	BID_AUCTION_SERVICE: "ONDC:SRV18"
+}
+
+export const ALL_DOMAINS = {
+	"B2B": B2B_DOMAINS,
+	"B2C": B2C_DOMAINS,
+	"Services": SERVICE_DOMAINS
+};
+
+export const CITY_CODE = ["std:080", "std:011"];
+
+export const B2C_CITY_CODE = ["UN:SIN"]
 export const INITIATE_FIELDS = {
 	search: [
 		{
@@ -85,29 +106,33 @@ export const INITIATE_FIELDS = {
 			placeholder: "Enter Your BPP URI",
 			type: "text",
 		},
+
+		//DEPEND ON SELECTED SERVICES
 		{
 			name: "domain",
-			placeholder: "Select domain...",
+			placeholder: "Select Domain...",
 			type: "select",
 			domainDepended: true,
 			options: {
-				"b2b": B2B_DOMAINS,
-				"b2c":B2C_DOMAINS,
-				"services": SERVICES_DOMAINS,
-				"agri-services": AGRI_SERVICES_DOMAINS,
-				"healthcare-services": HEALTHCARE_SERVICES_DOMAINS,
-				"agri-equipment-hiring": AGRI_EQUIPMENT_SERVICES_DOMAINS,
-				"logistics": LOGISTICS_DOMAINS,
+				b2b: B2B_DOMAINS,
+				services: SERVICE_DOMAINS,
+				b2c: B2C_DOMAINS,
 			},
 		},
+
 		{
 			name: "city",
 			placeholder: "Select A City",
 			type: "select",
-			domainDepended: false,
-			options: CITY_CODE,
+			domainDepended: true,
+			options: {
+				b2b: CITY_CODE,
+				services: CITY_CODE,
+				b2c: B2C_CITY_CODE,
+			},
 		},
 	],
+
 	select: [
 		{
 			name: "transactionId",
@@ -121,12 +146,13 @@ export const INITIATE_FIELDS = {
 			domainDepended: true,
 			options: {
 				b2b: B2B_SCENARIOS["select"].map((each) => each.scenario),
-			  // "agri-equipment-hiring": A,
+				// "agri-equipment-hiring": A,
 
 				// services: SERVICES_SCENARIOS["select"].map((each) => each.scenario),
 			},
 		},
 	],
+
 	init: [
 		{
 			name: "transactionId",
@@ -144,6 +170,7 @@ export const INITIATE_FIELDS = {
 			},
 		},
 	],
+
 	confirm: [
 		{
 			name: "transactionId",
@@ -160,6 +187,7 @@ export const INITIATE_FIELDS = {
 			},
 		},
 	],
+
 	status: [
 		{
 			name: "transactionId",
@@ -176,6 +204,7 @@ export const INITIATE_FIELDS = {
 			},
 		},
 	],
+
 	update: [
 		{
 			name: "transactionId",
@@ -186,17 +215,11 @@ export const INITIATE_FIELDS = {
 			name: "update_target",
 			placeholder: "Update Target",
 			type: "select",
-			domainDepended: true,
-			options: {
-				"b2b":["payments"],
-				"services": ["payments"],
-				"logistics": ["fulfillments"],
-				"agri-services": ["payments","fulfillments"],
-				"healthcare-services": ["payments","fulfillments","items"],
-				"agri-equipment-hiring": ["payments","items"]
-			},
+			domainDepended: false,
+			options: ["payments", "fulfillments", "items"],
 		},
 	],
+
 	cancel: [
 		{
 			name: "transactionId",
@@ -212,10 +235,6 @@ export const INITIATE_FIELDS = {
 			name: "cancellationReasonId",
 			placeholder: "Enter Your Cancellation Reason ID",
 			type: "text",
-			domainDepended: true,
-			options: {
-				logistics: ["TAT Breach, 007"], // Follow this format if new options are added.
-			},
 		},
 		{
 			name: "scenario",
@@ -227,4 +246,12 @@ export const INITIATE_FIELDS = {
 			},
 		},
 	],
+};
+
+export const SWAGGER_DOMAIN_FIELDS = {
+	name: "service_name",
+	placeholder: "Select Service...",
+	type: "select",
+	domainDepended: false,
+	options: ALL_DOMAINS,
 };

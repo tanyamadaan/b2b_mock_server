@@ -1,11 +1,7 @@
 import { b2bSchemaValidator } from "../lib/schema/b2b";
 import { srvSchemaValidator } from "../lib/schema/services";
-import { agriSrvSchemaValidator } from "../lib/schema/agri-services";
-import { healthcareSrvSchemaValidator } from "../lib/schema/healthcare-services";
 import { logisticsSchemaValidator } from "../lib/schema/logistics";
-import { agriEquipmentHiringSchemaValidator } from "../lib/schema/agri-equipment-hiring";
 import { b2cSchemaValidator } from "../lib/schema/b2c";
-
 
 type AllActions =
   | "search"
@@ -48,14 +44,10 @@ export const jsonSchemaValidator = <T extends Domain>({
 			return b2cSchemaValidator(action as AllActions);
     case "services":
       return srvSchemaValidator(action as AllActions);
-    case "agri-services":
-      return agriSrvSchemaValidator(action as AllActions);
+
     case "logistics":
       return logisticsSchemaValidator(action as LogisticsActions);
-    case "healthcare-service":
-      return healthcareSrvSchemaValidator(action as AllActions);
-		case "agri-equipment-hiring":
-			return agriEquipmentHiringSchemaValidator(action as AllActions)
+
     default:
       throw new Error(`Unsupported domain: ${domain}`);
   }

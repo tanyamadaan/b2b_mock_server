@@ -3,16 +3,12 @@ import swaggerUi from "swagger-ui-express";
 import cron from "node-cron"; // Import node-cron
 
 import {
-	agriEquipmentHiriingRouter,
-	agriServiceRouter,
 	authRouter,
 	b2bRouter,
-	healthCareServiceRouter,
 	miscRouter,
 	servicesRouter,
 	logisticsRouter,
 } from "./controllers";
-
 import cors from "cors";
 import {
 	authSwagger,
@@ -26,8 +22,15 @@ import {
 	errorHandlingWrapper,
 	healthcareServiceSwagger,
 } from "./middlewares";
-import { sendUpsolicieatedOnStatus } from "./lib/utils/sendUpsolicieatedOnStatus";
 import { b2cRouter } from "./controllers/b2c";
+
+// import memwatch from 'memwatch-next';
+
+// // Set up memwatch to listen for memory leaks
+// memwatch.on('leak', (info) => {
+//   console.log('Memory leak detected:', info);
+// });
+
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
@@ -67,14 +70,10 @@ app.use(express.json());
 app.use(express.raw({ type: "*/*", limit: "1mb" }));
 app.use(requestParser);
 app.use("/", miscRouter);
-
 app.use("/b2b", errorHandlingWrapper(b2bRouter));
 app.use("/b2c", errorHandlingWrapper(b2cRouter));
 app.use("/auth", errorHandlingWrapper(authRouter));
 app.use("/services", errorHandlingWrapper(servicesRouter));
-app.use("/agri-services", errorHandlingWrapper(agriServiceRouter));
-app.use("/healthcare-services", errorHandlingWrapper(healthCareServiceRouter));
-app.use("/agri-equipment-hiring", errorHandlingWrapper(agriEquipmentHiriingRouter))
 app.use("/logistics", errorHandlingWrapper(logisticsRouter));
 app.use("/detect_app_installation", (req: Request, res: Response) => {
 	const headers = req.headers;
@@ -84,15 +83,17 @@ app.use("/detect_app_installation", (req: Request, res: Response) => {
 });
 app.use(globalErrorHandler);
 
-//Schedule the function to run every 30 seconds using node-cron
-cron.schedule("*/30 * * * * *", async () => {
-	try {
-		await sendUpsolicieatedOnStatus();
-	} catch (error) {
-		console.log("error occured in cron");
-	}
-});
+// //Schedule the function to run every 30 seconds using node-cron
+// cron.schedule("*/30 * * * * *", async () => {
+// 	try {
+// 		await sendUpsolicieatedOnStatus();
+// 	} catch (error) {
+// 		console.log("error occured in cron");
+// 	}
+// });
 
 app.listen(port, () => {
 	console.log(`[server]: Server is running at http://localhost:${port}`);
 });
+
+export default app

@@ -14,36 +14,37 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import { CurlDisplay } from ".";
-import { useAction, useMock } from "../utils/hooks";
+import { useAction, useDomain, useMock } from "../utils/hooks";
 import { URL_MAPPING } from "../utils";
 import axios, { AxiosError } from "axios";
 import { UserGuide } from "./UserGuideSection";
 
-type MockRequestSectionProp = {
-    domain: string;
-};
+// type MockRequestSectionProp = {
+// 	domain: string;
+// };
 
-export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
-    const [log, setLog] = useState<string>();
-    const [showCurl, setShowCurl] = useState(false);
-    const [activeScenario, setActiveScenario] = useState<{
-        name: string;
-        scenario: string;
-    }>();
-    const { action, detectAction, logError, scenarios } = useAction(domain);
-    const { setAsyncResponse, setSyncResponse } = useMock();
+export const MockRequestSection = () => {
+	const [log, setLog] = useState<string>();
+	const [showCurl, setShowCurl] = useState(false);
+	const [activeScenario, setActiveScenario] = useState<{
+		name: string;
+		scenario: string;
+	}>();
+	const { domain } = useDomain();
+	const { action, detectAction, logError, scenarios } = useAction();
+	const { setAsyncResponse, setSyncResponse } = useMock();
 
-    useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        setSyncResponse(undefined);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        setAsyncResponse(undefined);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-    
-    const [curl, setCurl] = useState<string>();
+	useEffect(() => {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		setSyncResponse(undefined);
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		setAsyncResponse(undefined);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
+	const [curl, setCurl] = useState<string>();
 
     const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setLog(e.target.value);
@@ -51,107 +52,102 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
         console.log("Action:", action);
     };
 
-    const handleSubmit = async () => {
-        let url = `${[
-            import.meta.env.VITE_SERVER_URL,
-        ]}/${domain.toLowerCase()}/${Object.keys(URL_MAPPING).filter((key) =>
-            URL_MAPPING[key as keyof typeof URL_MAPPING].includes(action as string)
-        )}/${action}?mode=mock`;
-        if (activeScenario?.scenario)
-            url = url + `&scenario=${activeScenario?.scenario}`;
+	const handleSubmit = async () => {
+		let url = `${[
+			import.meta.env.VITE_SERVER_URL,
+		]}/${domain.toLowerCase()}/${Object.keys(URL_MAPPING).filter((key) =>
+			URL_MAPPING[key as keyof typeof URL_MAPPING].includes(action as string)
+		)}/${action}?mode=mock`;
+		if (activeScenario?.scenario)
+			url = url + `&scenario=${activeScenario?.scenario}`;
+		setCurl(`curl -X POST \\
+		  ${url} \\
+		-H 'accept: application/json' \\
+		-H 'Content-Type: application/json' \\
+		-d '${log}'`);
+		try {
+			const response = await axios.post(url, JSON.parse(log as string), {
+				headers: {
+					"Content-Type": "application/json",
+				},
+			});
+			setSyncResponse(response.data.sync);
 
-        setCurl(`curl -X POST \\
-          ${url} \\
-        -H 'accept: application/json' \\
-        -H 'Content-Type: application/json' \\
-        -d '${log}'`);
-        try {
-            console.log(url);
-
-            const response = await axios.post(url, JSON.parse(log as string), {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            console.log("RESPONSE", response)
-            setSyncResponse(response.data.sync || response.data || {});
-            setAsyncResponse(response.data.async || response.data || {});
-        } catch (error:any) {
-            console.log("ERROR Occured while pinging backend:", error);
-            // setAsyncResponse({});
-            // if (error instanceof AxiosError) setSyncResponse(error.response!.data);
-            setSyncResponse(error.response!.data.sync || error.response!.data || {});
-            setAsyncResponse(error.response!.data.async || {});
-            setShowCurl(true);        
-        }   
-    };
-    // useEffect(() => {}, [logError, action, scenarios, activeScenario]);
-    return (
-        <>
-            <Fade in={true} timeout={1500}>
-                <Paper
-                    sx={{
-                        p: 2,
-                    }}
-                    elevation={5}
-                >
-                    <Stack spacing={2} justifyContent="center" alignItems="center">
-                        <Typography variant="h5">Domain: {domain}</Typography>
-                        <FormControl error={logError} sx={{ width: "100%" }}>
-                            <Textarea
-                                minRows={10}
-                                maxRows={15}
-                                sx={{ width: "100%" }}
-                                placeholder="Request Body"
-                                value={log}
-                                onChange={handleLogChange}
-                            />
-                            {logError && (
-                                <Stack justifyContent="center">
-                                    <FormHelperText>
-                                        <InfoOutlined />
-                                        Opps! The log seems to be invalid.
-                                    </FormHelperText>
-                                </Stack>
-                            )}
-                        </FormControl>
-                        {action && (
-                            <Grid container>
-                                <Grid item xs={12} md={6}>
-                                    <Box
-                                        sx={{
-                                            display: "flex",
-                                            justifyContent: "flex-start",
-                                            alignItems: "center",
-                                        }}
-                                    >
-                                        <Typography mr={1}>Detected Action:</Typography>
-                                        <Typography color="text.secondary" variant="body2">
-                                            {action}
-                                        </Typography>
-                                    </Box>
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <Select
-                                        placeholder="Select a scenario"
-                                        indicator={<KeyboardArrowDown />}
-                                        sx={{
-                                            width: "100%",
-                                            [`& .${selectClasses.indicator}`]: {
-                                                transition: "0.2s",
-                                                [`&.${selectClasses.expanded}`]: {
-                                                    transform: "rotate(-180deg)",
-                                                },
-                                            },
-                                        }}
-
+			setAsyncResponse(response.data.async || {});
+		} catch (error) {
+			console.log("ERROR Occured while pinging backend:", error);
+			setAsyncResponse({});
+			if (error instanceof AxiosError) setSyncResponse(error.response!.data);
+		}
+		setShowCurl(true);
+	};
+	return (
+		<>
+			<Fade in={true} timeout={1500}>
+				<Paper
+					sx={{
+						p: 2,
+					}}
+					elevation={5}
+				>
+					<Stack spacing={2} justifyContent="center" alignItems="center">
+						<Typography variant="h5">Mock Server</Typography>
+						<FormControl error={logError} sx={{ width: "100%" }}>
+							<Textarea
+								minRows={10}
+								maxRows={15}
+								sx={{ width: "100%" }}
+								placeholder="Request Body"
+								value={log}
+								onChange={handleLogChange}
+							/>
+							{logError && (
+								<Stack justifyContent="center">
+									<FormHelperText>
+										<InfoOutlined />
+										Opps! The log seems to be invalid.
+									</FormHelperText>
+								</Stack>
+							)}
+						</FormControl>
+						{action && (
+							<Grid container>
+								<Grid item xs={12} md={6}>
+									<Box
+										sx={{
+											display: "flex",
+											justifyContent: "flex-start",
+											alignItems: "center",
+										}}
+									>
+										<Typography mr={1}>Detected Action:</Typography>
+										<Typography color="text.secondary" variant="body2">
+											{action}
+										</Typography>
+									</Box>
+								</Grid>
+								<Grid item xs={12} md={6}>
+									<Select
+										placeholder="Select a scenario"
+										indicator={<KeyboardArrowDown />}
+										sx={{
+											width: "100%",
+											[`& .${selectClasses.indicator}`]: {
+												transition: "0.2s",
+												[`&.${selectClasses.expanded}`]: {
+													transform: "rotate(-180deg)",
+												},
+											},
+										}}
 										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 										// @ts-ignore
 										onChange={(
 											_event: React.SyntheticEvent | null,
 											newValue: object
 										) => {
-											setActiveScenario(newValue as { name: string; scenario: string; });
+											setActiveScenario(
+												newValue as { name: string; scenario: string }
+											);
 										}}
 										defaultValue={scenarios![0]}
 										disabled={scenarios?.length === 0}
@@ -184,7 +180,7 @@ export const MockRequestSection = ({ domain }: MockRequestSectionProp) => {
 					</Stack>
 				</Paper>
 			</Fade>
-			<UserGuide domain={domain} />
+			<UserGuide />
 			<CurlDisplay slideIn={showCurl} curl={curl} />
 		</>
 	);

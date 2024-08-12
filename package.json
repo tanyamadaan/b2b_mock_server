@@ -1,24 +1,18 @@
 {
-  "name": "ondc-mock-sandbox",
-  "version": "0.1.0",
-  "private": false,
-  "packageManager": "npm@9.2.0",
-  "scripts": {
-    "dev": "turbo run dev",
-    "ec2": "turbo run ec2"
-  },
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
-  "devDependencies": {
-    "@types/node-cron": "^3.0.11",
-    "turbo": "^1.12.4"
-  },
-  "dependencies": {
-    "@mui/styles": "^5.15.18",
-    "date-fns": "^3.6.0",
-    "lodash": "^4.17.21",
-    "vite": "^5.3.4"
-  }
+	"name": "ondc-mock-sandbox",
+	"version": "0.1.0",
+	"private": false,
+	"packageManager": "npm@9.2.0",
+	"scripts": {
+		"dev": "NODE_OPTIONS='--max-old-space-size=4096' turbo run dev",
+		"ec2": "NODE_OPTIONS='--max-old-space-size=4096' turbo run ec2",
+		"test":"NODE_OPTIONS='--max-old-space-size=4096' turbo run test"
+	},
+	"workspaces": [
+		"apps/*",
+		"packages/*"
+	],
+	"devDependencies": {
+		"turbo": "^1.12.4"
+	}
 }

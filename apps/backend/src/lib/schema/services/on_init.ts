@@ -168,8 +168,7 @@ export const onInitSchema = {
                 },
                 required: [
                   "id",
-                  "parent_item_id",
-                  "fulfillment_ids",
+                  // "fulfillment_ids",
                   "quantity",
                 ],
               },
@@ -469,7 +468,7 @@ export const onInitSchema = {
                                     type: "string",
                                   },
                                 },
-                                required: ["descriptor", "value"],
+                                required: ["descriptor"],
                               },
                             },
                           },
