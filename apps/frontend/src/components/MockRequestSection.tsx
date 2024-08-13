@@ -80,8 +80,8 @@ export const MockRequestSection = () => {
 					"Content-Type": "application/json",
 				},
 			});
+			
 			setSyncResponse(response.data.sync);
-
 			setAsyncResponse(response.data.async || {});
 		} catch (error) {
 			console.log("ERROR Occured while pinging backend:", error);
@@ -104,7 +104,7 @@ export const MockRequestSection = () => {
 						{domain === "retail" && (
 							<Select placeholder="Select a version" sx={{ width: "100%" }} onChange={handleVersion}>
 								<Option value="b2b">B2B</Option>
-								<Option value="b2c">B2c</Option>
+								<Option value="b2c">B2C</Option>
 							</Select>
 						)}
 						<FormControl error={logError} sx={{ width: "100%" }}>
