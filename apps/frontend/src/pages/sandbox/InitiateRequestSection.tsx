@@ -1,4 +1,3 @@
-/* eslint-disable no-mixed-spaces-and-tabs */
 import Fade from "@mui/material/Fade";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
@@ -84,7 +83,6 @@ export const InitiateRequestSection = () => {
 				INITIATE_FIELDS.select.find((field) => field.name === "scenario")
 					?.options[version] || [];
 
-			console.log("newScenarioOption", version, newScenarioOption);
 			setScenarioOptions(newScenarioOption as string[]);
 		}
 		setFormState((prev: any) => ({ ...prev, [fieldName]: value }));
@@ -175,9 +173,9 @@ export const InitiateRequestSection = () => {
 				handleMessageToggle(
 					error.response?.data?.error?.message.error?.message === "string"
 						? error.response?.data?.error?.message.error?.message
-						: error.response?.data?.error?.message?.error?.message.length > 0
+						: Array.isArray(error.response?.data?.error?.message?.error?.message) && error.response?.data?.error?.message?.error?.message.length > 0
 						? `${error.response?.data?.error?.message?.error?.message[0]?.message} in ${error.response?.data?.error?.message?.error?.message[0]?.details}`
-						: "Error Occurred while initiating request!"
+						:error.response?.data?.error?.message.error?.message
 				);
 			} else {
 				handleMessageToggle(

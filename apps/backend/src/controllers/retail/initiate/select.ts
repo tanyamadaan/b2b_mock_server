@@ -121,6 +121,6 @@ const intializeRequest = async (
 			version
 		);
 	} catch (err) {
-		next(err);
+		return next(err);
 	}
 };

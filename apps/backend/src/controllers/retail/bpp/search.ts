@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
@@ -8,7 +7,6 @@ import {
 	B2C_EXAMPLES_PATH,
 	responseBuilder,
 } from "../../../lib/utils";
-import axios from "axios";
 
 export const searchController = async (
 	req: Request,
@@ -16,7 +14,6 @@ export const searchController = async (
 	next: NextFunction
 ) => {
 	try {
-		console.log("versionnnn", req.body.version);
 		const domain = req.body.context.domain;
 		const { version } = req.body;
 		var onSearch;

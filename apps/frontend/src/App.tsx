@@ -22,8 +22,6 @@ import Readme from "./pages/readme";
 import { B2CMock } from "./pages/mock/domains/b2c";
 import { B2CSandbox } from "./pages/sandbox/domains/b2c";
 
-// log
-
 const router = createBrowserRouter([
 	{
 		path: "/",
