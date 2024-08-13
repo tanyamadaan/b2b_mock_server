@@ -13,7 +13,7 @@ import {
 	NEXT_ACTION_LOGISTICS,
 } from "openapi-specs/constants";
 import {
-	LOGISTICS_DOMAINS,
+	LOGISTICS_DOMAINS_OBJECT,
 	SERVICE_DOMAINS,
 	SERVICES_DOMAINS,
 } from "../constants";
@@ -57,8 +57,8 @@ export const useAction = () => {
 					? AGRI_EQUIPMENT_SERVICES_SCENARIOS
 					: servicesDomain === SERVICES_DOMAINS.BID_AUCTION_SERVICE
 					? BID_AUCTION_SCENARIOS
-					: servicesDomain === LOGISTICS_DOMAINS.DOMESTIC ||
-					  servicesDomain === LOGISTICS_DOMAINS.INTERNATIONAL
+					: servicesDomain === LOGISTICS_DOMAINS_OBJECT.DOMESTIC ||
+					  servicesDomain === LOGISTICS_DOMAINS_OBJECT.INTERNATIONAL
 					? LOGISTICS_SCENARIOS
 					: B2B_SCENARIOS;
 			if (!parsedLog.context!.action) setLogError(true);

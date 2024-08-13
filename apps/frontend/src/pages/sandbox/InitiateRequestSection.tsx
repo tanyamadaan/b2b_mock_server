@@ -17,16 +17,23 @@ import Tooltip from "@mui/material/Tooltip";
 
 import { Item } from "../../../../backend/src/lib/utils/interfaces";
 type InitiateRequestSectionProp = {
-	domain: "b2b" |"b2c"| "services" | "agri-services" | "healthcare-services" | "agri-equipment-hiring"|"logistics";
+	domain:
+		| "b2b"
+		| "b2c"
+		| "services"
+		| "agri-services"
+		| "healthcare-services"
+		| "agri-equipment-hiring"
+		| "logistics";
 };
 
 type SELECT_OPTIONS =
 	| string[]
-	| { b2b: string[]; services: string[]; b2c: string[]}
+	| { b2b: string[]; services: string[]; b2c: string[] }
 	| { b2b: string[]; services: string[]; b2c: string[] }
 	| { services: string[] }
 	| { logistics: string[] }
-	| {b2c: string[]}
+	| { b2c: string[] }
 	| object;
 
 type SELECT_FIELD = {
@@ -319,6 +326,8 @@ export const InitiateRequestSection = () => {
 												</React.Fragment>
 											);
 										}
+
+
 										return (
 											<React.Fragment key={`field-${action}-${index}`}>
 												{field.type === "text" &&
@@ -410,62 +419,61 @@ export const InitiateRequestSection = () => {
 																		)}
 																	</Select>
 																);
-															} else {
+															} else if (
+																domain == "logistics" &&
+																action == "search"
+															) {
 																return (
-																	<Input
-																		fullWidth
+																	<Select
 																		placeholder={field.placeholder}
-																		key={"input-" + action + "-" + index}
-																		onChange={(e) =>
+																		onChange={(
+																			_event: React.SyntheticEvent | null,
+																			newValue: string | null
+																		) =>
 																			handleFieldChange(
 																				field.name,
-																				e.target.value
+																				newValue as string
 																			)
 																		}
-																	/>
+																	>
+																		{field.name === "city" ? (
+																			formState.domain === "ONDC:LOG10" ? (
+																				CITY_CODE.map((option, optionIndex) => (
+																					<Option
+																						value={option}
+																						key={`${option}-${optionIndex}`}
+																					>
+																						{option}
+																					</Option>
+																				))
+																			) : (
+																				<Option value="UN:SIN">UN:SIN</Option>
+																			)
+																		) : Array.isArray(field.options) ? (
+																			field.options.map(
+																				(option, optionIndex: number) => (
+																					<Option
+																						value={option}
+																						key={`${option}-${optionIndex}`}
+																					>
+																						{option}
+																					</Option>
+																				)
+																			)
+																		) : null}
+																	</Select>
 																);
 															}
 														})()
 													) : (
-														<Select
+														<Input
+															fullWidth
 															placeholder={field.placeholder}
-															onChange={(
-																_event: React.SyntheticEvent | null,
-																newValue: string | null
-															) =>
-																handleFieldChange(
-																	field.name,
-																	newValue as string
-																)
+															key={"input-" + action + "-" + index}
+															onChange={(e) =>
+																handleFieldChange(field.name, e.target.value)
 															}
-														>
-															{field.name === "city" &&
-															domain === "logistics" ? (
-																formState.domain === "ONDC:LOG10" ? (
-																	CITY_CODE.map((option, optionIndex) => (
-																		<Option
-																			value={option}
-																			key={`${option}-${optionIndex}`}
-																		>
-																			{option}
-																		</Option>
-																	))
-																) : (
-																	<Option value="UN:SIN">UN:SIN</Option>
-																)
-															) : Array.isArray(field.options) ? (
-																field.options.map(
-																	(option, optionIndex: number) => (
-																		<Option
-																			value={option}
-																			key={`${option}-${optionIndex}`}
-																		>
-																			{option}
-																		</Option>
-																	)
-																)
-															) : null}
-														</Select>
+														/>
 													)
 												) : null}
 											</React.Fragment>

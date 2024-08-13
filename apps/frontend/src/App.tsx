@@ -14,7 +14,11 @@ import {
 	SandboxProvider,
 } from "./utils/context";
 import { B2BMock, ServicesMock } from "./pages/mock/domains";
-import { B2BSandbox, ServicesSandbox } from "./pages/sandbox/domains";
+import {
+	B2BSandbox,
+	LogisticsSandbox,
+	ServicesSandbox,
+} from "./pages/sandbox/domains";
 import Readme from "./pages/readme";
 import { B2CMock } from "./pages/mock/domains/b2c";
 import { B2CSandbox } from "./pages/sandbox/domains/b2c";
@@ -87,7 +91,7 @@ const router = createBrowserRouter([
 					},
 					{
 						path: "logistics",
-						Component: LogisticsSwagger,
+						Component: LogisticsSandbox,
 					},
 				],
 			},
