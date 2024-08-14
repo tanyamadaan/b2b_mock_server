@@ -8,5 +8,5 @@ export const onStatusController = (req: Request, res: Response) => {
 		transaction_id: req.body.context.transaction_id,
 		message: { sync: { message: { ack: { status: "ACK" } } } },
 	});
-	return send_ack(res)
+	return send_ack(res);
 };

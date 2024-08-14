@@ -20,6 +20,7 @@ export const statusController = async (
 ) => {
 	try {
 		const {version} = req.query;
+		console.log("versionnnnnnnnnnnnnnnn", version, req.query.scenario)
 		const scenario: string = String(req.query.scenario) || "";
 		const { transaction_id } = req.body.context;
 		const on_confirm = await redisFetchFromServer(
@@ -44,7 +45,7 @@ const statusRequest = async (
 	version:any
 ) => {
 	try {
-
+		console.log("versionnnnnnnnn", scenario,version)
 		const timestamp = new Date().toISOString();
 		const responseMessage: any = {
 			order: {
@@ -167,61 +168,172 @@ const statusRequest = async (
 			(itm: Payment) => (itm.status = "PAID")
 		);
 
-		switch (scenario) {
-			case B2C_STATUS_OBJECT.PICKUP_APPROVED:
-				responseMessage.order.state = "In-progress";
-				responseMessage.order.fulfillments.forEach(
-					(itm: Fulfillment) =>
-						(itm.state.descriptor.code = B2C_STATUS_OBJECT.PICKUP_APPROVED)
-				);
-				break;
-			case B2C_STATUS_OBJECT.ORDER_PICKED_UP:
-				responseMessage.order.state = "In-progress";
-				responseMessage.order.fulfillments.forEach(
-					(itm: Fulfillment) =>
-						(itm.state.descriptor.code = B2C_STATUS_OBJECT.ORDER_PICKED_UP)
-				);
-				break;
-			case B2C_STATUS_OBJECT.DOMESTIC_CUSTOM_CLEARED:
-				responseMessage.order.state = "In-progress";
-				responseMessage.order.fulfillments.forEach(
-					(itm: Fulfillment) =>
-						(itm.state.descriptor.code =
-							B2C_STATUS_OBJECT.DOMESTIC_CUSTOM_CLEARED)
-				);
-				break;
-			case B2C_STATUS_OBJECT.AT_DESTINATION_HUB:
-				responseMessage.order.state = "In-progress";
-				responseMessage.order.fulfillments.forEach(
-					(itm: Fulfillment) =>
-						(itm.state.descriptor.code = B2C_STATUS_OBJECT.AT_DESTINATION_HUB)
-				);
-				break;
-			case B2C_STATUS_OBJECT.OUT_FOR_DELIVERY:
-				responseMessage.order.state = "In-progress";
-				responseMessage.order.fulfillments.forEach(
-					(itm: Fulfillment) =>
-						(itm.state.descriptor.code = B2C_STATUS_OBJECT.OUT_FOR_DELIVERY)
-				);
-				break;
-			case B2C_STATUS_OBJECT.ORDER_DELIVERED:
-				responseMessage.order.fulfillments.forEach(
-					(itm: Fulfillment) =>
-						(itm.state.descriptor.code = B2C_STATUS_OBJECT.ORDER_DELIVERED)
-				);
-				break;
-			default:
-				responseMessage.order.documents = [
-					{
-						url: "https://invoice_url",
-						label: "Invoice",
-					},
-				];
-				responseMessage.order.fulfillments.forEach(
-					(itm: Fulfillment) =>
-						(itm.state.descriptor.code = B2C_STATUS_OBJECT.ORDER_DELIVERED)
-				);
-				break;
+		if(version === "b2c"){
+			switch (scenario) {
+				case B2C_STATUS_OBJECT.PICKUP_APPROVED:
+					responseMessage.order.state = "In-progress";
+					responseMessage.order.fulfillments.forEach(
+						(itm: Fulfillment) =>
+							(itm.state.descriptor.code = B2C_STATUS_OBJECT.PICKUP_APPROVED)
+					);
+					break;
+				case B2C_STATUS_OBJECT.ORDER_PICKED_UP:
+					responseMessage.order.state = "In-progress";
+					responseMessage.order.fulfillments.forEach(
+						(itm: Fulfillment) =>
+							(itm.state.descriptor.code = B2C_STATUS_OBJECT.ORDER_PICKED_UP)
+					);
+					break;
+				case B2C_STATUS_OBJECT.DOMESTIC_CUSTOM_CLEARED:
+					responseMessage.order.state = "In-progress";
+					responseMessage.order.fulfillments.forEach(
+						(itm: Fulfillment) =>
+							(itm.state.descriptor.code =
+								B2C_STATUS_OBJECT.DOMESTIC_CUSTOM_CLEARED)
+					);
+					break;
+				case B2C_STATUS_OBJECT.AT_DESTINATION_HUB:
+					responseMessage.order.state = "In-progress";
+					responseMessage.order.fulfillments.forEach(
+						(itm: Fulfillment) =>
+							(itm.state.descriptor.code = B2C_STATUS_OBJECT.AT_DESTINATION_HUB)
+					);
+					break;
+				case B2C_STATUS_OBJECT.OUT_FOR_DELIVERY:
+					responseMessage.order.state = "In-progress";
+					responseMessage.order.fulfillments.forEach(
+						(itm: Fulfillment) =>
+							(itm.state.descriptor.code = B2C_STATUS_OBJECT.OUT_FOR_DELIVERY)
+					);
+					break;
+				case B2C_STATUS_OBJECT.ORDER_DELIVERED:
+					responseMessage.order.fulfillments.forEach(
+						(itm: Fulfillment) =>
+							(itm.state.descriptor.code = B2C_STATUS_OBJECT.ORDER_DELIVERED)
+					);
+					break;
+				default:
+					responseMessage.order.documents = [
+						{
+							url: "https://invoice_url",
+							label: "Invoice",
+						},
+					];
+					responseMessage.order.fulfillments.forEach(
+						(itm: Fulfillment) =>
+							(itm.state.descriptor.code = B2C_STATUS_OBJECT.ORDER_DELIVERED)
+					);
+					break;
+			}
+		}else{
+			switch (scenario) {
+				case "delivered":
+					responseMessage.order.documents = [
+						{
+							url: "https://invoice_url",
+							label: "Invoice",
+						},
+					];
+					responseMessage.order.fulfillments.forEach(
+						(itm: Fulfillment) => (itm.state.descriptor.code = "Order-delivered")
+					);
+					break;
+				case "out-for-delivery":
+					responseMessage.order.state = "In-progress";
+					responseMessage.order.fulfillments.forEach(
+						(itm: Fulfillment) => (itm.state.descriptor.code = "Out-for-delivery")
+					);
+					break;
+				case "picked-up":
+					responseMessage.order.state = "In-progress";
+					responseMessage.order.fulfillments.forEach(
+						(itm: Fulfillment) => (itm.state.descriptor.code = "Order-picked-up")
+					);
+					break;
+				case "proforma-invoice":
+					console.log("proforma-invoice")
+					responseMessage.order.state = "Accepted";
+					responseMessage.order.documents = [
+						{
+							url: "https://invoice_url",
+							label: "PROFORMA_INVOICE",
+						},
+					];
+					responseMessage.order.payments.forEach((itm: Payment) => {
+						delete itm.tl_method;
+						delete itm.uri;
+					});
+					responseMessage.order.payments.forEach((itm: Payment) => {
+						itm.status = "NOT-PAID";
+					});
+					responseMessage.order.payments.forEach((itm: Payment) =>
+						itm["@ondc/org/settlement_details"]?.forEach(
+							(itm: SettlementDetails) => {
+								delete itm.settlement_status;
+								delete itm.settlement_timestamp;
+							}
+						)
+					);
+					break;
+				case "bpp-payment-error":
+					console.log("bpp payment error");
+					responseMessage.error = {
+						code: "31004",
+						message: "Payment Failed",
+					};
+					responseMessage.order.payments.forEach(
+						(itm: Payment) => (itm.status = "NOT-PAID")
+					);
+					responseMessage.order.fulfillments.forEach(
+						(itm: Fulfillment) => (itm.state.descriptor.code = "Order-delivered")
+					);
+					responseMessage.order.payments.forEach((itm: Payment) =>
+						itm["@ondc/org/settlement_details"]?.forEach(
+							(itm: SettlementDetails) => {
+								delete itm.settlement_reference;
+								delete itm.settlement_status;
+								delete itm.settlement_timestamp;
+								itm.settlement_counterparty = "buyer-app";
+							}
+						)
+					);
+					responseMessage.order.fulfillments.forEach(
+						(itm: Fulfillment) => (itm.state.descriptor.code = "Order-delivered")
+					);
+					break;
+				case "bpp-payment":
+					console.log("bpp payment")
+					responseMessage.order.payments.forEach((itm: Payment) =>
+						itm["@ondc/org/settlement_details"]?.forEach(
+							(itm: SettlementDetails) => {
+								delete itm.settlement_reference;
+								delete itm.settlement_status;
+								delete itm.settlement_timestamp;
+								itm.settlement_counterparty = "buyer-app";
+							}
+						)
+					);
+					break;
+				case "self-picked-up":
+					responseMessage.order.fulfillments.forEach(
+						(itm: Fulfillment) => (itm.state.descriptor.code = "order-picked-up")
+					);
+					responseMessage.order.fulfillments.forEach(
+						(itm: Fulfillment) => (itm.type = "Self-Pickup")
+					);
+					break;
+				default:
+					responseMessage.order.documents = [
+						{
+							url: "https://invoice_url",
+							label: "Invoice",
+						},
+					];
+					responseMessage.order.fulfillments.forEach(
+						(itm: Fulfillment) => (itm.state.descriptor.code = "Order-delivered")
+					);
+					break;
+			}
 		}
 
 		return responseBuilder(

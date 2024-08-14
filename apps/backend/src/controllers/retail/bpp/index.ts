@@ -44,6 +44,7 @@ bppRouter.post(
 	redisRetriever,
 	updateController
 );
+
 bppRouter.post(
 	"/status",
 	jsonSchemaValidator({ domain: "retail", action: "status" }),

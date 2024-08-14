@@ -8,7 +8,7 @@ import {
 	RETAIL_BAP_MOCKSERVER_URL,
 } from "../../../lib/utils";
 import { v4 as uuidv4 } from "uuid";
-import { B2C_STATUS } from "../../../lib/utils/apiConstants";
+import { B2B_STATUS, B2C_STATUS } from "../../../lib/utils/apiConstants";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 
 export const initiateStatusController = async (
@@ -67,6 +67,7 @@ const intializeRequest = async (
 		} = transaction;
 		const { transaction_id } = context;
 
+		console.log("versionb2bbbb",version)
 		const status = {
 			context: {
 				...context,
@@ -80,7 +81,7 @@ const intializeRequest = async (
 				order_id: order.id,
 			},
 		};
-		const senarios = B2C_STATUS;
+		const senarios = version === "b2c" ? B2C_STATUS: B2B_STATUS;
 		// satus index is always witin boundary of senarios array
 		statusIndex = Math.min(Math.max(statusIndex, 0), senarios.length - 1);
 

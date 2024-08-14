@@ -82,24 +82,41 @@ export const EQUIPMENT_HIRING_STATUS = [
 //Order-delivered(Completed)
 
 export const B2C_STATUS = [
-"Pickup-approved",
-"Order-picked-up",
-"Domestic-custom-cleared",
-"At-destination-hub",
-"Out-for-delivery",
-"Order-delivered"
-]
+	"Pickup-approved",
+	"Order-picked-up",
+	"Domestic-custom-cleared",
+	"At-destination-hub",
+	"Out-for-delivery",
+	"Order-delivered",
+];
 
 export const B2C_STATUS_OBJECT = {
-PICKUP_APPROVED:"Pickup-approved",
-ORDER_PICKED_UP:"Order-picked-up",
-DOMESTIC_CUSTOM_CLEARED:"Domestic-custom-cleared",
-AT_DESTINATION_HUB:"At-destination-hub",
-OUT_FOR_DELIVERY:"Out-for-delivery",
-ORDER_DELIVERED:"Order-delivered"
-}
+	PICKUP_APPROVED: "Pickup-approved",
+	ORDER_PICKED_UP: "Order-picked-up",
+	DOMESTIC_CUSTOM_CLEARED: "Domestic-custom-cleared",
+	AT_DESTINATION_HUB: "At-destination-hub",
+	OUT_FOR_DELIVERY: "Out-for-delivery",
+	ORDER_DELIVERED: "Order-delivered",
+};
 
+export const B2B_STATUS = [
+	"bpp-payment",
+	"bpp-payment-error",
+	"delivered",
+	"out-for-delivery",
+	"picked-up",
+	"self-picked-up",
+];
 
+export const B2B_STATUS_OBJECT = {
+	BPP_PAYMENT_SUCCESS: "bpp-payment",
+	BPP_PAYMENT_ERROR: "bpp-payment-error",
+	DELIVERED: "delivered",
+	OUT_FOR_DELIVERY: "out-for-delivery",
+	PICKED_UP: "picked-up",
+	PROFORMA_INVOICE: "proforma-invoice",
+	SELF_PICKUP: "self-picked-up",
+};
 
 export const EQUIPMENT_HIRING_STATUS_OBJECT = {
 	IN_TRANSIT: "In-Transit",
