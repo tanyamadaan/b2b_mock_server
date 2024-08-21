@@ -17,7 +17,6 @@ async function send_response(
 	version: any = ""
 ) {
 	try {
-		console.log("responseversion", version);
 		const { context } = res_obj;
 		const bpp_uri = context.bpp_uri || res_obj.bpp_uri;
 		// res_obj.context.bpp_uri = bpp_uri
@@ -37,7 +36,6 @@ async function send_response(
 		if (action === "search") {
 			headers["X-Gateway-Authorization"] = header;
 		}
-		console.log("initiateeeee", version);
 
 		let uri: any;
 
@@ -51,7 +49,6 @@ async function send_response(
 			uri = `${bpp_uri}/${action}${scenario ? `?scenario=${scenario}` : ""}`;
 
 		}
-		console.log("uriiiiiiiiii", uri);
 		const response = await axios.post(uri, res_obj, {
 			headers: { ...headers },
 		});

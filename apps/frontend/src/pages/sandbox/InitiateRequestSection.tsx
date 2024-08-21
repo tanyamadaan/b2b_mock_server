@@ -99,11 +99,13 @@ export const InitiateRequestSection = () => {
 				action as keyof typeof INITIATE_FIELDS
 			].filter((e) => e.name === "scenario")[0];
 
-			if (checker(keys, formKeys)) setAllowSubmission(true);
-			else if (
+			if (checker(keys, formKeys, domain)) {
+				setAllowSubmission(true);
+			} else if (
 				checker(
 					keys,
-					formKeys.filter((e) => e !== "scenario")
+					formKeys.filter((e) => e !== "scenario"),
+					domain
 				) &&
 				scenarios?.domainDepended &&
 				!scenarios.options[domain as keyof SELECT_OPTIONS]
@@ -111,6 +113,7 @@ export const InitiateRequestSection = () => {
 				setAllowSubmission(true);
 			else setAllowSubmission(false);
 		}
+
 		const newDomainOptions =
 			INITIATE_FIELDS.search.find((field) => field.name === "domain")?.options[
 				version
@@ -173,9 +176,12 @@ export const InitiateRequestSection = () => {
 				handleMessageToggle(
 					error.response?.data?.error?.message.error?.message === "string"
 						? error.response?.data?.error?.message.error?.message
-						: Array.isArray(error.response?.data?.error?.message?.error?.message) && error.response?.data?.error?.message?.error?.message.length > 0
+						: Array.isArray(
+								error.response?.data?.error?.message?.error?.message
+						  ) &&
+						  error.response?.data?.error?.message?.error?.message.length > 0
 						? `${error.response?.data?.error?.message?.error?.message[0]?.message} in ${error.response?.data?.error?.message?.error?.message[0]?.details}`
-						:error.response?.data?.error?.message.error?.message
+						: error.response?.data?.error?.message.error?.message
 				);
 			} else {
 				handleMessageToggle(

@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import {
-	B2C_BAP_MOCKSERVER_URL,
 	MOCKSERVER_ID,
 	send_nack,
 	send_response,
