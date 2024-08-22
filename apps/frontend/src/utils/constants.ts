@@ -2,7 +2,7 @@ import { B2B_SCENARIOS } from "openapi-specs/constants";
 
 export const SUPPORTED_DOMAINS = [
 	"B2B",
-	"B2C",
+	"B2C Exports",
 	"SERVICES",
 	"AGRI SERVICES",
 	"HEALTHCARE SERVICES",
