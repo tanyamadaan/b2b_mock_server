@@ -6,13 +6,15 @@
 	"scripts": {
 		"dev": "turbo run dev",
 		"ec2": "turbo run ec2",
-		"test": "turbo run test"
+		"test": "turbo run test",
+		"build": "turbo run build"
 	},
 	"workspaces": [
 		"apps/*",
 		"packages/*"
 	],
 	"devDependencies": {
-		"turbo": "^1.12.4"
+		"tsup": "^8.2.4",
+		"turbo": "2.0.11"
 	}
 }
