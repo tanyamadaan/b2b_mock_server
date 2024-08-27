@@ -7,6 +7,7 @@ import {
 	b2bRouter,
 	miscRouter,
 	servicesRouter,
+	subscriptionRouter,
 } from "./controllers";
 import cors from "cors";
 import {
@@ -72,6 +73,7 @@ app.use("/b2c", errorHandlingWrapper(b2cRouter));
 app.use("/retail", errorHandlingWrapper(retailRouter));
 app.use("/auth", errorHandlingWrapper(authRouter));
 app.use("/services", errorHandlingWrapper(servicesRouter));
+app.use("/subscription", errorHandlingWrapper(subscriptionRouter));
 app.use("/detect_app_installation", (req: Request, res: Response) => {
 	const headers = req.headers;
 	return res.json({

@@ -68,6 +68,10 @@ export const SERVICE_DOMAINS = [
 	"ONDC:SRV18",
 ];
 
+export const SUBSCRIPTION_DOMAINS = [
+	"ONDC:MEC10"
+]
+
 export const RETAIL_DOMAINS = ["b2b", "b2c"];
 
 export const SERVICE_DOMAINS_OBJECT = [
@@ -91,6 +95,7 @@ export const ALL_DOMAINS = {
 	// "B2C": B2C_DOMAINS,
 	Retail: RETAIL_DOMAINS,
 	Services: SERVICE_DOMAINS,
+	Subscription: SUBSCRIPTION_DOMAINS,
 };
 
 export const CITY_CODE = ["std:080", "std:011"];
@@ -128,6 +133,8 @@ export const INITIATE_FIELDS = {
 				retail:B2B_DOMAINS,
 				b2b: B2B_DOMAINS,
 				services: SERVICE_DOMAINS,
+				subscription:SUBSCRIPTION_DOMAINS,
+				// services:SERVICE_DOMAINS_OBJECT,
 				b2c: B2C_DOMAINS,
 			},
 		},
@@ -141,6 +148,7 @@ export const INITIATE_FIELDS = {
 				retail:CITY_CODE,
 				b2b: CITY_CODE,
 				services: CITY_CODE,
+				subscription:CITY_CODE,
 				b2c: B2C_CITY_CODE,
 			},
 		},

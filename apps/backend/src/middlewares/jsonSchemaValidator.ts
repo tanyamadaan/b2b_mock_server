@@ -1,10 +1,11 @@
 import { b2bSchemaValidator } from "../lib/schema/b2b";
 import { srvSchemaValidator } from "../lib/schema/services";
+import { subscriptionSchemaValidator } from "../lib/schema/subscription";
 import { b2cSchemaValidator } from "../lib/schema/b2c";
 import { retailSchemaValidator } from "../lib/schema/retail";
 
 type JsonSchemaValidatorType = {
-	domain: "b2b" | "b2c" | "services" | "retail";
+	domain: "b2b" | "b2c" | "services" | "retail" | "subscription";
 
 	action:
 		| "search"
@@ -38,6 +39,9 @@ export const jsonSchemaValidator = ({
 		return srvSchemaValidator(action);
 	} else if (domain === "retail") {
 		return retailSchemaValidator(action);
+	} else if (domain === "subscription"){
+		console.log("domainnnnnnnnnn")
+		return subscriptionSchemaValidator(action);
 	} else {
 		return srvSchemaValidator(action);
 	}

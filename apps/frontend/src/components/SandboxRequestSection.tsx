@@ -76,7 +76,6 @@ export const SandboxRequestSection = () => {
 					authorization: authHeader,
 				},
 			});
-			console.log("RESPONSE RECEIVED", response);
 
 			if (response.data.error) {
 				setSyncResponse(response.data);
