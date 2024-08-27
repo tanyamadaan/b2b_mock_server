@@ -16,7 +16,7 @@ export const BID_AUCTION_SERVICES_EXAMPLES_PATH =
 	"./domain-repos/@services/draft-agri_bids_and_auction/api/components/Examples/Agri_Bids_And_Auction_yaml";
 
 export const HEALTHCARE_SERVICES_EXAMPLES_PATH =
-	"./domain-repos/@services/draft-healthcare-service/api/components/Examples/Health_care_services_yaml";
+	"./domain-repos/@services/draft-healthcare-services/api/components/Examples/Health_care_services_yaml";
 
 export const AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH =
 	"./domain-repos/@services/draft-agri_equipment/api/components/Examples/Agri_Equipment_Hiring_yaml";
