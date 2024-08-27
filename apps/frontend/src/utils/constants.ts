@@ -2,7 +2,7 @@ import { B2B_SCENARIOS } from "openapi-specs/constants";
 
 export const SUPPORTED_DOMAINS = [
 	"B2B",
-	"B2C",
+	"B2C Exports",
 	"SERVICES",
 	"AGRI SERVICES",
 	"HEALTHCARE SERVICES",
@@ -54,13 +54,10 @@ export const B2B_DOMAINS = [
 	"ONDC:RET10",
 	"ONDC:RET12",
 	"ONDC:RET13",
-	"ONDC:RET14"
-]
+	"ONDC:RET14",
+];
 
-export const B2C_DOMAINS = [
-	"ONDC:RET10",
-	"ONDC:RET12"
-]
+export const B2C_DOMAINS = ["ONDC:RET10", "ONDC:RET12"];
 
 export const SERVICE_DOMAINS = [
 	"ONDC:SRV11",
@@ -94,7 +91,7 @@ export const ALL_DOMAINS = {
 
 export const CITY_CODE = ["std:080", "std:011"];
 
-export const B2C_CITY_CODE = ["UN:SIN"]
+export const B2C_CITY_CODE = ["UN:SIN"];
 export const INITIATE_FIELDS = {
 	search: [
 		{

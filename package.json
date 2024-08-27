@@ -4,15 +4,17 @@
 	"private": false,
 	"packageManager": "npm@9.2.0",
 	"scripts": {
-		"dev": "NODE_OPTIONS='--max-old-space-size=4096' turbo run dev",
-		"ec2": "NODE_OPTIONS='--max-old-space-size=4096' turbo run ec2",
-		"test":"NODE_OPTIONS='--max-old-space-size=4096' turbo run test"
+		"dev": "turbo run dev",
+		"ec2": "turbo run ec2",
+		"test": "turbo run test",
+		"build": "turbo run build"
 	},
 	"workspaces": [
 		"apps/*",
 		"packages/*"
 	],
 	"devDependencies": {
-		"turbo": "^1.12.4"
+		"tsup": "^8.2.4",
+		"turbo": "2.0.11"
 	}
 }

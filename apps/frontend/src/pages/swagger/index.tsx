@@ -10,15 +10,26 @@ import { useDomain } from "../../utils/hooks";
 
 export const Swagger = () => {
 	const [swaggerSpec, setSwaggerSpec] = useState(b2bswaggerSpec);
-	const [fileName, setFileName] = useState("B2b.yaml")
+	const [fileName, setFileName] = useState("B2b.yaml");
 	const { domain } = useDomain();
 
-	useEffect(()=>{
-		const swaggerFile = domain === "b2b"?b2bswaggerSpec:domain === "b2c"?b2cswaggerSpec:serviceswaggerSpec;
-		const yamlFileName = domain === "b2b"?"B2b.yaml":domain === "b2c"?"B2c.yaml":"services.yaml";
-		setSwaggerSpec(swaggerFile);
+	useEffect(() => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const swaggerFile: any =
+			domain === "b2b"
+				? b2bswaggerSpec
+				: domain === "b2c"
+				? b2cswaggerSpec
+				: serviceswaggerSpec;
+		const yamlFileName =
+			domain === "b2b"
+				? "B2b.yaml"
+				: domain === "b2c"
+				? "B2c.yaml"
+				: "services.yaml";
+		setSwaggerSpec(swaggerFile);``
 		setFileName(yamlFileName);
-	},[domain])
+	}, [domain]);
 
 	return (
 		<>
@@ -28,12 +39,9 @@ export const Swagger = () => {
 					justifyContent: "flex-end",
 				}}
 			>
-					<SwaggerDownloadButton
-						swaggerYaml={swaggerSpec}
-						fileName={fileName}
-					/>
+				<SwaggerDownloadButton swaggerYaml={swaggerSpec} fileName={fileName} />
 			</Toolbar>
-				<SwaggerUI spec={swaggerSpec} />
+			<SwaggerUI spec={swaggerSpec} />
 		</>
 	);
 };

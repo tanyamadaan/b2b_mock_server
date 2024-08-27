@@ -197,14 +197,14 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 				}}
 				render={mobileOpen}
 			/>
-			<NavButton
+			{/* <NavButton
 				link={{
 					name: "Misc. Swagger",
 					nested: false,
 					path: "/swagger/misc",
 				}}
 				render={mobileOpen}
-			/>
+			/> */}
 			<NavButton
 				link={{
 					name: "User Guide",
