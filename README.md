@@ -98,9 +98,12 @@ If you receive a NACK as sync response, it indicates there are schema errors in 
 
 In case you use mock service you will receive both `sync` and `async` and in case of sandbox service you will receive only `sync` response with `ACK` and `async` response will be sent back to the respective API end point hosted on your server (bap_uri or bpp_uri sent in context part). 
 
-
-
-
+# Steps to Start
+This mock server uses Node/TS along with TurboRepo to manage the monorepo. It requires Docker and Docker Compose to be present on the workstation. In development mode, the mock server can be started by following:
+1. `npm i --force` to install the dependencies. Run this at the project root.
+2. `docker compose up db redis -d` to start the databases in detached mode.
+3. `git submodule update --init` to initiate and update the submodules.
+4. `npm run dev` to finally start up the server.
 
 
 
