@@ -1,6 +1,6 @@
 {
 	"$schema": "https://turbo.build/schema.json",
-	"pipeline": {
+	"tasks": {
 		"test": {
 			"dependsOn": ["test:backend"],
 			"persistent": true
@@ -10,7 +10,7 @@
 			"persistent": false
 		},
 		"dev": {
-			"dependsOn": ["db:migrate:dev", "swagger:gen"],
+			"dependsOn": ["db:migrate:dev", "swagger:gen","start:nginx"],
 			"cache": false,
 			"persistent": true
 		},
