@@ -8,9 +8,8 @@ export const requestParser = (
 	if (!req.body) next();
 	try {
 		if (req.headers["content-type"] === "application/json") {
-			(req as any).rawBody = req.body;
-			req.body = JSON.parse(req.body.toString());
-			// console.log("REQ BODY PARSED", Object.keys(req.body));
+			(req as any).rawBody = JSON.stringify(req.body);
+			// req.body is already parsed, no need to parse it again
 		}
 	} catch (error) {
 		if (error instanceof SyntaxError)

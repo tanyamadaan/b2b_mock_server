@@ -13,11 +13,14 @@ async function send_response(
 	res_obj: any,
 	transaction_id: string,
 	action: string,
-	scenario: string = ""
+	scenario: string = "",
+	bpp_uri: string = "" // for search
 ) {
 	try {
 		const { context } = res_obj;
-		const bpp_uri = context.bpp_uri || res_obj.bpp_uri;
+		if(bpp_uri === "")
+			bpp_uri = context.bpp_uri || res_obj.bpp_uri;
+
 		// res_obj.context.bpp_uri = bpp_uri
 		if (res_obj.bpp_uri) delete res_obj.bpp_uri;
 
