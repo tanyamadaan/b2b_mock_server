@@ -14,7 +14,6 @@ export const onUpdateController = (
 ) => {
 	const sandboxMode = res.getHeader("mode") === "sandbox";
 	if (!sandboxMode) {
-    console.log("Hello")
 		res.status(200).json({
 			sync: {
 				message: {

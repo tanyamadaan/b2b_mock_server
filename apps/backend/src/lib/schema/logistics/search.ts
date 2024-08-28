@@ -142,7 +142,7 @@ export const searchSchema = {
 							},
 							required: ["time"],
 						},
-						fulfillments: {
+						fulfillment: {
 							type: "object",
 							properties: {
 								type: {
@@ -297,7 +297,7 @@ export const searchSchema = {
 							},
 						},
 					},
-					required: [ "provider", "fulfillments", "payment", "tags"],
+					required: [ "provider", "fulfillment", "payment", "tags"],
 				},
 			},
 			required: ["intent"],
