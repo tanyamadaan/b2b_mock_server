@@ -73,6 +73,12 @@ export type Select={
   }
 }
 
+export interface TimeObject {
+  label: string;
+  duration: string;
+  timestamp: string;
+}
+
 interface ItemDescriptor {
   name: string;
   code: string;
@@ -91,6 +97,7 @@ export interface Item {
   category_ids?: string[]; // Optional because not all items have category_ids
   tags?: Tag[]; // Optional because not all items have tags
   descriptor?: ItemDescriptor;
+  time?: TimeObject;
 }
 
 export interface Category {
@@ -158,7 +165,8 @@ export interface Fulfillment {
   type: string;
   tracking: boolean;
   stops: Stop[];
-  rateable: boolean;
+  rateable?: boolean;
+  tags: Tag[];
 }
 interface Params {
   amount: string;

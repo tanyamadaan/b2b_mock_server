@@ -256,7 +256,7 @@ const initItemNotAvaliableController = (
 
 		const updatedFulfillments = updateFulfillments(
 			fulfillments,
-			ON_ACTION_KEY?.ON_INIT,
+			ON_ACTION_KEY?.ON_INIT
 		);
 
 		const file = fs.readFileSync(
