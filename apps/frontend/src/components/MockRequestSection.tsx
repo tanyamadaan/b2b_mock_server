@@ -46,10 +46,11 @@ export const MockRequestSection = () => {
 
 	const [curl, setCurl] = useState<string>();
 
-	const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-		setLog(e.target.value);
-		detectAction(e.target.value);
-	};
+    const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setLog(e.target.value);
+        detectAction(e.target.value);
+        console.log("Action:", action);
+    };
 
 	const handleSubmit = async () => {
 		let url = `${[
