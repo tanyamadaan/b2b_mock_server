@@ -13,14 +13,18 @@ import {
 	MockProvider,
 	SandboxProvider,
 } from "./utils/context";
+import { B2BMock, ServicesMock } from "./pages/mock/domains";
 import {
-	B2BMock,
-	ServicesMock,
-} from "./pages/mock/domains";
-import { B2BSandbox, ServicesSandbox } from "./pages/sandbox/domains";
+	B2BSandbox,
+	LogisticsSandbox,
+	ServicesSandbox,
+} from "./pages/sandbox/domains";
 import Readme from "./pages/readme";
 import { B2CMock } from "./pages/mock/domains/b2c";
 import { B2CSandbox } from "./pages/sandbox/domains/b2c";
+import { LogisticsMock } from "./pages/mock/domains/logistics";
+import { LogisticsSwagger } from "./pages/swagger/domains/logistics";
+// log
 
 const router = createBrowserRouter([
 	{
@@ -58,7 +62,11 @@ const router = createBrowserRouter([
 					{
 						path: "services",
 						Component: ServicesMock,
-					}
+					},
+					{
+						path: "logistics",
+						Component: LogisticsMock,
+					},
 				],
 			},
 			{
@@ -80,7 +88,11 @@ const router = createBrowserRouter([
 					{
 						path: "services",
 						Component: ServicesSandbox,
-					}
+					},
+					{
+						path: "logistics",
+						Component: LogisticsSandbox,
+					},
 				],
 			},
 			{
@@ -94,6 +106,7 @@ const router = createBrowserRouter([
 					{ path: "b2b", Component: B2BSwagger },
 					{ path: "b2c", Component: B2BSwagger },
 					{ path: "services", Component: ServicesSwagger },
+					{ path: "logistics", Component: LogisticsSwagger },
 				],
 			},
 			{

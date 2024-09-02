@@ -8,6 +8,7 @@ import {
 	miscRouter,
 	servicesRouter,
 	subscriptionRouter,
+	logisticsRouter,
 } from "./controllers";
 import cors from "cors";
 import {
@@ -65,6 +66,7 @@ app.use(
 	healthcareServiceSwagger("/api-docs/agri-equipment-services")
 );
 
+app.use(express.json());
 app.use(express.raw({ type: "*/*", limit: "1mb" }));
 app.use(requestParser);
 app.use("/", miscRouter);
@@ -74,6 +76,7 @@ app.use("/retail", errorHandlingWrapper(retailRouter));
 app.use("/auth", errorHandlingWrapper(authRouter));
 app.use("/services", errorHandlingWrapper(servicesRouter));
 app.use("/subscription", errorHandlingWrapper(subscriptionRouter));
+app.use("/logistics", errorHandlingWrapper(logisticsRouter));
 app.use("/detect_app_installation", (req: Request, res: Response) => {
 	const headers = req.headers;
 	return res.json({

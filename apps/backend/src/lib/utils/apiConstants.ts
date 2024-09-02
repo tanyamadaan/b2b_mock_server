@@ -14,6 +14,11 @@ export const SERVICES_DOMAINS = {
 	BID_ACTION_SERVICES: "ONDC:SRV18",
 };
 
+export const SUBSCRIPTION_DOMAINS = {
+	PRINT_MEDIA: "ONDC:MEC10",
+	AUDIO_VIDEO: "ONDC:MEC11"
+};
+
 export const ORDER_STATUS = {
 	IN_PROGRESS: "In-progress",
 	CREATED: "Created",

@@ -112,31 +112,36 @@ export const subscriptionSchemaValidator =
 		}
 
 		isValid = validate(req.body);
-		// console.log('isValid::::: ', isValid)
 		if (!isValid) {
-			res.status(400).json({
-				message: {
-					ack: {
-						status: "NACK",
+			const errorResponse = {
+				sync: {
+					message: {
+						ack: {
+							status: "NACK",
+						},
+					},
+					error: {
+						type: "JSON-SCHEMA-ERROR",
+						code: "50009",
+						message: validate.errors?.map(
+							({ message, params, instancePath }) => ({
+								message: `${message}${
+									params.allowedValues ? ` (${params.allowedValues})` : ""
+								}${params.allowedValue ? ` (${params.allowedValue})` : ""}${
+									params.additionalProperty
+										? ` (${params.additionalProperty})`
+										: ""
+								}`,
+								details: instancePath,
+							})
+						),
 					},
 				},
-				error: {
-					type: "JSON-SCHEMA-ERROR",
-					code: "50009",
-					message: validate.errors?.map(
-						({ message, params, instancePath }) => ({
-							message: `${message}${
-								params.allowedValues ? ` (${params.allowedValues})` : ""
-							}${params.allowedValue ? ` (${params.allowedValue})` : ""}${
-								params.additionalProperty
-									? ` (${params.additionalProperty})`
-									: ""
-							}`,
-							details: instancePath,
-						})
-					),
-				},
-			});
+				async: {},
+			};
+
+			console.log("subscription error response",schema,JSON.stringify(errorResponse, null, 2));
+			res.status(400).json(errorResponse);
 			return;
 		}
 		next();

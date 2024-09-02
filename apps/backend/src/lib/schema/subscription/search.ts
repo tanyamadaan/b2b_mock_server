@@ -1,4 +1,4 @@
-import { SRV_FULFILLMENT_TYPE, GPS_PATTERN, SRV_PAYMENT_TYPE, PAYMENT_COLLECTEDBY, DOMAIN, VERSION, SRV_INTENT_TAGS } from "./constants";
+import { DOMAIN, VERSION, SRV_INTENT_TAGS } from "./constants";
 
 export const searchSchema = {
   $id: "searchSchema",
@@ -106,83 +106,6 @@ export const searchSchema = {
               },
               required: ["id"],
             },
-            fulfillment: {
-              type: "object",
-              properties: {
-                type: {
-                  type: "string",
-                  enum: SRV_FULFILLMENT_TYPE
-                },
-                stops: {
-                  type: "array",
-                  items: {
-                    type: "object",
-                    properties: {
-                      type: {
-                        type: "string",
-                        const: "end"
-                      },
-                      location: {
-                        type: "object",
-                        properties: {
-                          gps: {
-                            type: "string",
-                            pattern: GPS_PATTERN,
-                            errorMessage: "Incorrect gps value (minimum of six decimal places are required)"
-                          },
-                          area_code: {
-                            type: "string",
-                          },
-                        },
-                        required: ["gps", "area_code"],
-                      },
-                      time: {
-                        type: "object",
-                        properties: {
-                          range: {
-                            type: "object",
-                            properties: {
-                              start: {
-                                type: "string",
-                                format: "date-time"
-                              },
-                              end: {
-                                type: "string",
-                                format: "date-time"
-                              },
-                            },
-                            required: ["start"],
-                          },
-                          days: {
-                            type: "array",
-                            items: {
-                              type: "string",
-                            },
-                          },
-                        },
-                        required: ["range"],
-                      },
-                    },
-                    required: ["type", "location"],
-                  },
-                },
-              },
-              required: ["type", "stops"],
-            },
-            payment: {
-              type: "object",
-              properties: {
-                type: {
-                  type: "string",
-                  enum: SRV_PAYMENT_TYPE
-                },
-                collected_by: {
-                  type: "string",
-                  enum:  PAYMENT_COLLECTEDBY
-                },
-              },
-              required: ["type", "collected_by"],
-            },
             tags: {
               type: "array",
               minItems: 1,
@@ -227,8 +150,7 @@ export const searchSchema = {
               },
             },
           },
-          required: [ //"fulfillment",
-             "payment", "tags"],
+          required: ["tags"],
         },
       },
       required: ["intent"],

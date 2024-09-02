@@ -4,7 +4,7 @@ export const DOMAIN = ["ONDC:MEC10","ONDC:MEC11"];
 
 export const SRV_FULFILLMENT_TYPE = ["Home-Service", "Store-Service","Seller-Fulfilled", "Buyer-Fulfilled"];
 
-export const SRV_INTENT_TAGS = ["finder_fee_type","finder_fee_amount","FINDER_FEE_TYPE","FINDER_FEE_AMOUNT","BAP_TYPE","BAP_Terms","BAP_TERMS","BAP_DETAILS","BUYER_ID_CODE","BUYER_ID_NO","BUYER_ID"];
+export const SRV_INTENT_TAGS = ["BAP_TERMS","BAP_DETAILS","BUYER_FINDER_FEES","BUYER_FINDER_FEE_TYPE","BUYER_FINDER_FEE_AMOUNT"];
 
 export const SRV_PAYMENT_TYPE = [
 	"PRE-FULFILLMENT",

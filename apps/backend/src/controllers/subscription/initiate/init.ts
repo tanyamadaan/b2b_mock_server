@@ -5,7 +5,7 @@ import {
 	send_response,
 	send_nack,
 	redisFetchToServer,
-	SERVICES_BAP_MOCKSERVER_URL,
+	SUBSCRIPTION_BAP_MOCKSERVER_URL,
 } from "../../../lib/utils";
 import {
 	ACTTION_KEY,
@@ -64,7 +64,7 @@ const intializeRequest = async (
 				timestamp: new Date().toISOString(),
 				action: ACTTION_KEY.INIT,
 				bap_id: MOCKSERVER_ID,
-				bap_uri: SERVICES_BAP_MOCKSERVER_URL,
+				bap_uri: SUBSCRIPTION_BAP_MOCKSERVER_URL,
 				message_id: uuidv4(),
 			},
 			message: {
@@ -109,7 +109,7 @@ const intializeRequest = async (
 				},
 			},
 		};
-
+		console.log("inittttttttttttt",init.context)
 		await send_response(
 			res,
 			next,

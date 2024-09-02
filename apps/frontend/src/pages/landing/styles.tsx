@@ -3,7 +3,7 @@ import { Button, Box } from "@mui/material";
 import Background_Img from "../../assets/images/Background.jpg";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const BackgroundContainer = styled(Box)(({ theme }) => ({
+export const BackgroundContainer = styled(Box)(() => ({
 	backgroundImage: `url(${Background_Img})`,
 	backgroundSize: "cover",
 	backgroundPosition: "center",

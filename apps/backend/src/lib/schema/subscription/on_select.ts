@@ -125,12 +125,7 @@ export const onSelectSchema = {
                   parent_item_id: {
                     type: "string",
                   },
-                  location_ids: {
-                    type: "array",
-                    items: {
-                      type: "string",
-                    },
-                  },
+                
                   quantity: {
                     type: "object",
                     properties: {
@@ -189,7 +184,6 @@ export const onSelectSchema = {
                 required: [
                   // "fulfillment_ids",
                   "id",
-                  "location_ids",
                   "quantity"
                 ],
               },
@@ -413,7 +407,7 @@ export const onSelectSchema = {
                               },
                             },
                           },
-                          required: ["descriptor", "list"],
+                          required: ["descriptor"],
                         },
                       },
                     },
@@ -427,26 +421,9 @@ export const onSelectSchema = {
               isQuoteMatching: true,
               required: ["price", "breakup", "ttl"],
             },
-            payments: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  type: {
-                    type: "string",
-                  },
-                  collected_by: {
-                    type: "string",
-                    enum: ["BAP", "BPP"]
-                  },
-                },
-                required: ["type", "collected_by"],
-              },
-            },
           },
           required: ["provider", "items", "fulfillments", 
-            //"quote", 
-            "payments"],
+          ],
         },
       },
       required: ["order"],

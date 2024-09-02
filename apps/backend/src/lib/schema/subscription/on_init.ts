@@ -472,7 +472,7 @@ export const onInitSchema = {
                               },
                             },
                           },
-                          required: ["descriptor", "list"],
+                          required: ["descriptor"],
                         },
                       },
                     },

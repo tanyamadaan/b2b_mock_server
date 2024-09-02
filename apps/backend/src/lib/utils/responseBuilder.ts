@@ -7,9 +7,11 @@ import {
 	B2B_BPP_MOCKSERVER_URL,
 	B2C_BPP_MOCKSERVER_URL,
 	HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL,
+	LOGISTICS_BPP_MOCKSERVER_URL,
 	MOCKSERVER_ID,
 	REATIL_BPP_MOCKSERVER_URL,
 	SERVICES_BPP_MOCKSERVER_URL,
+	SUBSCRIPTION_BPP_MOCKSERVER_URL,
 } from "./constants";
 import { createAuthHeader } from "./responseAuth";
 import { logger } from "./logger";
@@ -74,7 +76,9 @@ export const responseBuilder = async (
 		| "agri-services"
 		| "healthcare-service"
 		| "agri-equipment-hiring"
-		| "retail",
+		| "retail"
+		| "logistics"
+		| "subscription",
 
 	error?: object | undefined
 ) => {
@@ -87,15 +91,18 @@ export const responseBuilder = async (
 		context: {},
 		message,
 	};
-
 	const bppURI =
 		domain === "b2b"
 			? B2B_BPP_MOCKSERVER_URL
 			: domain === "b2c"
-				? B2C_BPP_MOCKSERVER_URL
-				: domain === "retail"?
-				REATIL_BPP_MOCKSERVER_URL:
-				SERVICES_BPP_MOCKSERVER_URL;
+			? B2C_BPP_MOCKSERVER_URL
+			: domain === "retail"
+			? REATIL_BPP_MOCKSERVER_URL
+			: domain === "logistics"
+			? LOGISTICS_BPP_MOCKSERVER_URL
+			: domain === "subscription"
+			? SUBSCRIPTION_BPP_MOCKSERVER_URL
+			: SERVICES_BPP_MOCKSERVER_URL;
 
 	if (action.startsWith("on_")) {
 		async = {
@@ -143,7 +150,8 @@ export const responseBuilder = async (
 				).length;
 
 				await redis.set(
-					`${(async.context! as any).transaction_id
+					`${
+						(async.context! as any).transaction_id
 					}-${logIndex}-${action}-from-server`,
 					JSON.stringify(log)
 				);
@@ -174,15 +182,15 @@ export const responseBuilder = async (
 					error instanceof AxiosError
 						? error?.response?.data
 						: {
-							message: {
-								ack: {
-									status: "NACK",
+								message: {
+									ack: {
+										status: "NACK",
+									},
 								},
-							},
-							error: {
-								message: error,
-							},
-						};
+								error: {
+									message: error,
+								},
+						  };
 				log.response = {
 					timestamp: new Date().toISOString(),
 					response: response,
@@ -210,72 +218,6 @@ export const responseBuilder = async (
 			},
 		});
 	} else {
-		if (action.startsWith("on_")) {
-			var log: TransactionType = {
-				request: async,
-			};
-			if (action === "on_status") {
-				const transactionKeys = await redis.keys(
-					`${(async.context! as any).transaction_id}-*`
-				);
-				const logIndex = transactionKeys.filter((e) =>
-					e.includes("on_status-to-server")
-				).length;
-
-				await redis.set(
-					`${(async.context! as any).transaction_id
-					}-${logIndex}-${action}-from-server`,
-					JSON.stringify(log)
-				);
-			} else {
-				await redis.set(
-					`${(async.context! as any).transaction_id}-${action}-from-server`,
-					JSON.stringify(log)
-				);
-			}
-			try {
-				const response = await axios.post(uri, async, {
-					headers: {
-						authorization: header,
-					},
-				});
-
-				log.response = {
-					timestamp: new Date().toISOString(),
-					response: response.data,
-				};
-
-				await redis.set(
-					`${(async.context! as any).transaction_id}-${action}-from-server`,
-					JSON.stringify(log)
-				);
-			} catch (error) {
-				const response =
-					error instanceof AxiosError
-						? error?.response?.data
-						: {
-							message: {
-								ack: {
-									status: "NACK",
-								},
-							},
-							error: {
-								message: error,
-							},
-						};
-				log.response = {
-					timestamp: new Date().toISOString(),
-					response: response,
-				};
-				await redis.set(
-					`${(async.context! as any).transaction_id}-${action}-from-server`,
-					JSON.stringify(log)
-				);
-
-				return next(error);
-			}
-		}
-
 		logger.info({
 			type: "response",
 			action: action,
@@ -292,20 +234,6 @@ export const responseBuilder = async (
 			},
 			async,
 		});
-
-		// logger.info({
-		// 	type: "response",
-		// 	action: action,
-		// 	transaction_id: (reqContext as any).transaction_id,
-		// 	message: { sync: { message: { ack: { status: "ACK" } } } },
-		// });
-		// return res.json({
-		// 	message: {
-		// 		ack: {
-		// 			status: "ACK",
-		// 		},
-		// 	},
-		// });
 	}
 };
 
@@ -334,12 +262,12 @@ export const sendStatusAxiosCall = async (
 		domain === "b2b"
 			? B2B_BPP_MOCKSERVER_URL
 			: domain === "agri-services"
-				? AGRI_SERVICES_BPP_MOCKSERVER_URL
-				: domain === "healthcare-service"
-					? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
-					: domain === "agri-equipment-hiring"
-						? AGRI_EQUIPMENT_BPP_MOCKSERVER_URL
-						: SERVICES_BPP_MOCKSERVER_URL;
+			? AGRI_SERVICES_BPP_MOCKSERVER_URL
+			: domain === "healthcare-service"
+			? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
+			: domain === "agri-equipment-hiring"
+			? AGRI_EQUIPMENT_BPP_MOCKSERVER_URL
+			: SERVICES_BPP_MOCKSERVER_URL;
 
 	async = {
 		...async,
@@ -381,15 +309,15 @@ export const sendStatusAxiosCall = async (
 				error instanceof AxiosError
 					? error?.response?.data
 					: {
-						message: {
-							ack: {
-								status: "NACK",
+							message: {
+								ack: {
+									status: "NACK",
+								},
 							},
-						},
-						error: {
-							message: error,
-						},
-					};
+							error: {
+								message: error,
+							},
+					  };
 			log.response = {
 				timestamp: new Date().toISOString(),
 				response: response,
@@ -669,13 +597,13 @@ export const quoteCreatorAgriService = (
 			item:
 				item.title === "tax"
 					? {
-						id: item.id,
-					}
+							id: item.id,
+					  }
 					: {
-						id: item.id,
-						price: item.price,
-						quantity: item.quantity ? item.quantity : undefined,
-					},
+							id: item.id,
+							price: item.price,
+							quantity: item.quantity ? item.quantity : undefined,
+					  },
 		});
 	});
 
@@ -756,10 +684,9 @@ export const quoteCreatorHealthCareService = (
 	offers?: any,
 	fulfillment_type?: string,
 	service_name?: string,
-	action?: string
+	scenario?: string
 ) => {
 	try {
-
 		//GET PACKAGE ITEMS
 		//get price from on_search
 		items.forEach((item) => {
@@ -817,13 +744,13 @@ export const quoteCreatorHealthCareService = (
 				item:
 					item.title === "tax"
 						? {
-							id: item?.id,
-						}
+								id: item?.id,
+						  }
 						: {
-							id: item?.id,
-							price: item?.price,
-							quantity: item?.quantity ? item?.quantity : undefined,
-						},
+								id: item?.id,
+								price: item?.price,
+								quantity: item?.quantity ? item?.quantity : undefined,
+						  },
 			});
 		});
 
@@ -935,7 +862,39 @@ export const quoteCreatorHealthCareService = (
 			});
 		}
 
-		if (service_name === "bid_auction_service") {
+		if (
+			service_name === "bid_auction_service" &&
+			scenario === "participation_fee"
+		) {
+			breakup = [
+				{
+					title: "earnest_money_deposit",
+					price: {
+						currency: "INR",
+						value: "5000.00",
+					},
+					item: items[0],
+					tags: [
+						{
+							descriptor: {
+								code: "TITLE",
+							},
+							list: [
+								{
+									descriptor: {
+										code: "type",
+									},
+									value: "earnest_money_deposit",
+								},
+							],
+						},
+					],
+				},
+			];
+		} else if (
+			service_name === "bid_auction_service" &&
+			scenario === "bid_placement"
+		) {
 			breakup?.push({
 				title: "earnest_money_deposit",
 				price: {
@@ -960,13 +919,13 @@ export const quoteCreatorHealthCareService = (
 				],
 			});
 		}
-		
+
 		let totalPrice = 0;
 		breakup.forEach((entry) => {
 			const priceValue = parseFloat(entry?.price?.value);
 
 			if (!isNaN(priceValue)) {
-				if (entry?.title === 'discount') {
+				if (entry?.title === "discount") {
 					totalPrice -= priceValue;
 				} else {
 					totalPrice += priceValue;
@@ -990,7 +949,6 @@ export const quoteCreatorHealthCareService = (
 };
 
 export const quoteCommon = (items: Item[], providersItems?: any) => {
-
 	//get price from on_search
 	items.forEach((item) => {
 		// Find the corresponding item in the second array

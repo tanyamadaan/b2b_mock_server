@@ -10,7 +10,7 @@
 
 [submodule "apps/backend/domain-repos/@retail-b2b/release-2.0.2"]
 	path = apps/backend/domain-repos/@retail-b2b/release-2.0.2
-	url = https://github.com/ONDC-Official/ONDC-RET-Specifications
+	url = https://github.com/ONDC-Official/ONDC-RET-Specifications.git
 	branch = release-2.0.2
 
 [submodule "packages/openapi/domain-repos/@retail-b2b/release-2.0.2"]
@@ -28,10 +28,23 @@
 	url = https://github.com/ONDC-Official/ONDC-SRV-Specifications
 	branch = draft-agri_services
 
-[submodule "apps/backend/domain-repos/@services/draft-healthcare-services"]
-	path = apps/backend/domain-repos/@services/draft-healthcare-services
+[submodule "apps/backend/domain-repos/@services/draft-healthcare-service"]
+	path = apps/backend/domain-repos/@services/draft-healthcare-service
 	url = https://github.com/ONDC-Official/ONDC-SRV-Specifications
 	branch = draft-healthcare
+
+
+[submodule "apps/backend/domain-repos/@services/draft-agri_equipment"]
+	path = apps/backend/domain-repos/@services/draft-agri_equipment
+	url = https://github.com/ONDC-Official/ONDC-SRV-Specifications
+	branch = draft-agri_equipment
+
+
+
+[submodule "packages/openapi/domain-repos/@services/draft-agri_equipment"]
+	path = packages/openapi/domain-repos/@services/draft-agri_equipment
+	url = https://github.com/ONDC-Official/ONDC-SRV-Specifications
+	branch = draft-agri_equipment
 
 [submodule "packages/openapi/domain-repos/@services/draft-healthcare-services"]
 	path = packages/openapi/domain-repos/@services/draft-healthcare-services
@@ -68,12 +81,17 @@
 	url = https://github.com/ONDC-Official/ONDC-RET-Specifications
 	branch = b2c_exports_2.0
 
+[submodule "apps/backend/domain-repos/@logistics/ONDC-LOG-Specifications"]
+	path = apps/backend/domain-repos/@logistics/ONDC-LOG-Specifications
+	url = https://github.com/ONDC-Official/ONDC-LOG-Specifications.git
+	branch = draft-2.x
+
 [submodule "apps/backend/domain-repos/@MEC/subscription/draft-ptint_media"]
 	path = apps/backend/domain-repos/@MEC/subscription/draft-ptint_media
 	url = https://github.com/ONDC-Official/ONDC-MEC-Specifications
 	branch = draft-print_media
-
+	
 [submodule "packages/openapi/domain-repos/@MEC/subscription/draft-ptint_media"]
-path = packages/openapi/domain-repos/@MEC/subscription/draft-ptint_media
-url = https://github.com/ONDC-Official/ONDC-MEC-Specifications
-branch = draft-print_media
+	path = packages/openapi/domain-repos/@MEC/subscription/draft-ptint_media
+	url = https://github.com/ONDC-Official/ONDC-MEC-Specifications
+	branch = draft-print_media

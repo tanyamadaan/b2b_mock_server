@@ -159,7 +159,7 @@ export const confirmServiceCustomizationController = (
         req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
       }`,
       `on_confirm`,
-      "services"
+      "subscription"
     );
   } catch (error) {
     return next(error);

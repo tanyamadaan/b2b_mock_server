@@ -107,20 +107,8 @@ export const selectSchema = {
                 id: {
                   type: "string",
                 },
-                locations: {
-                  type: "array",
-                  items: {
-                    type: "object",
-                    properties: {
-                      id: {
-                        type: "string",
-                      },
-                    },
-                    required: ["id"],
-                  },
-                },
               },
-              required: ["id", "locations"],
+              required: ["id"],
             },
             items: {
               type: "array",
@@ -132,12 +120,6 @@ export const selectSchema = {
                   },
                   parent_item_id: {
                     type: "string",
-                  },
-                  location_ids: {
-                    type: "array",
-                    items: {
-                      type: "string",
-                    },
                   },
                   quantity: {
                     type: "object",
@@ -152,7 +134,7 @@ export const selectSchema = {
                   }
                 }
                 },
-                required: ["id","location_ids","quantity"],
+                required: ["id","quantity"],
               },
             },
             fulfillments: {
@@ -216,21 +198,8 @@ export const selectSchema = {
                 required: ["stops"],
               },
             },
-            payments: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  type: {
-                    type: "string",
-                    enum: SRV_PAYMENT_TYPE
-                  },
-                },
-                required: ["type"],
-              },
-            },
           },
-          required: ["provider", "items", "fulfillments", "payments"],
+          required: ["provider", "items", "fulfillments"],
         },
       },
       required: ["order"],

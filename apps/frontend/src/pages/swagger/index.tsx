@@ -9,7 +9,7 @@ import { useDomain } from "../../utils/hooks";
 
 export const Swagger = () => {
 	const [swaggerSpec, setSwaggerSpec] = useState(b2bswaggerSpec);
-	const [fileName, setFileName] = useState("B2b.yaml")
+	const [fileName, setFileName] = useState("B2b.yaml");
 	const { domain } = useDomain();
 
 	useEffect(()=>{
@@ -17,7 +17,7 @@ export const Swagger = () => {
 		const yamlFileName = domain === "retail"?"B2b.yaml":"services.yaml";
 		setSwaggerSpec(swaggerFile);
 		setFileName(yamlFileName);
-	},[domain])
+	}, [domain]);
 
 	return (
 		<>
@@ -27,12 +27,9 @@ export const Swagger = () => {
 					justifyContent: "flex-end",
 				}}
 			>
-					<SwaggerDownloadButton
-						swaggerYaml={swaggerSpec}
-						fileName={fileName}
-					/>
+				<SwaggerDownloadButton swaggerYaml={swaggerSpec} fileName={fileName} />
 			</Toolbar>
-				<SwaggerUI spec={swaggerSpec} />
+			<SwaggerUI spec={swaggerSpec} />
 		</>
 	);
 };

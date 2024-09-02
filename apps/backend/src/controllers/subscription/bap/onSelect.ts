@@ -86,10 +86,10 @@ const onSelectConsultationController = (
 						],
 					},
 				],
-				
 				payments,
 			},
 		};
+		console.log("bpppppppppppppppppppp",req.body.context.bpp_uri)
 		return responseBuilder(
 			res,
 			next,
@@ -99,7 +99,7 @@ const onSelectConsultationController = (
 				req.body.context.bpp_uri.endsWith("/") ? "init" : "/init"
 			}`,
 			`init`,
-			"services"
+			"subscription"
 		);
 	} catch (error) {
 		next(error);

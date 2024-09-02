@@ -222,7 +222,7 @@ const initConsultationController = (
 					: `/${ON_ACTION_KEY.ON_INIT}`
 			}`,
 			`${ON_ACTION_KEY.ON_INIT}`,
-			"services"
+			"subscription"
 		);
 	} catch (error) {
 		next(error);
@@ -425,7 +425,7 @@ const initBidPlacementController = (
 					: `/${ON_ACTION_KEY.ON_INIT}`
 			}`,
 			`${ON_ACTION_KEY.ON_INIT}`,
-			"services"
+			"subscription"
 		);
 	} catch (error) {
 		next(error);

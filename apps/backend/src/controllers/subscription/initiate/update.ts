@@ -10,7 +10,7 @@ import {
 	redis,
 	redisFetchToServer,
 	AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH,
-	SERVICES_BPP_MOCKSERVER_URL,
+	SUBSCRIPTION_BAP_MOCKSERVER_URL,
 } from "../../../lib/utils";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
@@ -29,7 +29,7 @@ export const initiateUpdateController = async (
 		if (!on_confirm) {
 			return send_nack(res, ERROR_MESSAGES.ON_CONFIRM_DOES_NOT_EXISTED);
 		}
-		on_confirm.context.bpp_uri = SERVICES_BPP_MOCKSERVER_URL;
+		on_confirm.context.bpp_uri = SUBSCRIPTION_BAP_MOCKSERVER_URL;
 		// update_target = update_target ? update_target : "payments"
 
 		let { context, message } = on_confirm;

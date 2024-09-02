@@ -14,11 +14,15 @@ async function send_response(
 	transaction_id: string,
 	action: string,
 	scenario: string = "",
-	version: any = ""
+	version: any = "",
+	bpp_uri: string = "" // for search
 ) {
 	try {
 		const { context } = res_obj;
-		const bpp_uri = context.bpp_uri || res_obj.bpp_uri;
+		if(bpp_uri === "")
+			bpp_uri = context.bpp_uri || res_obj.bpp_uri;
+		console.log("bpp_uriiiiiiiiii",bpp_uri)
+
 		// res_obj.context.bpp_uri = bpp_uri
 		if (res_obj.bpp_uri) delete res_obj.bpp_uri;
 
@@ -49,9 +53,11 @@ async function send_response(
 			uri = `${bpp_uri}/${action}${scenario ? `?scenario=${scenario}` : ""}`;
 
 		}
+		console.log("uriiiiiiiiiiiiiiii",uri)
 		const response = await axios.post(uri, res_obj, {
 			headers: { ...headers },
 		});
+		console.log("responseeeeeeeeeeeee",response)
 
 		await redis.set(
 			`${transaction_id}-${action}-from-server`,
@@ -64,6 +70,7 @@ async function send_response(
 			})
 		);
 
+		console.log("sendresssssssssssss")
 		return res.status(200).json({
 			message: {
 				ack: {

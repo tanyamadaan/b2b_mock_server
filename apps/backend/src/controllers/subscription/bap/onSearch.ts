@@ -30,7 +30,7 @@ const onSearchSelectionController = (
 				context.bpp_uri.endsWith("/") ? "select" : "/select"
 			}`,
 			`select`,
-			"services"
+			"subscription"
 		);
 	} catch (error) {
 		next(error);

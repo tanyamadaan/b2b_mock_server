@@ -3,12 +3,13 @@ import { version } from "react";
 
 export const SUPPORTED_DOMAINS = [
 	"B2B",
-	"B2C",
+	"B2C Exports",
 	"SERVICES",
 	"AGRI SERVICES",
 	"HEALTHCARE SERVICES",
 	"AGRI EQUIPMENT HIRING",
 	"BID AND AUCTION",
+	"LOGISTICS",
 ];
 
 export const USER_GUIDE_LINK =
@@ -58,6 +59,13 @@ export const B2B_DOMAINS = [
 	"ONDC:RET14",
 ];
 
+export const LOGISTICS_DOMAINS_OBJECT = {
+	DOMESTIC: "ONDC:LOG10",
+	INTERNATIONAL: "ONDC:LOG11",
+};
+
+export const LOGISTICS_DOMAINS = ["ONDC:LOG10", "ONDC:LOG11"];
+
 export const B2C_DOMAINS = ["ONDC:RET10", "ONDC:RET12"];
 
 export const SERVICE_DOMAINS = [
@@ -91,17 +99,15 @@ export const SERVICES_DOMAINS = {
 };
 
 export const ALL_DOMAINS = {
-	// "B2B": B2B_DOMAINS,
-	// "B2C": B2C_DOMAINS,
 	Retail: RETAIL_DOMAINS,
 	Services: SERVICE_DOMAINS,
 	Subscription: SUBSCRIPTION_DOMAINS,
+	Logistics: LOGISTICS_DOMAINS,
 };
 
 export const CITY_CODE = ["std:080", "std:011"];
 
 export const B2C_CITY_CODE = ["UN:SIN"];
-
 export const INITIATE_FIELDS = {
 	search: [
 		{
@@ -136,6 +142,7 @@ export const INITIATE_FIELDS = {
 				subscription:SUBSCRIPTION_DOMAINS,
 				// services:SERVICE_DOMAINS_OBJECT,
 				b2c: B2C_DOMAINS,
+				logistics: LOGISTICS_DOMAINS,
 			},
 		},
 
@@ -150,6 +157,7 @@ export const INITIATE_FIELDS = {
 				services: CITY_CODE,
 				subscription:CITY_CODE,
 				b2c: B2C_CITY_CODE,
+				logistics: [],
 			},
 		},
 	],
@@ -238,8 +246,13 @@ export const INITIATE_FIELDS = {
 			name: "update_target",
 			placeholder: "Update Target",
 			type: "select",
-			domainDepended: false,
-			options: ["payments", "fulfillments", "items"],
+			domainDepended: true,
+			options: {
+				services: ["payments", "fulfillments", "items"],
+				b2b: ["payments", "fulfillments", "items"],
+				b2c: ["payments", "fulfillments", "items"],
+				logistics: ["fulfillments"],
+			},
 		},
 	],
 
@@ -258,6 +271,10 @@ export const INITIATE_FIELDS = {
 			name: "cancellationReasonId",
 			placeholder: "Enter Your Cancellation Reason ID",
 			type: "text",
+			domainDepended: true,
+			options: {
+				logistics: ["TAT Breach, 007"], // Follow this format if new options are added.
+			},
 		},
 		{
 			name: "scenario",
