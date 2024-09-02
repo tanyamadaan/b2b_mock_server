@@ -13,81 +13,129 @@ import {
 	MockProvider,
 	SandboxProvider,
 } from "./utils/context";
-import {
-	B2BMock,
-	ServicesMock,
-} from "./pages/mock/domains";
+import { B2BMock, ServicesMock } from "./pages/mock/domains";
 import { B2BSandbox, ServicesSandbox } from "./pages/sandbox/domains";
 import Readme from "./pages/readme";
 import { B2CMock } from "./pages/mock/domains/b2c";
 import { B2CSandbox } from "./pages/sandbox/domains/b2c";
+import { ErrorBoundary } from "react-error-boundary";
+import { ErrorFallbackComponent } from "./components";
+import React from "react";
 
 // log
 
 const router = createBrowserRouter([
 	{
 		path: "/",
-		Component: Layout,
+		element: (
+			<ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
+				<Layout />
+			</ErrorBoundary>
+		),
 		children: [
 			{
 				path: "/",
-				Component: Landing,
+				element: (
+					<ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
+						<Landing />{" "}
+					</ErrorBoundary>
+				),
 			},
 			{
 				path: "/user-guide",
-				Component: Readme,
+				element: (
+					<ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
+						<Readme />{" "}
+					</ErrorBoundary>
+				),
 			},
 			{
 				path: "/sign-check",
-				Component: Sign,
+				element: (
+					<ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
+						<Sign />{" "}
+					</ErrorBoundary>
+				),
 			},
 			{
 				path: "/mock",
-				Component: () => (
-					<MockProvider>
-						<Mock />
-					</MockProvider>
+				element: (
+					<ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
+						<MockProvider>
+							<Mock />
+						</MockProvider>
+					</ErrorBoundary>
 				),
 				children: [
 					{
 						path: "b2b",
-						Component: B2BMock,
+						element: (
+							<ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
+								<B2BMock />
+							</ErrorBoundary>
+						),
 					},
 					{
 						path: "b2c",
-						Component: B2CMock,
+						element: (
+							<ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
+								<B2CMock />
+							</ErrorBoundary>
+						),
 					},
 					{
 						path: "services",
-						Component: ServicesMock,
-					}
+						element: (
+							<ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
+								<ServicesMock />
+							</ErrorBoundary>
+						),
+					},
 				],
 			},
 			{
 				path: "/sandbox",
-				Component: () => (
-					<SandboxProvider>
-						<Sandbox />
-					</SandboxProvider>
+				element: (
+					<ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
+						<SandboxProvider>
+							<Sandbox />
+						</SandboxProvider>
+					</ErrorBoundary>
 				),
 				children: [
 					{
 						path: "b2b",
-						Component: B2BSandbox,
+						element: (
+							<ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
+								<B2BSandbox />
+							</ErrorBoundary>
+						),
 					},
 					{
 						path: "b2c",
-						Component: B2CSandbox,
+						element: (
+							<ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
+								<B2CSandbox />
+							</ErrorBoundary>
+						),
 					},
 					{
 						path: "services",
-						Component: ServicesSandbox,
-					}
+						element: (
+							<ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
+								<ServicesSandbox />
+							</ErrorBoundary>
+						),
+					},
 				],
 			},
 			{
 				path: "/swagger/misc",
-				Component: MiscSwagger,
+				element: (
+					<ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
+						<MiscSwagger />
+					</ErrorBoundary>
+				),
 			},
 			{
 				path: "/swagger",
@@ -114,7 +162,9 @@ export default function App() {
 	return (
 		<MessageProvider>
 			<DomainProvider>
-				<RouterProvider router={router} />
+				<ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
+					<RouterProvider router={router} />
+				</ErrorBoundary>
 			</DomainProvider>
 		</MessageProvider>
 	);
