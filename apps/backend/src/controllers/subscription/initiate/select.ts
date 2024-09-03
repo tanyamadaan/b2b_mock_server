@@ -106,7 +106,7 @@ const intializeRequest = async (
 					fulfillments: [
 						{
 							...fulfillments?.[2],
-							type: fulfillments?.[2]?.type,
+							type: "subscription",
 							// stops:fulfillments?.[2]?.stops,
 							stops: [
 								{

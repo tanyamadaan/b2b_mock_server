@@ -21,6 +21,11 @@ export const SUBSCRIPTION_DOMAINS = {
 	AUDIO_VIDEO: "ONDC:MEC11"
 };
 
+export const PRINT_MEDIA_CATEGORIES = {
+	NEWSPAPER: "MEC10-1002",
+	MAGAZINES: "MEC10-1001"
+};
+
 export const ORDER_STATUS = {
 	IN_PROGRESS: "In-progress",
 	CREATED: "Created",
@@ -135,6 +140,7 @@ export const EQUIPMENT_HIRING_STATUS_OBJECT = {
 export const FULFILLMENT_TYPES = {
 	BUYER_FULFILLED: "Buyer-Fulfilled",
 	SELLER_FULFILLED: "Seller-Fulfilled",
+	SUBSCRIPTION: "Subscription",
 };
 
 export const FULFILLMENT_LABELS = {

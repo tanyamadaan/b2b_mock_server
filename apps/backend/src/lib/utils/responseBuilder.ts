@@ -1379,19 +1379,18 @@ export const updateFulfillments = (
 				},
 			};
 		} else {
-			fulfillmentObj.stops = fulfillments[0]?.stops.map((ele: any) => {
+			fulfillmentObj.stops = fulfillments[0]?.stops.map((ele: any) => {action
 				ele.time.range.end = new Date(rangeEnd).toISOString();
 				return ele;
 			});
+			fulfillmentObj.type = FULFILLMENT_TYPES.SUBSCRIPTION
 		}
-
-		if (domain !== SERVICES_DOMAINS.BID_ACTION_SERVICES || domain !== "subscription"){
+		if (domain !== SERVICES_DOMAINS.BID_ACTION_SERVICES && domain !== "subscription"){
 			fulfillmentObj = {
 				...fulfillmentObj,
 				type: FULFILLMENT_TYPES.SELLER_FULFILLED,
 			};
 		}
-
 		switch (action) {
 			case ON_ACTION_KEY.ON_SELECT:
 				// Always push the initial fulfillmentObj

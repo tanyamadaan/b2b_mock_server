@@ -7,7 +7,7 @@ import {
 	SUBSCRIPTION_EXAMPLES_PATH,
 } from "../../../lib/utils";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
-import { SUBSCRIPTION_DOMAINS } from "../../../lib/utils/apiConstants";
+import { PRINT_MEDIA_CATEGORIES, SUBSCRIPTION_DOMAINS } from "../../../lib/utils/apiConstants";
 
 export const searchController = (
 	req: Request,
@@ -20,14 +20,15 @@ export const searchController = (
 		const {
 			message: { intent },
 		} = req.body;
-
-		switch (domain) {
-			case SUBSCRIPTION_DOMAINS.PRINT_MEDIA:
+    const category = req?.body?.message?.intent?.category?.id;
+		console.log("categoriesssssssssss",category,JSON.stringify(req.body));
+		switch (category) {
+			case PRINT_MEDIA_CATEGORIES.NEWSPAPER:
 				file = fs.readFileSync(
 					path.join(
 						SUBSCRIPTION_EXAMPLES_PATH,
 						`on_search/${
-								"on_search_print.yaml"
+								"on_search_newspaper.yaml"
 						}`
 					)
 				);

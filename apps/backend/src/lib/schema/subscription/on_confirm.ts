@@ -372,11 +372,8 @@ export const onConfirmSchema = {
                 },
                 required: [
                   "id",
-                  "state",
                   "type",
-                  "stops",
-                  "rateable",
-                ],
+                  "stops"                ],
               },
             },
             quote: {
@@ -525,20 +522,12 @@ export const onConfirmSchema = {
                       },
                       transaction_id: {
                         type: "string",
-                      },
-                      bank_account_number: {
-                        type: "string",
-                      },
-                      virtual_payment_address: {
-                        type: "string",
-                      },
+                      }
                     },
                     required: [
                       "amount",
                       "currency",
-                      "transaction_id",
-                      "bank_account_number",
-                      "virtual_payment_address",
+                      "transaction_id"
                     ],
                   },
                   status: {
@@ -604,31 +593,7 @@ export const onConfirmSchema = {
             updated_at: {
               type: "string",
               format: "date-time",
-            },
-            xinput: {
-              type: "object",
-              properties: {
-                form: {
-                  type: "object",
-                  properties: {
-                    url: {
-                      type: "string",
-                    },
-                    mimetype: {
-                      type: "string",
-                    },
-                    submission_id: {
-                      type: "string",
-                    },
-                    status: {
-                      type: "string",
-                    },
-                  },
-                  required: ["submission_id", "status"],
-                },
-              },
-              required: ["form"],
-            },
+            }
           },
           required: [
             "id",

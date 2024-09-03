@@ -516,8 +516,8 @@ export const onInitSchema = {
                     required: [
                       "amount",
                       "currency",
-                      "bank_account_number",
-                      "virtual_payment_address",
+                      // "bank_account_number",
+                      // "virtual_payment_address",
                     ],
                   },
                   type: {

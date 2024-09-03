@@ -89,11 +89,10 @@ const initConsultationController = (
 
 		const quoteData = quoteSubscription(
 			items,
-			providersItems?.items,
+			providersItems,
 			"",
-			fulfillments[0]
-		);
-
+			fulfillments[0],
+		)
 		const responseMessage = {
 			order: {
 				provider: remainingProvider,
@@ -117,6 +116,7 @@ const initConsultationController = (
 			},
 		};
 		delete req.body?.providersItems;
+
 		return responseBuilder(
 			res,
 			next,

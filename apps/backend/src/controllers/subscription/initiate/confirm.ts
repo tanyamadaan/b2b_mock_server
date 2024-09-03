@@ -75,26 +75,7 @@ const intializeRequest = async (
 						...provider,
 						locations,
 					},
-					fulfillments: [
-						{
-							...remainingfulfillments,
-							stops: stops.map((stop: any) => {
-								return {
-									...stop,
-									contact: {
-										...stop.contact,
-										email: stop.contact && stop.contact.email ? stop.contact.email : "nobody@nomail.com"
-									},
-									customer: {
-										person: {
-											name: "Ramu",
-										},
-									},
-									tags: undefined
-								};
-							}),
-						},
-					],
+					fulfillments,
 					payments: [
 						{
 							...payments[0],
@@ -102,27 +83,11 @@ const intializeRequest = async (
 								...payments[0].params,
 								transaction_id: uuidv4(),
 							},
-							status: PAYMENT_STATUS.PAID,
-						},
-						{
-							...payments[1],
-							params: {
-								...payments[1].params,
-								transaction_id: uuidv4(),
-							},
 							status: PAYMENT_STATUS.NON_PAID,
 						},
 					],
 					created_at: timestamp,
 					updated_at: timestamp,
-					xinput: {
-						...xinput,
-						form: {
-							...xinput?.form,
-							submission_id: uuidv4(),
-							status: "SUCCESS",
-						}
-					},
 				},
 			},
 		};

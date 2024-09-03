@@ -10,7 +10,7 @@ import {
 	SUBSCRIPTION_EXAMPLES_PATH,
 } from "../../../lib/utils";
 import { ACTTION_KEY } from "../../../lib/utils/actionOnActionKeys";
-import { SUBSCRIPTION_DOMAINS } from "../../../lib/utils/apiConstants";
+import { PRINT_MEDIA_CATEGORIES, SUBSCRIPTION_DOMAINS } from "../../../lib/utils/apiConstants";
 
 export const initiateSearchController = async (
 	req: Request,
@@ -20,21 +20,14 @@ export const initiateSearchController = async (
 	try {
 		const { bpp_uri, city, domain } = req.body;
 		let onSearch, file;
-
+		
 		switch (domain) {
-			case SUBSCRIPTION_DOMAINS.PRINT_MEDIA:
+			case PRINT_MEDIA_CATEGORIES.NEWSPAPER:
 				file = fs.readFileSync(
 					path.join(SUBSCRIPTION_EXAMPLES_PATH, "search/search_print.yaml")
 				);
 				onSearch = YAML.parse(file.toString());
 				break;
-			case SUBSCRIPTION_DOMAINS.AUDIO_VIDEO:
-				file = fs.readFileSync(
-					path.join(SUBSCRIPTION_EXAMPLES_PATH, "search/search_print.yaml")
-				);
-				onSearch = YAML.parse(file.toString());
-				break;
-
 			default:
 				file = fs.readFileSync(
 					path.join(SUBSCRIPTION_EXAMPLES_PATH, "search/search.yaml")
