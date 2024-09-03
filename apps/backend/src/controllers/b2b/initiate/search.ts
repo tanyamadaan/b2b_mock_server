@@ -18,7 +18,7 @@ export const initiateSearchController = async (
   try {
     const { bpp_uri, city, domain } = req.body;
     var file = fs.readFileSync(
-      path.join(B2B_EXAMPLES_PATH, "search/search_by_category.yaml")
+      path.join(B2B_EXAMPLES_PATH, "search/search_by_fulfillment_end_loc.yaml")
     );
     var search = YAML.parse(file.toString());
     search = search.value;
