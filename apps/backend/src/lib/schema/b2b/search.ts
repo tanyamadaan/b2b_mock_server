@@ -142,7 +142,7 @@ export const searchSchema = {
 									},
 								},
 							},
-							required: ["type", "stops"],
+							required: ["type"],
 						},
 						payment: {
 							type: "object",
