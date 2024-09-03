@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 import { v4 as uuidv4 } from "uuid";
-import { AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH, SERVICES_EXAMPLES_PATH, SUBSCRIPTION_EXAMPLES_PATH, checkIfCustomized, quoteCreatorHealthCareService, redisFetchFromServer, responseBuilder } from "../../../lib/utils";
+import { SUBSCRIPTION_EXAMPLES_PATH,redisFetchFromServer, responseBuilder } from "../../../lib/utils";
 
 
 export const onInitController = async (req: Request, res: Response, next: NextFunction) => {
@@ -28,7 +28,6 @@ const onInitConsultationController = (req: Request, res: Response, next: NextFun
 		
 		const response = YAML.parse(file.toString());
 		const timestamp = new Date().toISOString();
-	``
 		const responseMessage = {
 			order: {
 				id: uuidv4(),

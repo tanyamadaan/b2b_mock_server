@@ -9,18 +9,12 @@ import {
 	AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH,
 	redisFetchFromServer,
 	updateFulfillments,
-	quoteCreatorService,
-	SERVICES_EXAMPLES_PATH,
-	HEALTHCARE_SERVICES_EXAMPLES_PATH,
-	AGRI_SERVICES_EXAMPLES_PATH,
 	BID_AUCTION_SERVICES_EXAMPLES_PATH,
+	SUBSCRIPTION_EXAMPLES_PATH,
+	quoteSubscription,
 } from "../../../lib/utils";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
-import {
-	PAYMENT_TYPE,
-	SERVICES_DOMAINS,
-} from "../../../lib/utils/apiConstants";
 
 export const initController = async (
 	req: Request,
@@ -58,17 +52,7 @@ export const initController = async (
 			return send_nack(res, ERROR_MESSAGES.ON_SELECT_DOES_NOT_EXISTED);
 		}
 
-		switch (scenario) {
-			//EQUIPMENT HIRING
-			case "availability_changes_during_the_transaction_journey":
-				initItemNotAvaliableController(req, res, next);
-				break;
-			case "bid_placement":
-				initBidPlacementController(req, res, next);
-				break;
-			default:
-				return initConsultationController(req, res, next);
-		}
+		return initConsultationController(req, res, next);
 	} catch (error) {
 		return next(error);
 	}
@@ -89,7 +73,7 @@ const initConsultationController = (
 		} = req.body;
 
 		let file: any = fs.readFileSync(
-			path.join(SERVICES_EXAMPLES_PATH, "on_init/on_init_consultation.yaml")
+			path.join(SUBSCRIPTION_EXAMPLES_PATH, "on_init/on_init.yaml")
 		);
 		const domain = context?.domain;
 		const { locations, ...remainingProvider } = provider;
@@ -97,69 +81,18 @@ const initConsultationController = (
 		const updatedFulfillments = updateFulfillments(
 			fulfillments,
 			ON_ACTION_KEY?.ON_INIT,
-			domain
+			"",
+			"subscription"
 		);
-
-		switch (domain) {
-			case SERVICES_DOMAINS.SERVICES:
-				file = fs.readFileSync(
-					path.join(SERVICES_EXAMPLES_PATH, "on_init/on_init_consultation.yaml")
-				);
-				break;
-			case SERVICES_DOMAINS.AGRI_EQUIPMENT:
-				file = fs.readFileSync(
-					path.join(AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH, "on_init/on_init.yaml")
-				);
-				break;
-			case SERVICES_DOMAINS.HEALTHCARE_SERVICES:
-				file = fs.readFileSync(
-					path.join(HEALTHCARE_SERVICES_EXAMPLES_PATH, "on_init/on_init.yaml")
-				);
-				break;
-			case SERVICES_DOMAINS.AGRI_SERVICES:
-				file = fs.readFileSync(
-					path.join(AGRI_SERVICES_EXAMPLES_PATH, "on_init/on_init.yaml")
-				);
-				break;
-			case SERVICES_DOMAINS.BID_ACTION_SERVICES:
-				file = fs.readFileSync(
-					path.join(BID_AUCTION_SERVICES_EXAMPLES_PATH, "on_init/on_init.yaml")
-				);
-				break;
-			default:
-				file = fs.readFileSync(
-					path.join(SERVICES_EXAMPLES_PATH, "on_init/on_init_consultation.yaml")
-				);
-				break;
-		}
 
 		const response = YAML.parse(file.toString());
 
-		const quoteData =
-			domain === SERVICES_DOMAINS.SERVICES
-				? quoteCreatorService(items, providersItems)
-				: domain === SERVICES_DOMAINS.AGRI_EQUIPMENT
-				? quoteCreatorHealthCareService(
-						items,
-						providersItems,
-						"",
-						fulfillments[0]?.type,
-						"agri-equipment-hiring"
-				  )
-				: domain === SERVICES_DOMAINS.BID_ACTION_SERVICES
-				? quoteCreatorHealthCareService(
-						items,
-						providersItems,
-						"",
-						fulfillments[0]?.type,
-						"bid_auction_service"
-				  )
-				: quoteCreatorHealthCareService(
-						items,
-						providersItems,
-						"",
-						fulfillments[0]?.type
-				  );
+		const quoteData = quoteSubscription(
+			items,
+			providersItems?.items,
+			"",
+			fulfillments[0]
+		);
 
 		const responseMessage = {
 			order: {
@@ -173,39 +106,12 @@ const initConsultationController = (
 				//UPDATE PAYMENT OBJECT WITH REFUNDABLE SECURITY
 
 				payments: [
-					response?.value?.message?.order?.payments[0],
 					{
-						id:
-							domain === SERVICES_DOMAINS.AGRI_EQUIPMENT
-								? response?.value?.message?.order?.payments[1]?.id
-								: response?.value?.message?.order?.payments[0]?.id,
-						type: PAYMENT_TYPE.ON_FULFILLMENT,
-						collected_by:
-							response?.value?.message?.order?.payments[0]?.collected_by,
+						...response?.value?.message?.order?.payments[0],
 						params: {
-							amount:
-								domain === SERVICES_DOMAINS.AGRI_EQUIPMENT
-									? (Number(quoteData?.price?.value) - 5000).toString()
-									: Number(quoteData?.price?.value).toString(),
-							currency: quoteData?.price?.currency,
-							bank_account_number:
-								domain === SERVICES_DOMAINS.AGRI_EQUIPMENT
-									? response?.value?.message?.order?.payments[1]?.params
-											?.bank_account_number
-									: response?.value?.message?.order?.payments[0]?.params
-											?.bank_account_number,
-
-							virtual_payment_address:
-								domain === SERVICES_DOMAINS.AGRI_EQUIPMENT
-									? response?.value?.message?.order?.payments[1]?.params
-											?.virtual_payment_address
-									: response?.value?.message?.order?.payments[0]?.params
-											?.virtual_payment_address,
+							amount: (quoteData?.price?.value).toString(),
+							currency: "INR",
 						},
-						tags:
-							domain === SERVICES_DOMAINS.AGRI_EQUIPMENT
-								? response?.value?.message?.order?.payments[1]?.tags
-								: response?.value?.message?.order?.payments[0]?.tags,
 					},
 				],
 			},
@@ -331,7 +237,6 @@ const initItemNotAvaliableController = (
 	}
 };
 
-
 const initBidPlacementController = (
 	req: Request,
 	res: Response,
@@ -366,7 +271,10 @@ const initBidPlacementController = (
 		);
 
 		const file = fs.readFileSync(
-			path.join(BID_AUCTION_SERVICES_EXAMPLES_PATH, "on_init/on_init_bid_placement.yaml")
+			path.join(
+				BID_AUCTION_SERVICES_EXAMPLES_PATH,
+				"on_init/on_init_bid_placement.yaml"
+			)
 		);
 
 		const response = YAML.parse(file.toString());

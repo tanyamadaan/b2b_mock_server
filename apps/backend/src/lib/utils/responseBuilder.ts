@@ -27,6 +27,7 @@ import {
 	SCENARIO,
 	SERVICES_DOMAINS,
 } from "./apiConstants";
+import { calculateQuotePrice } from "./getISODuration";
 
 interface TagDescriptor {
 	code: string;
@@ -948,6 +949,165 @@ export const quoteCreatorHealthCareService = (
 	}
 };
 
+//QUOTE FOR SUBSCRIPTION PROCESS
+export const quoteSubscription = (
+	items: Item[],
+	providersItems?: any,
+	offers?: any,
+	fulfillment?: any
+) => {
+	try {
+		console.log("fulfillmentsssssssss",fulfillment.stops[0].time)
+		//GET PACKAGE ITEMS
+		//get price from on_search
+		items.forEach((item) => {
+			if (
+				item &&
+				item?.tags &&
+				item?.tags[0] &&
+				item?.tags[0]?.list[0]?.value === "PACKAGE"
+			) {
+				const getItems = item.tags[0].list[1].value.split(",");
+				getItems.forEach((pItem) => {
+					// Find the corresponding item in the second array
+					if (providersItems) {
+						const matchingItem = providersItems?.find(
+							(secondItem: { id: string }) => secondItem.id === pItem
+						);
+						// If a matching item is found, update the price in the items array
+
+						if (matchingItem) {
+							items.push({ ...matchingItem, quantity: item?.quantity });
+						}
+					}
+				});
+			}
+		});
+
+		items.forEach((item) => {
+			// Find the corresponding item in the second array
+			if (providersItems) {
+				const matchingItem = providersItems?.find(
+					(secondItem: { id: string }) => secondItem.id === item.id
+				);
+				// If a matching item is found, update the price in the items array
+				if (matchingItem) {
+					item.title = matchingItem?.descriptor?.name;
+					item.price = matchingItem?.price;
+					item.tags = matchingItem?.tags;
+				}
+			}
+		});
+
+		let breakup: any[] = [];
+
+		items.forEach((item: any) => {
+			const quantity = item?.quantity?.selected?.count
+				? item?.quantity?.selected?.count
+				: Number(item?.quantity?.unitized?.measure?.value);
+			breakup.push({
+				title: item.title,
+				price: {
+					currency: "INR",
+					value: (Number(item?.price?.value) * quantity).toString(),
+				},
+				tags: item?.tags,
+				item:
+					item.title === "tax"
+						? {
+								id: item?.id,
+						  }
+						: {
+								id: item?.id,
+								price: item?.price,
+								quantity: item?.quantity ? item?.quantity : undefined,
+						  },
+			});
+		});
+
+		//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
+
+		//ADD STATIC TAX AND DISCOUNT FOR ITEM ONE
+		breakup?.push(
+			{
+				title: "tax",
+				price: {
+					currency: "INR",
+					value: "10",
+				},
+				item: items[0],
+				tags: [
+					{
+						descriptor: {
+							code: "title",
+						},
+						list: [
+							{
+								descriptor: {
+									code: "type",
+								},
+								value: "tax",
+							},
+						],
+					},
+				],
+			},
+			{
+				title: "discount",
+				price: {
+					currency: "INR",
+					value: "10",
+				},
+				item: items[0],
+				tags: [
+					{
+						descriptor: {
+							code: "title",
+						},
+						list: [
+							{
+								descriptor: {
+									code: "type",
+								},
+								value: "discount",
+							},
+						],
+					},
+				],
+			}
+		);
+
+
+		let totalPrice = 0;
+		breakup.forEach((entry) => {
+			const priceValue = parseFloat(entry?.price?.value);
+
+			if (!isNaN(priceValue)) {
+				if (entry?.title === "discount") {
+					totalPrice -= priceValue;
+				} else {
+					totalPrice += priceValue;
+				}
+			}
+		});
+
+		const quotePrice =  calculateQuotePrice(fulfillment.stops[0].time.duration, fulfillment.stops[0].time.schedule.frequency, totalPrice);
+
+		const result = {
+			breakup,
+			price: {
+				currency: "INR",
+				value: quotePrice.toFixed(2) //calculateQuotePrice(fulfillment.stops[0].time.duration, fulfillment.stops[0].time.schedule.frequency, totalPrice.toFixed(2)),
+			},
+			ttl: "P1D",
+		};
+
+		return result;
+	} catch (error: any) {
+		return error;
+	}
+};
+
 export const quoteCommon = (items: Item[], providersItems?: any) => {
 	//get price from on_search
 	items.forEach((item) => {
@@ -1204,20 +1364,28 @@ export const updateFulfillments = (
 		}
 
 		let fulfillmentObj: any = {
-			id: "F1",
-			tracking: false,
-			state: {
-				descriptor: {
-					code: FULFILLMENT_STATES.SERVICEABLE,
-				},
-			},
+			id: domain === "subscription" ? fulfillments[0].id : "F1",
 			stops: fulfillments[0]?.stops.map((ele: any) => {
 				ele.time.label = FULFILLMENT_LABELS.CONFIRMED;
 				return ele;
 			}),
 		};
 
-		if (domain !== SERVICES_DOMAINS.BID_ACTION_SERVICES) {
+		if (domain !== "subscription") {
+			fulfillmentObj.tracking = false;
+			fulfillmentObj.state = {
+				descriptor: {
+					code: FULFILLMENT_STATES.SERVICEABLE,
+				},
+			};
+		} else {
+			fulfillmentObj.stops = fulfillments[0]?.stops.map((ele: any) => {
+				ele.time.range.end = new Date(rangeEnd).toISOString();
+				return ele;
+			});
+		}
+
+		if (domain !== SERVICES_DOMAINS.BID_ACTION_SERVICES || domain !== "subscription"){
 			fulfillmentObj = {
 				...fulfillmentObj,
 				type: FULFILLMENT_TYPES.SELLER_FULFILLED,

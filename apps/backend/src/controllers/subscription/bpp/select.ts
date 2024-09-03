@@ -1,4 +1,7 @@
 import { NextFunction, Request, Response } from "express";
+import fs from "fs";
+import path from "path";
+import YAML from "yaml";
 import {
 	responseBuilder,
 	quoteCreatorHealthCareService,
@@ -6,11 +9,19 @@ import {
 	send_nack,
 	checkSelectedItems,
 	updateFulfillments,
+	checkIfCustomized,
+	quoteCreatorServiceCustomized,
+	Time,
+	redis,
 	quoteCreatorService,
+	SUBSCRIPTION_EXAMPLES_PATH,
+	quoteSubscription,
 } from "../../../lib/utils";
+import { v4 as uuidv4 } from "uuid";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { SERVICES_DOMAINS } from "../../../lib/utils/apiConstants";
+import { calculateQuotePrice } from "../../../lib/utils/getISODuration";
 
 export const selectController = async (
 	req: Request,
@@ -63,27 +74,32 @@ const selectConsultationConfirmController = (
 	next: NextFunction
 ) => {
 	try {
+		// Example Usage
+		// const duration = "P6W"; // 6 months
+		// const frequency = "P1W"; // 1 month
+		// const itemPrice = 199; // Price per delivery
+
+		// const quotePrice = calculateQuotePrice(duration, frequency, itemPrice);
+		// console.log(`Quote Price: ${quotePrice} INR`); // Output: Quote Price: 1194 INR
+
 		const { context, message, providersItems } = req.body;
 		const { locations, ...provider } = message.order.provider;
-		const domain = context?.domain;
+		const file = fs.readFileSync(
+			path.join(SUBSCRIPTION_EXAMPLES_PATH, "on_select/on_select.yaml")
+		);
 
-		const updatedFulfillments =
-			domain === SERVICES_DOMAINS.BID_ACTION_SERVICES
-				? updateFulfillments(
-						message?.order?.fulfillments,
-						ON_ACTION_KEY?.ON_SELECT,
-						"bid_auction_service"
-				  )
-				: updateFulfillments(
-						message?.order?.fulfillments,
-						ON_ACTION_KEY?.ON_SELECT
-				  );
+		const response = YAML.parse(file.toString());
+		const updatedFulfillments = updateFulfillments(
+			message?.order?.fulfillments,
+			ON_ACTION_KEY?.ON_SELECT,
+			"",
+			"subscription"
+		);
 
-		console.log("providersItemsssssssssssssss",providersItems)
 		const responseMessage = {
 			order: {
 				provider,
-
+				payments: message?.order?.payments,
 				items: message.order.items.map(
 					({ ...remaining }: { location_ids: any; remaining: any }) => ({
 						...remaining,
@@ -92,31 +108,12 @@ const selectConsultationConfirmController = (
 
 				fulfillments: updatedFulfillments,
 
-				quote:
-					domain === SERVICES_DOMAINS.SERVICES
-						? quoteCreatorService(message?.order?.items, providersItems?.items)
-						: domain === SERVICES_DOMAINS.BID_ACTION_SERVICES
-						? quoteCreatorHealthCareService(
-								message?.order?.items,
-								providersItems?.items,
-								"",
-								message?.order?.fulfillments[0]?.type,
-								"bid_auction_service"
-						  )
-						: domain === SERVICES_DOMAINS.AGRI_EQUIPMENT
-						? quoteCreatorHealthCareService(
-								message?.order?.items,
-								providersItems?.items,
-								"",
-								message?.order?.fulfillments[0]?.type,
-								"agri-equipment-hiring"
-						  )
-						: quoteCreatorHealthCareService(
-								message?.order?.items,
-								providersItems?.items,
-								"",
-								message?.order?.fulfillments[0]?.type
-						  ),
+				quote: quoteSubscription(
+					message?.order?.items,
+					providersItems?.items,
+					"",
+					message?.order?.fulfillments[0],
+				),
 			},
 		};
 
@@ -170,6 +167,12 @@ const onSelectNoEquipmentAvaliable = (
 		const responseMessage = {
 			order: {
 				provider,
+				payments: message?.order?.payments.map(
+					({ type }: { type: string }) => ({
+						type,
+						collected_by: "BAP",
+					})
+				),
 
 				items: message?.order?.items.map(
 					({ ...remaining }: { location_ids: any; remaining: any }) => ({
@@ -207,7 +210,7 @@ const selectMultiCollectionController = (
 	next: NextFunction
 ) => {
 	try {
-		console.log("multicollection")
+		console.log("multicollection");
 		const { context, message, providersItems } = req.body;
 		const updatedFulfillments = updateFulfillments(
 			req.body?.message?.order?.fulfillments,
@@ -220,6 +223,12 @@ const selectMultiCollectionController = (
 		const responseMessage = {
 			order: {
 				provider,
+				payments: message?.order?.payments.map(
+					({ type }: { type: string }) => ({
+						type,
+						collected_by: "BAP",
+					})
+				),
 
 				items: message?.order?.items.map(
 					({ ...remaining }: { location_ids: any; remaining: any }) => ({
@@ -264,6 +273,10 @@ const selectConsultationRejectController = (
 		const responseMessage = {
 			order: {
 				provider,
+				payments: message.order.payments.map(({ type }: { type: string }) => ({
+					type,
+					collected_by: "BAP",
+				})),
 
 				items: message.order.items.map(
 					({ ...remaining }: { location_ids: any; remaining: any }) => ({
@@ -331,3 +344,119 @@ const selectConsultationRejectController = (
 	}
 };
 
+const selectServiceCustomizationConfirmedController = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const { context, message } = req.body;
+		const { locations, ...provider } = message.order.provider;
+		const { id, parent_item_id, location_ids, quantity, ...item } =
+			message?.order?.items[0];
+		const transactionKeys = await redis.keys(`${context.transaction_id}-*`);
+		const ifTransactionToExist = transactionKeys.filter((e) =>
+			e.includes("on_search-to-server")
+		);
+
+		const ifTransactionFromExist = transactionKeys.filter((e) =>
+			e.includes("on_search-from-server")
+		);
+
+		const raw = await redis.mget(
+			ifTransactionToExist ? ifTransactionToExist : ifTransactionFromExist
+		);
+		const onSearchHistory = raw.map((ele) => {
+			return JSON.parse(ele as string);
+		})[0].request;
+
+		const fulfillment = message?.order?.fulfillments[0];
+
+		const fulfillment_id =
+			onSearchHistory.message?.catalog?.fulfillments.filter(
+				(e: { type: string }) => e.type === fulfillment?.type
+			)[0]?.id;
+
+		const responseMessage = {
+			order: {
+				provider,
+				payments: message?.order?.payments?.map(
+					({ type }: { type: string }) => ({
+						type,
+						collected_by: "BAP",
+					})
+				),
+				items: [
+					{
+						id,
+						parent_item_id,
+						location_ids,
+						quantity,
+						fulfillment_ids: [uuidv4()],
+					},
+					...message?.order?.items
+						?.slice(1)
+						.map(
+							({
+								location_ids,
+								...remaining
+							}: {
+								location_ids: string[];
+								remaining: any;
+							}) => ({
+								...remaining,
+								location_ids,
+								fulfillment_ids: [uuidv4()],
+							})
+						),
+				],
+				fulfillments:
+					// message.order.fulfillments.map(
+					// 	({ stops, type, ...each }: any) => ({
+					// 		id: fulfillment_id,
+					// 		type,
+					// 		tracking: false,
+					// 		state: {
+					// 			descriptor: {
+					// 				code: "Serviceable",
+					// 			},
+					// 		},
+					// 		stops,
+					// 	})
+					// )
+					[
+						{
+							...fulfillment,
+							id: fulfillment_id,
+							tracking: false,
+							state: {
+								descriptor: {
+									code: "Serviceable",
+								},
+							},
+							stops: fulfillment?.stops?.map((e: { time: Time }) => ({
+								...e,
+								time: { ...e.time, label: "confirmed" },
+							})),
+						},
+					],
+				quote: quoteCreatorServiceCustomized(
+					message.order.items,
+					req.body?.providersItems
+				),
+			},
+		};
+
+		return responseBuilder(
+			res,
+			next,
+			context,
+			responseMessage,
+			`${context.bap_uri}/on_select`,
+			`on_select`,
+			"subscription"
+		);
+	} catch (error) {
+		return next(error);
+	}
+};

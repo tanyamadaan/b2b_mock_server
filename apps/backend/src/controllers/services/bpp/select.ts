@@ -81,6 +81,7 @@ const selectConsultationConfirmController = (
 				? updateFulfillments(
 						message?.order?.fulfillments,
 						ON_ACTION_KEY?.ON_SELECT,
+						"",
 						"bid_auction_service"
 				  )
 				: updateFulfillments(

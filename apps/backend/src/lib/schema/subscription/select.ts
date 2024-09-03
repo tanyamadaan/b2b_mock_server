@@ -179,7 +179,7 @@ export const selectSchema = {
                                   type: "string",
                                 },
                               },
-                              required: ["start", "end"],
+                              required: ["start"],
                             },
                             days: {
                               type: "array",
@@ -191,7 +191,7 @@ export const selectSchema = {
                           required: ["label", "range"],
                         },
                       },
-                      required: ["type", "location","time"],
+                      required: ["type","time"],
                     },
                   },
                 },

@@ -1,15 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import {
-  MOCKSERVER_ID,
-  checkIfCustomized,
-  send_response,
-  send_nack,
-  redisFetchToServer,
-  Item,
-  Category,
-  Tag,
-  TagItem,
-  SUBSCRIPTION_BAP_MOCKSERVER_URL,
+	MOCKSERVER_ID,
+	checkIfCustomized,
+	send_response,
+	send_nack,
+	redisFetchToServer,
+	Item,
+	Category,
+	Tag,
+	TagItem,
+	SUBSCRIPTION_BAP_MOCKSERVER_URL,
 } from "../../../lib/utils";
 import { v4 as uuidv4 } from "uuid";
 import { set, eq, isEmpty } from "lodash";
@@ -17,125 +17,124 @@ import _ from "lodash";
 import { isBefore, addDays } from "date-fns";
 
 export const initiateSelectController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
+	req: Request,
+	res: Response,
+	next: NextFunction
 ) => {
-  try {
-    const { transactionId } = req.body;
+	try {
+		const { transactionId } = req.body;
 
-    const on_search = await redisFetchToServer("on_search", transactionId);
-    if (!on_search) {
-      return send_nack(res, "On Search doesn't exist");
-    }
-    // selecting the senarios
-    let scenario = "selection";
-    if (checkIfCustomized(on_search.message.catalog?.providers?.[0]?.items)) {
-      scenario = "customization";
-    }
+		const on_search = await redisFetchToServer("on_search", transactionId);
+		if (!on_search) {
+			return send_nack(res, "On Search doesn't exist");
+		}
+		// selecting the senarios
+		let scenario = "selection";
+		if (checkIfCustomized(on_search.message.catalog?.providers?.[0]?.items)) {
+			scenario = "customization";
+		}
 
-    return intializeRequest(req, res, next, on_search, scenario);
-
-  } catch (error) {
-    return next(error);
-  }
+		return intializeRequest(req, res, next, on_search, scenario);
+	} catch (error) {
+		return next(error);
+	}
 };
 
 const intializeRequest = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-  transaction: any,
-  scenario: string
+	req: Request,
+	res: Response,
+	next: NextFunction,
+	transaction: any,
+	scenario: string
 ) => {
-  try {
-    const {
-      context,
-      message: {
-        catalog: { providers },
-      },
-    } = transaction;
+	try {
+		const {
+			context,
+			message: {
+				catalog: { providers,payments },
+			},
+		} = transaction;
 
-    const { transaction_id } = context;
-    const { id, locations,fulfillments } = providers?.[0];
+		const { transaction_id } = context;
+		const { id, locations, fulfillments } = providers?.[0];
 
-    let items = [];
-    let start;
-    let endDate;
-   
-      items = providers[0].items = [
-        providers?.[0]?.items.map(
-          ({
-            id,
-            fulfillment_ids,
-          }: {
-            id: string;
-            fulfillment_ids: string[];
-          }) => ({ id, fulfillment_ids: [fulfillment_ids?.[0]] })
-        )?.[0],
-      ];
+		let items = [];
+		let start;
+		let endDate;
 
-    const select = {
-      context: {
-        ...context,
-        timestamp: new Date().toISOString(),
-        action: "select",
-        bap_id: MOCKSERVER_ID,
-        bap_uri: SUBSCRIPTION_BAP_MOCKSERVER_URL,
-        message_id: uuidv4(),
-      },
+		console.log("providersssssssssssssss", JSON.stringify(providers[0].items));
 
-      message: {
-        order: {
-          provider: {
-            id,
-          },
-          items: items.map((itm: Item) => ({
-            ...itm,
-            fulfillment_ids: itm.fulfillment_ids
-              ? itm.fulfillment_ids?.map((id: string) => String(id))
-              : undefined,
-            quantity: {
-              selected: {
-                count: 1,
-              },
-            },
-          })),
+		items = providers[0].items = [
+			providers?.[0]?.items.map(
+				({
+					id,
+					fulfillment_ids,
+				}: {
+					id: string;
+					fulfillment_ids: string[];
+				}) => ({ id, fulfillment_ids: [fulfillment_ids?.[1]] })
+			)?.[0],
+		];
 
-          fulfillments: [
-            {
-              ...fulfillments?.[0],
-              type: fulfillments?.[0].type,
-              stops: [
-                {
-                  type: "end",
-                  location: {
-                    gps: "12.974002,77.613458",
-                    area_code: "560001",
-                  },
-                  time: {
-                    label: "selected",
-                    range: {
-                      // should be dynamic on the basis of scehdule
-                      start:
-                        providers?.[0]?.time?.schedule?.times?.[0] ?? new Date(),
-                      end:
-                        providers?.[0]?.time?.schedule?.times?.[1] ?? new Date(),
-                    },
-                  },
-                  days: scenario === "customization" ? "4" : undefined,
-                  // 	? fulfillments[0].stops[0].time.days.split(",")[0]
-                  // 	: undefined,
-                },
-              ],
-              tags:fulfillments?.[0]?.tags
-            },
-          ],
-        },
-      },
-    };
-    await send_response(res, next, select, transaction_id, "select");
-  } catch (error) {
-    return next(error);
-  }
+		const select = {
+			context: {
+				...context,
+				timestamp: new Date().toISOString(),
+				action: "select",
+				bap_id: MOCKSERVER_ID,
+				bap_uri: SUBSCRIPTION_BAP_MOCKSERVER_URL,
+				message_id: uuidv4(),
+			},
+
+			message: {
+				order: {
+					provider: {
+						id,
+					},
+					items: items.map((itm: Item) => ({
+						...itm,
+						fulfillment_ids: itm.fulfillment_ids
+							? itm.fulfillment_ids?.map((id: string) => String(id))
+							: undefined,
+						quantity: {
+							selected: {
+								count: 1,
+							},
+						},
+					})),
+
+					fulfillments: [
+						{
+							...fulfillments?.[2],
+							type: fulfillments?.[2]?.type,
+							// stops:fulfillments?.[2]?.stops,
+							stops: [
+								{
+									type: "start",
+									time: {
+										label: "selected",
+										range: {
+											start:
+												providers?.[0]?.time?.schedule?.times?.[0] ??
+												new Date(),
+										},
+										duration: fulfillments?.[2]?.stops?.time?.duration?fulfillments?.[2]?.stops?.time?.duration:"P6M",
+										schedule: {
+											frequency: fulfillments?.[2]?.stops?.time?.schedule?.frequency,
+										},
+									},
+								},
+							],
+							tags: fulfillments?.[2]?.tags,
+						},
+					],
+          payments: [{ type: payments?.[0].type }],
+
+				},
+			},
+		};
+		await send_response(res, next, select, transaction_id, "select");
+	} catch (error) {
+		return next(error);
+	}
 };

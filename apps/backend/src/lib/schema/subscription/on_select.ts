@@ -240,7 +240,7 @@ export const onSelectSchema = {
                           properties: {
                             label: {
                               type: "string",
-                              enum: ["confirmed", "rejected"]
+                              // enum: ["confirmed", "rejected"]
                             },
                             range: {
                               type: "object",
@@ -252,7 +252,7 @@ export const onSelectSchema = {
                                   type: "string",
                                 },
                               },
-                              required: ["start", "end"],
+                              required: ["start"],
                             },
                           },
                           required: ["label", "range"],
@@ -294,11 +294,11 @@ export const onSelectSchema = {
                           required: ["descriptor", "list"],
                         },
                       },
-                      required: ["type", "location", "time"],
+                      required: ["type", "time"],
                     },
                   },
                 },
-                required: ["id", "state", "stops"],
+                required: ["id", "stops"],
               },
             },
             quote: {

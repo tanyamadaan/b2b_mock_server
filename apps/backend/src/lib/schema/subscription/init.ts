@@ -118,7 +118,7 @@ export const initSchema = {
                   },
                 },
               },
-              required: ["id", "locations"],
+              required: ["id"],
             },
             items: {
               type: "array",
@@ -320,7 +320,7 @@ export const initSchema = {
                           required: ["label", "range"],
                         },
                       },
-                      required: ["type", "location", "contact", "time"],
+                      required: ["type","time"],
                     },
                   },
                 },

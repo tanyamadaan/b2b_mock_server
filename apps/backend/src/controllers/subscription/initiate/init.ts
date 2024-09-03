@@ -75,41 +75,42 @@ const intializeRequest = async (
 					},
 					items,
 					billing: BILLING_DETAILS,
-					fulfillments: [
-						{
-							id,
-							type,
-							stops: [
-								{
-									...stops[0],
-									id: undefined,
-									location: {
-										gps: "12.974002,77.613458",
-										address: "My House #, My buildin",
-										city: {
-											name: "Bengaluru",
-										},
-										country: {
-											code: "IND",
-										},
-										area_code: "560001",
-										state: {
-											name: "Karnataka",
-										},
-									},
-									contact: {
-										phone: "9886098860",
-									},
-									time: stops[0].time,
-								},
-							],
-						},
-					],
-					payments,
+					fulfillments,
+					// fulfillments: [
+					// 	{
+					// 		id,
+					// 		type,
+					// 		stops: [
+					// 			{
+					// 				...stops[0],
+					// 				id: undefined,
+					// 				location: {
+					// 					gps: "12.974002,77.613458",
+					// 					address: "My House #, My buildin",
+					// 					city: {
+					// 						name: "Bengaluru",
+					// 					},
+					// 					country: {
+					// 						code: "IND",
+					// 					},
+					// 					area_code: "560001",
+					// 					state: {
+					// 						name: "Karnataka",
+					// 					},
+					// 				},
+					// 				contact: {
+					// 					phone: "9886098860",
+					// 				},
+					// 				time: stops[0].time,
+					// 			},
+					// 		],
+					// 	},
+					// ],
+					payments: [{ ...payments[0], collected_by: "BAP" }],
 				},
 			},
 		};
-		console.log("inittttttttttttt",init.context)
+		console.log("inittttttttttttt", init.context);
 		await send_response(
 			res,
 			next,
@@ -118,8 +119,6 @@ const intializeRequest = async (
 			ACTTION_KEY.INIT,
 			(scenario = scenario)
 		);
-		
-
 	} catch (error) {
 		next(error);
 	}
