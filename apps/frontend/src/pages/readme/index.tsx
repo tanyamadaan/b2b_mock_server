@@ -128,9 +128,10 @@ const ONDCDocumentation = () => {
 					<li>Navigate to the "Initiate Request" section on the right.</li>
 					<li>Enter the BPP URL in the provided input field:</li>
 					<ul>
+						<li>Healthcare services: <a href="https://mock.ondc.org/api/healthcare-services/bpp">https://mock.ondc.org/api/healthcare-services/bpp</a></li>
+						<li>Agri services: <a href="https://mock.ondc.org/api/agri-services/bpp">https://mock.ondc.org/api/agri-services/bpp</a></li>
 						<li>Services: <a href="https://mock.ondc.org/api/services/bpp">https://mock.ondc.org/api/services/bpp</a></li>
 						<li>B2B: <a href="https://mock.ondc.org/api/b2b/bpp">https://mock.ondc.org/api/b2b/bpp</a></li>
-						<li>B2C: <a href="https://mock.ondc.org/api/b2c/bpp">https://mock.ondc.org/api/b2c/bpp</a></li>
 					</ul>
 				</ul>
 				<h3>Step 2: Select the Request Type for Search</h3>
@@ -172,7 +173,7 @@ const ONDCDocumentation = () => {
 													"action": "search",
 													"version": "2.0.0",
 													"bap_id": "mock.ondc.org/api",
-													"bap_uri": "https://mock.ondc.org/api/services/bap",
+													"bap_uri": "https://mock.ondc.org/api/healthcare-services/bap",
 													"transaction_id": "0933f5c2-130c-4ce1-adcf-d9971c289611",
 													"message_id": "ec9badac-46c0-46d1-95fe-13096584275e",
 													"timestamp": "2024-06-18T08:01:52.263Z",
@@ -540,9 +541,10 @@ const ONDCDocumentation = () => {
 					<li>Navigate to the "Initiate Request" section on the left.</li>
 					<li>Enter the BAP URL in the Request Payload:</li>
 					<ul>
+						<li>Healthcare services: <a href="https://mock.ondc.org/api/healthcare-services/bap">https://mock.ondc.org/api/healthcare-services/bap</a></li>
+						<li>Agri services: <a href="https://mock.ondc.org/api/agri-services/bap">https://mock.ondc.org/api/agri-services/bap</a></li>
 						<li>Services: <a href="https://mock.ondc.org/api/services/bap">https://mock.ondc.org/api/services/bap</a></li>
 						<li>B2B: <a href="https://mock.ondc.org/api/b2b/bap">https://mock.ondc.org/api/b2b/bap</a></li>
-						<li>B2C: <a href="https://mock.ondc.org/api/b2c/bap">https://mock.ondc.org/api/b2c/bap</a></li>
 					</ul>
 				</ul>
 				<img src={BapSearch} alt="Search Request Type" style={{ width: '100%', maxWidth: '600px', margin: '20px 0' }} />
@@ -599,7 +601,7 @@ const ONDCDocumentation = () => {
 														"action": "search",
 														"version": "2.0.0",
 														"bap_id": "mock.ondc.org/api",
-														"bap_uri": "https://mock.ondc.org/api/services/bap",
+														"bap_uri": "https://mock.ondc.org/api/healthcare-services/bap",
 														"transaction_id": "0933f5c2-130c-4ce1-adcf-d9971c289611",
 														"message_id": "ec9badac-46c0-46d1-95fe-13096584275e",
 														"timestamp": "2024-06-18T08:01:52.263Z",

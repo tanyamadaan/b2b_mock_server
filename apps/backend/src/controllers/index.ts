@@ -1,5 +1,5 @@
 export * from "./b2b"
-export * from "./retail"
+export * from "./b2c"
 export * from "./auth"
 export * from "./services"
 export * from "./misc"

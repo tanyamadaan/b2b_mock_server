@@ -12,7 +12,6 @@ export const searchController = async (
   next: NextFunction
 ) => {
   try {
-    console.log("versionnnn",req.body.version);
     const domain = req.body.context.domain;
 
     var onSearch;
