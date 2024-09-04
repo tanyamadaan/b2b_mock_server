@@ -6,15 +6,10 @@ import {
 	send_nack,
 	redisFetchToServer,
 	Item,
-	Category,
-	Tag,
-	TagItem,
 	SUBSCRIPTION_BAP_MOCKSERVER_URL,
 } from "../../../lib/utils";
 import { v4 as uuidv4 } from "uuid";
-import { set, eq, isEmpty } from "lodash";
 import _ from "lodash";
-import { isBefore, addDays } from "date-fns";
 
 export const initiateSelectController = async (
 	req: Request,
@@ -56,13 +51,8 @@ const intializeRequest = async (
 		} = transaction;
 
 		const { transaction_id } = context;
-		const { id, locations, fulfillments } = providers?.[0];
-
+		const { id, fulfillments } = providers?.[0];
 		let items = [];
-		let start;
-		let endDate;
-
-		console.log("providersssssssssssssss", JSON.stringify(providers[0].items));
 
 		items = providers[0].items = [
 			providers?.[0]?.items.map(
@@ -106,7 +96,7 @@ const intializeRequest = async (
 					fulfillments: [
 						{
 							...fulfillments?.[2],
-							type: "subscription",
+							// type: "subscription",
 							// stops:fulfillments?.[2]?.stops,
 							stops: [
 								{

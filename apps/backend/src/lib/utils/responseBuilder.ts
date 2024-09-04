@@ -200,6 +200,10 @@ export const responseBuilder = async (
 					`${(async.context! as any).transaction_id}-${action}-from-server`,
 					JSON.stringify(log)
 				);
+				
+				if(error instanceof AxiosError) {
+					return res.status(error.status ? error.status : 500).json(response)
+				}
 
 				return next(error);
 			}
@@ -953,11 +957,10 @@ export const quoteCreatorHealthCareService = (
 export const quoteSubscription = (
 	items: Item[],
 	providersItems?: any,
-	offers?: any,
+	scenario?: any,
 	fulfillment?: any
 ) => {
 	try {
-		console.log("fulfillmentsssssssss",fulfillment.stops[0].time)
 		//GET PACKAGE ITEMS
 		//get price from on_search
 		items.forEach((item) => {
@@ -1091,13 +1094,13 @@ export const quoteSubscription = (
 			}
 		});
 
-		const quotePrice =  calculateQuotePrice(fulfillment.stops[0].time.duration, fulfillment.stops[0].time.schedule.frequency, totalPrice);
+		const quotePrice =  scenario === "single-order"?totalPrice:calculateQuotePrice(fulfillment.stops[0].time.duration, fulfillment.stops[0].time.schedule.frequency, totalPrice);
 
 		const result = {
 			breakup,
 			price: {
 				currency: "INR",
-				value: quotePrice.toFixed(2) //calculateQuotePrice(fulfillment.stops[0].time.duration, fulfillment.stops[0].time.schedule.frequency, totalPrice.toFixed(2)),
+				value: quotePrice.toFixed(2)
 			},
 			ttl: "P1D",
 		};
@@ -1354,6 +1357,7 @@ export const updateFulfillments = (
 	try {
 		// Update fulfillments according to actions
 
+		console.log("fulfillmentssssssssssssssssssssssss",fulfillments)
 		const rangeStart = new Date().setHours(new Date().getHours() + 2);
 		const rangeEnd = new Date().setHours(new Date().getHours() + 3);
 
@@ -1364,7 +1368,7 @@ export const updateFulfillments = (
 		}
 
 		let fulfillmentObj: any = {
-			id: domain === "subscription" ? fulfillments[0].id : "F1",
+			id: fulfillments[0]?.id ? fulfillments[0].id : "F1",
 			stops: fulfillments[0]?.stops.map((ele: any) => {
 				ele.time.label = FULFILLMENT_LABELS.CONFIRMED;
 				return ele;
@@ -1383,7 +1387,7 @@ export const updateFulfillments = (
 				ele.time.range.end = new Date(rangeEnd).toISOString();
 				return ele;
 			});
-			fulfillmentObj.type = FULFILLMENT_TYPES.SUBSCRIPTION
+			fulfillmentObj.type = fulfillments[0]?.type;
 		}
 		if (domain !== SERVICES_DOMAINS.BID_ACTION_SERVICES && domain !== "subscription"){
 			fulfillmentObj = {

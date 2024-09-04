@@ -132,8 +132,10 @@ export const copyToClipboard = (body: object, callback?: CopyCallbackFn) => {
 };
 
 export const checker = (arr: string[], target: string[],domain?:string) =>{
+  console.log("targetttttttttttttttt",arr,target)
 	if(domain !== "reatil"){
 		target = target.filter(item => item !== "version")
 	}
+  console.log("solution target",target,target.every((v) => arr.includes(v)))
 	return target.every((v) => arr.includes(v));
 }

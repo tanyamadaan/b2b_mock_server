@@ -7,7 +7,10 @@ import {
 	SUBSCRIPTION_EXAMPLES_PATH,
 } from "../../../lib/utils";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
-import { PRINT_MEDIA_CATEGORIES, SUBSCRIPTION_DOMAINS } from "../../../lib/utils/apiConstants";
+import {
+	PRINT_MEDIA_CATEGORIES,
+	SUBSCRIPTION_DOMAINS,
+} from "../../../lib/utils/apiConstants";
 
 export const searchController = (
 	req: Request,
@@ -20,16 +23,14 @@ export const searchController = (
 		const {
 			message: { intent },
 		} = req.body;
-    const category = req?.body?.message?.intent?.category?.id;
-		console.log("categoriesssssssssss",category,JSON.stringify(req.body));
+		const category = req?.body?.message?.intent?.category?.id;
+		console.log("categoriesssssssssss", category, JSON.stringify(req.body));
 		switch (category) {
 			case PRINT_MEDIA_CATEGORIES.NEWSPAPER:
 				file = fs.readFileSync(
 					path.join(
 						SUBSCRIPTION_EXAMPLES_PATH,
-						`on_search/${
-								"on_search_newspaper.yaml"
-						}`
+						"on_search/on_search_newspaper.yaml"
 					)
 				);
 				break;
@@ -40,7 +41,25 @@ export const searchController = (
 				break;
 		}
 		const response = YAML.parse(file.toString());
-
+		// for (let i = 0; i < 8; i++) {
+		// 	setTimeout(() => {
+		// 		console.log(
+		// 			`This is operation ${i + 1} performed after ${i + 1} minute(s)`
+		// 		);
+		// 		return responseBuilder(
+		// 			res,
+		// 			next,
+		// 			req.body.context,
+		// 			response.value.message,
+		// 			`${req.body.context.bap_uri}${
+		// 				req.body.context.bap_uri.endsWith("/") ? "on_search" : "/on_search"
+		// 			}`,
+		// 			`${ON_ACTION_KEY.ON_SEARCH}`,
+		// 			"subscription"
+		// 		);
+		// 		// Additional operations like logging, updating a database, etc.
+		// 	}, i * 30000); // i * 60000 ms delay for each iteration
+		// }
 		return responseBuilder(
 			res,
 			next,

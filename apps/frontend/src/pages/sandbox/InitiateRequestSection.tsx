@@ -152,15 +152,19 @@ export const InitiateRequestSection = () => {
 				action as keyof typeof INITIATE_FIELDS
 			].map((e) => e.name);
 
+			console.log("formkeysssssssss",keys,formKeys)
+
 			const scenarios = INITIATE_FIELDS[
 				action as keyof typeof INITIATE_FIELDS
 			].filter((e) => e.name === "scenario")[0];
 			const logisticsInitKeys = ["transactionId", "itemID"];
+			
 			const logisticsCancelKeys = [
 				"transactionId",
 				"cancellationReasonId",
 			].every((key) => formKeys.includes(key));
 
+			console.log("domainnnnnnnnnnnnnnn",domain)
 			if (domain === "logistics" && action === "init") {
 				// Check if both transactionId and itemID are present in formState
 				if (logisticsInitKeys.every((key) => key in formState)) {
@@ -174,7 +178,8 @@ export const InitiateRequestSection = () => {
 				logisticsCancelKeys
 			) {
 				setAllowSubmission(true);
-			} else if (checker(keys, formKeys,domain)) {
+			} else if (checker(keys, formKeys,domain)){
+				console.log("chekrrrrrrrrrrrrrr")
 				setAllowSubmission(true);
 			} else if (
 				checker(
@@ -185,8 +190,11 @@ export const InitiateRequestSection = () => {
 				scenarios?.domainDepended &&
 				!scenarios.options[domain as keyof SELECT_OPTIONS]
 			) {
+				console.log("dominsssssscheckrrrrrrrrr")
+
 				setAllowSubmission(true);
 			} else {
+				console.log("allowwwwwwwwwwww")
 				setAllowSubmission(false);
 			}
 		}
@@ -252,7 +260,30 @@ export const InitiateRequestSection = () => {
 				setMessageType("error");
 			}
 		} catch (error: any) {
-			setMessageType("error");
+		// 	setMessageType("error");
+		// 	if (
+		// 		error instanceof AxiosError &&
+		// 		error.response?.data?.error?.message.error?.message
+		// 	) {
+		// 		handleMessageToggle(
+		// 			error.response?.data?.error?.message.error?.message === "string"
+		// 				? error.response?.data?.error?.message.error?.message
+		// 				: Array.isArray(
+		// 						error.response?.data?.error?.message?.error?.message
+		// 				  ) &&
+		// 				  error.response?.data?.error?.message?.error?.message.length > 0
+		// 				? `${error.response?.data?.error?.message?.error?.message[0]?.message} in ${error.response?.data?.error?.message?.error?.message[0]?.details}`
+		// 				: error.response?.data?.error?.message.error?.message
+		// 		);
+		// 	} else {
+		// 		handleMessageToggle(
+		// 			error.response?.data?.error?.message
+		// 				? error.response?.data?.error?.message
+		// 				: "Error Occurred while initiating request!"
+		// 		);
+		// 	}
+		// }
+		setMessageType("error");
 			if (
 				error instanceof AxiosError &&
 				error.response?.data?.error?.message.error?.message
@@ -266,6 +297,33 @@ export const InitiateRequestSection = () => {
 						  error.response?.data?.error?.message?.error?.message.length > 0
 						? `${error.response?.data?.error?.message?.error?.message[0]?.message} in ${error.response?.data?.error?.message?.error?.message[0]?.details}`
 						: error.response?.data?.error?.message.error?.message
+				);
+			} else if(error instanceof AxiosError &&
+				error.response?.data?.sync?.error.message) {
+					handleMessageToggle(
+						error.response?.data?.sync?.error.message === "string"
+							? error.response?.data?.sync?.error.message
+							: Array.isArray(
+								error.response?.data?.sync?.error.message
+								) &&
+								error.response?.data?.sync?.error.message.length > 0
+							? `${error.response?.data?.sync?.error.message[0].message} in ${error.response?.data?.sync?.error.message[0]?.details}`
+							: error.response?.data?.sync?.error.message
+					);
+
+			}	else if (
+				error instanceof AxiosError &&
+				error.response?.data?.error?.message
+			) {
+				handleMessageToggle(
+					error.response?.data?.error?.message === "string"
+						? error.response?.data?.error?.message
+						: Array.isArray(
+							error.response?.data?.error?.message
+						  ) &&
+						  error.response?.data?.error?.message.length > 0
+						? `${error.response?.data?.error?.message[0]?.message} in ${error.response?.data?.error?.message[0]?.details}`
+						: error.response?.data?.error?.message
 				);
 			} else {
 				handleMessageToggle(
@@ -307,7 +365,7 @@ export const InitiateRequestSection = () => {
 					<Select placeholder="Select Action" onChange={handleActionSelection}>
 						{Object.keys(INITIATE_FIELDS)
 							.filter(
-								(action) => !(domain === "logistics" && action === "select")
+								(action) => !((domain === "logistics" && action === "select") ||(domain === "subscription" && action === "update") )
 							)
 							.map((action, idx) => (
 								<Option value={action} key={"action-" + idx}>

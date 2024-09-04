@@ -11,11 +11,9 @@ import {
 	LOGISTICS_SCENARIOS,
 	NEXT_ACTION_LOGISTICS,
 	B2C_SCENARIOS,
+	PRINT_MEDIA_SCENARIOS,
 } from "openapi-specs/constants";
-import {
-	LOGISTICS_DOMAINS_OBJECT,
-	SERVICES_DOMAINS,
-} from "../constants";
+import { LOGISTICS_DOMAINS_OBJECT, SERVICES_DOMAINS } from "../constants";
 // import { ALL_DOMAINS_FRONTEND } from "../constants";
 
 export const useAction = () => {
@@ -43,6 +41,8 @@ export const useAction = () => {
 					? AGRI_EQUIPMENT_SERVICES_SCENARIOS
 					: servicesDomain === SERVICES_DOMAINS.BID_AUCTION_SERVICE
 					? BID_AUCTION_SCENARIOS
+					: servicesDomain === SERVICES_DOMAINS.PRINT_MEDIA
+					? PRINT_MEDIA_SCENARIOS
 					: servicesDomain === LOGISTICS_DOMAINS_OBJECT.DOMESTIC ||
 					  servicesDomain === LOGISTICS_DOMAINS_OBJECT.INTERNATIONAL
 					? LOGISTICS_SCENARIOS

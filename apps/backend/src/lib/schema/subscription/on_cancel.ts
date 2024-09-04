@@ -192,7 +192,7 @@ export const onCancelSchema = {
                         required: ["unit", "value"],
                       },
                     },
-                    required: ["selected", "measure"],
+                    required: ["selected"],
                   },
                 },
                 required: [
@@ -388,7 +388,7 @@ export const onCancelSchema = {
                     },
                   },
                 },
-                required: ["id", "type", "state", "stops"],
+                required: ["id", "type","stops"],
               },
             },
             quote: {
@@ -497,7 +497,7 @@ export const onCancelSchema = {
                               },
                             },
                           },
-                          required: ["descriptor", "list"],
+                          required: ["descriptor"],
                         },
                       },
                     },
@@ -543,9 +543,7 @@ export const onCancelSchema = {
                     required: [
                       "amount",
                       "currency",
-                      "transaction_id",
-                      "bank_account_number",
-                      "virtual_payment_address",
+                      "transaction_id"
                     ],
                   },
                   status: {

@@ -96,6 +96,7 @@ export const SERVICES_DOMAINS = {
 	AGRI_SERVICES: "ONDC:SRV14",
 	EQUIPMENT_HIRING_SERVICES: "ONDC:SRV15",
 	BID_AUCTION_SERVICE: "ONDC:SRV18",
+	PRINT_MEDIA:"ONDC:MEC10"
 };
 
 export const ALL_DOMAINS = {
@@ -273,6 +274,11 @@ export const INITIATE_FIELDS = {
 			type: "text",
 			domainDepended: true,
 			options: {
+				services:["001"],
+				b2b:["001"],
+				b2c:["001"],
+				retail:["001"],
+				subscription:["001"],
 				logistics: ["TAT Breach, 007"], // Follow this format if new options are added.
 			},
 		},

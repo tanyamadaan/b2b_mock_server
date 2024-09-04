@@ -40,10 +40,6 @@ export const confirmConsultationController = async (
 		}
 
 		const { fulfillments } = order;
-		// const updatedFulfillments = updateFulfillments(
-		// 	fulfillments,
-		// 	ON_ACTION_KEY?.ON_CONFIRM
-		// );
 
 		const responseMessage = {
 			order: {
@@ -63,6 +59,12 @@ export const confirmConsultationController = async (
 			},
 		};
 
+  //   for (let i = 0; i < 8; i++) {
+  //     setTimeout(() => {
+  //         console.log(`This is operation ${i + 1} performed after ${i + 1} minute(s)`);
+  //         // Additional operations like logging, updating a database, etc.
+  //     }, i * 60000); // i * 60000 ms delay for each iteration
+  // }
 		return responseBuilder(
 			res,
 			next,
@@ -74,6 +76,7 @@ export const confirmConsultationController = async (
 			`${ON_ACTION_KEY.ON_CONFIRM}`,
 			"subscription"
 		);
+    
 	} catch (error) {
 		next(error);
 	}

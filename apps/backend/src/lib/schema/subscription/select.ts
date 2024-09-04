@@ -182,7 +182,7 @@ export const selectSchema = {
                               required: ["start"],
                             },
                             days: {
-                              type: "array",
+                              type: "string",
                               items: {
                                 type: "string",
                               },

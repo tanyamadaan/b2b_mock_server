@@ -259,7 +259,6 @@ export const onStatusSchema = {
                                   type: "string",
                                 },
                               },
-                              required: ["name"],
                             },
                             gps: {
                               type: "string",
@@ -298,7 +297,6 @@ export const onStatusSchema = {
                               required: ["name"],
                             },
                           },
-                          required: ["gps"],
                         },
                         time: {
                           type: "object",
@@ -345,10 +343,7 @@ export const onStatusSchema = {
                       },
                       required: [
                         "type",
-                        "location",
-                        "time",
-                        "contact",
-                        "person",
+                        "time"
                       ],
                     },
                   },
@@ -462,7 +457,7 @@ export const onStatusSchema = {
                               },
                             },
                           },
-                          required: ["descriptor", "list"],
+                          required: ["descriptor"],
                         },
                       },
                     },
@@ -508,9 +503,7 @@ export const onStatusSchema = {
                     required: [
                       "amount",
                       "currency",
-                      "transaction_id",
-                      "bank_account_number",
-                      "virtual_payment_address",
+                      "transaction_id"
                     ],
                   },
                   status: {

@@ -32,22 +32,22 @@ export const cancelController = async (
 			return send_nack(res, ERROR_MESSAGES.ORDER_ID_DOES_NOT_EXISTED);
 		}
 
-		const on_search_data = await redisFetchFromServer(
-			ON_ACTION_KEY.ON_SEARCH,
-			transaction_id
-		);
+		// const on_search_data = await redisFetchFromServer(
+		// 	ON_ACTION_KEY.ON_SEARCH,
+		// 	transaction_id
+		// );
 
-		const item_measure_ids =
-			on_search_data.message.catalog.providers[0].items.reduce(
-				(accumulator: any, currentItem: any) => {
-					accumulator[currentItem.id] = currentItem.quantity
-						? currentItem.quantity.unitized.measure
-						: undefined;
-					return accumulator;
-				},
-				{}
-			);
-		req.body.item_measure_ids = item_measure_ids;
+		// const item_measure_ids =
+		// 	on_search_data.message.catalog.providers[0].items.reduce(
+		// 		(accumulator: any, currentItem: any) => {
+		// 			accumulator[currentItem.id] = currentItem.quantity
+		// 				? currentItem.quantity.unitized.measure
+		// 				: undefined;
+		// 			return accumulator;
+		// 		},
+		// 		{}
+		// 	);
+		// req.body.item_measure_ids = item_measure_ids;
 		cancelRequest(req, res, next, on_confirm_data, scenario);
 	} catch (error) {
 		return next(error);
@@ -63,10 +63,10 @@ const cancelRequest = async (
 ) => {
 	try {
 		const { context } = req.body;
-		const updatedFulfillments = updateFulfillments(
-			transaction.message.order.fulfillments,
-			ON_ACTION_KEY?.ON_CANCEL
-		);
+		// const updatedFulfillments = updateFulfillments(
+		// 	transaction.message.order.fulfillments,
+		// 	ON_ACTION_KEY?.ON_CANCEL
+		// );
 
 		const responseMessage = {
 			order: {
@@ -89,14 +89,11 @@ const cancelRequest = async (
 					...itm,
 					quantity: {
 						...itm.quantity,
-						measure: req.body.item_measure_ids[itm.id]
-							? req.body.item_measure_ids[itm.id]
-							: { unit: "", value: "" },
 					},
 				})),
 
 				quote: transaction.message.order.quote,
-				fulfillments: updatedFulfillments,
+				fulfillments: transaction.message.order.fulfillments,
 				billing: transaction.message.order.billing,
 				payments: transaction.message.order.payments.map((itm: any) => ({
 					...itm,
@@ -104,6 +101,23 @@ const cancelRequest = async (
 						(tag: any) => tag.descriptor.code !== "Settlement_Counterparty"
 					),
 				})),
+				cancellation_terms: [
+					{
+						fulfillment_state: {
+							descriptor: {
+								code: "PENDING",
+								short_desc: "002",
+							},
+						},
+						cancellation_fee: {
+							percentage: "0.00",
+							amount: {
+								currency: "INR",
+								value: "0.00",
+							},
+						},
+					},
+				],
 				updated_at: new Date().toISOString(),
 			},
 		};
@@ -119,7 +133,7 @@ const cancelRequest = async (
 					: `/${ON_ACTION_KEY.ON_CANCEL}`
 			}`,
 			`${ON_ACTION_KEY.ON_CANCEL}`,
-			"services"
+			"subscription"
 		);
 	} catch (error) {
 		next(error);
