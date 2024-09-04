@@ -79,11 +79,16 @@ export const InitiateRequestSection = () => {
 
 			setCityOptions(newCityOptions as string[]);
 
-			const newScenarioOption =
-				INITIATE_FIELDS.select.find((field) => field.name === "scenario")
-					?.options[version] || [];
+			// const newScenarioOption =
+			// INITIATE_FIELDS.select
+			// .find((field) => field.name === "scenario")
+			// ?.options[value] || [];
 
-			setScenarioOptions(newScenarioOption as string[]);
+					// field.name === "scenario")})
+					// ?.options[version] || [];
+
+			// console.log("newScenarioOptionnnnnnnnn", newScenarioOption);
+			// setScenarioOptions(newScenarioOption as string[]);
 		}
 		setFormState((prev: any) => ({ ...prev, [fieldName]: value }));
 	};
@@ -129,10 +134,13 @@ export const InitiateRequestSection = () => {
 		setCityOptions(newCityOptions as string[]);
 
 		const newScenarioOption =
-			INITIATE_FIELDS.select.find((field) => field.name === "scenario")
-				?.options[version] || [];
+			action === "select"?INITIATE_FIELDS.select.find((field) => field.name === "scenario")
+				?.options[version] || []:action === "init"?INITIATE_FIELDS.init.find((field) => field.name === "scenario")
+				?.options[version] || []:[];
 
-		setScenarioOptions(newScenarioOption as string[]);
+		console.log("INITIATE_FIELDSsssssssss",INITIATE_FIELDS.select.find((field) => field.name === "scenario"),newScenarioOption,version,action,INITIATE_FIELDS);
+
+		setScenarioOptions(newScenarioOption);
 	}, [action, domain, formState, version]);
 
 	const handleSubmit = async () => {
@@ -229,7 +237,6 @@ export const InitiateRequestSection = () => {
 							</Option>
 						))}
 					</Select>
-
 					<Grow in={renderActionFields} timeout={500}>
 						<Stack spacing={2} sx={{ my: 2 }}>
 							<Divider />
@@ -278,7 +285,7 @@ export const InitiateRequestSection = () => {
 															))}
 														</>
 													) : field.name === "scenario" &&
-													  domain === "retail" ? (
+													  version === "b2b" ? (
 														<>
 															{scenarioOptions.map((option, index: number) => (
 																<Option value={option} key={option + index}>
