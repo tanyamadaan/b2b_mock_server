@@ -1,6 +1,6 @@
 {
 	"$schema": "https://turbo.build/schema.json",
-	"pipeline": {
+	"tasks": {
 		"test": {
 			"dependsOn": ["test:backend"],
 			"persistent": true
@@ -29,6 +29,7 @@
 			"cache": false
 		},
 		"build": {
+      "dependsOn": ["^build"],
 			"outputs": ["dist/**"]
 		},
 		"type-check": {}

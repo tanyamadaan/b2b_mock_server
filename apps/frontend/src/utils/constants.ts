@@ -3,7 +3,7 @@ import { version } from "react";
 
 export const SUPPORTED_DOMAINS = [
 	"B2B",
-	"B2C",
+	"B2C Exports",
 	"SERVICES",
 	"AGRI SERVICES",
 	"HEALTHCARE SERVICES",
@@ -96,7 +96,6 @@ export const ALL_DOMAINS = {
 export const CITY_CODE = ["std:080", "std:011"];
 
 export const B2C_CITY_CODE = ["UN:SIN"];
-
 export const INITIATE_FIELDS = {
 	search: [
 		{
@@ -159,7 +158,6 @@ export const INITIATE_FIELDS = {
 			domainDepended: true,
 			options: {
 				b2b: B2B_SCENARIOS["select"].map((each) => each.scenario),
-				// retail: B2B_SCENARIOS["select"].map((each) => each.scenario),
 				// "agri-equipment-hiring": A,
 
 				// services: SERVICES_SCENARIOS["select"].map((each) => each.scenario),

@@ -99,7 +99,7 @@ const intializeRequest = async (
 						{
 							...payments[0],
 							params: {
-								...payments[0].params,
+								...payments[0]?.params,
 								transaction_id: uuidv4(),
 							},
 							status: PAYMENT_STATUS.PAID,
@@ -107,7 +107,7 @@ const intializeRequest = async (
 						{
 							...payments[1],
 							params: {
-								...payments[1].params,
+								...payments[1]?.params,
 								transaction_id: uuidv4(),
 							},
 							status: PAYMENT_STATUS.NON_PAID,
