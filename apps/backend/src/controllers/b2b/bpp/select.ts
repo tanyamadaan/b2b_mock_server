@@ -129,7 +129,7 @@ export const selectDomesticController = (
           })
         ),
         fulfillments: message.order.fulfillments.map(
-          ({ id, ...each }: { id: string; each: any }) => ({
+          ({ id }: { id: string; each: any }) => ({
             id,
             tracking: false,
             "@ondc/org/provider_name": "ONDC Mock Server",
@@ -202,7 +202,7 @@ export const selectNonServiceableController = (
           })
         ),
         fulfillments: message.order.fulfillments.map(
-          ({ id, ...each }: { id: string; each: any }) => ({
+          ({ id}: { id: string; each: any }) => ({
             id,
             tracking: false,
             "@ondc/org/provider_name": "ONDC Mock Server",
@@ -266,7 +266,7 @@ export const selectQuantityUnavailableController = (
           })
         ),
         fulfillments: message.order.fulfillments.map(
-          ({ id, ...each }: { id: string; each: any }) => ({
+          ({ id }: { id: string; each: any }) => ({
             id,
             tracking: false,
             "@ondc/org/provider_name": "ONDC Mock Server",

@@ -16,16 +16,6 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 
 import { Item } from "../../../../backend/src/lib/utils/interfaces";
-type InitiateRequestSectionProp = {
-	domain:
-		| "b2b"
-		| "b2c"
-		| "services"
-		| "agri-services"
-		| "healthcare-services"
-		| "agri-equipment-hiring"
-		| "logistics";
-};
 
 type SELECT_OPTIONS =
 	| string[]
@@ -36,13 +26,6 @@ type SELECT_OPTIONS =
 	| { b2c: string[] }
 	| object;
 
-type SELECT_FIELD = {
-	name: string;
-	placeholder: string;
-	type: string;
-	domainDepended: boolean;
-	options: SELECT_OPTIONS;
-};
 
 export const InitiateRequestSection = () => {
 	const { handleMessageToggle, setMessageType, setCopy } = useMessage();

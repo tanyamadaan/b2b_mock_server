@@ -1,9 +1,6 @@
 import * as _ from "lodash";
 import { useState } from "react";
 import {
-	LOGISTICS_SCENARIOS,
-	B2B_SCENARIOS,
-	SERVICES_SCENARIOS,
 	NEXT_ACTION,
 	NEXT_ACTION_LOGISTICS,
 } from "openapi-specs/constants";
