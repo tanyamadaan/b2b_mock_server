@@ -78,17 +78,6 @@ export const InitiateRequestSection = () => {
 				] || [];
 
 			setCityOptions(newCityOptions as string[]);
-
-			// const newScenarioOption =
-			// INITIATE_FIELDS.select
-			// .find((field) => field.name === "scenario")
-			// ?.options[value] || [];
-
-					// field.name === "scenario")})
-					// ?.options[version] || [];
-
-			// console.log("newScenarioOptionnnnnnnnn", newScenarioOption);
-			// setScenarioOptions(newScenarioOption as string[]);
 		}
 		setFormState((prev: any) => ({ ...prev, [fieldName]: value }));
 	};
@@ -137,8 +126,6 @@ export const InitiateRequestSection = () => {
 			action === "select"?INITIATE_FIELDS.select.find((field) => field.name === "scenario")
 				?.options[version] || []:action === "init"?INITIATE_FIELDS.init.find((field) => field.name === "scenario")
 				?.options[version] || []:[];
-
-		console.log("INITIATE_FIELDSsssssssss",INITIATE_FIELDS.select.find((field) => field.name === "scenario"),newScenarioOption,version,action,INITIATE_FIELDS);
 
 		setScenarioOptions(newScenarioOption);
 	}, [action, domain, formState, version]);
