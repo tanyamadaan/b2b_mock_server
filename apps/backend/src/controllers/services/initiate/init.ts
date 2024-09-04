@@ -109,7 +109,6 @@ const intializeRequest = async (
 				},
 			},
 		};
-
 		await send_response(
 			res,
 			next,
@@ -118,8 +117,6 @@ const intializeRequest = async (
 			ACTTION_KEY.INIT,
 			(scenario = scenario)
 		);
-		
-
 	} catch (error) {
 		next(error);
 	}

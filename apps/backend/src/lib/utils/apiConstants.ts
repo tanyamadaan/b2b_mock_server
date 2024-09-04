@@ -15,11 +15,11 @@ export const SERVICES_DOMAINS = {
 };
 
 export const ORDER_STATUS = {
-	IN_PROGRESS: "In-progress",
+	IN_PROGRESS:"In-progress",
 	CREATED: "Created",
 	ACCEPTED: "Accepted",
 	CANCELLED: "Cancelled",
-	COMPLETED: "Completed",
+	COMPLETED:"Completed"
 };
 
 export const ORDER_CACELLED_BY = {
@@ -36,7 +36,7 @@ export const AGRI_HEALTHCARE_STATUS = [
 	"REPORT_GENERATED",
 	"REPORT_SHARED",
 	"COMPLETED",
-	"cancel",
+	"cancel"
 ];
 
 export const AGRI_HEALTH_STATUS = [
@@ -46,14 +46,16 @@ export const AGRI_HEALTH_STATUS = [
 	"RECEIVED_AT_LAB",
 	"TEST_COMPLETED",
 	"REPORT_GENERATED",
-	"REPORT_SHARED",
+	"REPORT_SHARED"
 ];
 
-export const BID_AUCTION_STATUS = ["Placed"];
+export const BID_AUCTION_STATUS = [
+	"Placed"
+];
 
 export const BID_AUCTION_STATUS_OBJECT = {
-	PLACED: "Placed",
-};
+	PLACED:"Placed"
+}
 
 export const AGRI_HEALTHCARE_STATUS_OBJECT = {
 	IN_TRANSIT: "IN_TRANSIT",
@@ -64,65 +66,22 @@ export const AGRI_HEALTHCARE_STATUS_OBJECT = {
 	COMPLETED: "COMPLETED",
 	REPORT_GENERATED: "REPORT_GENERATED",
 	REPORT_SHARED: "REPORT_SHARED",
-	PLACED: "Placed",
-	CANCEL: "cancel",
+	PLACED:"Placed",
+	CANCEL:"cancel"
 };
 
 export const EQUIPMENT_HIRING_STATUS = [
 	"IN_TRANSIT",
 	"AT_LOCATION",
 	"Completed",
-];
+]
 
-//Pickup-approved (progress)
-//Order-picked-up (progress)
-//Domestic-custom-cleared
-//At-destination-hub
-//Out-for-delivery(In-progress)
-//Order-delivered(Completed)
-
-export const B2C_STATUS = [
-	"Pickup-approved",
-	"Order-picked-up",
-	"Domestic-custom-cleared",
-	"At-destination-hub",
-	"Out-for-delivery",
-	"Order-delivered",
-];
-
-export const B2C_STATUS_OBJECT = {
-	PICKUP_APPROVED: "Pickup-approved",
-	ORDER_PICKED_UP: "Order-picked-up",
-	DOMESTIC_CUSTOM_CLEARED: "Domestic-custom-cleared",
-	AT_DESTINATION_HUB: "At-destination-hub",
-	OUT_FOR_DELIVERY: "Out-for-delivery",
-	ORDER_DELIVERED: "Order-delivered",
-};
-
-export const B2B_STATUS = [
-	"bpp-payment",
-	"bpp-payment-error",
-	"delivered",
-	"out-for-delivery",
-	"picked-up",
-	"self-picked-up",
-];
-
-export const B2B_STATUS_OBJECT = {
-	BPP_PAYMENT_SUCCESS: "bpp-payment",
-	BPP_PAYMENT_ERROR: "bpp-payment-error",
-	DELIVERED: "delivered",
-	OUT_FOR_DELIVERY: "out-for-delivery",
-	PICKED_UP: "picked-up",
-	PROFORMA_INVOICE: "proforma-invoice",
-	SELF_PICKUP: "self-picked-up",
-};
 
 export const EQUIPMENT_HIRING_STATUS_OBJECT = {
 	IN_TRANSIT: "In-Transit",
 	AT_LOCATION: "At-Location",
 	COMPLETED: "Completed",
-	CANCEL: "cancel",
+	CANCEL:"cancel"
 };
 
 export const FULFILLMENT_TYPES = {
@@ -153,10 +112,10 @@ export const PAYMENT_STATUS = {
 };
 
 export const PAYMENT_TYPE = {
-	PRE_FULFILLMENT: "PRE-FULFILLMENT",
-	ON_FULFILLMENT: "ON-FULFILLMENT",
-	POST_FULFILLMENT: "POST-FULFILLMENT",
-};
+	PRE_FULFILLMENT:"PRE-FULFILLMENT",
+	ON_FULFILLMENT:"ON-FULFILLMENT",
+	POST_FULFILLMENT:"POST-FULFILLMENT",
+}
 
 export const BILLING_DETAILS = {
 	name: "ONDC buyer",
@@ -174,23 +133,23 @@ export const BILLING_DETAILS = {
 };
 
 export const TIME_AVALIABLITY = {
-	label: "validity",
-	range: {
-		start: "2024-06-09T00:00:00.000Z",
-		end: "2024-06-19T00:00:00.000Z",
-	},
-	days: "01,04,05",
-	schedule: {
-		frequency: "PT1H",
-		holidays: ["2024-06-11", "2024-06-18"],
-		times: [
-			"2024-06-09T22:00:00.000Z",
-			"2024-06-09T23:00:00.000Z",
-			"2024-06-10T00:00:00.000Z",
-			"2024-06-10T01:00:00.000Z",
-			"2024-06-10T02:00:00.000Z",
-		],
-	},
+		label: "validity",
+		range: {
+			start: "2024-06-09T00:00:00.000Z",
+			end: "2024-06-19T00:00:00.000Z",
+		},
+		days: "01,04,05",
+		schedule: {
+			frequency: "PT1H",
+			holidays: ["2024-06-11", "2024-06-18"],
+			times: [
+				"2024-06-09T22:00:00.000Z",
+				"2024-06-09T23:00:00.000Z",
+				"2024-06-10T00:00:00.000Z",
+				"2024-06-10T01:00:00.000Z",
+				"2024-06-10T02:00:00.000Z",
+			],
+		},
 };
 export const FULFILLMENT_START = {
 	location: {

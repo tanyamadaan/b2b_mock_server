@@ -125,7 +125,6 @@ const onSelectDomesticBPPPaymentController = (
     next(error);
   }
 };
-
 const onSelectDomesticBAPPaymentController = (
   req: Request,
   res: Response,

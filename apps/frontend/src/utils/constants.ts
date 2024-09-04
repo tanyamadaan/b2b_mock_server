@@ -1,5 +1,4 @@
 import { B2B_SCENARIOS } from "openapi-specs/constants";
-import { version } from "react";
 
 export const SUPPORTED_DOMAINS = [
 	"B2B",
@@ -7,8 +6,6 @@ export const SUPPORTED_DOMAINS = [
 	"SERVICES",
 	"AGRI SERVICES",
 	"HEALTHCARE SERVICES",
-	"AGRI EQUIPMENT HIRING",
-	"BID AND AUCTION",
 ];
 
 export const USER_GUIDE_LINK =
@@ -68,16 +65,6 @@ export const SERVICE_DOMAINS = [
 	"ONDC:SRV18",
 ];
 
-export const RETAIL_DOMAINS = ["b2b", "b2c"];
-
-export const SERVICE_DOMAINS_OBJECT = [
-	{ lable: "ONDC:SRV11-Services", value: "ONDC:SRV11" },
-	{ lable: "ONDC:SRV13-Healthcare Services", value: "ONDC:SRV13" },
-	{ lable: "ONDC:SRV14-Agri Services", value: "ONDC:SRV14" },
-	{ lable: "ONDC:SRV15-Agri Equipment Hiring Services", value: "ONDC:SRV15" },
-	{ lable: "ONDC:SRV18-Bid And Auction Services", value: "ONDC:SRV18" },
-];
-
 export const SERVICES_DOMAINS = {
 	SERVICE: "ONDC:SRV11",
 	HEALTHCARE_SERVICES: "ONDC:SRV13",
@@ -87,9 +74,8 @@ export const SERVICES_DOMAINS = {
 };
 
 export const ALL_DOMAINS = {
-	// "B2B": B2B_DOMAINS,
-	// "B2C": B2C_DOMAINS,
-	Retail: RETAIL_DOMAINS,
+	B2B: B2B_DOMAINS,
+	B2C: B2C_DOMAINS,
 	Services: SERVICE_DOMAINS,
 };
 
@@ -104,19 +90,6 @@ export const INITIATE_FIELDS = {
 			type: "text",
 		},
 
-		//DEPEND ON SERVICES AND RETAILS
-		{
-			name: "version",
-			placeholder: "Select Version...",
-			type: "select",
-			domainDepended: true,
-			options: {
-				retail: RETAIL_DOMAINS,
-				b2b: RETAIL_DOMAINS,
-				b2c: RETAIL_DOMAINS
-			},
-		},
-
 		//DEPEND ON SELECTED SERVICES
 		{
 			name: "domain",
@@ -124,7 +97,6 @@ export const INITIATE_FIELDS = {
 			type: "select",
 			domainDepended: true,
 			options: {
-				retail:B2B_DOMAINS,
 				b2b: B2B_DOMAINS,
 				services: SERVICE_DOMAINS,
 				b2c: B2C_DOMAINS,
@@ -137,7 +109,6 @@ export const INITIATE_FIELDS = {
 			type: "select",
 			domainDepended: true,
 			options: {
-				retail:CITY_CODE,
 				b2b: CITY_CODE,
 				services: CITY_CODE,
 				b2c: B2C_CITY_CODE,
@@ -157,8 +128,10 @@ export const INITIATE_FIELDS = {
 			type: "select",
 			domainDepended: true,
 			options: {
-				retail: B2B_SCENARIOS["select"].map((each) => each.scenario),
 				b2b: B2B_SCENARIOS["select"].map((each) => each.scenario),
+				// "agri-equipment-hiring": A,
+
+				// services: SERVICES_SCENARIOS["select"].map((each) => each.scenario),
 			},
 		},
 	],
@@ -175,10 +148,7 @@ export const INITIATE_FIELDS = {
 			type: "select",
 			domainDepended: true,
 			options: {
-				retail: B2B_SCENARIOS["init"].map((each) => each.scenario),
 				b2b: B2B_SCENARIOS["init"].map((each) => each.scenario),
-
-				// retail: B2B_SCENARIOS["init"].map((each) => each.scenario),
 				// services: SERVICES_SCENARIOS["init"].map((each) => each.scenario),
 			},
 		},
