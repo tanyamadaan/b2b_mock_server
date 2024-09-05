@@ -132,7 +132,7 @@ const selectConsultationConfirmController = (
 		};
 
 		if (scenario === "subscription-with-manual-payments") {
-			responseMessage.payments = [
+			responseMessage.order.payments = [
 				{
 					id: "PG1",
 					collected_by: "BPP",

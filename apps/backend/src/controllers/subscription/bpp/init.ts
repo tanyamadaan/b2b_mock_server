@@ -72,9 +72,12 @@ const initConsultationController = (
 			},
 		} = req.body;
 
+		const { scenario } = req.query;
+
 		let file: any = fs.readFileSync(
 			path.join(SUBSCRIPTION_EXAMPLES_PATH, "on_init/on_init.yaml")
 		);
+
 		const domain = context?.domain;
 		const { locations, ...remainingProvider } = provider;
 
@@ -91,8 +94,45 @@ const initConsultationController = (
 			items,
 			providersItems,
 			"",
-			fulfillments[0],
-		)
+			fulfillments[0]
+		);
+
+		let paymentsData = [
+			{
+				...response?.value?.message?.order?.payments[0],
+				params: {
+					amount: (quoteData?.price?.value).toString(),
+					currency: "INR",
+				},
+			},
+		]
+		/*****HANDLE SCENARIOS OF INIT*****/
+		switch (scenario) {
+			case "subscription-with-manual-payments":
+				paymentsData = [
+					{
+						...response?.value?.message?.order?.payments[1],
+						params: {
+							amount: (quoteData?.price?.value).toString(),
+							currency: "INR",
+						},
+					},
+				]
+				break;
+			case "subscription-with-full-payments":
+				paymentsData = [
+					{
+						...response?.value?.message?.order?.payments[2],
+						params: {
+							amount: (quoteData?.price?.value).toString(),
+							currency: "INR",
+						},
+					},
+				]
+				break;
+			default:
+
+		}
 		const responseMessage = {
 			order: {
 				provider: remainingProvider,
@@ -103,18 +143,10 @@ const initConsultationController = (
 				quote: quoteData,
 
 				//UPDATE PAYMENT OBJECT WITH REFUNDABLE SECURITY
-
-				payments: [
-					{
-						...response?.value?.message?.order?.payments[0],
-						params: {
-							amount: (quoteData?.price?.value).toString(),
-							currency: "INR",
-						},
-					},
-				],
+				payments:paymentsData
 			},
 		};
+
 		delete req.body?.providersItems;
 
 		return responseBuilder(

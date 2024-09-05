@@ -1094,7 +1094,7 @@ export const quoteSubscription = (
 			}
 		});
 
-		const quotePrice =  scenario === "single-order"?totalPrice:calculateQuotePrice(fulfillment.stops[0].time.duration, fulfillment.stops[0].time.schedule.frequency, totalPrice);
+		const quotePrice =  scenario === "single-order"?totalPrice:calculateQuotePrice(fulfillment?.stops[0]?.time?.duration, fulfillment?.stops[0]?.time.schedule?.frequency, totalPrice);
 
 		const result = {
 			breakup,
