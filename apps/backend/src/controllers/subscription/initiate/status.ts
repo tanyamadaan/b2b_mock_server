@@ -13,12 +13,13 @@ import {
 	AGRI_HEALTH_STATUS,
 	BID_AUCTION_STATUS,
 	EQUIPMENT_HIRING_STATUS,
+	PRINT_MEDIA_STATUS,
 	SERVICES_DOMAINS,
 } from "../../../lib/utils/apiConstants";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 
-let senarios: string[] = EQUIPMENT_HIRING_STATUS;
+let senarios: string[] = PRINT_MEDIA_STATUS;
 
 export const initiateStatusController = async (
 	req: Request,
@@ -67,23 +68,8 @@ const intializeRequest = async (
 				order_id: transaction.message.order.id,
 			},
 		};
-		const domain = context?.domain;
-		switch (domain) {
-			case SERVICES_DOMAINS.SERVICES:
-				senarios = EQUIPMENT_HIRING_STATUS;
-				break;
-				case SERVICES_DOMAINS.AGRI_EQUIPMENT:
-				senarios = EQUIPMENT_HIRING_STATUS;
-				break;
-			case SERVICES_DOMAINS.BID_ACTION_SERVICES:
-				senarios = BID_AUCTION_STATUS;
-				break;
-			default: //service started is the default case
-				senarios = AGRI_HEALTH_STATUS;
-				break;
-		}
-
-		// satus index is always witin boundary of senarios array
+	
+	// satus index is always witin boundary of senarios array
 		statusIndex = Math.min(Math.max(statusIndex, 0), senarios.length - 1);
 
 		await send_response(

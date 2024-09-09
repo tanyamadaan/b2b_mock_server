@@ -7,9 +7,13 @@ import {
 	redisFetchToServer,
 	Item,
 	SUBSCRIPTION_BAP_MOCKSERVER_URL,
+	SUBSCRIPTION_EXAMPLES_PATH,
 } from "../../../lib/utils";
 import { v4 as uuidv4 } from "uuid";
+import fs from "fs";
+import YAML from "yaml";
 import _ from "lodash";
+import path from "path";
 
 export const initiateSelectController = async (
 	req: Request,
@@ -23,13 +27,7 @@ export const initiateSelectController = async (
 		if (!on_search) {
 			return send_nack(res, "On Search doesn't exist");
 		}
-		// selecting the senarios
-		let scenario = "selection";
-		if (checkIfCustomized(on_search.message.catalog?.providers?.[0]?.items)) {
-			scenario = "customization";
-		}
-
-		return intializeRequest(req, res, next, on_search, scenario);
+		return intializeRequest(req, res, next, on_search);
 	} catch (error) {
 		return next(error);
 	}
@@ -39,21 +37,22 @@ const intializeRequest = async (
 	req: Request,
 	res: Response,
 	next: NextFunction,
-	transaction: any,
-	scenario: string
+	transaction: any
 ) => {
 	try {
 		const {
 			context,
 			message: {
-				catalog: { providers,payments },
+				catalog: { providers, payments },
 			},
 		} = transaction;
 
+		const { scenario } = req?.query;
 		const { transaction_id } = context;
 		const { id, fulfillments } = providers?.[0];
 		let items = [];
-
+    let file:any;
+		let response:any;
 		items = providers[0].items = [
 			providers?.[0]?.items.map(
 				({
@@ -65,6 +64,28 @@ const intializeRequest = async (
 				}) => ({ id, fulfillment_ids: [fulfillment_ids?.[1]] })
 			)?.[0],
 		];
+
+		switch (scenario) {
+			case "subscription-with-eMandate":
+				file = fs.readFileSync(
+					path.join(SUBSCRIPTION_EXAMPLES_PATH, "select/select_mandate.yaml")
+				);
+				response = YAML.parse(file.toString());
+				break;
+			case "single-order-offline-without-subscription":
+				file = fs.readFileSync(
+					path.join(SUBSCRIPTION_EXAMPLES_PATH, "select/select_single.yaml")
+				);
+				response = YAML.parse(file.toString());
+				break;
+			case "single-order-online-without-subscription":
+				file = fs.readFileSync(
+					path.join(SUBSCRIPTION_EXAMPLES_PATH, "select/select_single_online.yaml")
+				);
+				response = YAML.parse(file.toString());
+				break;
+			default:
+		}
 
 		const select = {
 			context: {
@@ -108,9 +129,12 @@ const intializeRequest = async (
 												providers?.[0]?.time?.schedule?.times?.[0] ??
 												new Date(),
 										},
-										duration: fulfillments?.[2]?.stops?.time?.duration?fulfillments?.[2]?.stops?.time?.duration:"P6M",
+										duration: fulfillments?.[2]?.stops?.time?.duration
+											? fulfillments?.[2]?.stops?.time?.duration
+											: "P6M",
 										schedule: {
-											frequency: fulfillments?.[2]?.stops?.time?.schedule?.frequency,
+											frequency:
+												fulfillments?.[2]?.stops?.time?.schedule?.frequency,
 										},
 									},
 								},
@@ -118,8 +142,7 @@ const intializeRequest = async (
 							tags: fulfillments?.[2]?.tags,
 						},
 					],
-          payments: [{ type: payments?.[0].type }],
-
+					payments: [{ type: payments?.[0].type }],
 				},
 			},
 		};

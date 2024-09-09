@@ -21,7 +21,6 @@ async function send_response(
     const { context } = res_obj;
     if(bpp_uri === "")
       bpp_uri = context.bpp_uri || res_obj.bpp_uri;
-    console.log("bpp_uriiiiiiiiii",bpp_uri)
 
     // res_obj.context.bpp_uri = bpp_uri
     if (res_obj.bpp_uri) delete res_obj.bpp_uri;
@@ -53,14 +52,11 @@ async function send_response(
       uri = `${bpp_uri}/${action}${scenario ? `?scenario=${scenario}` : ""}`;
 
     }
-    console.log("uriiiiiiiiiiiiiiii",uri)
 
     try{
       const response = await axios.post(uri, res_obj, {
         headers: { ...headers },
-      });
-      console.log("responseeeeeeeeeeeee",response)
-      
+      });      
       await redis.set(
         `${transaction_id}-${action}-from-server`,
         JSON.stringify({
@@ -79,7 +75,6 @@ async function send_response(
       throw err
     }
 
-    console.log("sendresssssssssssss")
     return res.status(200).json({
       message: {
         ack: {

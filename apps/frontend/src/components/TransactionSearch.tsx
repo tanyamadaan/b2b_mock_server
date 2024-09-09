@@ -26,58 +26,60 @@ export const TransactionSearch = () => {
 			);
 			const seenActionMessageId: Record<string, Date> = {};
 			const formattedResponse = response.data
-				.reduce(
-					(
-						// eslint-disable-next-line @typescript-eslint/no-explicit-any
-						uniqueArr: any[],
-						// eslint-disable-next-line @typescript-eslint/no-explicit-any
-						item: {
-							request: {
-								context: {
-									action: string;
-									timestamp: string;
-									message_id: string;
-								};
-							};
-						}
-					) => {
-						const {
-							action,
-							timestamp: strTimestamp,
-							message_id,
-						} = item.request.context;
-						const timestamp = new Date(strTimestamp);
-						if (
-							!seenActionMessageId[`${message_id}-${action}`]
-							// || timestamp > seenActionMessageId[action]
-						) {
-							seenActionMessageId[`${message_id}-${action}`] = timestamp; // Update latest timestamp for the action
-							// const existingIndex = uniqueArr.findIndex(
-							// 	(obj) => obj.action === action
-							// );
-							// if (existingIndex !== -1) {
-							// 	uniqueArr[existingIndex] = item;
-							// } else {
-							uniqueArr.push(item);
-							// }
-						}
-						return uniqueArr;
-					},
-					[]
-				)
-				.sort(
-					// (
-					// 	a: {
-					// 		request: { context: { timestamp: string | number | Date } };
-					// 	},
-					// 	b: {
-					// 		request: { context: { timestamp: string | number | Date } };
-					// 	}
-					// ) =>
-					// 	new Date(a.request.context.timestamp!).getTime() -
-					// 	new Date(b.request.context.timestamp!).getTime()
-					actionComparator
-				);
+        .reduce(
+          (
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            uniqueArr: any[],
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            item: {
+              request: {
+                context: {
+                  action: string;
+                  timestamp: string;
+                  message_id: string;
+                };
+              };
+              type: string
+            }
+          ) => {
+            const {
+              action,
+              timestamp: strTimestamp,
+              message_id,
+            } = item.request.context;
+            const timestamp = new Date(strTimestamp);
+            if (
+              !seenActionMessageId[`${message_id}-${action}`] || (action === "on_confirm" && item.type === "from_server")
+              // || timestamp > seenActionMessageId[action]
+            ) {
+              seenActionMessageId[`${message_id}-${action}`] = timestamp; // Update latest timestamp for the action
+              // const existingIndex = uniqueArr.findIndex(
+              //  (obj) => obj.action === action
+              // );
+              // if (existingIndex !== -1) {
+              //  uniqueArr[existingIndex] = item;
+              // } else {
+              uniqueArr.push(item);
+              // }
+            }
+            return uniqueArr;
+          },
+          []
+        )
+        .sort(
+          // (
+          //  a: {
+          //    request: { context: { timestamp: string | number | Date } };
+          //  },
+          //  b: {
+          //    request: { context: { timestamp: string | number | Date } };
+          //  }
+          // ) =>
+          //  new Date(a.request.context.timestamp!).getTime() -
+          //  new Date(b.request.context.timestamp!).getTime()
+          actionComparator
+        );
+
 			// console.log("RESPONSE", response, formattedResponse);
 			const { edges, nodes } = getNodesAndEdges(formattedResponse, theme);
 			setNodes(nodes);
@@ -89,6 +91,8 @@ export const TransactionSearch = () => {
 			console.log("Following error occurred while querying", error);
 		}
 	};
+
+	
 	const requestTransaction = _.debounce(
 		async (
 			event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>

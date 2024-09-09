@@ -1,21 +1,14 @@
 import { NextFunction, Request, Response } from "express";
-import fs from "fs";
-import path from "path";
-import YAML from "yaml";
 import {
 	responseBuilder,
-	quoteCreatorHealthCareService,
 	redisFetchFromServer,
 	send_nack,
 	checkSelectedItems,
 	updateFulfillments,
-	quoteCreatorService,
-	SUBSCRIPTION_EXAMPLES_PATH,
 	quoteSubscription,
 } from "../../../lib/utils";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
-import { SERVICES_DOMAINS } from "../../../lib/utils/apiConstants";
 
 export const selectController = async (
 	req: Request,
@@ -111,11 +104,6 @@ const selectConsultationConfirmController = (
 					message?.order?.fulfillments[0]
 				);
 		}
-		console.log(
-			"updatedFulfillmentsssssssssss",
-			quoteData,
-			updatedFulfillments
-		);
 		let responseMessage: any = {
 			order: {
 				provider,
@@ -131,7 +119,7 @@ const selectConsultationConfirmController = (
 			},
 		};
 
-		if (scenario === "subscription-with-manual-payments") {
+		if (scenario === "subscription-with-manual-payments" || scenario === "subscription-with-full-payments") {
 			responseMessage.order.payments = [
 				{
 					id: "PG1",

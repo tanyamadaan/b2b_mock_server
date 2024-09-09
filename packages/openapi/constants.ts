@@ -162,7 +162,38 @@ export const PRINT_MEDIA_SCENARIOS = {
 			name: "Single Order Online without Subscription",
 			scenario: "single-order-online-without-subscription",
 		},
+		{
+			name: "Subscription with Full Payments",
+			scenario: "subscription-with-full-payments",
+		},
 		
+	],
+
+	init:[
+		{
+		name: "Default",
+		scenario: "default",
+	},
+	{
+		name: "Subscription with EMandate",
+		scenario: "subscription-with-eMandate",
+	},
+	{
+		name: "Subscription with Manual Payments",
+		scenario: "subscription-with-manual-payments",
+	},
+	{
+		name: "Single Order Offline without Subscription",
+		scenario: "single-order-offline-without-subscription",
+	},
+	{
+		name: "Single Order Online without Subscription",
+		scenario: "single-order-online-without-subscription",
+	},
+	{
+		name: "Subscription with Full Payments",
+		scenario: "subscription-with-full-payments",
+	},
 	],
 	on_init: [
 		{

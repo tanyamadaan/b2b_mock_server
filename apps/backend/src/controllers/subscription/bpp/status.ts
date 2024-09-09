@@ -1,12 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import {
-	AGRI_HEALTHCARE_STATUS,
-	AGRI_HEALTHCARE_STATUS_OBJECT,
-	BID_AUCTION_STATUS,
-	EQUIPMENT_HIRING_STATUS,
 	FULFILLMENT_LABELS,
 	ORDER_STATUS,
-	SERVICES_DOMAINS,
+	PRINT_MEDIA_STATUS,
+	PRINT_MEDIA_STATUS_OBJECT,
 } from "../../../lib/utils/apiConstants";
 import {
 	Fulfillment,
@@ -59,7 +56,7 @@ const statusRequest = async (
 	try {
 		const { context, message } = transaction;
 		context.action = ON_ACTION_KEY.ON_STATUS;
-		const domain = context?.domain;
+
 		const on_status = await redisFetchFromServer(
 			ON_ACTION_KEY.ON_STATUS,
 			req.body.context.transaction_id
@@ -73,46 +70,17 @@ const statusRequest = async (
 
 			//FIND NEXT STATUS
 			let lastStatusIndex: any = 0;
-			switch (domain) {
-				case SERVICES_DOMAINS.SERVICES || SERVICES_DOMAINS.AGRI_EQUIPMENT:
-					lastStatusIndex = EQUIPMENT_HIRING_STATUS.indexOf(lastStatus);
-					if (lastStatusIndex === 2) {
-						next_status = lastStatus;
-					}
-					if (
-						lastStatusIndex !== -1 &&
-						lastStatusIndex < EQUIPMENT_HIRING_STATUS.length - 1
-					) {
-						const nextStatusIndex = lastStatusIndex + 1;
-						next_status = EQUIPMENT_HIRING_STATUS[nextStatusIndex];
-					}
-					break;
-				case SERVICES_DOMAINS.BID_ACTION_SERVICES:
-					lastStatusIndex = BID_AUCTION_STATUS.indexOf(lastStatus);
-					if (lastStatusIndex === 1) {
-						next_status = lastStatus;
-					}
-					if (
-						lastStatusIndex !== -1 &&
-						lastStatusIndex < BID_AUCTION_STATUS.length - 1
-					) {
-						const nextStatusIndex = lastStatusIndex + 1;
-						next_status = BID_AUCTION_STATUS[nextStatusIndex];
-					}
-					break;
-				default: //service started is the default case
-					lastStatusIndex = AGRI_HEALTHCARE_STATUS.indexOf(lastStatus);
-					if (lastStatus === 6) {
-						next_status = lastStatus;
-					}
-					if (
-						lastStatusIndex !== -1 &&
-						lastStatusIndex < AGRI_HEALTHCARE_STATUS.length - 1
-					) {
-						const nextStatusIndex = lastStatusIndex + 1;
-						next_status = AGRI_HEALTHCARE_STATUS[nextStatusIndex];
-					}
-					break;
+
+			lastStatusIndex = PRINT_MEDIA_STATUS.indexOf(lastStatus);
+			if (lastStatus === 6) {
+				next_status = lastStatus;
+			}
+			if (
+				lastStatusIndex !== -1 &&
+				lastStatusIndex < PRINT_MEDIA_STATUS.length - 1
+			) {
+				const nextStatusIndex = lastStatusIndex + 1;
+				next_status = PRINT_MEDIA_STATUS[nextStatusIndex];
 			}
 		}
 		scenario = scenario ? scenario : next_status;
@@ -134,7 +102,7 @@ const statusRequest = async (
 						id: fulfillment.id,
 						state: {
 							descriptor: {
-								code: AGRI_HEALTHCARE_STATUS_OBJECT.IN_TRANSIT,
+								code: PRINT_MEDIA_STATUS_OBJECT.PENDING,
 							},
 						},
 
@@ -150,7 +118,7 @@ const statusRequest = async (
 									: undefined,
 								person: stop.person ? stop.person : stop.customer?.person,
 							};
-							if (stop.type === "start"){
+							if (stop.type === "start") {
 								return {
 									...demoObj,
 									location: {
@@ -181,22 +149,22 @@ const statusRequest = async (
 		};
 
 		switch (scenario) {
-			case AGRI_HEALTHCARE_STATUS_OBJECT.IN_TRANSIT:
+			case PRINT_MEDIA_STATUS_OBJECT.PENDING:
 				responseMessage.order.fulfillments.forEach(
 					(fulfillment: Fulfillment) => {
 						fulfillment.state.descriptor.code =
-							AGRI_HEALTHCARE_STATUS_OBJECT.IN_TRANSIT;
+						PRINT_MEDIA_STATUS_OBJECT.PENDING;
 						fulfillment.stops.forEach((stop: Stop) =>
 							stop?.authorization ? (stop.authorization = undefined) : undefined
 						);
 					}
 				);
 				break;
-			case AGRI_HEALTHCARE_STATUS_OBJECT.AT_LOCATION:
+			case PRINT_MEDIA_STATUS_OBJECT.PACKED:
 				responseMessage.order.fulfillments.forEach(
 					(fulfillment: Fulfillment) => {
 						fulfillment.state.descriptor.code =
-							AGRI_HEALTHCARE_STATUS_OBJECT.AT_LOCATION;
+							PRINT_MEDIA_STATUS_OBJECT.PACKED;
 						fulfillment.stops.forEach((stop: Stop) =>
 							stop?.authorization
 								? (stop.authorization = {
@@ -208,70 +176,41 @@ const statusRequest = async (
 					}
 				);
 				break;
-			case AGRI_HEALTHCARE_STATUS_OBJECT.COLLECTED_BY_AGENT:
+			case PRINT_MEDIA_STATUS_OBJECT.AGENT_ASSIGNED:
 				responseMessage.order.fulfillments.forEach(
 					(fulfillment: Fulfillment) => {
 						fulfillment.state.descriptor.code =
-							AGRI_HEALTHCARE_STATUS_OBJECT.COLLECTED_BY_AGENT;
+							PRINT_MEDIA_STATUS_OBJECT.AGENT_ASSIGNED;
 					}
 				);
 				break;
-			case AGRI_HEALTHCARE_STATUS_OBJECT.RECEIVED_AT_LAB:
+			case PRINT_MEDIA_STATUS_OBJECT.OUT_FOR_DELIVERY:
 				responseMessage.order.fulfillments.forEach(
 					(fulfillment: Fulfillment) => {
 						fulfillment.state.descriptor.code =
-							AGRI_HEALTHCARE_STATUS_OBJECT.RECEIVED_AT_LAB;
+							PRINT_MEDIA_STATUS_OBJECT.OUT_FOR_DELIVERY;
 					}
 				);
 				break;
-			case AGRI_HEALTHCARE_STATUS_OBJECT.TEST_COMPLETED:
+			case PRINT_MEDIA_STATUS_OBJECT.ORDER_PICKED_UP:
 				responseMessage.order.fulfillments.forEach(
 					(fulfillment: Fulfillment) => {
 						fulfillment.state.descriptor.code =
-							AGRI_HEALTHCARE_STATUS_OBJECT.TEST_COMPLETED;
+							PRINT_MEDIA_STATUS_OBJECT.ORDER_PICKED_UP;
 						fulfillment.stops.forEach((stop: Stop) =>
 							stop?.authorization ? (stop.authorization = undefined) : undefined
 						);
 					}
 				);
 				break;
-			case AGRI_HEALTHCARE_STATUS_OBJECT.REPORT_GENERATED:
+			case PRINT_MEDIA_STATUS_OBJECT.COMPLETED:
+				responseMessage.order.status = PRINT_MEDIA_STATUS_OBJECT.COMPLETED
 				responseMessage.order.fulfillments.forEach(
 					(fulfillment: Fulfillment) => {
 						fulfillment.state.descriptor.code =
-							AGRI_HEALTHCARE_STATUS_OBJECT.REPORT_GENERATED;
+							PRINT_MEDIA_STATUS_OBJECT.COMPLETED;
 					}
 				);
-				break;
-			case AGRI_HEALTHCARE_STATUS_OBJECT.REPORT_SHARED:
-				responseMessage.order.status = AGRI_HEALTHCARE_STATUS_OBJECT.COMPLETED;
-				responseMessage.order.fulfillments.forEach(
-					(fulfillment: Fulfillment) => {
-						fulfillment.state.descriptor.code =
-							AGRI_HEALTHCARE_STATUS_OBJECT.REPORT_SHARED;
-					}
-				);
-				break;
-			case AGRI_HEALTHCARE_STATUS_OBJECT.COMPLETED:
-				responseMessage.order.status = AGRI_HEALTHCARE_STATUS_OBJECT.COMPLETED;
-				responseMessage.order.fulfillments.forEach(
-					(fulfillment: Fulfillment) => {
-						fulfillment.state.descriptor.code =
-							AGRI_HEALTHCARE_STATUS_OBJECT.REPORT_SHARED;
-					}
-				);
-				break;
-			case AGRI_HEALTHCARE_STATUS_OBJECT.PLACED:
-				// responseMessage.order.status = AGRI_HEALTHCARE_STATUS_OBJECT.COMPLETED;
-				responseMessage.order.fulfillments.forEach(
-					(fulfillment: Fulfillment) => {
-						fulfillment.state.descriptor.code =
-							AGRI_HEALTHCARE_STATUS_OBJECT.PLACED;
-					}
-				);
-				break;
-			case AGRI_HEALTHCARE_STATUS_OBJECT.CANCEL:
-				responseMessage.order.status = "Cancelled";
 				break;
 			default: //service started is the default case
 				break;
@@ -288,7 +227,7 @@ const statusRequest = async (
 					: `/${ON_ACTION_KEY.ON_STATUS}`
 			}`,
 			`${ON_ACTION_KEY.ON_STATUS}`,
-			"services"
+			"subscription"
 		);
 	} catch (error) {
 		next(error);

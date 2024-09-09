@@ -125,7 +125,7 @@ export const onStatusSchema = {
                   },
                 },
               },
-              required: ["id", "locations"],
+              required: ["id"],
             },
             items: {
               type: "array",
@@ -348,7 +348,7 @@ export const onStatusSchema = {
                     },
                   },
                 },
-                required: ["id", "type", "state", "stops"],
+                required: ["type", "stops"],
               },
             },
             quote: {
@@ -502,9 +502,7 @@ export const onStatusSchema = {
                     },
                     required: [
                       "amount",
-                      "currency",
-                      "transaction_id"
-                    ],
+                      "currency"                    ],
                   },
                   status: {
                     type: "string",
@@ -589,17 +587,14 @@ export const onStatusSchema = {
             },
           },
           required: [
-            "id",
-            "status",
+            // "id",
+            // "status",
             "provider",
             "items",
             "billing",
             "fulfillments",
             "quote",
             "payments",
-            "documents",
-            "created_at",
-            "updated_at",
           ],
         },
       },

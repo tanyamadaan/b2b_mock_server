@@ -1,8 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import { checkIfCustomized, redisFetchFromServer, responseBuilder, send_nack, Stop, updateFulfillments } from "../../../lib/utils";
+import { createAuthHeader, logger, MOCKSERVER_ID, redis, redisFetchFromServer, responseBuilder, send_nack, Stop, SUBSCRIPTION_BPP_MOCKSERVER_URL, TransactionType, updateFulfillments } from "../../../lib/utils";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ORDER_STATUS, PAYMENT_STATUS } from "../../../lib/utils/apiConstants";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
+import axios, { AxiosError } from "axios";
+import { v4 as uuidv4 } from "uuid";
+import { getRangeUsingDurationFrequency } from "../../../lib/utils/getISODuration";
 
 export const confirmController = (
 	req: Request,
@@ -10,9 +13,6 @@ export const confirmController = (
 	next: NextFunction
 ) => {
 	try {
-		if (checkIfCustomized(req.body.message.order?.items)) {
-      return confirmServiceCustomizationController(req, res, next);
-    }
     confirmConsultationController(req, res, next);	} catch (error) {
 		return next(error);
 	}
@@ -59,13 +59,7 @@ export const confirmConsultationController = async (
 			},
 		};
 
-  //   for (let i = 0; i < 8; i++) {
-  //     setTimeout(() => {
-  //         console.log(`This is operation ${i + 1} performed after ${i + 1} minute(s)`);
-  //         // Additional operations like logging, updating a database, etc.
-  //     }, i * 60000); // i * 60000 ms delay for each iteration
-  // }
-		return responseBuilder(
+		responseBuilder(
 			res,
 			next,
 			context,
@@ -76,101 +70,177 @@ export const confirmConsultationController = async (
 			`${ON_ACTION_KEY.ON_CONFIRM}`,
 			"subscription"
 		);
-    
+
+    //get range for confirm calls
+    const range = getRangeUsingDurationFrequency(fulfillments[0]?.stops[0]?.time?.duration,fulfillments[0]?.stops[0]?.time?.schedule?.frequency);
+    responseMessage.order["ref_order_ids"] = [
+      responseMessage.order.id
+    ]
+    responseMessage.order.id = uuidv4() // static ID for child process on_confirm
+    responseMessage.order.status = "In-Progress" // static ID for child process on_confirm
+
+    let i = 1;
+    let interval = setInterval(() => {
+      if(i >= 3) {
+        clearInterval(interval)
+      }
+			childOrderResponseBuilder(
+				i,
+				res,
+				context,
+				responseMessage,
+				`${req.body.context.bap_uri}${
+					req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
+				}`,
+				"on_confirm"
+			);
+
+			childOrderResponseBuilder(
+				i,
+				res,
+				context,
+				responseMessage,
+				`${req.body.context.bap_uri}${
+					req.body.context.bap_uri.endsWith("/") ? "on_update" : "/on_update"
+				}`,
+				"on_update"
+			);
+      i++;
+    }, 60000)
 	} catch (error) {
 		next(error);
 	}
 };
 
-export const confirmServiceCustomizationController = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const {
-      context,
-      message: { order },
-    } = req.body;
-    const { fulfillments } = order;
-    const timestamp = new Date();
-    const end_time = new Date(timestamp.getTime() + 30 * 60 * 1000);
-    // const fulfillments = response.value.message.order.fulfillments
 
-    context.action = "on_confirm";
-    fulfillments[0].stops?.splice(0, 0, {
-      id: "L1",
-      type: "start",
-      location: {
-        id: "L1",
-        descriptor: {
-          name: "ABC Store",
-        },
-        gps: "12.956399,77.636803",
-      },
-      time: {
-        range: {
-          start: timestamp.toISOString(),
-          end: end_time.toISOString(),
-        },
-      },
-      contact: {
-        phone: "9886098860",
-        email: "nobody@nomail.com",
-      },
-      person: {
-        name: "Kishan",
-      },
-    });
-    fulfillments[0].stops.forEach((itm: Stop) => {
-      if (itm.type === "end") {
-        itm.id = "L2";
-        itm.authorization = {
-          type: "OTP",
-          token: "1234",
-          valid_from: "2023-11-16T09:30:00.000Z",
-          valid_to: "2023-11-16T09:35:00.000Z",
-          status: "valid",
-        };
-        itm.person = { name: itm?.customer?.person?.name || "" };
-        itm.customer = undefined;
-      }
-    });
-    const responseMessage = {
-      order: {
-        ...order,
-        status: "Accepted",
-        provider: {
-          ...order?.provider,
-          rateable: true,
-        },
-        fulfillments: [
-          {
-            ...fulfillments[0],
-            // state hard coded
-            state: {
-              descriptor: {
-                code: "Pending",
-              },
-            },
-            rateable: true,
-            // stops:
-          },
-        ],
-      },
-    };
-    return responseBuilder(
-      res,
-      next,
-      context,
-      responseMessage,
-      `${req.body.context.bap_uri}${
-        req.body.context.bap_uri.endsWith("/") ? "on_confirm" : "/on_confirm"
-      }`,
-      `on_confirm`,
-      "subscription"
-    );
-  } catch (error) {
-    return next(error);
-  }
+export const childOrderResponseBuilder = async (
+	id: number,
+	res: Response,
+	reqContext: object,
+	message: object,
+	uri: string,
+	action: string,
+	error?: object | undefined
+) => {
+	let ts = new Date();
+	ts.setSeconds(ts.getSeconds() + 1);
+	const sandboxMode = res.getHeader("mode") === "sandbox";
+
+		
+
+	var async: { message: object; context?: object; error?: object } = {
+		context: {},
+		message,
+	};
+	const bppURI = SUBSCRIPTION_BPP_MOCKSERVER_URL;
+	async = {
+		...async,
+		context: {
+			...reqContext,
+			bpp_id: MOCKSERVER_ID,
+			bpp_uri: bppURI,
+			timestamp: ts.toISOString(),
+			action: action,
+		},
+	};
+
+	if (error) {
+		async = { ...async, error };
+	}
+
+	const header = await createAuthHeader(async);
+	if (sandboxMode) {
+		var log: TransactionType = {
+			request: async,
+		};
+
+
+		try {
+			const response = await axios.post(uri + "?mode=mock", async, {
+				headers: {
+					authorization: header,
+				},
+			});
+
+			log.response = {
+				timestamp: new Date().toISOString(),
+				response: response.data,
+			};
+
+			await redis.set(
+				`${(async.context! as any).transaction_id}-${action}-from-server-${id}`, // saving ID with on_confirm child process (duplicate keys are not allowed)
+				JSON.stringify(log)
+			);
+			console.log(`>>>${(async.context! as any).transaction_id}-${action}-from-server-${id}`)
+		} catch (error) {
+			const response =
+				error instanceof AxiosError
+					? error?.response?.data
+					: {
+							message: {
+								ack: {
+									status: "NACK",
+								},
+							},
+							error: {
+								message: error,
+							},
+					  };
+			log.response = {
+				timestamp: new Date().toISOString(),
+				response: response,
+			};
+			await redis.set(
+				`${(async.context! as any).transaction_id}-${action}-from-server-${id}`,
+				JSON.stringify(log)
+			);
+
+			if(error instanceof AxiosError && id === 0 && action === "on_confirm") {
+				res.status(error.status || 500).json(error)
+			}
+
+			if(error instanceof AxiosError) {
+				console.log(error.response?.data)
+			}
+
+			throw error;
+		}
+
+		logger.info({
+			type: "response",
+			action: action,
+			transaction_id: (reqContext as any).transaction_id,
+			message: { sync: { message: { ack: { status: "ACK" } } } },
+		});
+
+		console.log(`Subscription Child Process (action: ${action}) ${id} : `, {
+			message: {
+				ack: {
+					status: "ACK",
+				},
+			},
+		});
+		return;
+	} else {
+		logger.info({
+			type: "response",
+			action: action,
+			transaction_id: (reqContext as any).transaction_id,
+			message: { sync: { message: { ack: { status: "ACK" } } } },
+		});
+
+		
+
+		console.log(`Subscription Child Process (action: ${action}) ${id} : `, {
+			sync: {
+				message: {
+					ack: {
+						status: "ACK",
+					},
+				},
+			},
+			async,
+		});
+		return;
+	}
 };

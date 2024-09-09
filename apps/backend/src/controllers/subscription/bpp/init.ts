@@ -3,18 +3,24 @@ import fs from "fs";
 import path from "path";
 import YAML from "yaml";
 import {
-	quoteCreatorHealthCareService,
 	responseBuilder,
 	send_nack,
-	AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH,
 	redisFetchFromServer,
 	updateFulfillments,
-	BID_AUCTION_SERVICES_EXAMPLES_PATH,
 	SUBSCRIPTION_EXAMPLES_PATH,
 	quoteSubscription,
+	SUBSCRIPTION_BPP_MOCKSERVER_URL,
+	MOCKSERVER_ID,
+	createAuthHeader,
+	TransactionType,
+	redis,
+	logger,
 } from "../../../lib/utils";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
+import axios from "axios";
+import { AxiosError } from "axios";
+import { ORDER_STATUS } from "../../../lib/utils/apiConstants";
 
 export const initController = async (
 	req: Request,
@@ -74,11 +80,7 @@ const initConsultationController = (
 
 		const { scenario } = req.query;
 
-		let file: any = fs.readFileSync(
-			path.join(SUBSCRIPTION_EXAMPLES_PATH, "on_init/on_init.yaml")
-		);
-
-		const domain = context?.domain;
+		let file: any;
 		const { locations, ...remainingProvider } = provider;
 
 		const updatedFulfillments = updateFulfillments(
@@ -88,8 +90,6 @@ const initConsultationController = (
 			"subscription"
 		);
 
-		const response = YAML.parse(file.toString());
-
 		const quoteData = quoteSubscription(
 			items,
 			providersItems,
@@ -97,43 +97,26 @@ const initConsultationController = (
 			fulfillments[0]
 		);
 
-		let paymentsData = [
-			{
-				...response?.value?.message?.order?.payments[0],
-				params: {
-					amount: (quoteData?.price?.value).toString(),
-					currency: "INR",
-				},
-			},
-		]
 		/*****HANDLE SCENARIOS OF INIT*****/
 		switch (scenario) {
 			case "subscription-with-manual-payments":
-				paymentsData = [
-					{
-						...response?.value?.message?.order?.payments[1],
-						params: {
-							amount: (quoteData?.price?.value).toString(),
-							currency: "INR",
-						},
-					},
-				]
+				file = fs.readFileSync(
+					path.join(SUBSCRIPTION_EXAMPLES_PATH, "on_init/on_init_manual.yaml")
+				);
 				break;
 			case "subscription-with-full-payments":
-				paymentsData = [
-					{
-						...response?.value?.message?.order?.payments[2],
-						params: {
-							amount: (quoteData?.price?.value).toString(),
-							currency: "INR",
-						},
-					},
-				]
+				file = fs.readFileSync(
+					path.join(SUBSCRIPTION_EXAMPLES_PATH, "on_init/on_init_full.yaml")
+				);
 				break;
 			default:
-
+				file = fs.readFileSync(
+					path.join(SUBSCRIPTION_EXAMPLES_PATH, "on_init/on_init.yaml")
+				);
 		}
-		const responseMessage = {
+
+		const response = YAML.parse(file.toString());
+		let responseMessage:any = {
 			order: {
 				provider: remainingProvider,
 				locations,
@@ -143,13 +126,21 @@ const initConsultationController = (
 				quote: quoteData,
 
 				//UPDATE PAYMENT OBJECT WITH REFUNDABLE SECURITY
-				payments:paymentsData
+				payments: [
+					{
+						...response?.value?.message?.order?.payments[0],
+						params: {
+							amount: (quoteData?.price?.value).toString(),
+							currency: "INR",
+						},
+					},
+				],
 			},
 		};
 
 		delete req.body?.providersItems;
 
-		return responseBuilder(
+		responseBuilder(
 			res,
 			next,
 			context,
@@ -162,212 +153,145 @@ const initConsultationController = (
 			`${ON_ACTION_KEY.ON_INIT}`,
 			"subscription"
 		);
+
+		// if(responseMessage.order.payments[0])
+		responseMessage.order.payments=[{
+			...responseMessage.order.payments[0],
+			status:"PAID"
+		}],
+
+		console.log("responseMessage...........",responseMessage)
+		onStatusResponseBuilder(
+			res,
+			context,
+			responseMessage,
+			`${req.body.context.bap_uri}${
+				req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+			}`);
+
 	} catch (error) {
 		next(error);
 	}
 };
 
-const initItemNotAvaliableController = (
-	req: Request,
-	res: Response,
-	next: NextFunction
+export const onStatusResponseBuilder = async (
+  res: Response,
+  reqContext: object,
+  message: object,
+  uri: string,
+  error?: object | undefined
 ) => {
-	try {
-		const {
-			context,
-			providersItems,
-			message: {
-				order: { provider, items, billing, fulfillments, payments },
-			},
-		} = req.body;
-		const { locations, ...remainingProvider } = provider;
+  let action  = "on_status";
+  let ts = new Date();
+  ts.setSeconds(ts.getSeconds() + 1);
+  const sandboxMode = res.getHeader("mode") === "sandbox";
 
-		items.forEach((item: any) => {
-			// Find the corresponding item in the second array
-			if (providersItems) {
-				const matchingItem = providersItems.find(
-					(secondItem: { id: string }) => secondItem.id === item.id
-				);
-				// If a matching item is found, update the price in the items array
-				if (matchingItem) {
-					item.time = matchingItem?.time;
-				}
-			}
-		});
+  var async: { message: object; context?: object; error?: object } = {
+    context: {},
+    message,
+  };
+  const bppURI =  SUBSCRIPTION_BPP_MOCKSERVER_URL;
 
-		const updatedFulfillments = updateFulfillments(
-			fulfillments,
-			ON_ACTION_KEY?.ON_INIT
-		);
+    async = {
+      ...async,
+      context: {
+        ...reqContext,
+        bpp_id: MOCKSERVER_ID,
+        bpp_uri: bppURI,
+        timestamp: ts.toISOString(),
+        action,
+      },
+    };
 
-		const file = fs.readFileSync(
-			path.join(AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH, "on_init/on_init.yaml")
-		);
-		const response = YAML.parse(file.toString());
-		const quoteData = quoteCreatorHealthCareService(
-			items,
-			providersItems,
-			"",
-			fulfillments[0]?.type,
-			"agri-equipment-hiring"
-		);
+  if (error) {
+    async = { ...async, error };
+  }
 
-		const responseMessage = {
-			order: {
-				provider: remainingProvider,
-				locations,
-				items: items.map(
-					({ ...remaining }: { location_ids: any; remaining: any }) => ({
-						...remaining,
-					})
-				),
-				billing,
-				fulfillments: updatedFulfillments,
-				// quote: quoteData,
-				payments: [
-					{
-						id: response?.value?.message?.order?.payments[0]?.id,
-						type: payments[0]?.type,
-						collected_by: payments[0]?.collected_by,
-						params: {
-							amount: quoteData?.price?.value,
-							currency: quoteData?.price?.currency,
-							bank_account_number:
-								response?.value?.message?.order?.payments[0]?.params
-									?.bank_account_number,
-							virtual_payment_address:
-								response?.value?.message?.order?.payments[0]?.params
-									?.virtual_payment_address,
-						},
-						tags: response?.value?.message?.order?.payments[0]?.tags,
-					},
-				],
-			},
-		};
+  const header = await createAuthHeader(async);
+  if (sandboxMode) {
+      var log: TransactionType = {
+        request: async,
+      };
+      
+      // await redis.set(
+      //   `${(async.context! as any).transaction_id}-${action}-from-server`,
+      //   JSON.stringify(log)
+      // );
 
-		const error = {
-			code: "90002",
-			message: ERROR_MESSAGES.EQUIPMENT_NOT_LONGER_AVALIABLE,
-		};
-		delete req.body?.providersItems;
-		return responseBuilder(
-			res,
-			next,
-			context,
-			responseMessage,
-			`${req.body.context.bap_uri}${
-				req.body.context.bap_uri.endsWith("/")
-					? ON_ACTION_KEY.ON_INIT
-					: `/${ON_ACTION_KEY.ON_INIT}`
-			}`,
-			`${ON_ACTION_KEY.ON_INIT}`,
-			"agri-equipment-hiring",
-			error
-		);
-	} catch (error) {
-		next(error);
-	}
-};
+      try {
+        const response = await axios.post(uri, async, {
+          headers: {
+            authorization: header,
+          },
+        });
 
-const initBidPlacementController = (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
-	try {
-		const {
-			context,
-			providersItems,
-			message: {
-				order: { provider, items, billing, fulfillments, payments },
-			},
-		} = req.body;
-		const { locations, ...remainingProvider } = provider;
+        log.response = {
+          timestamp: new Date().toISOString(),
+          response: response.data,
+        };
 
-		items.forEach((item: any) => {
-			// Find the corresponding item in the second array
-			if (providersItems) {
-				const matchingItem = providersItems.find(
-					(secondItem: { id: string }) => secondItem.id === item.id
-				);
-				// If a matching item is found, update the price in the items array
-				if (matchingItem) {
-					item.time = matchingItem?.time;
-				}
-			}
-		});
+        await redis.set(
+          `${(async.context! as any).transaction_id}-${action}-from-server`, // saving ID with on_confirm child process (duplicate keys are not allowed)
+          JSON.stringify(log)
+        );
+      } catch (error) {
+        const response =
+          error instanceof AxiosError
+            ? error?.response?.data
+            : {
+                message: {
+                  ack: {
+                    status: "NACK",
+                  },
+                },
+                error: {
+                  message: error,
+                },
+              };
+        log.response = {
+          timestamp: new Date().toISOString(),
+          response: response,
+        };
+        await redis.set(
+          `${(async.context! as any).transaction_id}-${action}-from-server`,
+          JSON.stringify(log)
+        );
+        throw error;
+      }
 
-		const updatedFulfillments = updateFulfillments(
-			fulfillments,
-			ON_ACTION_KEY?.ON_INIT
-		);
+    logger.info({
+      type: "response",
+      action: action,
+      transaction_id: (reqContext as any).transaction_id,
+      message: { sync: { message: { ack: { status: "ACK" } } } },
+    });
 
-		const file = fs.readFileSync(
-			path.join(
-				BID_AUCTION_SERVICES_EXAMPLES_PATH,
-				"on_init/on_init_bid_placement.yaml"
-			)
-		);
+    console.log("Subscription Child Process: ", {
+      message: {
+        ack: {
+          status: "ACK",
+        },
+      },
+    });
+    return;
+  } else {
+    logger.info({
+      type: "response",
+      action: action,
+      transaction_id: (reqContext as any).transaction_id,
+      message: { sync: { message: { ack: { status: "ACK" } } } },
+    });
 
-		const response = YAML.parse(file.toString());
-
-		const quoteData = quoteCreatorHealthCareService(
-			items,
-			providersItems,
-			"",
-			fulfillments[0]?.type,
-			"bid_auction_service"
-		);
-
-		const responseMessage = {
-			order: {
-				provider: remainingProvider,
-				locations,
-				items: items.map(
-					({ ...remaining }: { location_ids: any; remaining: any }) => ({
-						...remaining,
-					})
-				),
-				billing,
-				fulfillments: updatedFulfillments,
-				quote: quoteData,
-				payments: [
-					{
-						id: response?.value?.message?.order?.payments[0]?.id,
-						type: payments[0]?.type,
-						collected_by: payments[0]?.collected_by,
-						params: {
-							amount: quoteData?.price?.value,
-							currency: quoteData?.price?.currency,
-							bank_account_number:
-								response?.value?.message?.order?.payments[0]?.params
-									?.bank_account_number,
-							virtual_payment_address:
-								response?.value?.message?.order?.payments[0]?.params
-									?.virtual_payment_address,
-						},
-						tags: response?.value?.message?.order?.payments[0]?.tags,
-					},
-				],
-			},
-		};
-		delete req.body?.providersItems;
-
-		// console.log("responseMessage=>>>>>>>>>",responseMessage)
-		return responseBuilder(
-			res,
-			next,
-			context,
-			responseMessage,
-			`${req.body.context.bap_uri}${
-				req.body.context.bap_uri.endsWith("/")
-					? ON_ACTION_KEY.ON_INIT
-					: `/${ON_ACTION_KEY.ON_INIT}`
-			}`,
-			`${ON_ACTION_KEY.ON_INIT}`,
-			"subscription"
-		);
-	} catch (error) {
-		next(error);
-	}
+    console.log(`Subscription On status Child Process : `, {
+      sync: {
+        message: {
+          ack: {
+            status: "ACK",
+          },
+        },
+      },
+      async,
+    });
+    return;
+  }
 };

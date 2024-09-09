@@ -1,11 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
+import fs from "fs";
+import YAML from "yaml";
 import {
 	MOCKSERVER_ID,
 	send_response,
 	send_nack,
 	redisFetchToServer,
 	SUBSCRIPTION_BAP_MOCKSERVER_URL,
+	SUBSCRIPTION_EXAMPLES_PATH,
+	quoteSubscription,
+	redisFetchFromServer,
 } from "../../../lib/utils";
 import {
 	ACTTION_KEY,
@@ -13,6 +18,7 @@ import {
 } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 import { BILLING_DETAILS } from "../../../lib/utils/apiConstants";
+import path from "path";
 
 export const initiateInitController = async (
 	req: Request,
@@ -21,6 +27,16 @@ export const initiateInitController = async (
 ) => {
 	try {
 		const { scenario, transactionId } = req.body;
+		const on_search = await redisFetchFromServer(
+			ON_ACTION_KEY.ON_SEARCH,
+			transactionId
+		);
+		if (!on_search) {
+			return send_nack(res, ERROR_MESSAGES.ON_SEARCH_DOES_NOT_EXISTED);
+		}
+		const providersItems = on_search?.message?.catalog?.providers[0]?.items;
+		req.body.providersItems = providersItems;
+
 		const on_select = await redisFetchToServer(
 			ON_ACTION_KEY.ON_SELECT,
 			transactionId
@@ -31,6 +47,7 @@ export const initiateInitController = async (
 		if (Object.keys(on_select).includes("error")) {
 			return send_nack(res, ERROR_MESSAGES.ON_SELECT_DOES_NOT_EXISTED);
 		}
+		on_select.providersItems = providersItems;
 		return intializeRequest(res, next, on_select, scenario);
 	} catch (error) {
 		return next(error);
@@ -49,6 +66,7 @@ const intializeRequest = async (
 			message: {
 				order: { provider, fulfillments, quote },
 			},
+			providersItems
 		} = transaction;
 		let { payments, items } = transaction.message.order;
 		const { id, type, stops } = fulfillments[0];
@@ -57,6 +75,33 @@ const intializeRequest = async (
 		items = items.map(
 			({ location_ids, ...items }: { location_ids: any }) => items
 		);
+
+		const quoteData = quoteSubscription(
+			items,
+			providersItems,
+			"",
+			fulfillments[0]
+		);
+		let file: any;
+		/*****HANDLE SCENARIOS OF INIT*****/
+		switch (scenario) {
+			case "subscription-with-manual-payments":
+				file = fs.readFileSync(
+					path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init_manual.yaml")
+				);
+				break;
+			case "subscription-with-full-payments":
+				file = fs.readFileSync(
+					path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init_full.yaml")
+				);
+				break;
+			default:
+				file = fs.readFileSync(
+					path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init.yaml")
+				);
+		}
+
+		const response = YAML.parse(file.toString());
 
 		const init = {
 			context: {
@@ -76,11 +121,18 @@ const intializeRequest = async (
 					items,
 					billing: BILLING_DETAILS,
 					fulfillments,
-					payments: [{ ...payments[0], collected_by: "BAP" }],
+					payments: [
+						{
+							...response?.value?.message?.order?.payments[0],
+							params: {
+								amount: (quoteData?.price?.value).toString(),
+								currency: "INR",
+							},
+						},
+					],
 				},
 			},
 		};
-		console.log("inittttttttttttt", init.context);
 		await send_response(
 			res,
 			next,

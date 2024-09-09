@@ -86,12 +86,23 @@ export const EQUIPMENT_HIRING_STATUS = [
 	"Completed",
 ];
 
-//Pickup-approved (progress)
-//Order-picked-up (progress)
-//Domestic-custom-cleared
-//At-destination-hub
-//Out-for-delivery(In-progress)
-//Order-delivered(Completed)
+export const PRINT_MEDIA_STATUS = [
+	"PENDING",
+	"PACKED",
+	"AGENT-ASSIGNED",
+	"OUT-FOR-DELIVERY",
+	"ORDER-PICKED-UP",
+	"COMPLETED",
+];
+
+export const PRINT_MEDIA_STATUS_OBJECT = {
+	PENDING:"PENDING",
+	PACKED:"PACKED",
+	AGENT_ASSIGNED:"AGENT-ASSIGNED",
+	OUT_FOR_DELIVERY:"OUT-FOR-DELIVERY",
+	ORDER_PICKED_UP:"ORDER-PICKED-UP",
+	COMPLETED:"COMPLETED",
+};
 
 export const B2C_STATUS = [
 	"Pickup-approved",

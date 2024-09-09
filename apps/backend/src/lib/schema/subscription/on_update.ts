@@ -390,10 +390,10 @@ export const onUpdateSchema = {
                       },
                       required: [
                         "type",
-                        "location",
-                        "time",
-                        "contact",
-                        "person",
+                        // "location",
+                        "time"
+                        // "contact",
+                        // "person",
                       ],
                     },
                   },
@@ -401,7 +401,10 @@ export const onUpdateSchema = {
                     type: "boolean",
                   },
                 },
-                required: ["id", "state", "type", "stops"],
+                required: ["id", 
+                  // "state"
+                  "type", 
+                  "stops"],
               },
             },
             quote: {
@@ -496,7 +499,9 @@ export const onUpdateSchema = {
                               },
                             },
                           },
-                          required: ["descriptor", "list"],
+                          required: ["descriptor"
+                            // "list"
+                          ],
                         },
                       },
                     },
