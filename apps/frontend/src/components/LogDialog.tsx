@@ -1,48 +1,65 @@
+import * as _ from "lodash";
+import { useState } from "react";
+import {
+	NEXT_ACTION,
+	NEXT_ACTION_LOGISTICS,
+} from "openapi-specs/constants";
 import { UnControlled as CodeMirror } from "react-codemirror2";
 import Button from "@mui/joy/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-// import SendTwoToneIcon from "@mui/icons-material/SendTwoTone";
 import CancelTwoToneIcon from "@mui/icons-material/CancelTwoTone";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { useState } from "react";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+import { useAnalyse } from "../utils/hooks";
+import { copyToClipboard } from "../utils";
 
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/material.css";
 import "codemirror/mode/javascript/javascript.js";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import DoneAllIcon from "@mui/icons-material/DoneAll";
-import { useAnalyse } from "../utils/hooks";
-// import axios from "axios";
-import { copyToClipboard } from "../utils";
-import { NEXT_ACTION } from "openapi-specs/constants";
 
 export const LogDialog = () => {
 	const { openLogDialog: open, setOpenLogDialog, logToShow } = useAnalyse();
-
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const log = logToShow as any;
 
 	const [copiedRequest, setCopiedRequest] = useState(false);
+	const [copiedResponse, setCopiedResponse] = useState(false);
+
+	// Function to toggle the copied state for request
 	const toggleRequestCopy = () => {
 		setCopiedRequest(true);
-		setTimeout(function () {
+		setTimeout(() => {
 			setCopiedRequest(false);
 		}, 1000);
 	};
 
-	const [copiedResponse, setCopiedResponse] = useState(false);
+	// Function to toggle the copied state for response
 	const toggleResponseCopy = () => {
 		setCopiedResponse(true);
-		setTimeout(function () {
+		setTimeout(() => {
 			setCopiedResponse(false);
 		}, 1000);
+	};
+
+	// Determine the action mapping based on the domain
+	const getActionName = (action: string, toBeSent: boolean) => {
+		if (toBeSent) {
+			// Determine domain, default to 'services' if not specified
+			const domain = log.domain?.toLowerCase() || "services";
+
+			const actionMapping =
+				domain === "logistics" ? NEXT_ACTION_LOGISTICS : NEXT_ACTION;
+
+			return actionMapping[action as keyof typeof actionMapping] || action;
+		}
+		return action;
 	};
 
 	return (
@@ -53,10 +70,7 @@ export const LogDialog = () => {
 					<Stack direction="row" spacing={2} alignItems="center">
 						<Typography>Action:</Typography>
 						<Typography variant="body2" color="text.secondary">
-							/
-							{log.toBeSent
-								? NEXT_ACTION[log.action as keyof typeof NEXT_ACTION]
-								: log.action}
+							/{getActionName(log.action, log.toBeSent)}
 						</Typography>
 					</Stack>
 				)}
@@ -75,9 +89,6 @@ export const LogDialog = () => {
 							<Typography variant="h6">Request:</Typography>
 							<IconButton
 								size="small"
-								// sx={{
-								// 	display: display ? "block" : "none",
-								// }}
 								onClick={() => copyToClipboard(log.request, toggleRequestCopy)}
 							>
 								{copiedRequest ? (
@@ -87,7 +98,6 @@ export const LogDialog = () => {
 								)}
 							</IconButton>
 						</Stack>
-
 						<Stack direction="row" spacing={2} alignItems="center">
 							<Typography>Request Timestamp:</Typography>
 							<Typography variant="body2" color="text.secondary">
@@ -122,9 +132,6 @@ export const LogDialog = () => {
 							<Typography variant="h6">Response:</Typography>
 							<IconButton
 								size="small"
-								// sx={{
-								// 	display: display ? "block" : "none",
-								// }}
 								onClick={() =>
 									copyToClipboard(log.response, toggleResponseCopy)
 								}

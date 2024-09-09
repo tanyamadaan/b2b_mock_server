@@ -13,16 +13,19 @@ import {
 	MockProvider,
 	SandboxProvider,
 } from "./utils/context";
-import { B2BMock, ServicesMock } from "./pages/mock/domains";
-import { B2BSandbox, ServicesSandbox } from "./pages/sandbox/domains";
+import { B2BMock, ServicesMock, LogisticsMock } from "./pages/mock/domains";
 import Readme from "./pages/readme";
 import { B2CMock } from "./pages/mock/domains/b2c";
 import { B2CSandbox } from "./pages/sandbox/domains/b2c";
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorFallbackComponent } from "./components";
-import React from "react";
 
-// log
+import {
+	B2BSandbox,
+	LogisticsSandbox,
+	ServicesSandbox,
+} from "./pages/sandbox/domains";
+import { LogisticsSwagger } from "./pages/swagger/domains/logistics";
 
 const router = createBrowserRouter([
 	{
@@ -91,6 +94,14 @@ const router = createBrowserRouter([
 							</ErrorBoundary>
 						),
 					},
+					{
+						path: "logistics",
+						element: (
+							<ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
+								<LogisticsMock />
+							</ErrorBoundary>
+						),
+					},
 				],
 			},
 			{
@@ -127,6 +138,14 @@ const router = createBrowserRouter([
 							</ErrorBoundary>
 						),
 					},
+					{
+						path: "logistics",
+						element: (
+							<ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
+								<LogisticsSandbox />
+							</ErrorBoundary>
+						),
+					},
 				],
 			},
 			{
@@ -144,6 +163,7 @@ const router = createBrowserRouter([
 					{ path: "b2b", Component: B2BSwagger },
 					{ path: "b2c", Component: B2BSwagger },
 					{ path: "services", Component: ServicesSwagger },
+					{ path: "logistics", Component: LogisticsSwagger },
 				],
 			},
 			{
