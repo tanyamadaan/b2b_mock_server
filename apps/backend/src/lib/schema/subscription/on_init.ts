@@ -277,11 +277,11 @@ export const onInitSchema = {
                           },
                           required: [
                             "gps",
-                            "address",
-                            "city",
-                            "country",
+                            // "address",
+                            // "city",
+                            // "country",
                             "area_code",
-                            "state",
+                            // "state",
                           ],
                         },
                         contact: {
@@ -355,7 +355,7 @@ export const onInitSchema = {
                       // required: ["type", "location", "contact", "time", "tags"],
                       if: { properties: { type: { const: "end" } } },
                       then: {
-                        required: ["type", "location", "contact", "time"]
+                        required: ["type", "location", "time"]
                       },
                       else: {
                         required: ["type"],

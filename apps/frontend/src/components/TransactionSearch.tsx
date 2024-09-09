@@ -81,6 +81,8 @@ export const TransactionSearch = () => {
         );
 
 			// console.log("RESPONSE", response, formattedResponse);
+
+			console.log("formattedResponseeeeeeeeeeeee",formattedResponse)
 			const { edges, nodes } = getNodesAndEdges(formattedResponse, theme);
 			setNodes(nodes);
 			setEdges(edges);
@@ -102,6 +104,7 @@ export const TransactionSearch = () => {
 		},
 		500
 	);
+
 	const handleFetch = async () => {
 		await fetchTransaction(transactionId);
 	};

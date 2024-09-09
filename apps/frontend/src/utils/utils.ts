@@ -177,7 +177,7 @@
 import { Edge, MarkerType, Node } from "reactflow";
 import { CustomNodeData } from "../components";
 import { Theme } from "@mui/material/styles";
-import { PREV_ACTION, PREV_ACTION_LOGISTICS } from "openapi-specs/constants";
+import { PREV_ACTION, PREV_ACTION_LOGISTICS, PREV_SUBSCRIPTION_EMANDATE_ACTION } from "openapi-specs/constants";
 import { ACTION_PRECENDENCE } from "./constants";
 
 // Create a map to assign precedence values to action strings
@@ -222,9 +222,10 @@ export const getNodesAndEdges = (formattedResponse: any, theme: Theme) => {
   // Determine the domain (assume domain info is available in the response)
   const domain = formattedResponse[0].domain?.toLowerCase() || "services"; // Default to "services" if domain is not provided
 
+  console.log("formattedResponse previous actionnnnnnnnnnnnn",formattedResponse[5]?.request?.message?.order?.payments[0].tags[0].list[0].value)
   // Choose the correct mapping based on the domain
   const prevActionMapping =
-    domain === "logistics" ? PREV_ACTION_LOGISTICS : PREV_ACTION;
+    domain === "logistics" ? PREV_ACTION_LOGISTICS : formattedResponse && formattedResponse[5] && formattedResponse[5]?.request?.message?.order?.payments[0].tags[0].list[0].value?PREV_SUBSCRIPTION_EMANDATE_ACTION:PREV_ACTION;
 
     console.log(formattedResponse)
   formattedResponse.forEach(
@@ -285,7 +286,6 @@ export const getNodesAndEdges = (formattedResponse: any, theme: Theme) => {
       );
       // console.log("a")
     } while (previousActions.length === 0 && prevAction)
-      // console.log("-.>>>>>>>>>>>>>>>>>", log.action,previousActions)
 
       if (previousActions.length > 0) {
         const prevMessageId = previousActions[0].request.context.message_id;

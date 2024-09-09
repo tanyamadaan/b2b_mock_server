@@ -280,11 +280,11 @@ export const initSchema = {
                           },
                           required: [
                             "gps",
-                            "address",
-                            "city",
-                            "country",
+                            // "address",
+                            // "city",
+                            // "country",
                             "area_code",
-                            "state",
+                            // "state",
                           ],
                         },
                         contact: {

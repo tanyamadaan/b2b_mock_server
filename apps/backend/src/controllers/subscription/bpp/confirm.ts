@@ -81,7 +81,7 @@ export const confirmConsultationController = async (
 
     let i = 1;
     let interval = setInterval(() => {
-      if(i >= range) {
+      if(i >= 2) {
         clearInterval(interval)
       }
 			childOrderResponseBuilder(
@@ -106,7 +106,7 @@ export const confirmConsultationController = async (
 				"on_update"
 			);
       i++;
-    }, 60000)
+    }, 1000)
 	} catch (error) {
 		next(error);
 	}

@@ -52,6 +52,7 @@ export const useAction = () => {
 			if (!parsedLog.context!.action) setLogError(true);
 			const parsedAction = parsedLog.context.action;
 			setAction(parsedAction);
+
 			// Choose the appropriate action mapping based on the domain
 			const actionMapping =
 				domain.toLowerCase() === "logistics"

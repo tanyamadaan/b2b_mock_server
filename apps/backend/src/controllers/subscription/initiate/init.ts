@@ -66,7 +66,7 @@ const intializeRequest = async (
 			message: {
 				order: { provider, fulfillments, quote },
 			},
-			providersItems
+			providersItems,
 		} = transaction;
 		let { payments, items } = transaction.message.order;
 		const { id, type, stops } = fulfillments[0];
@@ -76,12 +76,14 @@ const intializeRequest = async (
 			({ location_ids, ...items }: { location_ids: any }) => items
 		);
 
-		const quoteData = quoteSubscription(
+		console.log("transactionnnnnnnnn",transaction.message.order.quote)
+		let quoteData: any = transaction?.message?.order?.quote?transaction?.message?.order?.quote:quoteSubscription(
 			items,
 			providersItems,
 			"",
 			fulfillments[0]
 		);
+
 		let file: any;
 		/*****HANDLE SCENARIOS OF INIT*****/
 		switch (scenario) {
@@ -90,23 +92,23 @@ const intializeRequest = async (
 					path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init_manual.yaml")
 				);
 				break;
-				case "subscription-with-eMandate":
-					file = fs.readFileSync(
-						path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init_mandate.yaml")
-					);
-					break;
+			case "subscription-with-eMandate":
+				file = fs.readFileSync(
+					path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init_mandate.yaml")
+				);
+				break;
 			case "subscription-with-full-payments":
 				file = fs.readFileSync(
 					path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init_full.yaml")
 				);
 				break;
-					
+
 			case "single-order-offline-without-subscription":
 				file = fs.readFileSync(
 					path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init_single.yaml")
 				);
 				break;
-				case "single-order-online-without-subscription":
+			case "single-order-online-without-subscription":
 				file = fs.readFileSync(
 					path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init.yaml")
 				);

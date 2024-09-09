@@ -782,3 +782,33 @@ export const PREV_ACTION = {
 	update: "on_confirm",
 	on_update: "update",
 };
+
+export const PREV_SUBSCRIPTION_EMANDATE_ACTION = {
+	on_search: "search",
+	select: "on_search",
+	on_select: "select",
+	init: "on_select",
+	on_init: "init",
+	on_status: "on_init",
+	confirm: "on_status",
+	on_confirm: "confirm",
+	status:"on_confirm"	,
+	on_update:"on_confirm",
+	cancel: "on_confirm",
+	on_cancel: "cancel",
+	update: "on_confirm",
+};
+
+export const NEXT_SUBSCRIPTION_EMANDATE_ACTION = {
+	search: "on_search",
+	on_search: "select",
+	select: "on_select",
+	on_select: "init",
+	init: "on_init",
+	on_init: "on_status",
+	on_status:"confirm",
+	confirm: "on_confirm",
+	on_confirm:"on_update",
+	status: "on_status",
+	cancel: "on_cancel",
+};

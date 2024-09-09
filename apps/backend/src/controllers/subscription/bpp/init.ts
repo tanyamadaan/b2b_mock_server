@@ -90,7 +90,7 @@ const initConsultationController = (
 			"subscription"
 		);
 
-		const quoteData = quoteSubscription(
+		let quoteData = quoteSubscription(
 			items,
 			providersItems,
 			"",
@@ -118,10 +118,22 @@ const initConsultationController = (
 				file = fs.readFileSync(
 					path.join(SUBSCRIPTION_EXAMPLES_PATH, "on_init/on_init_single.yaml")
 				);
+				quoteData = quoteSubscription(
+					items,
+					providersItems,
+					"single-order",
+					fulfillments[0]
+				);
 				break;
 				case "single-order-online-without-subscription":
 				file = fs.readFileSync(
 					path.join(SUBSCRIPTION_EXAMPLES_PATH, "on_init/on_init_full.yaml")
+				);
+				quoteData = quoteSubscription(
+					items,
+					providersItems,
+					"single-order",
+					fulfillments[0]
 				);
 				break;
 			default:
@@ -170,21 +182,25 @@ const initConsultationController = (
 		);
 
 		// if(responseMessage.order.payments[0])
-		(responseMessage.order.payments = [
-			{
-				...responseMessage.order.payments[0],
-				status: "PAID",
-			},
-		]),
-			console.log("responseMessage...........", responseMessage);
-		onStatusResponseBuilder(
-			res,
-			context,
-			responseMessage,
-			`${req.body.context.bap_uri}${
-				req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
-			}`
-		);
+
+		if(scenario === "subscription-with-eMandate"){
+			(responseMessage.order.payments = [
+				{
+					...responseMessage.order.payments[0],
+					status: "PAID",
+				},
+			]),
+				console.log("responseMessage...........", responseMessage);
+			onStatusResponseBuilder(
+				res,
+				context,
+				responseMessage,
+				`${req.body.context.bap_uri}${
+					req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+				}`
+			);
+		}
+		
 	} catch (error) {
 		next(error);
 	}
