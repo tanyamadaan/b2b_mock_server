@@ -24,7 +24,6 @@ export const searchController = (
 			message: { intent },
 		} = req.body;
 		const category = req?.body?.message?.intent?.category?.id;
-		console.log("categoriesssssssssss", category, JSON.stringify(req.body));
 		switch (category) {
 			case PRINT_MEDIA_CATEGORIES.NEWSPAPER:
 				file = fs.readFileSync(

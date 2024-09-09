@@ -49,7 +49,7 @@ export const TransactionSearch = () => {
             } = item.request.context;
             const timestamp = new Date(strTimestamp);
             if (
-              !seenActionMessageId[`${message_id}-${action}`] || (action === "on_confirm" && item.type === "from_server")
+              !seenActionMessageId[`${message_id}-${action}`] || ((action === "on_confirm" || action === "on_update") && item.type === "from_server")
               // || timestamp > seenActionMessageId[action]
             ) {
               seenActionMessageId[`${message_id}-${action}`] = timestamp; // Update latest timestamp for the action

@@ -55,6 +55,7 @@ export const InitiateRequestSection = () => {
 	const [scenarioOptions, setScenarioOptions] = useState<string[]>([]);
 	const [cityOptions, setCityOptions] = useState<string[]>([]);
 	const [version, setVersion] = useState<string>("services");
+	const [selectedScenario, setSelectedScenario] = useState<string>("default");
 	const [renderActionFields, setRenderActionFields] = useState(false);
 	const [formState, setFormState] = useState<{ [key: string]: any }>({});
 	const [allowSubmission, setAllowSubmission] = useState<boolean>(false);
@@ -142,6 +143,10 @@ export const InitiateRequestSection = () => {
 
 			setScenarioOptions(newScenarioOption as string[]);
 		}
+		if (fieldName === "scenario") {
+			setSelectedScenario(value as string);
+			/****Write the logic for changes the domain options based on version selection */
+			}
 		setFormState((prev: any) => ({ ...prev, [fieldName]: value }));
 	};
 
@@ -225,7 +230,7 @@ export const InitiateRequestSection = () => {
 			const response = await axios.post(
 				`${
 					import.meta.env.VITE_SERVER_URL
-				}/${domain}/initiate/${action}?mode=mock&version=${version}`,
+				}/${domain}/initiate/${action}?mode=mock&version=${version}&scenario=${selectedScenario}`,
 				formState,
 				{
 					headers: {

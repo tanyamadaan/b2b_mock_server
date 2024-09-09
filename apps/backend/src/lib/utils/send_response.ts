@@ -13,7 +13,7 @@ async function send_response(
   res_obj: any,
   transaction_id: string,
   action: string,
-  scenario: string = "",
+  scenario: any = "",
   version: any = "",
   bpp_uri: string = "" // for search
 ) {

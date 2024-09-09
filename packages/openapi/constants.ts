@@ -21,16 +21,16 @@ export const LOGISTICS_SCENARIOS = {
 			scenario: "rts-weight-difference",
 		},
 	],
-	on_update:[
+	on_update: [
 		{
-			name:"Slots provided.",
-			scenario:"regular"
+			name: "Slots provided.",
+			scenario: "regular",
 		},
 		{
-			name:"Slots with updated quote.",
-			scenario:"updated-quote",
+			name: "Slots with updated quote.",
+			scenario: "updated-quote",
 		},
-	]
+	],
 };
 
 export const B2B_SCENARIOS = {
@@ -130,16 +130,25 @@ export const B2B_SCENARIOS = {
 };
 
 export const PRINT_MEDIA_SCENARIOS = {
-	// select: [
-	// 	{
-	// 		name: "RFQ",
-	// 		scenario: "rfq", // Select Domestic
-	// 	},
-	// 	{
-	// 		name: "Non-RFQ",
-	// 		scenario: "non-rfq",
-	// 	},
-	// ],
+	select: [
+		{
+			name: "Default",
+			scenario: "default",
+		},
+		{
+			name: "Subscription with EMandate",
+			scenario: "subscription-with-eMandate",
+		},
+
+		{
+			name: "Single Order Offline without Subscription",
+			scenario: "single-order-offline-without-subscription",
+		},
+		{
+			name: "Single Order Online without Subscription",
+			scenario: "single-order-online-without-subscription",
+		},
+	],
 
 	on_select: [
 		{
@@ -166,34 +175,33 @@ export const PRINT_MEDIA_SCENARIOS = {
 			name: "Subscription with Full Payments",
 			scenario: "subscription-with-full-payments",
 		},
-		
 	],
 
-	init:[
+	init: [
 		{
-		name: "Default",
-		scenario: "default",
-	},
-	{
-		name: "Subscription with EMandate",
-		scenario: "subscription-with-eMandate",
-	},
-	{
-		name: "Subscription with Manual Payments",
-		scenario: "subscription-with-manual-payments",
-	},
-	{
-		name: "Single Order Offline without Subscription",
-		scenario: "single-order-offline-without-subscription",
-	},
-	{
-		name: "Single Order Online without Subscription",
-		scenario: "single-order-online-without-subscription",
-	},
-	{
-		name: "Subscription with Full Payments",
-		scenario: "subscription-with-full-payments",
-	},
+			name: "Default",
+			scenario: "default",
+		},
+		{
+			name: "Subscription with EMandate",
+			scenario: "subscription-with-eMandate",
+		},
+		{
+			name: "Subscription with Manual Payments",
+			scenario: "subscription-with-manual-payments",
+		},
+		{
+			name: "Single Order Offline without Subscription",
+			scenario: "single-order-offline-without-subscription",
+		},
+		{
+			name: "Single Order Online without Subscription",
+			scenario: "single-order-online-without-subscription",
+		},
+		{
+			name: "Subscription with Full Payments",
+			scenario: "subscription-with-full-payments",
+		},
 	],
 	on_init: [
 		{
@@ -250,7 +258,7 @@ export const PRINT_MEDIA_SCENARIOS = {
 		{
 			name: "Completed",
 			scenario: "completed",
-		}
+		},
 	],
 
 	on_update: [
@@ -271,7 +279,6 @@ export const PRINT_MEDIA_SCENARIOS = {
 			scenario: "subscription paused",
 		},
 	],
-	
 };
 
 export const B2C_SCENARIOS = {

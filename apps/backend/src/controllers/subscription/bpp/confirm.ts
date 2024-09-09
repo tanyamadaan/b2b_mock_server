@@ -81,7 +81,7 @@ export const confirmConsultationController = async (
 
     let i = 1;
     let interval = setInterval(() => {
-      if(i >= 3) {
+      if(i >= range) {
         clearInterval(interval)
       }
 			childOrderResponseBuilder(

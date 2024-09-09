@@ -10,6 +10,7 @@ export const SUPPORTED_DOMAINS = [
 	"AGRI EQUIPMENT HIRING",
 	"BID AND AUCTION",
 	"LOGISTICS",
+	"PRINT MEDIA (SUBSCRIPTION)"
 ];
 
 export const USER_GUIDE_LINK =
@@ -176,12 +177,7 @@ export const INITIATE_FIELDS = {
 			domainDepended: true,
 			options: {
 				retail: B2B_SCENARIOS["select"].map((each) => each.scenario),
-				subscription:PRINT_MEDIA_SCENARIOS["on_select"].map((each) => each.scenario),
-
-				// retail: B2B_SCENARIOS["select"].map((each) => each.scenario),
-				// "agri-equipment-hiring": A,
-
-				// services: SERVICES_SCENARIOS["select"].map((each) => each.scenario),
+				subscription:PRINT_MEDIA_SCENARIOS["select"].map((each) => each.scenario),
 			},
 		},
 	],

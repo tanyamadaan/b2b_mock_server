@@ -47,12 +47,12 @@ const intializeRequest = async (
 			},
 		} = transaction;
 
-		const { scenario } = req?.query;
+		const { scenario } = req?.query || "";
 		const { transaction_id } = context;
 		const { id, fulfillments } = providers?.[0];
 		let items = [];
-    let file:any;
-		let response:any;
+		let file: any;
+		let response: any;
 		items = providers[0].items = [
 			providers?.[0]?.items.map(
 				({
@@ -65,27 +65,62 @@ const intializeRequest = async (
 			)?.[0],
 		];
 
+		let fulfillment: any = [
+			{
+				...fulfillments?.[2],
+				// type: "subscription",
+				// stops:fulfillments?.[2]?.stops,
+				stops: [
+					{
+						type: "start",
+						time: {
+							label: "selected",
+							range: {
+								start: providers?.[0]?.time?.schedule?.times?.[0] ?? new Date(),
+							},
+							duration: fulfillments?.[2]?.stops?.time?.duration
+								? fulfillments?.[2]?.stops?.time?.duration
+								: "P6M",
+							schedule: {
+								frequency: fulfillments?.[2]?.stops?.time?.schedule?.frequency,
+							},
+						},
+					},
+				],
+				tags: fulfillments?.[2]?.tags,
+			},
+		];
 		switch (scenario) {
 			case "subscription-with-eMandate":
 				file = fs.readFileSync(
 					path.join(SUBSCRIPTION_EXAMPLES_PATH, "select/select_mandate.yaml")
 				);
 				response = YAML.parse(file.toString());
+				fulfillment = fulfillment;
 				break;
 			case "single-order-offline-without-subscription":
 				file = fs.readFileSync(
 					path.join(SUBSCRIPTION_EXAMPLES_PATH, "select/select_single.yaml")
 				);
 				response = YAML.parse(file.toString());
+				fulfillment = response?.value?.message?.order?.fulfillments;
+
 				break;
 			case "single-order-online-without-subscription":
 				file = fs.readFileSync(
-					path.join(SUBSCRIPTION_EXAMPLES_PATH, "select/select_single_online.yaml")
+					path.join(
+						SUBSCRIPTION_EXAMPLES_PATH,
+						"select/select_single_online.yaml"
+					)
 				);
 				response = YAML.parse(file.toString());
+				fulfillment = response?.value?.message?.order?.fulfillments;
 				break;
 			default:
+				fulfillment = fulfillment;
 		}
+
+		console.log("scenariosssssssssssss",scenario,fulfillment)
 
 		const select = {
 			context: {
@@ -114,39 +149,12 @@ const intializeRequest = async (
 						},
 					})),
 
-					fulfillments: [
-						{
-							...fulfillments?.[2],
-							// type: "subscription",
-							// stops:fulfillments?.[2]?.stops,
-							stops: [
-								{
-									type: "start",
-									time: {
-										label: "selected",
-										range: {
-											start:
-												providers?.[0]?.time?.schedule?.times?.[0] ??
-												new Date(),
-										},
-										duration: fulfillments?.[2]?.stops?.time?.duration
-											? fulfillments?.[2]?.stops?.time?.duration
-											: "P6M",
-										schedule: {
-											frequency:
-												fulfillments?.[2]?.stops?.time?.schedule?.frequency,
-										},
-									},
-								},
-							],
-							tags: fulfillments?.[2]?.tags,
-						},
-					],
+					fulfillments: fulfillment,
 					payments: [{ type: payments?.[0].type }],
 				},
 			},
 		};
-		await send_response(res, next, select, transaction_id, "select");
+		await send_response(res, next, select, transaction_id, "select",scenario);
 	} catch (error) {
 		return next(error);
 	}

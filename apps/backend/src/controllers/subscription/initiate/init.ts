@@ -90,9 +90,25 @@ const intializeRequest = async (
 					path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init_manual.yaml")
 				);
 				break;
+				case "subscription-with-eMandate":
+					file = fs.readFileSync(
+						path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init_mandate.yaml")
+					);
+					break;
 			case "subscription-with-full-payments":
 				file = fs.readFileSync(
 					path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init_full.yaml")
+				);
+				break;
+					
+			case "single-order-offline-without-subscription":
+				file = fs.readFileSync(
+					path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init_single.yaml")
+				);
+				break;
+				case "single-order-online-without-subscription":
+				file = fs.readFileSync(
+					path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init.yaml")
 				);
 				break;
 			default:

@@ -104,7 +104,22 @@ const initConsultationController = (
 					path.join(SUBSCRIPTION_EXAMPLES_PATH, "on_init/on_init_manual.yaml")
 				);
 				break;
+			case "subscription-with-eMandate":
+				file = fs.readFileSync(
+					path.join(SUBSCRIPTION_EXAMPLES_PATH, "on_init/on_init_mandate.yaml")
+				);
+				break;
 			case "subscription-with-full-payments":
+				file = fs.readFileSync(
+					path.join(SUBSCRIPTION_EXAMPLES_PATH, "on_init/on_init_full.yaml")
+				);
+				break;
+			case "single-order-offline-without-subscription":
+				file = fs.readFileSync(
+					path.join(SUBSCRIPTION_EXAMPLES_PATH, "on_init/on_init_single.yaml")
+				);
+				break;
+				case "single-order-online-without-subscription":
 				file = fs.readFileSync(
 					path.join(SUBSCRIPTION_EXAMPLES_PATH, "on_init/on_init_full.yaml")
 				);
@@ -116,7 +131,7 @@ const initConsultationController = (
 		}
 
 		const response = YAML.parse(file.toString());
-		let responseMessage:any = {
+		let responseMessage: any = {
 			order: {
 				provider: remainingProvider,
 				locations,
@@ -155,143 +170,144 @@ const initConsultationController = (
 		);
 
 		// if(responseMessage.order.payments[0])
-		responseMessage.order.payments=[{
-			...responseMessage.order.payments[0],
-			status:"PAID"
-		}],
-
-		console.log("responseMessage...........",responseMessage)
+		(responseMessage.order.payments = [
+			{
+				...responseMessage.order.payments[0],
+				status: "PAID",
+			},
+		]),
+			console.log("responseMessage...........", responseMessage);
 		onStatusResponseBuilder(
 			res,
 			context,
 			responseMessage,
 			`${req.body.context.bap_uri}${
 				req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
-			}`);
-
+			}`
+		);
 	} catch (error) {
 		next(error);
 	}
 };
 
 export const onStatusResponseBuilder = async (
-  res: Response,
-  reqContext: object,
-  message: object,
-  uri: string,
-  error?: object | undefined
+	res: Response,
+	reqContext: object,
+	message: object,
+	uri: string,
+	error?: object | undefined
 ) => {
-  let action  = "on_status";
-  let ts = new Date();
-  ts.setSeconds(ts.getSeconds() + 1);
-  const sandboxMode = res.getHeader("mode") === "sandbox";
+	let action = "on_status";
+	let ts = new Date();
+	ts.setSeconds(ts.getSeconds() + 1);
+	const sandboxMode = res.getHeader("mode") === "sandbox";
 
-  var async: { message: object; context?: object; error?: object } = {
-    context: {},
-    message,
-  };
-  const bppURI =  SUBSCRIPTION_BPP_MOCKSERVER_URL;
+	var async: { message: object; context?: object; error?: object } = {
+		context: {},
+		message,
+	};
+	const bppURI = SUBSCRIPTION_BPP_MOCKSERVER_URL;
 
-    async = {
-      ...async,
-      context: {
-        ...reqContext,
-        bpp_id: MOCKSERVER_ID,
-        bpp_uri: bppURI,
-        timestamp: ts.toISOString(),
-        action,
-      },
-    };
+	async = {
+		...async,
+		context: {
+			...reqContext,
+			bpp_id: MOCKSERVER_ID,
+			bpp_uri: bppURI,
+			timestamp: ts.toISOString(),
+			action,
+		},
+	};
 
-  if (error) {
-    async = { ...async, error };
-  }
+	if (error) {
+		async = { ...async, error };
+	}
 
-  const header = await createAuthHeader(async);
-  if (sandboxMode) {
-      var log: TransactionType = {
-        request: async,
-      };
-      
-      // await redis.set(
-      //   `${(async.context! as any).transaction_id}-${action}-from-server`,
-      //   JSON.stringify(log)
-      // );
+	const header = await createAuthHeader(async);
+	if (sandboxMode) {
+		var log: TransactionType = {
+			request: async,
+		};
 
-      try {
-        const response = await axios.post(uri, async, {
-          headers: {
-            authorization: header,
-          },
-        });
+		// await redis.set(
+		//   `${(async.context! as any).transaction_id}-${action}-from-server`,
+		//   JSON.stringify(log)
+		// );
 
-        log.response = {
-          timestamp: new Date().toISOString(),
-          response: response.data,
-        };
+		try {
+			const response = await axios.post(uri, async, {
+				headers: {
+					authorization: header,
+				},
+			});
 
-        await redis.set(
-          `${(async.context! as any).transaction_id}-${action}-from-server`, // saving ID with on_confirm child process (duplicate keys are not allowed)
-          JSON.stringify(log)
-        );
-      } catch (error) {
-        const response =
-          error instanceof AxiosError
-            ? error?.response?.data
-            : {
-                message: {
-                  ack: {
-                    status: "NACK",
-                  },
-                },
-                error: {
-                  message: error,
-                },
-              };
-        log.response = {
-          timestamp: new Date().toISOString(),
-          response: response,
-        };
-        await redis.set(
-          `${(async.context! as any).transaction_id}-${action}-from-server`,
-          JSON.stringify(log)
-        );
-        throw error;
-      }
+			log.response = {
+				timestamp: new Date().toISOString(),
+				response: response.data,
+			};
 
-    logger.info({
-      type: "response",
-      action: action,
-      transaction_id: (reqContext as any).transaction_id,
-      message: { sync: { message: { ack: { status: "ACK" } } } },
-    });
+			await redis.set(
+				`${(async.context! as any).transaction_id}-${action}-from-server`, // saving ID with on_confirm child process (duplicate keys are not allowed)
+				JSON.stringify(log)
+			);
+		} catch (error) {
+			const response =
+				error instanceof AxiosError
+					? error?.response?.data
+					: {
+							message: {
+								ack: {
+									status: "NACK",
+								},
+							},
+							error: {
+								message: error,
+							},
+					  };
+			log.response = {
+				timestamp: new Date().toISOString(),
+				response: response,
+			};
+			await redis.set(
+				`${(async.context! as any).transaction_id}-${action}-from-server`,
+				JSON.stringify(log)
+			);
+			throw error;
+		}
 
-    console.log("Subscription Child Process: ", {
-      message: {
-        ack: {
-          status: "ACK",
-        },
-      },
-    });
-    return;
-  } else {
-    logger.info({
-      type: "response",
-      action: action,
-      transaction_id: (reqContext as any).transaction_id,
-      message: { sync: { message: { ack: { status: "ACK" } } } },
-    });
+		logger.info({
+			type: "response",
+			action: action,
+			transaction_id: (reqContext as any).transaction_id,
+			message: { sync: { message: { ack: { status: "ACK" } } } },
+		});
 
-    console.log(`Subscription On status Child Process : `, {
-      sync: {
-        message: {
-          ack: {
-            status: "ACK",
-          },
-        },
-      },
-      async,
-    });
-    return;
-  }
+		console.log("Subscription Child Process: ", {
+			message: {
+				ack: {
+					status: "ACK",
+				},
+			},
+		});
+		return;
+	} else {
+		logger.info({
+			type: "response",
+			action: action,
+			transaction_id: (reqContext as any).transaction_id,
+			message: { sync: { message: { ack: { status: "ACK" } } } },
+		});
+
+		console.log(`Subscription On status Child Process : `, {
+			sync: {
+				message: {
+					ack: {
+						status: "ACK",
+					},
+				},
+			},
+			async,
+		});
+		return;
+	}
 };
