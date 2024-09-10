@@ -1,5 +1,4 @@
 // new code utils
-
 import { Edge, MarkerType, Node } from "reactflow";
 import { CustomNodeData } from "../components";
 import { Theme } from "@mui/material/styles";
@@ -241,6 +240,7 @@ export const _getNodesAndEdges = (formattedResponse: any, theme: Theme) => {
 					context: { message_id: string };
 					message: { order: { ref_order_ids: string[] } };
 				};
+				timestamp: string
 			},
 			index: number
 		) => {
@@ -254,7 +254,7 @@ export const _getNodesAndEdges = (formattedResponse: any, theme: Theme) => {
 				nodes.push({
 					// id: `${transaction_id}-${log.action}-${message_id}`,
 					// id: log.action === "on_confirm" && log.id ? `${transaction_id}-${log.action}-${message_id}-${log.id}` : `${transaction_id}-${log.action}-${message_id}`,
-					id: `${transaction_id}-${log.action}-${message_id}-${log.id}`,
+					id: `${transaction_id}-${log.action}-${message_id}-${log.id}-${log.timestamp}`,
 					position: { x: initialX, y: 300 },
 					data: { title: log.action, log: log },
 					type: "custom",
@@ -262,7 +262,7 @@ export const _getNodesAndEdges = (formattedResponse: any, theme: Theme) => {
 				initialX += 200;
 			} else {
 				nodes.push({
-					id: `${transaction_id}-${log.action}-${message_id}-${log.id}`,
+					id: `${transaction_id}-${log.action}-${message_id}-${log.id}-${log.timestamp}`,
 					position: { x: initialX, y: 100 },
 					data: { title: log.action, log: log },
 					type: "custom",
@@ -273,9 +273,9 @@ export const _getNodesAndEdges = (formattedResponse: any, theme: Theme) => {
         console.log(formattedResponse[i].request)
 				if (formattedResponse[i].id === log.id) {
 					edges.push({
-						id: `e-${transaction_id}-${formattedResponse[i].action}-${log.action}-${message_id}-${log.id}`,
-						source: `${transaction_id}-${formattedResponse[i].action}-${formattedResponse[i].request.context.message_id}-${log.id}`,
-						target: `${transaction_id}-${log.action}-${message_id}-${log.id}`,
+						id: `e-${transaction_id}-${formattedResponse[i].action}-${log.action}-${message_id}-${log.id}-${log.timestamp}`,
+						source: `${transaction_id}-${formattedResponse[i].action}-${formattedResponse[i].request.context.message_id}-${log.id}-${formattedResponse[i].timestamp}`,
+						target: `${transaction_id}-${log.action}-${message_id}-${log.id}-${log.timestamp}`,
 						type: "custom",
 						markerEnd: {
 							type: MarkerType.Arrow,

@@ -20,6 +20,7 @@ async function send_response(
   bpp_uri: string = "", // for search
   id: number = 0
 ) {
+  let time_now = new Date().toISOString()
   try {
     const { context } = res_obj;
     if(bpp_uri === "")
@@ -31,7 +32,7 @@ async function send_response(
     const header = await createAuthHeader(res_obj);
     // res_obj.bpp_uri = bpp_uri
     await redis.set(
-      `${transaction_id}-${action}-from-server-${id}`,
+      `${transaction_id}-${action}-from-server-${id}-${time_now}`,
       JSON.stringify({ request: { ...res_obj } })
     );
 
@@ -61,7 +62,7 @@ async function send_response(
         headers: { ...headers },
       });      
       await redis.set(
-        `${transaction_id}-${action}-from-server-${id}`,
+        `${transaction_id}-${action}-from-server-${id}-${time_now}`,
         JSON.stringify({
           request: { ...res_obj },
           response: {

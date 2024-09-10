@@ -49,11 +49,11 @@ export const TransactionSearch = () => {
               message_id,
             } = item.request.context;
             const timestamp = new Date(strTimestamp);
-            if (
-              !seenActionMessageId[`${message_id}-${action}-${item.id}`]
-              // || timestamp > seenActionMessageId[action]
-            ) {
-              seenActionMessageId[`${message_id}-${action}-${item.id}`] = timestamp; // Update latest timestamp for the action
+            // if (
+            //   !seenActionMessageId[`${message_id}-${action}-${item.id}`]
+            //   // || timestamp > seenActionMessageId[action]
+            // ) {
+            //   seenActionMessageId[`${message_id}-${action}-${item.id}`] = timestamp; // Update latest timestamp for the action
               // const existingIndex = uniqueArr.findIndex(
               //  (obj) => obj.action === action
               // );
@@ -62,7 +62,7 @@ export const TransactionSearch = () => {
               // } else {
               uniqueArr.push(item);
               // }
-            }
+            // }
             return uniqueArr;
           },
           []

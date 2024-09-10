@@ -42,6 +42,7 @@ export const confirmConsultationController = async (
 			message: { order },
 		} = req.body;
 
+		const { scenario } = req.query;
 		const on_init = await redisFetchFromServer(
 			ON_ACTION_KEY.ON_INIT,
 			context?.transaction_id
@@ -94,26 +95,51 @@ export const confirmConsultationController = async (
 			"subscription"
 		);
 
-		console.log("scenariosssssssss",req?.query?.scenario)
-
-		//CALL WHEN THE FULFILLMENT IS SUBSCRIPTION
-		if (
-			req?.query &&
-			req?.query?.scenario !== "single-order-offline-without-subscription" &&
-			req?.query &&
-			req?.query?.scenario !== "single-order-online-without-subscription"
-		) {
+		if (scenario !== "single-order-offline-without-subscription" && scenario !== "single-order-online-without-subscription") {
 			//get range for confirm calls
 			const range = getRangeUsingDurationFrequency(
 				fulfillments[0]?.stops[0]?.time?.duration,
 				fulfillments[0]?.stops[0]?.time?.schedule?.frequency
 			);
-			responseMessage.order["ref_order_ids"] = [responseMessage.order.id];
-			responseMessage.order.id = uuidv4(); // static ID for child process on_confirm
-			responseMessage.order.status = "In-Progress"; // static ID for child process on_confirm
+
+			/********************CHILD ORDER RESPONSE */
+			let childOrderResponse = {
+				order:{
+					...responseMessage.order,
+					id:uuidv4(),
+					ref_order_ids:[responseMessage.order.id]
+				}
+			};
+			/********************CHILD ORDER RESPONSE */
+
+
+			/**********ON UPDATE RESPONSE */
+			let onUpdateOrderResponse = {
+				order:{
+					...responseMessage.order,
+					id:responseMessage.order.id,
+					ref_order_ids:[childOrderResponse.order.id],
+					status:"Active"
+				}
+			};
+			/**********ON UPDATE RESPONSE */
+
+
+			// let responseMessage1 = responseMessage;
+			// responseMessage.order.id = uuidv4(); // static ID for child process on_confirm
+			// responseMessage.order.status = "Active"; // static ID for child process on_confirm
+
+			let responseMessage2 = {
+				order:{
+					...responseMessage.order,
+					id:responseMessage.order.id,
+					ref_order_ids:[childOrderResponse.order.id],
+					status:"In-Progress"
+				}
+			};
 
 			let i = 1;
-			let interval = setInterval(() => {
+			let interval = setInterval(async () => {
 				if (i >= 2) {
 					clearInterval(interval);
 				}
@@ -122,7 +148,7 @@ export const confirmConsultationController = async (
 					i,
 					res,
 					context,
-					responseMessage,
+					childOrderResponse,
 					`${req.body.context.bap_uri}${
 						req.body.context.bap_uri.endsWith("/")
 							? "on_confirm"
@@ -131,11 +157,22 @@ export const confirmConsultationController = async (
 					"on_confirm"
 				);
 
-				childOrderResponseBuilder(
+				await childOrderResponseBuilder(
 					i,
 					res,
 					context,
-					responseMessage,
+					onUpdateOrderResponse,
+					`${req.body.context.bap_uri}${
+						req.body.context.bap_uri.endsWith("/") ? "on_update" : "/on_update"
+					}`,
+					"on_update"
+				);
+
+				await childOrderResponseBuilder(
+					i,
+					res,
+					context,
+					responseMessage2,
 					`${req.body.context.bap_uri}${
 						req.body.context.bap_uri.endsWith("/") ? "on_update" : "/on_update"
 					}`,
@@ -159,7 +196,7 @@ export const childOrderResponseBuilder = async (
 	error?: object | undefined
 ) => {
 	let ts = new Date();
-	ts.setSeconds(ts.getSeconds() + 1);
+
 	const sandboxMode = res.getHeader("mode") === "sandbox";
 
 	let async: { message: object; context?: object; error?: object } = {
@@ -201,7 +238,9 @@ export const childOrderResponseBuilder = async (
 			};
 
 			await redis.set(
-				`${(async.context! as any).transaction_id}-${action}-from-server-${id}`, // saving ID with on_confirm child process (duplicate keys are not allowed)
+				`${
+					(async.context! as any).transaction_id
+				}-${action}-from-server-${id}-${ts.toISOString()}`, // saving ID with on_confirm child process (duplicate keys are not allowed)
 				JSON.stringify(log)
 			);
 		} catch (error) {
@@ -223,7 +262,9 @@ export const childOrderResponseBuilder = async (
 				response: response,
 			};
 			await redis.set(
-				`${(async.context! as any).transaction_id}-${action}-from-server-${id}`,
+				`${
+					(async.context! as any).transaction_id
+				}-${action}-from-server-${id}-${ts.toISOString()}`,
 				JSON.stringify(log)
 			);
 

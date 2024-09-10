@@ -125,7 +125,7 @@ const initConsultationController = (
 					fulfillments[0]
 				);
 				break;
-			case "single-order-online-without-subscription":
+				case "single-order-online-without-subscription":
 				file = fs.readFileSync(
 					path.join(SUBSCRIPTION_EXAMPLES_PATH, "on_init/on_init_full.yaml")
 				);
@@ -183,7 +183,7 @@ const initConsultationController = (
 
 		// if(responseMessage.order.payments[0])
 
-		if (scenario === "subscription-with-eMandate") {
+		if(scenario === "subscription-with-eMandate"){
 			(responseMessage.order.payments = [
 				{
 					...responseMessage.order.payments[0],
@@ -200,6 +200,7 @@ const initConsultationController = (
 				}`
 			);
 		}
+		
 	} catch (error) {
 		next(error);
 	}
@@ -210,11 +211,11 @@ export const onStatusResponseBuilder = async (
 	reqContext: object,
 	message: object,
 	uri: string,
-	error?: object | undefined
+	error?: object | undefined,
+	id: number = 0
 ) => {
 	let action = "on_status";
 	let ts = new Date();
-	ts.setSeconds(ts.getSeconds() + 1);
 	const sandboxMode = res.getHeader("mode") === "sandbox";
 
 	var async: { message: object; context?: object; error?: object } = {
@@ -262,7 +263,7 @@ export const onStatusResponseBuilder = async (
 			};
 
 			await redis.set(
-				`${(async.context! as any).transaction_id}-${action}-from-server`, // saving ID with on_confirm child process (duplicate keys are not allowed)
+				`${(async.context! as any).transaction_id}-${action}-from-server-${id}-${ts.toISOString()}`, // saving ID with on_confirm child process (duplicate keys are not allowed)
 				JSON.stringify(log)
 			);
 		} catch (error) {
@@ -284,7 +285,7 @@ export const onStatusResponseBuilder = async (
 				response: response,
 			};
 			await redis.set(
-				`${(async.context! as any).transaction_id}-${action}-from-server`,
+				`${(async.context! as any).transaction_id}-${action}-from-server-${id}-${ts.toISOString()}`,
 				JSON.stringify(log)
 			);
 			throw error;
