@@ -359,7 +359,7 @@ export const onConfirmSchema = {
                       },
                       if: { properties: { type: { const: "end" } } },
                       then: {
-                        required: ["type", "location", "contact", "time"]
+                        required: ["type", "location", "time"]
                       },
                       else: {
                         required: ["type"],

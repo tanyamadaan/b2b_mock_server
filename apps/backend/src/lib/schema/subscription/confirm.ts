@@ -284,11 +284,7 @@ export const confirmSchema = {
                           },
                           required: [
                             "gps",
-                            "address",
-                            "city",
-                            "country",
                             "area_code",
-                            "state",
                           ],
                         },
                         contact: {

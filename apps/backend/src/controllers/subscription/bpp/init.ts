@@ -125,7 +125,7 @@ const initConsultationController = (
 					fulfillments[0]
 				);
 				break;
-				case "single-order-online-without-subscription":
+			case "single-order-online-without-subscription":
 				file = fs.readFileSync(
 					path.join(SUBSCRIPTION_EXAMPLES_PATH, "on_init/on_init_full.yaml")
 				);
@@ -183,7 +183,7 @@ const initConsultationController = (
 
 		// if(responseMessage.order.payments[0])
 
-		if(scenario === "subscription-with-eMandate"){
+		if (scenario === "subscription-with-eMandate") {
 			(responseMessage.order.payments = [
 				{
 					...responseMessage.order.payments[0],
@@ -200,7 +200,6 @@ const initConsultationController = (
 				}`
 			);
 		}
-		
 	} catch (error) {
 		next(error);
 	}
