@@ -1,5 +1,5 @@
 import axios from "axios";
-import { SubscriberDetail } from "../../interfaces";
+import { SubscriberDetail } from "common/interfaces";
 import { prisma } from "./prisma";
 import { REGISTRY_URL } from "./constants";
 import { Prisma } from "@prisma/client";

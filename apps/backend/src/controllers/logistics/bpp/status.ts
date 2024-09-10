@@ -5,18 +5,16 @@ import YAML from "yaml";
 
 import {
 	responseBuilder,
-	send_nack,
 	LOGISTICS_EXAMPLES_PATH,
-	redis,
+	redisFetchFromServer,
+} from "../../../lib/utils";
+import {
 	Item,
 	Fulfillment,
 	Stop,
 	Payment,
 	SettlementDetails,
-	redisFetchFromServer,
-	responseBuilder_logistics,
-} from "../../../lib/utils";
-import { on } from "events";
+} from "common/interfaces";
 
 function getRandomFile(directory: string): string | null {
 	const files = fs.readdirSync(directory);
@@ -77,7 +75,7 @@ export const statusController = async (
 			const fileContent = fs.readFileSync(file, "utf8");
 			const response = YAML.parse(fileContent);
 
-			return responseBuilder_logistics(
+			return responseBuilder(
 				res,
 				next,
 				response.value.context,
@@ -123,16 +121,16 @@ export const statusController = async (
 						...onUpdate.message,
 					},
 				};
-			}else{
+			} else {
 				onStatus = {
-					context : {
+					context: {
 						...onConfirm.context,
-						message_id : req.body.context.message_id,
-						timestamp : newTime,
-						action : "on_status"
+						message_id: req.body.context.message_id,
+						timestamp: newTime,
+						action: "on_status",
 					},
-					message : {
-						order:{
+					message: {
+						order: {
 							id: onConfirm.message.order.id,
 							status: "Accepted",
 							provider: onConfirm.message.order.provider,
@@ -142,12 +140,12 @@ export const statusController = async (
 							billing: onConfirm.message.order.billing,
 							payments: onConfirm.message.order.payments,
 							tags: onConfirm.message.order.tags,
-							updated_at: newTime
-						}
-					}
+							updated_at: newTime,
+						},
+					},
 				};
 			}
-			return responseBuilder_logistics(
+			return responseBuilder(
 				res,
 				next,
 				onStatus.context,

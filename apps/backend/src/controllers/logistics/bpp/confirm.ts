@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import {
-	responseBuilder_logistics,
+	responseBuilder,
 	LOGISTICS_EXAMPLES_PATH,
-	Fulfillment,
 	redis,
 	send_nack,
-	Stop,
 } from "../../../lib/utils";
+import {
+	Stop,} from "common/interfaces"
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
@@ -16,6 +16,7 @@ export const confirmController = async (
 	res: Response,
 	next: NextFunction
 ) => {
+
 	const sandboxMode = res.getHeader("mode") === "sandbox";
 	if (!sandboxMode) {
 		try {
@@ -52,7 +53,7 @@ export const confirmController = async (
 					break;
 			}
 
-			return responseBuilder_logistics(
+			return responseBuilder(
 				res,
 				next,
 				response.value.context,
@@ -67,6 +68,7 @@ export const confirmController = async (
 			return next(error);
 		}
 	} else {
+
 		const transactionId = req.body.context.transaction_id;
 		var transactionKeys = await redis.keys(`${transactionId}-*`);
 		var ifTransactionExist = transactionKeys.filter((e) =>
@@ -230,7 +232,8 @@ export const confirmController = async (
 				},
 			},
 		};
-		return responseBuilder_logistics(
+
+		return responseBuilder(
 			res,
 			next,
 			onConfirm.context,

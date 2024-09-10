@@ -9,13 +9,13 @@ import {
 	SERVICES_DOMAINS,
 } from "../../../lib/utils/apiConstants";
 import {
-	Fulfillment,
-	Stop,
 	redisExistFromServer,
 	redisFetchFromServer,
 	responseBuilder,
 	send_nack,
 } from "../../../lib/utils";
+import{	Fulfillment,
+	Stop,} from "common/interfaces"
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 

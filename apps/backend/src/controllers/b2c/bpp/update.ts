@@ -1,18 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import {
   send_nack,
-  redis,
+  redisFetchFromServer,
+} from "../../../lib/utils";
+import {
   Payment,
-  responseBuilder,
-  B2B_EXAMPLES_PATH,
   SettlementDetails,
   Tag,
   Fulfillment,
   Item,
-  Stop,
-  redisFetchFromServer,
-} from "../../../lib/utils";
-import { on } from "events";
+  Stop,} from "common/interfaces"
 // import fs from "fs";
 // import path from "path";
 // import YAML from "yaml";

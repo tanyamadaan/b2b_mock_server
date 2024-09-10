@@ -3,13 +3,8 @@ import { NextFunction, Request, Response } from "express";
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";
-import {
-	LOGISTICS_EXAMPLES_PATH,
-	MOCKSERVER_ID,
-	responseBuilder_logistics,
-	TimeObject,
-} from "../../../lib/utils";
-import { times } from "lodash";
+import { LOGISTICS_EXAMPLES_PATH, responseBuilder } from "../../../lib/utils";
+import { TimeObject } from "common/interfaces";
 
 interface Item {
 	id: string;
@@ -49,7 +44,6 @@ export const searchController = async (
 	res: Response,
 	next: NextFunction
 ) => {
-	const sandboxMode = res.getHeader("mode") === "sandbox";
 	try {
 		const domain = req.body.context.domain;
 
@@ -88,8 +82,6 @@ export const searchController = async (
 			...req.body.context,
 			action: "on_search",
 			timestamp: newTime,
-			bpp_id: MOCKSERVER_ID,
-			bpp_uri: "http://localhost:3000/logistics/bpp",
 		};
 		const updatedItems = onSearch.value.message.catalog.providers[0].items.map(
 			(item: Item) => ({
@@ -157,7 +149,8 @@ export const searchController = async (
 				},
 			},
 		};
-		return responseBuilder_logistics(
+
+		return responseBuilder(
 			res,
 			next,
 			req.body.context,

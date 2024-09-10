@@ -15,8 +15,7 @@ import HelpOutlineTwoToneIcon from "@mui/icons-material/HelpOutlineTwoTone";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 
-import { Item } from "../../../../backend/src/lib/utils/interfaces";
-
+import { Item } from "common/interfaces";
 
 type SELECT_OPTIONS =
 	| string[]

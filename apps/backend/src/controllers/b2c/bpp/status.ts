@@ -2,13 +2,15 @@ import { NextFunction, Request, Response } from "express";
 import {
 	responseBuilder,
 	send_nack,
+	redisFetchFromServer,
+} from "../../../lib/utils";
+import {
 	Item,
 	Fulfillment,
 	Stop,
 	Payment,
 	SettlementDetails,
-	redisFetchFromServer,
-} from "../../../lib/utils";
+} from "common/interfaces";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 import { B2C_STATUS_OBJECT } from "../../../lib/utils/apiConstants";

@@ -2,8 +2,9 @@ import { NextFunction, Request, Response } from "express";
 import {
   responseBuilder,
   B2B_EXAMPLES_PATH,
-  Fulfillment,
 } from "../../../lib/utils";
+import {
+  Fulfillment,} from "common/interfaces"
 import fs from "fs";
 import path from "path";
 import YAML from "yaml";

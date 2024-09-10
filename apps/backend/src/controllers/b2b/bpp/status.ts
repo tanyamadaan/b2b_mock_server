@@ -6,15 +6,16 @@ import { NextFunction, Request, Response } from "express";
 import {
   responseBuilder,
   send_nack,
-  B2B_EXAMPLES_PATH,
-  redis,
+  redisFetchFromServer,
+} from "../../../lib/utils";
+
+import {
   Item,
   Fulfillment,
   Stop,
   Payment,
   SettlementDetails,
-  redisFetchFromServer,
-} from "../../../lib/utils";
+} from "common/interfaces"
 // import { stringify } from "querystring";
 // import { AnyARecord } from "dns";
 

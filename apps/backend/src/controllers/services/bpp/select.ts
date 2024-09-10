@@ -8,10 +8,10 @@ import {
 	updateFulfillments,
 	checkIfCustomized,
 	quoteCreatorServiceCustomized,
-	Time,
 	redis,
 	quoteCreatorService,
 } from "../../../lib/utils";
+import { Time } from "common/interfaces";
 import { v4 as uuidv4 } from "uuid";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
@@ -71,7 +71,7 @@ const selectConsultationConfirmController = (
 	next: NextFunction
 ) => {
 	try {
-		console.log("confirmation")
+		console.log("confirmation");
 		const { context, message, providersItems } = req.body;
 		const { locations, ...provider } = message.order.provider;
 		const domain = context?.domain;
@@ -88,7 +88,7 @@ const selectConsultationConfirmController = (
 						ON_ACTION_KEY?.ON_SELECT
 				  );
 
-		console.log("providersItemsssssssssssssss",providersItems)
+		console.log("providersItemsssssssssssssss", providersItems);
 		const responseMessage = {
 			order: {
 				provider,
@@ -226,7 +226,7 @@ const selectMultiCollectionController = (
 	next: NextFunction
 ) => {
 	try {
-		console.log("multicollection")
+		console.log("multicollection");
 		const { context, message, providersItems } = req.body;
 		const updatedFulfillments = updateFulfillments(
 			req.body?.message?.order?.fulfillments,

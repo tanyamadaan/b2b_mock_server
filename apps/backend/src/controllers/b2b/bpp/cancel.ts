@@ -4,12 +4,11 @@ import {
   send_nack,
   B2B_EXAMPLES_PATH,
   redis,
-  Stop,
-  Fulfillment,
-  Item,
   redisFetchFromServer,
 } from "../../../lib/utils";
-
+import {  Stop,
+  Fulfillment,
+  Item,} from "common/interfaces"
 interface Item_payment_id {
   [key: string]: string[];
 }

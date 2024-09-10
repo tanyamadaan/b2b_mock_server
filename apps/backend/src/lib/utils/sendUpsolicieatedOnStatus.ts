@@ -3,7 +3,7 @@ import {
 	ALL_DOMAINS,
 	SERVICES_DOMAINS,
 } from "./apiConstants";
-import { Fulfillment, Stop } from "./interfaces";
+import { Fulfillment, Stop } from "common/interfaces";
 import {
 	findIncompleteOnConfirmCalls,
 	redisFetchFromServer,

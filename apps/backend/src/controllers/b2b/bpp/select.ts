@@ -4,10 +4,11 @@ import {
   responseBuilder,
   redis,
   send_nack,
-  Item,
-  Quantity,
-  Breakup,
 } from "../../../lib/utils";
+
+import {  Item,
+  Quantity,
+  Breakup,} from "common/interfaces"
 interface Item_id_name {
   id: string;
   name: string;
@@ -129,7 +130,7 @@ export const selectDomesticController = (
           })
         ),
         fulfillments: message.order.fulfillments.map(
-          ({ id, ...each }: { id: string; each: any }) => ({
+          ({ id }: { id: string; each: any }) => ({
             id,
             tracking: false,
             "@ondc/org/provider_name": "ONDC Mock Server",
@@ -202,7 +203,7 @@ export const selectNonServiceableController = (
           })
         ),
         fulfillments: message.order.fulfillments.map(
-          ({ id, ...each }: { id: string; each: any }) => ({
+          ({ id}: { id: string; each: any }) => ({
             id,
             tracking: false,
             "@ondc/org/provider_name": "ONDC Mock Server",
@@ -266,7 +267,7 @@ export const selectQuantityUnavailableController = (
           })
         ),
         fulfillments: message.order.fulfillments.map(
-          ({ id, ...each }: { id: string; each: any }) => ({
+          ({ id }: { id: string; each: any }) => ({
             id,
             tracking: false,
             "@ondc/org/provider_name": "ONDC Mock Server",

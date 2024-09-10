@@ -6,11 +6,8 @@ import {
 	send_response,
 	send_nack,
 	redisFetchToServer,
-	Item,
-	Category,
-	Tag,
-	TagItem,
 } from "../../../lib/utils";
+import { Item, Category, Tag, TagItem } from "common/interfaces";
 import { v4 as uuidv4 } from "uuid";
 import { set, eq, isEmpty } from "lodash";
 import _ from "lodash";

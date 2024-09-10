@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { redisFetchFromServer } from "../../lib/utils";
-import { Fulfillment, Item } from "../../lib/utils";
+import { Fulfillment, Item } from "common/interfaces";
 export const getCatalogController = async (
 	req: Request,
 	res: Response,
