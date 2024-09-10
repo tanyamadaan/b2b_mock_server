@@ -10,11 +10,7 @@ import {
 
 import { v4 as uuidv4 } from "uuid";
 import {
-	AGRI_HEALTH_STATUS,
-	BID_AUCTION_STATUS,
-	EQUIPMENT_HIRING_STATUS,
 	PRINT_MEDIA_STATUS,
-	SERVICES_DOMAINS,
 } from "../../../lib/utils/apiConstants";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
