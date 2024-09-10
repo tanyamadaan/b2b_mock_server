@@ -223,11 +223,14 @@ export const _getNodesAndEdges = (formattedResponse: any, theme: Theme) => {
 			: PREV_ACTION;
 	console.log("---->", formattedResponse);
 
+	// formattedResponse = formattedResponse.sort(
+	// 	(a: any, b: any) =>
+	// 		new Date(a.request.context.timestamp) <
+	// 		new Date(b.request.context.timestamp)
+	// );
 	formattedResponse = formattedResponse.sort(
-		(a: any, b: any) =>
-			new Date(a.request.context.timestamp) <
-			new Date(b.request.context.timestamp)
-	);
+    (a: any, b: any) => new Date(a.request.context.timestamp).getTime() - new Date(b.request.context.timestamp).getTime()
+  );
 
 	formattedResponse.forEach(
 		(
