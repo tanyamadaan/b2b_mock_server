@@ -145,7 +145,7 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 
 			<Divider />
 			<FormControl fullWidth sx={{ my: 1 }}>
-				<InputLabel id="select-domain-label">Select Domain</InputLabel>
+				<InputLabel id="select-domain-label">{domain ? "" : "Select Domain"}</InputLabel>
 				<Select
 					labelId="select-domain-label"
 					label="Domain"

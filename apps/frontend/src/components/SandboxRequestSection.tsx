@@ -30,9 +30,14 @@ export const SandboxRequestSection = () => {
 		scenario: string;
 	}>();
 	const { domain } = useDomain();
-	const { action, detectAction, logError, scenarios } = useAction();
-
+	const { action, detectAction, logError, scenarios,setLogError } = useAction();
 	const { setSyncResponse } = useSandbox();
+	
+	useEffect(()=>{
+    setAuthHeader("")
+    setLog("")
+    setLogError(false)
+  },[domain])
 	useEffect(() => {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore

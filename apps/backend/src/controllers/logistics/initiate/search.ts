@@ -109,7 +109,7 @@ export const initiateSearchController = async (
 						...search.message.intent.fulfillments,
 						stops: [
 							{
-								...search.message.intent.fulfillments.stops[0],
+								...search.message.intent?.fulfillments?.stops[0],
 								time: {
 									range: {
 										start: startTime.toISOString(),
@@ -118,7 +118,7 @@ export const initiateSearchController = async (
 								},
 							},
 							{
-								...search.message.intent.fulfillments.stops[1],
+								...search.message.intent?.fulfillments?.stops[1],
 							},
 						],
 					},

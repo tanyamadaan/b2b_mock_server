@@ -11,8 +11,8 @@ import { useEffect } from "react";
 export const Sandbox = () => {
 	const { domain } = useDomain();
 	const navigate = useNavigate();
+
 	useEffect(() => {
-		console.log("DOMAIN", domain);
 		if (domain.length === 0) navigate("/");
 	}, []);
 

@@ -84,6 +84,7 @@ export const confirmConsultationController = async (
       if(i >= 2) {
         clearInterval(interval)
       }
+			// context.message_id = uuidv4();
 			childOrderResponseBuilder(
 				i,
 				res,
@@ -126,9 +127,7 @@ export const childOrderResponseBuilder = async (
 	ts.setSeconds(ts.getSeconds() + 1);
 	const sandboxMode = res.getHeader("mode") === "sandbox";
 
-		
-
-	var async: { message: object; context?: object; error?: object } = {
+	let async: { message: object; context?: object; error?: object } = {
 		context: {},
 		message,
 	};

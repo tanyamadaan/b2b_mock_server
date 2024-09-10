@@ -74,5 +74,5 @@ export const useAction = () => {
 			setAction(undefined);
 		}
 	}, 1500);
-	return { action, domain, setDomain, logError, scenarios, detectAction };
+	return { action, domain, setDomain, logError, scenarios, detectAction,setLogError };
 };

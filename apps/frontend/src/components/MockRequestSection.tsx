@@ -33,9 +33,13 @@ export const MockRequestSection = () => {
 
 	const { domain } = useDomain();
 	const [version, setVersion] = useState("");
-	const { action, detectAction, logError, scenarios } = useAction();
+	const { action, detectAction, logError, scenarios,setLogError } = useAction();
 	const { setAsyncResponse, setSyncResponse } = useMock();
 
+	useEffect(()=>{
+    setLog("")
+    setLogError(false)
+  },[domain])
 	useEffect(() => {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore

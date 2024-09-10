@@ -64,6 +64,10 @@ export const InitiateRequestSection = () => {
 	const [matchingItems, setMatchingItems] = useState<Item[]>([]);
 	const [selectedItemId, setSelectedItemId] = useState<string>("");
 
+	useEffect(() => {
+		// setRenderActionFields(true);
+		setAction("");
+	}, [domain]);
 	const handleSelectionChange = (
 		_event: React.SyntheticEvent | null,
 		newValue: string | null
@@ -146,7 +150,7 @@ export const InitiateRequestSection = () => {
 		if (fieldName === "scenario") {
 			setSelectedScenario(value as string);
 			/****Write the logic for changes the domain options based on version selection */
-			}
+		}
 		setFormState((prev: any) => ({ ...prev, [fieldName]: value }));
 	};
 
@@ -157,19 +161,16 @@ export const InitiateRequestSection = () => {
 				action as keyof typeof INITIATE_FIELDS
 			].map((e) => e.name);
 
-			console.log("formkeysssssssss",keys,formKeys)
-
 			const scenarios = INITIATE_FIELDS[
 				action as keyof typeof INITIATE_FIELDS
 			].filter((e) => e.name === "scenario")[0];
 			const logisticsInitKeys = ["transactionId", "itemID"];
-			
+
 			const logisticsCancelKeys = [
 				"transactionId",
 				"cancellationReasonId",
 			].every((key) => formKeys.includes(key));
 
-			console.log("domainnnnnnnnnnnnnnn",domain)
 			if (domain === "logistics" && action === "init") {
 				// Check if both transactionId and itemID are present in formState
 				if (logisticsInitKeys.every((key) => key in formState)) {
@@ -183,8 +184,7 @@ export const InitiateRequestSection = () => {
 				logisticsCancelKeys
 			) {
 				setAllowSubmission(true);
-			} else if (checker(keys, formKeys,domain)){
-				console.log("chekrrrrrrrrrrrrrr")
+			} else if (checker(keys, formKeys, domain)) {
 				setAllowSubmission(true);
 			} else if (
 				checker(
@@ -195,11 +195,8 @@ export const InitiateRequestSection = () => {
 				scenarios?.domainDepended &&
 				!scenarios.options[domain as keyof SELECT_OPTIONS]
 			) {
-				console.log("dominsssssscheckrrrrrrrrr")
-
 				setAllowSubmission(true);
 			} else {
-				console.log("allowwwwwwwwwwww")
 				setAllowSubmission(false);
 			}
 		}
@@ -265,30 +262,30 @@ export const InitiateRequestSection = () => {
 				setMessageType("error");
 			}
 		} catch (error: any) {
-		// 	setMessageType("error");
-		// 	if (
-		// 		error instanceof AxiosError &&
-		// 		error.response?.data?.error?.message.error?.message
-		// 	) {
-		// 		handleMessageToggle(
-		// 			error.response?.data?.error?.message.error?.message === "string"
-		// 				? error.response?.data?.error?.message.error?.message
-		// 				: Array.isArray(
-		// 						error.response?.data?.error?.message?.error?.message
-		// 				  ) &&
-		// 				  error.response?.data?.error?.message?.error?.message.length > 0
-		// 				? `${error.response?.data?.error?.message?.error?.message[0]?.message} in ${error.response?.data?.error?.message?.error?.message[0]?.details}`
-		// 				: error.response?.data?.error?.message.error?.message
-		// 		);
-		// 	} else {
-		// 		handleMessageToggle(
-		// 			error.response?.data?.error?.message
-		// 				? error.response?.data?.error?.message
-		// 				: "Error Occurred while initiating request!"
-		// 		);
-		// 	}
-		// }
-		setMessageType("error");
+			// 	setMessageType("error");
+			// 	if (
+			// 		error instanceof AxiosError &&
+			// 		error.response?.data?.error?.message.error?.message
+			// 	) {
+			// 		handleMessageToggle(
+			// 			error.response?.data?.error?.message.error?.message === "string"
+			// 				? error.response?.data?.error?.message.error?.message
+			// 				: Array.isArray(
+			// 						error.response?.data?.error?.message?.error?.message
+			// 				  ) &&
+			// 				  error.response?.data?.error?.message?.error?.message.length > 0
+			// 				? `${error.response?.data?.error?.message?.error?.message[0]?.message} in ${error.response?.data?.error?.message?.error?.message[0]?.details}`
+			// 				: error.response?.data?.error?.message.error?.message
+			// 		);
+			// 	} else {
+			// 		handleMessageToggle(
+			// 			error.response?.data?.error?.message
+			// 				? error.response?.data?.error?.message
+			// 				: "Error Occurred while initiating request!"
+			// 		);
+			// 	}
+			// }
+			setMessageType("error");
 			if (
 				error instanceof AxiosError &&
 				error.response?.data?.error?.message.error?.message
@@ -303,29 +300,26 @@ export const InitiateRequestSection = () => {
 						? `${error.response?.data?.error?.message?.error?.message[0]?.message} in ${error.response?.data?.error?.message?.error?.message[0]?.details}`
 						: error.response?.data?.error?.message.error?.message
 				);
-			} else if(error instanceof AxiosError &&
-				error.response?.data?.sync?.error.message) {
-					handleMessageToggle(
-						error.response?.data?.sync?.error.message === "string"
-							? error.response?.data?.sync?.error.message
-							: Array.isArray(
-								error.response?.data?.sync?.error.message
-								) &&
-								error.response?.data?.sync?.error.message.length > 0
-							? `${error.response?.data?.sync?.error.message[0].message} in ${error.response?.data?.sync?.error.message[0]?.details}`
-							: error.response?.data?.sync?.error.message
-					);
-
-			}	else if (
+			} else if (
+				error instanceof AxiosError &&
+				error.response?.data?.sync?.error.message
+			) {
+				handleMessageToggle(
+					error.response?.data?.sync?.error.message === "string"
+						? error.response?.data?.sync?.error.message
+						: Array.isArray(error.response?.data?.sync?.error.message) &&
+						  error.response?.data?.sync?.error.message.length > 0
+						? `${error.response?.data?.sync?.error.message[0].message} in ${error.response?.data?.sync?.error.message[0]?.details}`
+						: error.response?.data?.sync?.error.message
+				);
+			} else if (
 				error instanceof AxiosError &&
 				error.response?.data?.error?.message
 			) {
 				handleMessageToggle(
 					error.response?.data?.error?.message === "string"
 						? error.response?.data?.error?.message
-						: Array.isArray(
-							error.response?.data?.error?.message
-						  ) &&
+						: Array.isArray(error.response?.data?.error?.message) &&
 						  error.response?.data?.error?.message.length > 0
 						? `${error.response?.data?.error?.message[0]?.message} in ${error.response?.data?.error?.message[0]?.details}`
 						: error.response?.data?.error?.message
@@ -367,10 +361,18 @@ export const InitiateRequestSection = () => {
 				</Box>
 
 				<Stack spacing={2} sx={{ my: 2 }}>
-					<Select placeholder="Select Action" onChange={handleActionSelection}>
+					<Select
+						placeholder="Select Action"
+						value={action}
+						onChange={handleActionSelection}
+					>
 						{Object.keys(INITIATE_FIELDS)
 							.filter(
-								(action) => !((domain === "logistics" && action === "select") ||(domain === "subscription" && action === "update") )
+								(action) =>
+									!(
+										(domain === "logistics" && action === "select") ||
+										(domain === "subscription" && action === "update")
+									)
 							)
 							.map((action, idx) => (
 								<Option value={action} key={"action-" + idx}>
@@ -384,7 +386,6 @@ export const InitiateRequestSection = () => {
 							<Divider />
 							{action &&
 								INITIATE_FIELDS[action as keyof typeof INITIATE_FIELDS].map(
-									
 									//my version code
 
 									// (field, index) => (
@@ -529,10 +530,8 @@ export const InitiateRequestSection = () => {
 											);
 										}
 
-
 										return (
 											<React.Fragment key={`field-${action}-${index}`}>
-												
 												{field.type === "text" &&
 												field.name !== "cancellationReasonId" ? (
 													<Input
