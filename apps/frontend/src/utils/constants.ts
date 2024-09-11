@@ -2,12 +2,10 @@ import { B2B_SCENARIOS } from "openapi-specs/constants";
 
 export const SUPPORTED_DOMAINS = [
 	"B2B",
-	"B2C",
+	"B2C Exports",
 	"SERVICES",
 	"AGRI SERVICES",
 	"HEALTHCARE SERVICES",
-	"AGRI EQUIPMENT HIRING",
-	"BID AND AUCTION"
 ];
 
 export const USER_GUIDE_LINK =
@@ -54,13 +52,10 @@ export const B2B_DOMAINS = [
 	"ONDC:RET10",
 	"ONDC:RET12",
 	"ONDC:RET13",
-	"ONDC:RET14"
-]
+	"ONDC:RET14",
+];
 
-export const B2C_DOMAINS = [
-	"ONDC:RET10",
-	"ONDC:RET12"
-]
+export const B2C_DOMAINS = ["ONDC:RET10", "ONDC:RET12"];
 
 export const SERVICE_DOMAINS = [
 	"ONDC:SRV11",
@@ -70,31 +65,23 @@ export const SERVICE_DOMAINS = [
 	"ONDC:SRV18",
 ];
 
-export const SERVICE_DOMAINS_OBJECT = [
-	{ lable: "ONDC:SRV11-Services", value: "ONDC:SRV11" },
-	{ lable: "ONDC:SRV13-Healthcare Services", value: "ONDC:SRV13" },
-	{ lable: "ONDC:SRV14-Agri Services", value: "ONDC:SRV14" },
-	{ lable: "ONDC:SRV15-Agri Equipment Hiring Services", value: "ONDC:SRV15" },
-	{ lable: "ONDC:SRV18-Bid And Auction Services", value: "ONDC:SRV18" }
-];
-
 export const SERVICES_DOMAINS = {
 	SERVICE: "ONDC:SRV11",
 	HEALTHCARE_SERVICES: "ONDC:SRV13",
 	AGRI_SERVICES: "ONDC:SRV14",
 	EQUIPMENT_HIRING_SERVICES: "ONDC:SRV15",
-	BID_AUCTION_SERVICE: "ONDC:SRV18"
-}
+	BID_AUCTION_SERVICE: "ONDC:SRV18",
+};
 
 export const ALL_DOMAINS = {
-	"B2B": B2B_DOMAINS,
-	"B2C": B2C_DOMAINS,
-	"Services": SERVICE_DOMAINS
+	B2B: B2B_DOMAINS,
+	B2C: B2C_DOMAINS,
+	Services: SERVICE_DOMAINS,
 };
 
 export const CITY_CODE = ["std:080", "std:011"];
 
-export const B2C_CITY_CODE = ["UN:SIN"]
+export const B2C_CITY_CODE = ["UN:SIN"];
 export const INITIATE_FIELDS = {
 	search: [
 		{

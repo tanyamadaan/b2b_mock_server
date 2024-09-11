@@ -6,11 +6,10 @@ import {
 	NEXT_ACTION,
 	HEALTHCARE_SERVICES_SCENARIOS,
 	AGRI_SERVICES_SCENARIOS,
-	B2C_SCENARIOS,
 	AGRI_EQUIPMENT_SERVICES_SCENARIOS,
 	BID_AUCTION_SCENARIOS,
 } from "openapi-specs/constants";
-import { SERVICE_DOMAINS, SERVICES_DOMAINS } from "../constants";
+import { SERVICES_DOMAINS } from "../constants";
 // import { ALL_DOMAINS_FRONTEND } from "../constants";
 
 export const useAction = () => {
