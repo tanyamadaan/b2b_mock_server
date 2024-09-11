@@ -56,7 +56,6 @@ export const initController = async (
 		if (!on_select) {
 			return send_nack(res, ERROR_MESSAGES.ON_SELECT_DOES_NOT_EXISTED);
 		}
-		console.log("scenariooooooooooooooooooo", scenario);
 		switch (scenario) {
 			//EQUIPMENT HIRING
 			case "availability_changes_during_the_transaction_journey":
@@ -418,7 +417,6 @@ const initBidPlacementController = (
 		};
 		delete req.body?.providersItems;
 
-		// console.log("responseMessage=>>>>>>>>>",responseMessage)
 		return responseBuilder(
 			res,
 			next,
@@ -487,14 +485,6 @@ const initParticipationFeeController = (
 			"bid_auction_service",
 			"participation_fee"
 		);
-
-		console.log(
-			"itemsssssssssss",
-			items.map(({ ...remaining }: { location_ids: any; remaining: any }) => ({
-				...remaining,
-			}))
-		);
-
 		const responseMessage = {
 			order: {
 				provider: remainingProvider,

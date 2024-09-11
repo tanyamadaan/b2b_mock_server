@@ -189,18 +189,18 @@ export const _getNodesAndEdges = (formattedResponse: any, theme: Theme) => {
 	let initialX = 50;
 
 	// Determine the domain (assume domain info is available in the response)
-	const domain = formattedResponse[0].domain?.toLowerCase() || "services"; // Default to "services" if domain is not provided
+	// const domain = formattedResponse[0].domain?.toLowerCase() || "services"; // Default to "services" if domain is not provided
 
 	// Choose the correct mapping based on the domain
-	const prevActionMapping =
-		domain === "logistics"
-			? PREV_ACTION_LOGISTICS
-			: formattedResponse &&
-			  formattedResponse[5] &&
-			  formattedResponse[5]?.request?.message?.order?.payments[0].tags[0]
-					.list[0].value
-			? PREV_SUBSCRIPTION_EMANDATE_ACTION
-			: PREV_ACTION;
+	// const prevActionMapping =
+	// 	domain === "logistics"
+	// 		? PREV_ACTION_LOGISTICS
+	// 		: formattedResponse &&
+	// 		  formattedResponse[5] &&
+	// 		  formattedResponse[5]?.request?.message?.order?.payments[0].tags[0]
+	// 				.list[0].value
+	// 		? PREV_SUBSCRIPTION_EMANDATE_ACTION
+	// 		: PREV_ACTION;
 
 	// formattedResponse = formattedResponse.sort(
 	// 	(a: any, b: any) =>
