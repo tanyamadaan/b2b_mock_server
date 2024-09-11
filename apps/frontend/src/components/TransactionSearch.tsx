@@ -81,9 +81,6 @@ export const TransactionSearch = () => {
           actionComparator
         );
 
-			// console.log("RESPONSE", response, formattedResponse);
-
-			console.log("formattedResponseeeeeeeeeeeee",formattedResponse)
 			const {edges, nodes} = _getNodesAndEdges(formattedResponse, theme)
 
 			// const { edges, nodes } = getNodesAndEdges(formattedResponse, theme);

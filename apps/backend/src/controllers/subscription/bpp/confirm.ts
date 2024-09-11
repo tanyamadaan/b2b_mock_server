@@ -95,7 +95,10 @@ export const confirmConsultationController = async (
 			"subscription"
 		);
 
-		if (scenario !== "single-order-offline-without-subscription" && scenario !== "single-order-online-without-subscription") {
+		if (
+			scenario !== "single-order-offline-without-subscription" &&
+			scenario !== "single-order-online-without-subscription"
+		) {
 			//get range for confirm calls
 			const range = getRangeUsingDurationFrequency(
 				fulfillments[0]?.stops[0]?.time?.duration,
@@ -103,40 +106,178 @@ export const confirmConsultationController = async (
 			);
 
 			/********************CHILD ORDER RESPONSE */
-			let childOrderResponse = {
-				order:{
+			let childOrderResponse = structuredClone({
+				order: {
 					...responseMessage.order,
-					id:uuidv4(),
-					ref_order_ids:[responseMessage.order.id]
-				}
-			};
+					id: uuidv4(),
+					ref_order_ids: [responseMessage.order.id],
+				},
+			});
+
+			childOrderResponse.order.payments[0].id = "P2";
+			childOrderResponse.order.payments[0].status = "NOT-PAID";
+			delete childOrderResponse.order.payments[0].url;
+			childOrderResponse.order.payments[0].tags = [
+				{
+					descriptor: {
+						code: "SETTLEMENT_DETAILS",
+					},
+					list: [
+						{
+							descriptor: {
+								code: "COUNTERPARTY",
+							},
+							value: "BAP",
+						},
+						{
+							descriptor: {
+								code: "MODE",
+							},
+							value: "UPI",
+						},
+						{
+							descriptor: {
+								code: "BENEFICIARY_NAME",
+							},
+							value: "xxxxx",
+						},
+						{
+							descriptor: {
+								code: "BANK_ACCOUNT_NO",
+							},
+							value: "xxxxx",
+						},
+						{
+							descriptor: {
+								code: "IFSC_CODE",
+							},
+							value: "xxxxxxx",
+						},
+						{
+							descriptor: {
+								code: "UPI_ADDRESS",
+							},
+							value: "xxxxxxx",
+						},
+					],
+				},
+				{
+					descriptor: {
+						code: "BUYER_FINDER_FEES",
+					},
+					display: false,
+					list: [
+						{
+							descriptor: {
+								code: "BUYER_FINDER_FEE_TYPE",
+							},
+							value: "percent",
+						},
+						{
+							descriptor: {
+								code: "BUYER_FINDER_FEE_AMOUNT",
+							},
+							value: "0",
+						},
+					],
+				},
+			];
 			/********************CHILD ORDER RESPONSE */
 
-
 			/**********ON UPDATE RESPONSE */
-			let onUpdateOrderResponse = {
-				order:{
+			let onUpdateOrderResponse = structuredClone({
+				order: {
 					...responseMessage.order,
-					id:responseMessage.order.id,
-					ref_order_ids:[childOrderResponse.order.id],
-					status:"Active"
-				}
-			};
+					id: responseMessage.order.id,
+					ref_order_ids: [childOrderResponse.order.id],
+					status: "Active",
+				},
+			});
 			/**********ON UPDATE RESPONSE */
-
 
 			// let responseMessage1 = responseMessage;
 			// responseMessage.order.id = uuidv4(); // static ID for child process on_confirm
 			// responseMessage.order.status = "Active"; // static ID for child process on_confirm
 
-			let responseMessage2 = {
-				order:{
+			let responseMessage2 = structuredClone({
+				order: {
 					...responseMessage.order,
-					id:responseMessage.order.id,
-					ref_order_ids:[childOrderResponse.order.id],
-					status:"In-Progress"
-				}
-			};
+					id: responseMessage.order.id,
+					ref_order_ids: [childOrderResponse.order.id],
+					status: "In-Progress",
+				},
+			});
+
+			responseMessage2.order.payments[0].id = "P2";
+			responseMessage2.order.payments[0].status = "NOT-PAID";
+			delete responseMessage2.order.payments[0].url;
+			responseMessage2.order.payments[0].tags = [
+				{
+					descriptor: {
+						code: "SETTLEMENT_DETAILS",
+					},
+					list: [
+						{
+							descriptor: {
+								code: "COUNTERPARTY",
+							},
+							value: "BAP",
+						},
+						{
+							descriptor: {
+								code: "MODE",
+							},
+							value: "UPI",
+						},
+						{
+							descriptor: {
+								code: "BENEFICIARY_NAME",
+							},
+							value: "xxxxx",
+						},
+						{
+							descriptor: {
+								code: "BANK_ACCOUNT_NO",
+							},
+							value: "xxxxx",
+						},
+						{
+							descriptor: {
+								code: "IFSC_CODE",
+							},
+							value: "xxxxxxx",
+						},
+						{
+							descriptor: {
+								code: "UPI_ADDRESS",
+							},
+							value: "xxxxxxx",
+						},
+					],
+				},
+				{
+					descriptor: {
+						code: "BUYER_FINDER_FEES",
+					},
+					display: false,
+					list: [
+						{
+							descriptor: {
+								code: "BUYER_FINDER_FEE_TYPE",
+							},
+							value: "percent",
+						},
+						{
+							descriptor: {
+								code: "BUYER_FINDER_FEE_AMOUNT",
+							},
+							value: "0",
+						},
+					],
+				},
+			];
+
+
 
 			let i = 1;
 			let interval = setInterval(async () => {

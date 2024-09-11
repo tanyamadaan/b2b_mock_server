@@ -23,7 +23,6 @@ export const AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH =
 
 export const B2B_EXAMPLES_PATH =
 	"./domain-repos/@retail-b2b/release-2.0.2/api/components/Examples/B2B";
-
 export const B2C_EXAMPLES_PATH =
 	"./domain-repos/@b2c_exports_2.0/api/components/Examples/B2C_Exports";
 

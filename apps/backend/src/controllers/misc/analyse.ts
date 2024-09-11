@@ -26,7 +26,6 @@ export const analyseController = async (req: Request, res: Response) => {
     storedTransaction.push(
       transactions.map((each, index) => {
         let _key = _transactionsKeys[index].match(/-from-server(?:-(\d+))?(?:-(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z))?$/);
-				console.log(_key && _key[2])
         if (!each) return null;
         var parsed = JSON.parse(each);
         return {

@@ -53,12 +53,6 @@ export const getNodesAndEdges = (formattedResponse: any, theme: Theme) => {
 
 	// Determine the domain (assume domain info is available in the response)
 	const domain = formattedResponse[0].domain?.toLowerCase() || "services"; // Default to "services" if domain is not provided
-
-	console.log(
-		"formattedResponse previous actionnnnnnnnnnnnn",
-		formattedResponse[5]?.request?.message?.order?.payments[0].tags[0].list[0]
-			.value
-	);
 	// Choose the correct mapping based on the domain
 	const prevActionMapping =
 		domain === "logistics"
@@ -70,7 +64,6 @@ export const getNodesAndEdges = (formattedResponse: any, theme: Theme) => {
 			? PREV_SUBSCRIPTION_EMANDATE_ACTION
 			: PREV_ACTION;
 
-	console.log(formattedResponse);
 	formattedResponse.forEach(
 		(log: {
 			id?: string;
@@ -119,12 +112,6 @@ export const getNodesAndEdges = (formattedResponse: any, theme: Theme) => {
 						request: { context: { message_id: string } };
 					}) => {
 						if (e.action === prevAction) {
-							console.log(
-								log.action,
-								e.action,
-								prevAction,
-								e.request.context.message_id === log.request.context.message_id
-							);
 							if (
 								e.request.context.message_id === log.request.context.message_id
 							) {
@@ -136,7 +123,6 @@ export const getNodesAndEdges = (formattedResponse: any, theme: Theme) => {
 						return false;
 					}
 				);
-				// console.log("a")
 			} while (previousActions.length === 0 && prevAction);
 
 			if (previousActions.length > 0) {
@@ -205,11 +191,6 @@ export const _getNodesAndEdges = (formattedResponse: any, theme: Theme) => {
 	// Determine the domain (assume domain info is available in the response)
 	const domain = formattedResponse[0].domain?.toLowerCase() || "services"; // Default to "services" if domain is not provided
 
-	console.log(
-		"formattedResponse previous actionnnnnnnnnnnnn",
-		formattedResponse[5]?.request?.message?.order?.payments[0].tags[0].list[0]
-			.value
-	);
 	// Choose the correct mapping based on the domain
 	const prevActionMapping =
 		domain === "logistics"
@@ -220,7 +201,6 @@ export const _getNodesAndEdges = (formattedResponse: any, theme: Theme) => {
 					.list[0].value
 			? PREV_SUBSCRIPTION_EMANDATE_ACTION
 			: PREV_ACTION;
-	console.log("---->", formattedResponse);
 
 	// formattedResponse = formattedResponse.sort(
 	// 	(a: any, b: any) =>
@@ -270,7 +250,6 @@ export const _getNodesAndEdges = (formattedResponse: any, theme: Theme) => {
 			}
 
 			for (let i = index - 1; i >= 0; i--) {
-        console.log(formattedResponse[i].request)
 				if (formattedResponse[i].id === log.id) {
 					edges.push({
 						id: `e-${transaction_id}-${formattedResponse[i].action}-${log.action}-${message_id}-${log.id}-${log.timestamp}`,

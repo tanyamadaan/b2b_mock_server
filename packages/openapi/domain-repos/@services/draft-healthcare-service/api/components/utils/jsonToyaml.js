@@ -28,7 +28,6 @@ function convertJsonToYaml(jsonFilePath, yamlFilePath) {
     fs.writeFileSync(yamlFilePath, yamlContent, "utf8");
     fs.unlinkSync(jsonFilePath);
 
-    console.log(`Converted ${jsonFilePath} to ${yamlFilePath}`);
   } catch (err) {
     console.error(`Error converting ${jsonFilePath}:`, err);
   }

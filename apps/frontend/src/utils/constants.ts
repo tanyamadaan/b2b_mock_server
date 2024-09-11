@@ -104,7 +104,7 @@ export const ALL_DOMAINS = {
 	Retail: RETAIL_DOMAINS,
 	Services: SERVICE_DOMAINS,
 	Subscription: SUBSCRIPTION_DOMAINS,
-	Logistics: LOGISTICS_DOMAINS,
+	// Logistics: LOGISTICS_DOMAINS,
 };
 
 export const CITY_CODE = ["std:080", "std:011"];
@@ -178,6 +178,7 @@ export const INITIATE_FIELDS = {
 			options: {
 				retail: B2B_SCENARIOS["select"].map((each) => each.scenario),
 				subscription:PRINT_MEDIA_SCENARIOS["select"].map((each) => each.scenario),
+				b2b: B2B_SCENARIOS["select"].map((each) => each.scenario),
 			},
 		},
 	],
@@ -196,6 +197,7 @@ export const INITIATE_FIELDS = {
 			options: {
 				retail: B2B_SCENARIOS["init"].map((each) => each.scenario),
 				// subscription:PRINT_MEDIA_SCENARIOS["init"].map((each) => each.scenario),
+				b2b: B2B_SCENARIOS["init"].map((each) => each.scenario),
 
 				// retail: B2B_SCENARIOS["init"].map((each) => each.scenario),
 				// services: SERVICES_SCENARIOS["init"].map((each) => each.scenario),
