@@ -153,7 +153,7 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 				>
 					{Object.keys(ALL_DOMAINS).map((domain: string, key: number) => (
 						<MenuItem key={domain + key} value={domain}>
-							{domain}
+							{domain === "Subscription"?"Subscription(Print Media)":domain}
 						</MenuItem>
 					))}
 				</Select>
