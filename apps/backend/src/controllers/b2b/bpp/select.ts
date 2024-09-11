@@ -47,7 +47,6 @@ export const selectController = async (
       return JSON.parse(ele as string);
     });
     
-
     const providers = parsedTransaction[0].request.message.catalog.providers;
     const item_id_name: Item_id_name[] = providers.map((pro: any) => {
       const mappedItems = pro.items.map((item: Item) => ({
@@ -112,7 +111,7 @@ export const selectDomesticController = (
     const { context, message } = req.body;
     const { ttl, ...provider } = message.order.provider;
 
-    var responseMessage = {
+    let responseMessage = {
       order: {
         provider,
         payments: [message.order.payments[0]],

@@ -109,6 +109,7 @@ const intializeRequest = async (
 				},
 			},
 		};
+
 		await send_response(
 			res,
 			next,

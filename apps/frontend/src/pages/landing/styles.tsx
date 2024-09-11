@@ -24,7 +24,7 @@ export const StyledBox = styled(Box)(({ theme }) => ({
 	justifyContent: "space-evenly",
 	alignItems: "center",
 	maxWidth: "65%",
-	maxHeight: "70%",
+	maxHeight: "90%",
 	margin: theme.spacing(2),
 	textAlign: "center",
 	overflow: "auto",

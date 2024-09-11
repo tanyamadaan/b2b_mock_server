@@ -129,15 +129,7 @@ export const logisticsSchemaValidator =
 
 			console.log(JSON.stringify(errorResponse, null, 2));
 			res.status(400).json(errorResponse);
-
 			return;
 		}
-		// res.json({
-		// 	message: {
-		// 		ack: {
-		// 			status: "ACK",
-		// 		},
-		// 	},
-		// });
 		next();
 	};

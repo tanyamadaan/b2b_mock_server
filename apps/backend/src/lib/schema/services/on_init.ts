@@ -169,7 +169,7 @@ export const onInitSchema = {
                 required: [
                   "id",
                   // "fulfillment_ids",
-                  "quantity",
+                  // "quantity",
                 ],
               },
             },
@@ -363,7 +363,7 @@ export const onInitSchema = {
                     },
                   },
                 },
-                required: ["id", "type", "stops"],
+                required: ["id", "stops"],
               },
             },
             quote: {
@@ -434,7 +434,7 @@ export const onInitSchema = {
                             required: ["currency", "value"],
                           },
                         },
-                        required: ["id", "quantity", "price"],
+                        required: ["id", "price"],
                       },
                       tags: {
                         type: "array",

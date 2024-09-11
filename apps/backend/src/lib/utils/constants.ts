@@ -16,8 +16,7 @@ export const BID_AUCTION_SERVICES_EXAMPLES_PATH =
 	"./domain-repos/@services/draft-agri_bids_and_auction/api/components/Examples/Agri_Bids_And_Auction_yaml";
 
 export const HEALTHCARE_SERVICES_EXAMPLES_PATH =
-	"./domain-repos/@services/draft-healthcare-services/api/components/Examples/Health_care_services_yaml";
-
+	"./domain-repos/@services/draft-healthcare-service/api/components/Examples/Health_care_services_yaml";
 
 export const AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH =
 	"./domain-repos/@services/draft-agri_equipment/api/components/Examples/Agri_Equipment_Hiring_yaml";
@@ -27,7 +26,11 @@ export const B2B_EXAMPLES_PATH =
 export const B2C_EXAMPLES_PATH =
 	"./domain-repos/@b2c_exports_2.0/api/components/Examples/B2C_Exports";
 
-export const LOGISTICS_EXAMPLES_PATH = "./domain-repos/@logistics/ONDC-LOG-Specifications/api/components/Examples"
+export const LOGISTICS_EXAMPLES_PATH =
+	"./domain-repos/@logistics/ONDC-LOG-Specifications/api/components/Examples";
+
+export const SUBSCRIPTION_EXAMPLES_PATH =
+	"./domain-repos/@MEC/subscription/draft-ptint_media/api/components/Examples/Print_Content_yaml";
 
 export const MOCKSERVER_ID = "mock.ondc.org/api";
 // export const B2B_BPP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/b2b/bpp`;
@@ -36,8 +39,12 @@ export const B2B_BPP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}b2b/bpp`;
 export const B2B_BAP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}b2b/bap`;
 export const B2C_BPP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}b2c/bpp`;
 export const B2C_BAP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}b2c/bap`;
-export const LOGISTICS_BPP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}logistics/bpp`;
-export const LOGISTICS_BAP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}logistics/bap`;
+
+export const REATIL_BPP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}retail/bpp`;
+export const RETAIL_BAP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}retail/bap`;
+
+export const LOGISTICS_BPP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/logistics/bpp`;
+export const LOGISTICS_BAP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/logistics/bap`;
 // export const SERVICES_BPP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/services/bpp`;
 // export const SERVICES_BAP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/services/bap`;
 export const SERVICES_BPP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}services/bpp`;
@@ -56,3 +63,6 @@ export const AGRI_EQUIPMENT_BAP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}agri-equip
 
 // export const HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/healthcare-services/bpp`;
 // export const HEALTHCARE_SERVICES_BAP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/healthcare-services/bap`;
+
+export const SUBSCRIPTION_BPP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}subscription/bpp`;
+export const SUBSCRIPTION_BAP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}subscription/bap`;

@@ -21,16 +21,16 @@ export const LOGISTICS_SCENARIOS = {
 			scenario: "rts-weight-difference",
 		},
 	],
-	on_update:[
+	on_update: [
 		{
-			name:"Slots provided.",
-			scenario:"regular"
+			name: "Slots provided.",
+			scenario: "regular",
 		},
 		{
-			name:"Slots with updated quote.",
-			scenario:"updated-quote",
+			name: "Slots with updated quote.",
+			scenario: "updated-quote",
 		},
-	]
+	],
 };
 
 export const B2B_SCENARIOS = {
@@ -128,6 +128,159 @@ export const B2B_SCENARIOS = {
 		},
 	],
 };
+
+export const PRINT_MEDIA_SCENARIOS = {
+	select: [
+		{
+			name: "Default",
+			scenario: "default",
+		},
+		{
+			name: "Subscription with EMandate",
+			scenario: "subscription-with-eMandate",
+		},
+
+		{
+			name: "Single Order Offline without Subscription",
+			scenario: "single-order-offline-without-subscription",
+		},
+		{
+			name: "Single Order Online without Subscription",
+			scenario: "single-order-online-without-subscription",
+		},
+	],
+
+	on_select: [
+		{
+			name: "Default",
+			scenario: "default",
+		},
+		{
+			name: "Subscription with EMandate",
+			scenario: "subscription-with-eMandate",
+		},
+		{
+			name: "Subscription with Manual Payments",
+			scenario: "subscription-with-manual-payments",
+		},
+		{
+			name: "Single Order Offline without Subscription",
+			scenario: "single-order-offline-without-subscription",
+		},
+		{
+			name: "Single Order Online without Subscription",
+			scenario: "single-order-online-without-subscription",
+		},
+		{
+			name: "Subscription with Full Payments",
+			scenario: "subscription-with-full-payments",
+		},
+	],
+
+	init: [
+		{
+			name: "Default",
+			scenario: "default",
+		},
+		{
+			name: "Subscription with EMandate",
+			scenario: "subscription-with-eMandate",
+		},
+		{
+			name: "Subscription with Manual Payments",
+			scenario: "subscription-with-manual-payments",
+		},
+		{
+			name: "Single Order Offline without Subscription",
+			scenario: "single-order-offline-without-subscription",
+		},
+		{
+			name: "Single Order Online without Subscription",
+			scenario: "single-order-online-without-subscription",
+		},
+		{
+			name: "Subscription with Full Payments",
+			scenario: "subscription-with-full-payments",
+		},
+	],
+	on_init: [
+		{
+			name: "Default",
+			scenario: "default",
+		},
+		{
+			name: "Subscription with Manual Payments",
+			scenario: "subscription-with-manual-payments",
+		},
+		{
+			name: "Subscription with Full Payments",
+			scenario: "subscription-with-full-payments",
+		},
+	],
+
+	on_confirm: [
+		{
+			name: "Default",
+			scenario: "default",
+		},
+		{
+			name: "Child Order",
+			scenario: "child-order",
+		},
+	],
+
+	on_status: [
+		{
+			name: "Default",
+			scenario: "default",
+		},
+
+		{
+			name: "Pending",
+			scenario: "pending",
+		},
+		{
+			name: "Packed",
+			scenario: "packed",
+		},
+		{
+			name: "Agent Assigned",
+			scenario: "agent-assigned",
+		},
+		{
+			name: "Out for Delivery",
+			scenario: "out-for-delivery",
+		},
+		{
+			name: "Order Picked Up",
+			scenario: "order-picked-up",
+		},
+		{
+			name: "Completed",
+			scenario: "completed",
+		},
+	],
+
+	on_update: [
+		{
+			name: "Subscription Transffered",
+			scenario: "subscription-transffered", // default
+		},
+		{
+			name: "Paymment Confirmation",
+			scenario: "payment-confirmation",
+		},
+		{
+			name: "Parent Order Linked To Child Order",
+			scenario: "parent-order-linked-to-child-order",
+		},
+		{
+			name: "Subscription Paused",
+			scenario: "subscription paused",
+		},
+	],
+};
+
 export const B2C_SCENARIOS = {
 	on_select: [
 		{
@@ -280,13 +433,13 @@ export const HEALTHCARE_SERVICES_SCENARIOS = {
 	// ],
 	on_select: [
 		{
-			name:"Multi Collection",
-			scenario:"multi_collection"
+			name: "Multi Collection",
+			scenario: "multi_collection",
 		},
 		{
-			name:"Default",
-			scenario:"default"
-		}
+			name: "Default",
+			scenario: "default",
+		},
 	],
 	// init: [
 	// 	{
@@ -294,8 +447,7 @@ export const HEALTHCARE_SERVICES_SCENARIOS = {
 	// 		scenario: "service",
 	// 	},
 	// ],
-	on_init: [
-	],
+	on_init: [],
 	// confirm: [
 	// 	{
 	// 		name: "Service",
@@ -396,8 +548,7 @@ export const AGRI_SERVICES_SCENARIOS = {
 	// 		scenario: "service",
 	// 	},
 	// ],
-	on_init: [
-	],
+	on_init: [],
 	// confirm: [
 	// 	{
 	// 		name: "Service",
@@ -455,7 +606,7 @@ export const AGRI_SERVICES_SCENARIOS = {
 			scenario: "payments",
 		},
 	],
-	
+
 	on_cancel: [
 		// {
 		// 	name: "ACK",
@@ -469,12 +620,26 @@ export const AGRI_SERVICES_SCENARIOS = {
 };
 
 export const BID_AUCTION_SCENARIOS = {
+	on_init: [
+		{
+			name: "Default",
+			scenario: "default",
+		},
+		{
+			name: "Bid Placement",
+			scenario: "bid_placement",
+		},
+		{
+			name: "Participation Fee",
+			scenario: "participation_fee",
+		},
+	],
 	on_status: [
 		{
 			name: "Placed",
 			scenario: "Placed",
 		},
-	]
+	],
 };
 
 export const AGRI_EQUIPMENT_SERVICES_SCENARIOS = {
@@ -488,11 +653,11 @@ export const AGRI_EQUIPMENT_SERVICES_SCENARIOS = {
 			scenario: "no_equipment_avaliable",
 		},
 		{
-			name:"Know the land's acres but unsure of the usage hours",
-			scenario:"know_the_lands_acres_but_unsure_of_the_usage_hours"
-		}
+			name: "Know the land's acres but unsure of the usage hours",
+			scenario: "know_the_lands_acres_but_unsure_of_the_usage_hours",
+		},
 	],
-	
+
 	on_init: [
 		{
 			name: "Default",
@@ -524,12 +689,12 @@ export const AGRI_EQUIPMENT_SERVICES_SCENARIOS = {
 			name: "Reached",
 			scenario: "AT_LOCATION",
 		},
-		
+
 		{
 			name: "Completed",
 			scenario: "COMPLETED",
-		}
-	],	
+		},
+	],
 
 	on_update: [
 		{
@@ -616,4 +781,34 @@ export const PREV_ACTION = {
 	on_cancel: "cancel",
 	update: "on_confirm",
 	on_update: "update",
+};
+
+export const PREV_SUBSCRIPTION_EMANDATE_ACTION = {
+	on_search: "search",
+	select: "on_search",
+	on_select: "select",
+	init: "on_select",
+	on_init: "init",
+	on_status: "on_init",
+	confirm: "on_status",
+	on_confirm: "confirm",
+	status:"on_confirm"	,
+	on_update:"on_confirm",
+	cancel: "on_confirm",
+	on_cancel: "cancel",
+	update: "on_confirm",
+};
+
+export const NEXT_SUBSCRIPTION_EMANDATE_ACTION = {
+	search: "on_search",
+	on_search: "select",
+	select: "on_select",
+	on_select: "init",
+	init: "on_init",
+	on_init: "on_status",
+	on_status:"confirm",
+	confirm: "on_confirm",
+	on_confirm:"on_update",
+	status: "on_status",
+	cancel: "on_cancel",
 };

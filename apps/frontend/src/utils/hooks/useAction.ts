@@ -10,11 +10,10 @@ import {
 	BID_AUCTION_SCENARIOS,
 	LOGISTICS_SCENARIOS,
 	NEXT_ACTION_LOGISTICS,
+	B2C_SCENARIOS,
+	PRINT_MEDIA_SCENARIOS,
 } from "openapi-specs/constants";
-import {
-	LOGISTICS_DOMAINS_OBJECT,
-	SERVICES_DOMAINS,
-} from "../constants";
+import { LOGISTICS_DOMAINS_OBJECT, SERVICES_DOMAINS } from "../constants";
 // import { ALL_DOMAINS_FRONTEND } from "../constants";
 
 export const useAction = () => {
@@ -25,22 +24,9 @@ export const useAction = () => {
 	const [scenarios, setScenarios] =
 		useState<{ name: string; scenario?: string }[]>();
 
-	const detectAction = _.debounce((log: string) => {
+	const detectAction = _.debounce((log: string, version?: string) => {
 		try {
 			const parsedLog = JSON.parse(log);
-			// const newDomain =
-			// 	parsedLog?.context?.domain === ALL_DOMAINS_FRONTEND.SERVICES_DOMAINS
-			// 		? "services"
-			// 		: parsedLog?.context?.domain ===
-			// 		  ALL_DOMAINS_FRONTEND.HEALTHCARE_SERVICES_DOMAINS
-			// 		? "healthcare-services"
-			// 		: parsedLog?.context?.domain ===
-			// 		  ALL_DOMAINS_FRONTEND.AGRI_SERVICES_DOMAINS
-			// 		? "agri-services"
-			// 		: "b2b";
-
-			// setDomain(newDomain);
-
 			//DETACT DOMAIN FROM PAYLOAD
 			const servicesDomain = parsedLog?.context?.domain;
 			//DETACT DOMAIN
@@ -55,13 +41,18 @@ export const useAction = () => {
 					? AGRI_EQUIPMENT_SERVICES_SCENARIOS
 					: servicesDomain === SERVICES_DOMAINS.BID_AUCTION_SERVICE
 					? BID_AUCTION_SCENARIOS
+					: servicesDomain === SERVICES_DOMAINS.PRINT_MEDIA
+					? PRINT_MEDIA_SCENARIOS
 					: servicesDomain === LOGISTICS_DOMAINS_OBJECT.DOMESTIC ||
 					  servicesDomain === LOGISTICS_DOMAINS_OBJECT.INTERNATIONAL
 					? LOGISTICS_SCENARIOS
-					: B2B_SCENARIOS;
+					: version === "b2b"
+					? B2B_SCENARIOS
+					: B2C_SCENARIOS;
 			if (!parsedLog.context!.action) setLogError(true);
 			const parsedAction = parsedLog.context.action;
 			setAction(parsedAction);
+
 			// Choose the appropriate action mapping based on the domain
 			const actionMapping =
 				domain.toLowerCase() === "logistics"
@@ -76,11 +67,12 @@ export const useAction = () => {
 			} else {
 				setScenarios([]);
 			}
+
 			setLogError(false);
 		} catch (error) {
 			setLogError(true);
 			setAction(undefined);
 		}
 	}, 1500);
-	return { action, domain, setDomain, logError, scenarios, detectAction };
+	return { action, domain, setDomain, logError, scenarios, detectAction,setLogError };
 };

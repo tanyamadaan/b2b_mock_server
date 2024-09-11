@@ -7,6 +7,7 @@ import {
 	b2bRouter,
 	miscRouter,
 	servicesRouter,
+	subscriptionRouter,
 	logisticsRouter,
 } from "./controllers";
 import cors from "cors";
@@ -22,10 +23,10 @@ import {
 	errorHandlingWrapper,
 	healthcareServiceSwagger,
 } from "./middlewares";
+import { retailRouter } from "./controllers/retail";
 import { b2cRouter } from "./controllers/b2c";
 
 // import memwatch from 'memwatch-next';
-
 // // Set up memwatch to listen for memory leaks
 // memwatch.on('leak', (info) => {
 //   console.log('Memory leak detected:', info);
@@ -34,17 +35,6 @@ import { b2cRouter } from "./controllers/b2c";
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
-
-// const memoryUsage = process.memoryUsage();
-// console.log(`Memory Usage:`);
-// console.log(`- Heap Total: ${(memoryUsage.heapTotal / 1024 / 1024).toFixed(2)} MB`);
-// console.log(`- Heap Used: ${(memoryUsage.heapUsed / 1024 / 1024).toFixed(2)} MB`);
-// console.log("REDIS VARS :::")
-// console.log("REDIS HOST", process.env.REDIS_HOST)
-// console.log("REDIS PASS", process.env.REDIS_PASS)
-// console.log("REDIS USER", process.env.REDIS_USER)
-// console.log("REDIS PORT", process.env.REDIS_USER)
-
 app.use(cors());
 
 app.use("/api-docs/auth", swaggerUi.serve, authSwagger("/api-docs/auth"));
@@ -82,8 +72,10 @@ app.use(requestParser);
 app.use("/", miscRouter);
 app.use("/b2b", errorHandlingWrapper(b2bRouter));
 app.use("/b2c", errorHandlingWrapper(b2cRouter));
+app.use("/retail", errorHandlingWrapper(retailRouter));
 app.use("/auth", errorHandlingWrapper(authRouter));
 app.use("/services", errorHandlingWrapper(servicesRouter));
+app.use("/subscription", errorHandlingWrapper(subscriptionRouter));
 app.use("/logistics", errorHandlingWrapper(logisticsRouter));
 app.use("/detect_app_installation", (req: Request, res: Response) => {
 	const headers = req.headers;

@@ -12,6 +12,18 @@ export const SERVICES_DOMAINS = {
 	HEALTHCARE_SERVICES: "ONDC:SRV13",
 	AGRI_EQUIPMENT: "ONDC:SRV15",
 	BID_ACTION_SERVICES: "ONDC:SRV18",
+	SUBSCRIPTION_PRINT_MEDIA:"ONDC:MEC10",
+	SUBSCRIPTION_AUDIO_VIDEO: "ONDC:MEC11"
+};
+
+export const SUBSCRIPTION_DOMAINS = {
+	PRINT_MEDIA: "ONDC:MEC10",
+	AUDIO_VIDEO: "ONDC:MEC11"
+};
+
+export const PRINT_MEDIA_CATEGORIES = {
+	NEWSPAPER: "MEC10-1002",
+	MAGAZINES: "MEC10-1001"
 };
 
 export const ORDER_STATUS = {
@@ -74,32 +86,60 @@ export const EQUIPMENT_HIRING_STATUS = [
 	"Completed",
 ];
 
-//Pickup-approved (progress)
-//Order-picked-up (progress)
-//Domestic-custom-cleared
-//At-destination-hub
-//Out-for-delivery(In-progress)
-//Order-delivered(Completed)
+export const PRINT_MEDIA_STATUS = [
+	"PENDING",
+	"PACKED",
+	"AGENT-ASSIGNED",
+	"OUT-FOR-DELIVERY",
+	"ORDER-PICKED-UP",
+	"COMPLETED",
+];
+
+export const PRINT_MEDIA_STATUS_OBJECT = {
+	PENDING:"PENDING",
+	PACKED:"PACKED",
+	AGENT_ASSIGNED:"AGENT-ASSIGNED",
+	OUT_FOR_DELIVERY:"OUT-FOR-DELIVERY",
+	ORDER_PICKED_UP:"ORDER-PICKED-UP",
+	COMPLETED:"COMPLETED",
+};
 
 export const B2C_STATUS = [
-"Pickup-approved",
-"Order-picked-up",
-"Domestic-custom-cleared",
-"At-destination-hub",
-"Out-for-delivery",
-"Order-delivered"
-]
+	"Pickup-approved",
+	"Order-picked-up",
+	"Domestic-custom-cleared",
+	"At-destination-hub",
+	"Out-for-delivery",
+	"Order-delivered",
+];
 
 export const B2C_STATUS_OBJECT = {
-PICKUP_APPROVED:"Pickup-approved",
-ORDER_PICKED_UP:"Order-picked-up",
-DOMESTIC_CUSTOM_CLEARED:"Domestic-custom-cleared",
-AT_DESTINATION_HUB:"At-destination-hub",
-OUT_FOR_DELIVERY:"Out-for-delivery",
-ORDER_DELIVERED:"Order-delivered"
-}
+	PICKUP_APPROVED: "Pickup-approved",
+	ORDER_PICKED_UP: "Order-picked-up",
+	DOMESTIC_CUSTOM_CLEARED: "Domestic-custom-cleared",
+	AT_DESTINATION_HUB: "At-destination-hub",
+	OUT_FOR_DELIVERY: "Out-for-delivery",
+	ORDER_DELIVERED: "Order-delivered",
+};
 
+export const B2B_STATUS = [
+	"bpp-payment",
+	"bpp-payment-error",
+	"delivered",
+	"out-for-delivery",
+	"picked-up",
+	"self-picked-up",
+];
 
+export const B2B_STATUS_OBJECT = {
+	BPP_PAYMENT_SUCCESS: "bpp-payment",
+	BPP_PAYMENT_ERROR: "bpp-payment-error",
+	DELIVERED: "delivered",
+	OUT_FOR_DELIVERY: "out-for-delivery",
+	PICKED_UP: "picked-up",
+	PROFORMA_INVOICE: "proforma-invoice",
+	SELF_PICKUP: "self-picked-up",
+};
 
 export const EQUIPMENT_HIRING_STATUS_OBJECT = {
 	IN_TRANSIT: "In-Transit",
@@ -111,6 +151,7 @@ export const EQUIPMENT_HIRING_STATUS_OBJECT = {
 export const FULFILLMENT_TYPES = {
 	BUYER_FULFILLED: "Buyer-Fulfilled",
 	SELLER_FULFILLED: "Seller-Fulfilled",
+	SUBSCRIPTION: "Subscription",
 };
 
 export const FULFILLMENT_LABELS = {

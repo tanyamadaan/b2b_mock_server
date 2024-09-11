@@ -26,11 +26,24 @@ type SELECT_OPTIONS =
 	| { b2c: string[] }
 	| object;
 
+type SELECT_FIELD = {
+	name: string;
+	placeholder: string;
+	type: string;
+	domainDepended: boolean;
+	versionDepended: boolean;
+	options: SELECT_OPTIONS;
+};
 
 export const InitiateRequestSection = () => {
 	const { handleMessageToggle, setMessageType, setCopy } = useMessage();
 	const [action, setAction] = useState<string>();
 	const { domain } = useDomain();
+	const [domainOptions, setDomainOptions] = useState<string[]>([]);
+	const [scenarioOptions, setScenarioOptions] = useState<string[]>([]);
+	const [cityOptions, setCityOptions] = useState<string[]>([]);
+	const [version, setVersion] = useState<string>("services");
+	const [selectedScenario, setSelectedScenario] = useState<string>("default");
 	const [renderActionFields, setRenderActionFields] = useState(false);
 	const [formState, setFormState] = useState<{ [key: string]: any }>({});
 	const [allowSubmission, setAllowSubmission] = useState<boolean>(false);
@@ -39,6 +52,10 @@ export const InitiateRequestSection = () => {
 	const [matchingItems, setMatchingItems] = useState<Item[]>([]);
 	const [selectedItemId, setSelectedItemId] = useState<string>("");
 
+	useEffect(() => {
+		// setRenderActionFields(true);
+		setAction("");
+	}, [domain]);
 	const handleSelectionChange = (
 		_event: React.SyntheticEvent | null,
 		newValue: string | null
@@ -94,8 +111,35 @@ export const InitiateRequestSection = () => {
 			setSelectedItemId("");
 		}
 	};
-	const handleFieldChange = (fieldName: string, value: string | object) => {
-		setFormState((prev) => ({ ...prev, [fieldName]: value }));
+
+	const handleFieldChange = (fieldName: string, value: string) => {
+		if (fieldName === "version") {
+			setVersion(value as string);
+			/****Write the logic for changes the domain options based on version selection */
+			const newDomainOptions =
+				INITIATE_FIELDS.search.find((field) => field.name === "domain")
+					?.options[version] || [];
+
+			setDomainOptions(newDomainOptions as string[]);
+
+			const newCityOptions =
+				INITIATE_FIELDS.search.find((field) => field.name === "city")?.options[
+					version
+				] || [];
+
+			setCityOptions(newCityOptions as string[]);
+
+			const newScenarioOption =
+				INITIATE_FIELDS.select.find((field) => field.name === "scenario")
+					?.options[version] || [];
+
+			setScenarioOptions(newScenarioOption as string[]);
+		}
+		if (fieldName === "scenario") {
+			setSelectedScenario(value as string);
+			/****Write the logic for changes the domain options based on version selection */
+		}
+		setFormState((prev: any) => ({ ...prev, [fieldName]: value }));
 	};
 
 	useEffect(() => {
@@ -109,6 +153,7 @@ export const InitiateRequestSection = () => {
 				action as keyof typeof INITIATE_FIELDS
 			].filter((e) => e.name === "scenario")[0];
 			const logisticsInitKeys = ["transactionId", "itemID"];
+
 			const logisticsCancelKeys = [
 				"transactionId",
 				"cancellationReasonId",
@@ -127,12 +172,13 @@ export const InitiateRequestSection = () => {
 				logisticsCancelKeys
 			) {
 				setAllowSubmission(true);
-			} else if (checker(keys, formKeys)) {
+			} else if (checker(keys, formKeys, domain)) {
 				setAllowSubmission(true);
 			} else if (
 				checker(
 					keys,
-					formKeys.filter((e) => e !== "scenario")
+					formKeys.filter((e) => e !== "scenario"),
+					domain
 				) &&
 				scenarios?.domainDepended &&
 				!scenarios.options[domain as keyof SELECT_OPTIONS]
@@ -142,14 +188,34 @@ export const InitiateRequestSection = () => {
 				setAllowSubmission(false);
 			}
 		}
-	}, [action, domain, formState]);
+
+		const newDomainOptions =
+			INITIATE_FIELDS.search.find((field) => field.name === "domain")?.options[
+				version
+			] || [];
+
+		setDomainOptions(newDomainOptions as string[]);
+
+		const newCityOptions =
+			INITIATE_FIELDS.search.find((field) => field.name === "city")?.options[
+				version
+			] || [];
+
+		setCityOptions(newCityOptions as string[]);
+
+		const newScenarioOption =
+			INITIATE_FIELDS.select.find((field) => field.name === "scenario")
+				?.options[version] || [];
+
+		setScenarioOptions(newScenarioOption as string[]);
+	}, [action, domain, formState, version]);
 
 	const handleSubmit = async () => {
 		try {
 			const response = await axios.post(
 				`${
 					import.meta.env.VITE_SERVER_URL
-				}/${domain}/initiate/${action}?mode=mock`,
+				}/${domain}/initiate/${action}?mode=mock&version=${version}&scenario=${selectedScenario}`,
 				formState,
 				{
 					headers: {
@@ -184,6 +250,29 @@ export const InitiateRequestSection = () => {
 				setMessageType("error");
 			}
 		} catch (error: any) {
+			// 	setMessageType("error");
+			// 	if (
+			// 		error instanceof AxiosError &&
+			// 		error.response?.data?.error?.message.error?.message
+			// 	) {
+			// 		handleMessageToggle(
+			// 			error.response?.data?.error?.message.error?.message === "string"
+			// 				? error.response?.data?.error?.message.error?.message
+			// 				: Array.isArray(
+			// 						error.response?.data?.error?.message?.error?.message
+			// 				  ) &&
+			// 				  error.response?.data?.error?.message?.error?.message.length > 0
+			// 				? `${error.response?.data?.error?.message?.error?.message[0]?.message} in ${error.response?.data?.error?.message?.error?.message[0]?.details}`
+			// 				: error.response?.data?.error?.message.error?.message
+			// 		);
+			// 	} else {
+			// 		handleMessageToggle(
+			// 			error.response?.data?.error?.message
+			// 				? error.response?.data?.error?.message
+			// 				: "Error Occurred while initiating request!"
+			// 		);
+			// 	}
+			// }
 			setMessageType("error");
 			if (
 				error instanceof AxiosError &&
@@ -192,9 +281,36 @@ export const InitiateRequestSection = () => {
 				handleMessageToggle(
 					error.response?.data?.error?.message.error?.message === "string"
 						? error.response?.data?.error?.message.error?.message
-						: error.response?.data?.error?.message?.error?.message.length > 0
+						: Array.isArray(
+								error.response?.data?.error?.message?.error?.message
+						  ) &&
+						  error.response?.data?.error?.message?.error?.message.length > 0
 						? `${error.response?.data?.error?.message?.error?.message[0]?.message} in ${error.response?.data?.error?.message?.error?.message[0]?.details}`
-						: "Error Occurred while initiating request!"
+						: error.response?.data?.error?.message.error?.message
+				);
+			} else if (
+				error instanceof AxiosError &&
+				error.response?.data?.sync?.error.message
+			) {
+				handleMessageToggle(
+					error.response?.data?.sync?.error.message === "string"
+						? error.response?.data?.sync?.error.message
+						: Array.isArray(error.response?.data?.sync?.error.message) &&
+						  error.response?.data?.sync?.error.message.length > 0
+						? `${error.response?.data?.sync?.error.message[0].message} in ${error.response?.data?.sync?.error.message[0]?.details}`
+						: error.response?.data?.sync?.error.message
+				);
+			} else if (
+				error instanceof AxiosError &&
+				error.response?.data?.error?.message
+			) {
+				handleMessageToggle(
+					error.response?.data?.error?.message === "string"
+						? error.response?.data?.error?.message
+						: Array.isArray(error.response?.data?.error?.message) &&
+						  error.response?.data?.error?.message.length > 0
+						? `${error.response?.data?.error?.message[0]?.message} in ${error.response?.data?.error?.message[0]?.details}`
+						: error.response?.data?.error?.message
 				);
 			} else {
 				handleMessageToggle(
@@ -233,10 +349,18 @@ export const InitiateRequestSection = () => {
 				</Box>
 
 				<Stack spacing={2} sx={{ my: 2 }}>
-					<Select placeholder="Select Action" onChange={handleActionSelection}>
+					<Select
+						placeholder="Select Action"
+						value={action}
+						onChange={handleActionSelection}
+					>
 						{Object.keys(INITIATE_FIELDS)
 							.filter(
-								(action) => !(domain === "logistics" && action === "select")
+								(action) =>
+									!(
+										(domain === "logistics" && action === "select") ||
+										(domain === "subscription" && action === "update")
+									)
 							)
 							.map((action, idx) => (
 								<Option value={action} key={"action-" + idx}>
@@ -250,6 +374,90 @@ export const InitiateRequestSection = () => {
 							<Divider />
 							{action &&
 								INITIATE_FIELDS[action as keyof typeof INITIATE_FIELDS].map(
+									//my version code
+
+									// (field, index) => (
+									// 	<>
+									// 		{field.type === "text" ? (
+									// 			<Input
+									// 				fullWidth
+									// 				placeholder={field.placeholder}
+									// 				key={"input-" + action + "-" + index}
+									// 				onChange={(e) =>
+									// 					handleFieldChange(field.name, e.target.value)
+									// 				}
+									// 			/>
+									// 		) : field.type === "select" &&
+									// 		  (field as SELECT_FIELD).domainDepended &&
+									// 		  (field as SELECT_FIELD).options[
+									// 				domain as keyof SELECT_OPTIONS
+									// 		  ] ? (
+									// 			<Select
+									// 				placeholder={field.placeholder}
+									// 				key={"select-" + action + "-" + index}
+									// 				onChange={(
+									// 					_event: React.SyntheticEvent | null,
+									// 					newValue: string | null
+									// 				) =>
+									// 					handleFieldChange(field.name, newValue as string)
+									// 				}
+									// 			>
+									// 				{field.name === "domain" && domain === "retail" ? (
+									// 					<>
+									// 						{domainOptions.map((option, index: number) => (
+									// 							<Option value={option} key={option + index}>
+									// 								{option}
+									// 							</Option>
+									// 						))}
+									// 					</>
+									// 				) : field.name === "city" && domain === "retail" ? (
+									// 					<>
+									// 						{cityOptions.map((option, index: number) => (
+									// 							<Option value={option} key={option + index}>
+									// 								{option}
+									// 							</Option>
+									// 						))}
+									// 					</>
+									// 				) : field.name === "scenario" &&
+									// 				  domain === "retail" ? (
+									// 					<>
+									// 						{scenarioOptions.map((option, index: number) => (
+									// 							<Option value={option} key={option + index}>
+									// 								{option}
+									// 							</Option>
+									// 						))}
+									// 					</>
+									// 				) : (
+									// 					<>
+									// 						{(
+									// 							(field as SELECT_FIELD).options[
+									// 								domain as keyof SELECT_OPTIONS
+									// 							] as string[]
+									// 						).map((option, index: number) => (
+									// 							<Option value={option} key={option + index}>
+									// 								{option}
+									// 							</Option>
+									// 						))}
+									// 					</>
+									// 				)}
+									// 			</Select>
+									// 		) : field.type === "select" && !field.domainDepended ? (
+									// 			<Select
+									// 				placeholder={field.placeholder}
+									// 				key={"select-" + action + "-" + index}
+									// 				onChange={(
+									// 					_event: React.SyntheticEvent | null,
+									// 					newValue: string | null
+									// 				) =>
+									// 					handleFieldChange(field.name, newValue as string)
+									// 				}
+									// 			>
+									// 				{(field.options as string[]).map(
+									// 					(option, index: number) => (
+									// 						<Option value={option} key={option + index}>
+									// 							{option}
+									// 						</Option>
+									// 					)
 									(field, index) => {
 										// Skip rendering `orderId` if action is "cancel" and domain is "logistics"
 										if (
@@ -309,7 +517,6 @@ export const InitiateRequestSection = () => {
 												</React.Fragment>
 											);
 										}
-
 
 										return (
 											<React.Fragment key={`field-${action}-${index}`}>

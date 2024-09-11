@@ -24,35 +24,46 @@ export const SandboxRequestSection = () => {
 	const [authHeader, setAuthHeader] = useState<string>();
 	const [log, setLog] = useState<string>();
 	const [showCurl, setShowCurl] = useState(false);
+	const [version, setVersion] = useState("");
 	const [activeScenario, setActiveScenario] = useState<{
 		name: string;
 		scenario: string;
 	}>();
 	const { domain } = useDomain();
-	console.log("domainnnnnnnnnnn",domain)
-	
-	const { action, detectAction, logError, scenarios } = useAction();
-
+	const { action, detectAction, logError, scenarios,setLogError } = useAction();
 	const { setSyncResponse } = useSandbox();
+	
+	useEffect(()=>{
+    setAuthHeader("")
+    setLog("")
+    setLogError(false)
+  },[domain])
 	useEffect(() => {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		setSyncResponse(undefined);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [version]);
 
 	const [curl, setCurl] = useState<string>();
 
 	const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		setLog(e.target.value);
-		detectAction(e.target.value);
+		detectAction(e.target.value,version);
 	};
+
+	const handleVersion = (
+    event: React.SyntheticEvent | null,
+    newValue: string,
+  ) => {
+		setVersion(newValue)
+  };
 	const handleSubmit = async () => {
 		let url = `${[
 			import.meta.env.VITE_SERVER_URL,
 		]}/${domain.toLowerCase()}/${Object.keys(URL_MAPPING).filter((key) =>
 			URL_MAPPING[key as keyof typeof URL_MAPPING].includes(action as string)
-		)}/${action}?mode=sandbox`;
+		)}/${action}?mode=sandbox&version=${version}`;
 
 		if (activeScenario?.scenario)
 			url = url + `&scenario=${activeScenario?.scenario}`;
@@ -70,7 +81,6 @@ export const SandboxRequestSection = () => {
 					authorization: authHeader,
 				},
 			});
-			console.log("RESPONSE RECEIVED", response);
 
 			if (response.data.error) {
 				setSyncResponse(response.data);
@@ -100,6 +110,12 @@ export const SandboxRequestSection = () => {
 								alignItems: "center",
 							}}
 						></Box>
+						{domain === "retail" && (
+							<Select placeholder="Select a version" sx={{ width: "100%" }} onChange={handleVersion}>
+								<Option value="b2b">B2B</Option>
+								<Option value="b2c">B2c</Option>
+							</Select>
+						)}
 						{/* Select box for domain */}
 						<Input
 							fullWidth
