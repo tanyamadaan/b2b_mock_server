@@ -14,6 +14,7 @@ type MessageContextType = {
 	handleMessageToggle: (m: string) => void;
 	closeDialog: () => void;
 };
+
 export const MessageContext = createContext<MessageContextType>({
 	message: "",
 	messageType: "info",
@@ -32,16 +33,19 @@ export const MessageProvider = ({ children }: MessageProviderType) => {
 	);
 	const [copy, setCopy] = useState<string>();
 	const [showDialog, setShowDialog] = useState<boolean>(false);
+	
 	const handleMessageToggle = (message: string) => {
 		setMessage(message);
 		setShowDialog(true);
 	};
+
 	const closeDialog = () => {
 		setMessage("");
 		setShowDialog(false);
 		setCopy(undefined);
 		setMessageType("info")
 	};
+
 	return (
 		<MessageContext.Provider
 			value={{

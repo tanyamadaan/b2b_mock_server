@@ -8,6 +8,7 @@ import {
 	B2C_BPP_MOCKSERVER_URL,
 	HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL,
 	MOCKSERVER_ID,
+	REATIL_BPP_MOCKSERVER_URL,
 	SERVICES_BPP_MOCKSERVER_URL,
 } from "./constants";
 import { createAuthHeader } from "./responseAuth";
@@ -72,7 +73,8 @@ export const responseBuilder = async (
 		| "services"
 		| "agri-services"
 		| "healthcare-service"
-		| "agri-equipment-hiring",
+		| "agri-equipment-hiring"
+		| "retail",
 
 	error?: object | undefined
 ) => {
@@ -91,7 +93,9 @@ export const responseBuilder = async (
 			? B2B_BPP_MOCKSERVER_URL
 			: domain === "b2c"
 				? B2C_BPP_MOCKSERVER_URL
-				: SERVICES_BPP_MOCKSERVER_URL;
+				: domain === "retail"?
+				REATIL_BPP_MOCKSERVER_URL:
+				SERVICES_BPP_MOCKSERVER_URL;
 
 	if (action.startsWith("on_")) {
 		async = {
