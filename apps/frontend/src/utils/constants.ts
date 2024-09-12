@@ -107,7 +107,7 @@ export const INITIATE_FIELDS = {
 		//DEPEND ON SERVICES AND RETAILS
 		{
 			name: "version",
-			placeholder: "Select Version...",
+			placeholder: "Select Use Case...",
 			type: "select",
 			domainDepended: true,
 			options: {
