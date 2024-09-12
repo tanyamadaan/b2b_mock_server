@@ -1,4 +1,3 @@
-export * from "./b2b"
 export * from "./retail"
 export * from "./auth"
 export * from "./services"

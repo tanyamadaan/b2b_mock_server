@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 import { checker, INITIATE_FIELDS } from "../../utils";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
-import { CITY_CODE } from "../../utils/constants";
+// import { CITY_CODE } from "../../utils/constants";
 import { Input, Option, Select, Button } from "@mui/joy";
 import axios, { AxiosError } from "axios";
 import Divider from "@mui/material/Divider";
@@ -15,19 +15,19 @@ import HelpOutlineTwoToneIcon from "@mui/icons-material/HelpOutlineTwoTone";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 
-import { Item } from "../../../../backend/src/lib/utils/interfaces";
-type InitiateRequestSectionProp = {
-	domain:
-		| "b2b"
-		| "b2c"
-		| "services"
-		| "retail"
-		| "subscription"
-		| "agri-services"
-		| "healthcare-services"
-		| "agri-equipment-hiring"
-		| "logistics";
-};
+// import { Item } from "../../../../backend/src/lib/utils/interfaces";
+// type InitiateRequestSectionProp = {
+// 	domain:
+// 		| "b2b"
+// 		| "b2c"
+// 		| "services"
+// 		| "retail"
+// 		| "subscription"
+// 		| "agri-services"
+// 		| "healthcare-services"
+// 		| "agri-equipment-hiring"
+// 		| "logistics";
+// };
 
 type SELECT_OPTIONS =
 	| string[]
@@ -47,6 +47,15 @@ type SELECT_FIELD = {
 	options: SELECT_OPTIONS;
 };
 
+type OptionsType = {
+  retail: string[];
+  subscription: string[];
+  b2b: string[];
+	b2c:string[];
+};
+
+type Version = keyof OptionsType; 
+
 export const InitiateRequestSection = () => {
 	const { handleMessageToggle, setMessageType, setCopy } = useMessage();
 	const [action, setAction] = useState<string>();
@@ -59,53 +68,54 @@ export const InitiateRequestSection = () => {
 	const [renderActionFields, setRenderActionFields] = useState(false);
 	const [formState, setFormState] = useState<{ [key: string]: any }>({});
 	const [allowSubmission, setAllowSubmission] = useState<boolean>(false);
-	const [transactionId, setTransactionId] = useState<string>("");
-	const [showCatalogSelect, setShowCatalogSelect] = useState<boolean>(false);
-	const [matchingItems, setMatchingItems] = useState<Item[]>([]);
-	const [selectedItemId, setSelectedItemId] = useState<string>("");
+	// const [transactionId, setTransactionId] = useState<string>("");
+	// const [showCatalogSelect, setShowCatalogSelect] = useState<boolean>(false);
+	// const [matchingItems, setMatchingItems] = useState<Item[]>([]);
+	// const [selectedItemId, setSelectedItemId] = useState<string>("");
 
 	useEffect(() => {
 		// setRenderActionFields(true);
 		setAction("");
 	}, [domain]);
-	const handleSelectionChange = (
-		_event: React.SyntheticEvent | null,
-		newValue: string | null
-	) => {
-		setSelectedItemId(newValue as string | "");
-		setFormState((prev) => ({ ...prev, ["itemID"]: newValue }));
-		console.log(`Selected item ID: ${newValue}`);
-	};
 
-	const handleTransactionIdSubmit = async () => {
-		try {
-			const response = await axios.post<{
-				message: { matchingItems: Item[] };
-			}>(
-				`${
-					import.meta.env.VITE_SERVER_URL
-				}/${domain.toLowerCase()}/getCatalog/?mode=mock`,
-				{ transactionId },
-				{
-					headers: {
-						"Content-Type": "application/json",
-					},
-				}
-			);
+	// const handleSelectionChange = (
+	// 	_event: React.SyntheticEvent | null,
+	// 	newValue: string | null
+	// ) => {
+	// 	setSelectedItemId(newValue as string | "");
+	// 	setFormState((prev) => ({ ...prev, ["itemID"]: newValue }));
+	// 	console.log(`Selected item ID: ${newValue}`);
+	// };
 
-			if (response.data && response.data.message) {
-				setMatchingItems(response.data.message.matchingItems);
-				setShowCatalogSelect(true);
-			} else {
-				// Handle error or unexpected response
-				console.error("Unexpected response format:", response.data);
-			}
-		} catch (error) {
-			setShowCatalogSelect(false);
-			console.error("Error fetching catalog:", error);
-			// Handle error (e.g., show error message to user)
-		}
-	};
+	// const handleTransactionIdSubmit = async () => {
+	// 	try {
+	// 		const response = await axios.post<{
+	// 			message: { matchingItems: Item[] };
+	// 		}>(
+	// 			`${
+	// 				import.meta.env.VITE_SERVER_URL
+	// 			}/${domain.toLowerCase()}/getCatalog/?mode=mock`,
+	// 			{ transactionId },
+	// 			{
+	// 				headers: {
+	// 					"Content-Type": "application/json",
+	// 				},
+	// 			}
+	// 		);
+
+	// 		if (response.data && response.data.message) {
+	// 			setMatchingItems(response.data.message.matchingItems);
+	// 			setShowCatalogSelect(true);
+	// 		} else {
+	// 			// Handle error or unexpected response
+	// 			console.error("Unexpected response format:", response.data);
+	// 		}
+	// 	} catch (error) {
+	// 		setShowCatalogSelect(false);
+	// 		console.error("Error fetching catalog:", error);
+	// 		// Handle error (e.g., show error message to user)
+	// 	}
+	// };
 
 	const handleActionSelection = (
 		_event: React.SyntheticEvent | null,
@@ -117,10 +127,10 @@ export const InitiateRequestSection = () => {
 		setAllowSubmission(false);
 		setTimeout(() => setRenderActionFields(true), 500);
 		if (domain === "logistics") {
-			setTransactionId("");
-			setShowCatalogSelect(false);
-			setMatchingItems([]);
-			setSelectedItemId("");
+			// setTransactionId("");
+			// setShowCatalogSelect(false);
+			// setMatchingItems([]);
+			// setSelectedItemId("");
 		}
 	};
 
@@ -130,20 +140,21 @@ export const InitiateRequestSection = () => {
 			/****Write the logic for changes the domain options based on version selection */
 			const newDomainOptions =
 				INITIATE_FIELDS.search.find((field) => field.name === "domain")
-					?.options[version] || [];
+					?.options?.[version as Version] || [];
 
 			setDomainOptions(newDomainOptions as string[]);
 
 			const newCityOptions =
-				INITIATE_FIELDS.search.find((field) => field.name === "city")?.options[
-					version
+				INITIATE_FIELDS.search.find((field) => field.name === "city")?.options?.[
+					version as Version
 				] || [];
 
 			setCityOptions(newCityOptions as string[]);
 
 			const newScenarioOption =
-				INITIATE_FIELDS.select.find((field) => field.name === "scenario")
-					?.options[version] || [];
+			INITIATE_FIELDS.search.find((field) => field.name === "scenario")?.options?.[
+				version as Version
+			] || [];
 
 			setScenarioOptions(newScenarioOption as string[]);
 		}
@@ -202,24 +213,24 @@ export const InitiateRequestSection = () => {
 		}
 
 		const newDomainOptions =
-			INITIATE_FIELDS.search.find((field) => field.name === "domain")?.options[
-				version
+				INITIATE_FIELDS.search.find((field) => field.name === "domain")
+					?.options?.[version as Version] || [];
+
+			setDomainOptions(newDomainOptions as string[]);
+
+			const newCityOptions =
+				INITIATE_FIELDS.search.find((field) => field.name === "city")?.options?.[
+					version as Version
+				] || [];
+
+			setCityOptions(newCityOptions as string[]);
+
+			const newScenarioOption =
+			INITIATE_FIELDS.search.find((field) => field.name === "scenario")?.options?.[
+				version as Version
 			] || [];
 
-		setDomainOptions(newDomainOptions as string[]);
-
-		const newCityOptions =
-			INITIATE_FIELDS.search.find((field) => field.name === "city")?.options[
-				version
-			] || [];
-
-		setCityOptions(newCityOptions as string[]);
-
-		const newScenarioOption =
-			INITIATE_FIELDS.select.find((field) => field.name === "scenario")
-				?.options[version] || [];
-
-		setScenarioOptions(newScenarioOption as string[]);
+			setScenarioOptions(newScenarioOption as string[]);
 	}, [action, domain, formState, version]);
 
 	const handleSubmit = async () => {
@@ -381,7 +392,7 @@ export const InitiateRequestSection = () => {
 							))}
 					</Select>
 
-					<Grow in={renderActionFields} timeout={500}>
+					{/* <Grow in={renderActionFields} timeout={500}>
 						<Stack spacing={2} sx={{ my: 2 }}>
 							<Divider />
 							{action &&
@@ -681,6 +692,103 @@ export const InitiateRequestSection = () => {
 											</React.Fragment>
 										);
 									}
+								)}
+						</Stack>
+					</Grow> */}
+					<Grow in={renderActionFields} timeout={500}>
+						<Stack spacing={2} sx={{ my: 2 }}>
+							<Divider />
+							{action &&
+								INITIATE_FIELDS[action as keyof typeof INITIATE_FIELDS].map(
+									(field, index) => (
+										<>
+											{field.type === "text" ? (
+												<Input
+													fullWidth
+													placeholder={field.placeholder}
+													key={"input-" + action + "-" + index}
+													onChange={(e) =>
+														handleFieldChange(field.name, e.target.value)
+													}
+												/>
+											) : field.type === "select" &&
+											  (field as SELECT_FIELD).domainDepended &&
+											  (field as SELECT_FIELD).options[
+													domain as keyof SELECT_OPTIONS
+											  ] ? (
+												<Select
+													placeholder={field.placeholder}
+													key={"select-" + action + "-" + index}
+													onChange={(
+														_event: React.SyntheticEvent | null,
+														newValue: string | null
+													) =>
+														handleFieldChange(field.name, newValue as string)
+													}
+												>
+													{field.name === "domain" && domain === "retail" ? (
+														<>
+															{domainOptions.map((option, index: number) => (
+																<Option value={option} key={option + index}>
+																	{option}
+																</Option>
+															))}
+														</>
+													) : field.name === "city" && domain === "retail" ? (
+														<>
+															{cityOptions.map((option, index: number) => (
+																<Option value={option} key={option + index}>
+																	{option}
+																</Option>
+															))}
+														</>
+													) : field.name === "scenario" &&
+													  version === "b2b" ? (
+														<>
+															{scenarioOptions.map((option, index: number) => (
+																<Option value={option} key={option + index}>
+																	{option}
+																</Option>
+															))}
+														</>
+													) : (
+														<>
+															{(
+																(field as SELECT_FIELD).options[
+																	domain as keyof SELECT_OPTIONS
+																] as string[]
+															).map((option, index: number) => (
+																<Option value={option} key={option + index}>
+																	{option}
+																</Option>
+															))}
+														</>
+													)}
+												</Select>
+											) : field.type === "select" && !field.domainDepended ? (
+												<Select
+													placeholder={field.placeholder}
+													key={"select-" + action + "-" + index}
+													onChange={(
+														_event: React.SyntheticEvent | null,
+														newValue: string | null
+													) =>
+														handleFieldChange(field.name, newValue as string)
+													}
+												>
+													{(field.options as string[]).map(
+														(option, index: number) => (
+															<Option value={option} key={option + index}>
+																{option}
+															</Option>
+														)
+													)}
+												</Select>
+											) : (
+												<></>
+											)}
+										</>
+									)
 								)}
 						</Stack>
 					</Grow>

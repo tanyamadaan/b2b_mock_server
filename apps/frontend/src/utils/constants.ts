@@ -1,5 +1,4 @@
 import { B2B_SCENARIOS, PRINT_MEDIA_SCENARIOS } from "openapi-specs/constants";
-import { version } from "react";
 
 export const SUPPORTED_DOMAINS = [
 	"B2B",

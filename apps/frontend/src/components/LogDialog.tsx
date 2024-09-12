@@ -1,9 +1,6 @@
 import * as _ from "lodash";
 import { useState } from "react";
 import {
-	LOGISTICS_SCENARIOS,
-	B2B_SCENARIOS,
-	SERVICES_SCENARIOS,
 	NEXT_ACTION,
 	NEXT_ACTION_LOGISTICS,
 } from "openapi-specs/constants";
@@ -22,7 +19,6 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import { useAnalyse } from "../utils/hooks";
 import { copyToClipboard } from "../utils";
-
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/material.css";
 import "codemirror/mode/javascript/javascript.js";
@@ -31,7 +27,6 @@ export const LogDialog = () => {
 	const { openLogDialog: open, setOpenLogDialog, logToShow } = useAnalyse();
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const log = logToShow as any;
-
 	const [copiedRequest, setCopiedRequest] = useState(false);
 	const [copiedResponse, setCopiedResponse] = useState(false);
 

@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import Grow from "@mui/material/Grow";
 import IconButton from "@mui/material/IconButton";
 import useTheme from "@mui/material/styles/useTheme";
-import { _getNodesAndEdges, actionComparator, getNodesAndEdges } from "../utils";
+import { _getNodesAndEdges, actionComparator } from "../utils";
 import axios from "axios";
 import * as _ from "lodash";
 import { useAnalyse, useMessage } from "../utils/hooks";
@@ -24,7 +24,6 @@ export const TransactionSearch = () => {
 			const response = await axios.get(
 				`${import.meta.env.VITE_SERVER_URL}/analyse/${transaction}`
 			);
-			const seenActionMessageId: Record<string, Date> = {};
 			const formattedResponse = response.data
         .reduce(
           (
@@ -43,12 +42,12 @@ export const TransactionSearch = () => {
 							id: string
             }
           ) => {
-            const {
-              action,
-              timestamp: strTimestamp,
-              message_id,
-            } = item.request.context;
-            const timestamp = new Date(strTimestamp);
+            // const {
+            //   action,
+            //   timestamp: strTimestamp,
+            //   message_id,
+            // } = item.request.context;
+            // const timestamp = new Date(strTimestamp);
             // if (
             //   !seenActionMessageId[`${message_id}-${action}-${item.id}`]
             //   // || timestamp > seenActionMessageId[action]
