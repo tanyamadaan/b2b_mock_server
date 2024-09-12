@@ -15,5 +15,5 @@ export type SubscriberDetail = {
 
 export interface Locals {
   sender?: SubscriberDetail;
-  rawBody?: any
+  rawBody?: any;
 }
