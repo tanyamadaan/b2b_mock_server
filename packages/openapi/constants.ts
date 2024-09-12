@@ -95,6 +95,7 @@ export const B2B_SCENARIOS = {
 		},
 	],
 };
+
 export const B2C_SCENARIOS = {
 	on_select: [
 		{
@@ -436,6 +437,20 @@ export const AGRI_SERVICES_SCENARIOS = {
 };
 
 export const BID_AUCTION_SCENARIOS = {
+	on_init:[
+		{
+			name: "Default",
+			scenario: "default",
+		},
+		{
+			name: "Bid Placement",
+			scenario: "bid_placement",
+		},
+		{
+			name: "Participation Fee",
+			scenario: "participation_fee",
+		}
+	],
 	on_status: [
 		{
 			name: "Placed",

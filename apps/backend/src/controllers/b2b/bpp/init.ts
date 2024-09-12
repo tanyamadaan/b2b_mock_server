@@ -66,19 +66,7 @@ export const initController = async (
     });
 
     req.body.item_arr = item_id_name.flat();
-
-    // const { scenario } = req.query;
-    // switch (scenario) {
-    // case "default":
-    // 	initDomesticController(req, res);
-    // 	break;
-    // // case "reject-rfq":
-    // // 	initRejectRfq(req, res);
-    // // 	break;
-    // default:
     initDomesticController(req, res, next);
-    // 		break;
-    // }
   } catch (error) {
     return next(error);
   }

@@ -7,10 +7,10 @@ import {
 	redis,
 	SERVICES_BAP_MOCKSERVER_URL,
 } from "../../../lib/utils";
+
 import { v4 as uuidv4 } from "uuid";
 import {
 	AGRI_HEALTH_STATUS,
-	AGRI_HEALTHCARE_STATUS,
 	BID_AUCTION_STATUS,
 	EQUIPMENT_HIRING_STATUS,
 	SERVICES_DOMAINS,

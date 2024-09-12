@@ -13,7 +13,8 @@ async function send_response(
 	res_obj: any,
 	transaction_id: string,
 	action: string,
-	scenario: string = ""
+	scenario: string = "",
+	version: any = ""
 ) {
 	try {
 		const { context } = res_obj;
@@ -36,7 +37,18 @@ async function send_response(
 			headers["X-Gateway-Authorization"] = header;
 		}
 
-		const uri = `${bpp_uri}/${action}${scenario ? `?scenario=${scenario}` : ""}`
+		let uri: any;
+
+		if (scenario && version) {
+			uri = `${bpp_uri}/${action}${scenario ? `?scenario=${scenario}` : ""}${
+				version ? `&version=${version}` : ""
+			}`;
+		}else if (version){
+			uri = `${bpp_uri}/${action}${version ? `?version=${version}` : ""}`;
+		}else{
+			uri = `${bpp_uri}/${action}${scenario ? `?scenario=${scenario}` : ""}`;
+
+		}
 		const response = await axios.post(uri, res_obj, {
 			headers: { ...headers },
 		});
@@ -60,7 +72,6 @@ async function send_response(
 			},
 			transaction_id,
 		});
-
 	} catch (error) {
 		next(error);
 	}
@@ -79,7 +90,7 @@ function send_nack(res: Response, message: string) {
 	});
 }
 
-function send_ack(res:Response){
+function send_ack(res: Response) {
 	return res.json({
 		message: {
 			ack: {
@@ -88,4 +99,4 @@ function send_ack(res:Response){
 		},
 	});
 }
-export { send_response, send_nack ,send_ack};
+export { send_response, send_nack, send_ack };
