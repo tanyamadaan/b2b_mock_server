@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import swaggerUi from "swagger-ui-express";
-import cron from "node-cron"; // Import node-cron
+// import cron from "node-cron"; // Import node-cron
 import {
 	authRouter,
 	miscRouter,
@@ -22,13 +22,6 @@ import {
 	healthcareServiceSwagger,
 } from "./middlewares";
 import { retailRouter } from "./controllers/retail";
-
-// import memwatch from 'memwatch-next';
-// // Set up memwatch to listen for memory leaks
-// memwatch.on('leak', (info) => {
-//   console.log('Memory leak detected:', info);
-// });
-
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
