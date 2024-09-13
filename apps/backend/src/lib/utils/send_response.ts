@@ -3,6 +3,7 @@
 import { NextFunction, Response } from "express";
 import axios from "axios";
 import { createAuthHeader, redis } from "./index";
+import { AxiosError } from "axios";
 
 interface headers {
   authorization: string;
@@ -72,8 +73,8 @@ async function send_response(
         })
       );
     } catch(err: any) {
-      if(err.response.status == 400) {
-        res.status(err.response.status).json(err.response.data)
+      if(err instanceof AxiosError) {
+        res.status(err.response?.status || 500).json(err.response?.data || "")
         return;
       }
       throw err
