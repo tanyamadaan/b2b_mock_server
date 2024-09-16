@@ -123,6 +123,34 @@ export const updatePaymentController = (
 	res: Response,
 	next: NextFunction
 ) => {
+	const { context, message, on_confirm } = req.body;
+	const responseMessages = {
+		order: {
+			...message.order,
+			id: uuidv4(),
+			status: FULFILLMENT_STATES.PENDING,
+			ref_order_ids: [on_confirm?.message?.order?.id],
+			provider: {
+				id: on_confirm?.message?.order?.provider.id,
+			},
+		},
+	};
+	
+	return responseBuilder(
+		res,
+		next,
+		context,
+		responseMessages,
+		`${req.body.context.bap_uri}${
+			req.body.context.bap_uri.endsWith("/")
+				? ON_ACTION_KEY.ON_UPDATE
+				: `/${ON_ACTION_KEY.ON_UPDATE}`
+		}`,
+		`${ON_ACTION_KEY.ON_UPDATE}`,
+		"services"
+	);
+
+
 	return res.json({
 		sync: {
 			message: {

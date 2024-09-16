@@ -152,13 +152,22 @@ export const responseBuilder = async (
 				const logIndex = transactionKeys.filter((e) =>
 					e.includes("on_status-to-server")
 				).length;
-
-				await redis.set(
-					`${
-						(async.context! as any).transaction_id
-					}-${logIndex}-${action}-from-server-${id}-${ts.toISOString()}`,
-					JSON.stringify(log)
-				);
+				if(domain === "services") {
+					await redis.set(
+						`${
+							(async.context! as any).transaction_id
+						}-${action}-from-server-${id}-${ts.toISOString()}`,
+						JSON.stringify(log)
+					);
+				} else {
+					await redis.set(
+						`${
+							(async.context! as any).transaction_id
+						}-${logIndex}-${action}-from-server-${id}-${ts.toISOString()}`,
+						JSON.stringify(log)
+					);
+				}
+				
 			} else {
 				await redis.set(
 					`${(async.context! as any).transaction_id}-${action}-from-server-${id}-${ts.toISOString()}`,
