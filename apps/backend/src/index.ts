@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import swaggerUi from "swagger-ui-express";
-// import cron from "node-cron"; // Import node-cron
+import cron from "node-cron"; // Import node-cron
 import {
 	authRouter,
 	miscRouter,
@@ -22,6 +22,7 @@ import {
 	healthcareServiceSwagger,
 } from "./middlewares";
 import { retailRouter } from "./controllers/retail";
+import { sendUpsolicieatedOnStatus } from "./lib/utils/sendUpsolicieatedOnStatus";
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
@@ -73,14 +74,14 @@ app.use("/detect_app_installation", (req: Request, res: Response) => {
 });
 app.use(globalErrorHandler);
 
-// //Schedule the function to run every 30 seconds using node-cron
-// cron.schedule("*/30 * * * * *", async () => {
-// 	try {
-// 		await sendUpsolicieatedOnStatus();
-// 	} catch (error) {
-// 		console.log("error occured in cron");
-// 	}
-// });
+//Schedule the function to run every 30 seconds using node-cron
+cron.schedule("*/30 * * * * *", async () => {
+	try {
+		await sendUpsolicieatedOnStatus();
+	} catch (error) {
+		console.log("error occured in cron");
+	}
+});
 
 app.listen(port, () => {
 	console.log(`[server]: Server is running at http://localhost:${port}`);

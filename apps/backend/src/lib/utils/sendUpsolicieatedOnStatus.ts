@@ -12,6 +12,8 @@ import { sendStatusAxiosCall } from "./responseBuilder";
 
 export const sendUpsolicieatedOnStatus = async () => {
 	try {
+
+		console.log("cron for send solicieated On Status")
 		// steps
 		// 1. find all the on confirm call which status in not completed (or find only those which timestemp is not less then 5 min)
 		let nextStatus: string = AGRI_HEALTHCARE_STATUS[0];
