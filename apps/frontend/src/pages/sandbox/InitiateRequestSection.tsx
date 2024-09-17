@@ -48,13 +48,13 @@ type SELECT_FIELD = {
 };
 
 type OptionsType = {
-  retail: string[];
-  subscription: string[];
-  b2b: string[];
-	b2c:string[];
+	retail: string[];
+	subscription: string[];
+	b2b: string[];
+	b2c: string[];
 };
 
-type Version = keyof OptionsType; 
+type Version = keyof OptionsType;
 
 export const InitiateRequestSection = () => {
 	const { handleMessageToggle, setMessageType, setCopy } = useMessage();
@@ -145,16 +145,14 @@ export const InitiateRequestSection = () => {
 			setDomainOptions(newDomainOptions as string[]);
 
 			const newCityOptions =
-				INITIATE_FIELDS.search.find((field) => field.name === "city")?.options?.[
-					version as Version
-				] || [];
+				INITIATE_FIELDS.search.find((field) => field.name === "city")
+					?.options?.[version as Version] || [];
 
 			setCityOptions(newCityOptions as string[]);
 
 			const newScenarioOption =
-			INITIATE_FIELDS.search.find((field) => field.name === "scenario")?.options?.[
-				version as Version
-			] || [];
+				INITIATE_FIELDS.search.find((field) => field.name === "scenario")
+					?.options?.[version as Version] || [];
 
 			setScenarioOptions(newScenarioOption as string[]);
 		}
@@ -195,13 +193,14 @@ export const InitiateRequestSection = () => {
 				logisticsCancelKeys
 			) {
 				setAllowSubmission(true);
-			} else if (checker(keys, formKeys, domain)) {
+			} else if (checker(keys, formKeys, domain,version)) {
 				setAllowSubmission(true);
 			} else if (
 				checker(
 					keys,
 					formKeys.filter((e) => e !== "scenario"),
-					domain
+					domain,
+					version
 				) &&
 				scenarios?.domainDepended &&
 				!scenarios.options[domain as keyof SELECT_OPTIONS]
@@ -213,24 +212,32 @@ export const InitiateRequestSection = () => {
 		}
 
 		const newDomainOptions =
-				INITIATE_FIELDS.search.find((field) => field.name === "domain")
-					?.options?.[version as Version] || [];
+			INITIATE_FIELDS.search.find((field) => field.name === "domain")
+				?.options?.[version as Version] || [];
 
-			setDomainOptions(newDomainOptions as string[]);
+		setDomainOptions(newDomainOptions as string[]);
 
-			const newCityOptions =
-				INITIATE_FIELDS.search.find((field) => field.name === "city")?.options?.[
-					version as Version
-				] || [];
-
-			setCityOptions(newCityOptions as string[]);
-
-			const newScenarioOption =
-			INITIATE_FIELDS.search.find((field) => field.name === "scenario")?.options?.[
+		const newCityOptions =
+			INITIATE_FIELDS.search.find((field) => field.name === "city")?.options?.[
 				version as Version
 			] || [];
 
-			setScenarioOptions(newScenarioOption as string[]);
+		setCityOptions(newCityOptions as string[]);
+
+		// const newScenarioOption =
+		// INITIATE_FIELDS.search.find((field) => field.name === "scenario")?.options?.[
+		// 	version as Version
+		// ] || [];
+
+		// setScenarioOptions(newScenarioOption as string[]);
+		const choice = action || "search";
+		const field = INITIATE_FIELDS[choice as keyof typeof INITIATE_FIELDS];
+		const newScenarioOption =
+			field?.find((element: any) => element?.name === "scenario")?.options?.[
+				version
+			] || [];
+		console.log("newScenario", newScenarioOption);
+		setScenarioOptions(newScenarioOption as string[]);
 	}, [action, domain, formState, version]);
 
 	const handleSubmit = async () => {
@@ -716,6 +723,7 @@ export const InitiateRequestSection = () => {
 											  (field as SELECT_FIELD).options[
 													domain as keyof SELECT_OPTIONS
 											  ] ? (
+													field.name==="scenario" && version==="b2c"?(<></>):
 												<Select
 													placeholder={field.placeholder}
 													key={"select-" + action + "-" + index}
@@ -726,7 +734,8 @@ export const InitiateRequestSection = () => {
 														handleFieldChange(field.name, newValue as string)
 													}
 												>
-													{field.name === "domain" && domain === "retail" ? (
+													{
+													field.name === "domain" && domain === "retail" ? (
 														<>
 															{domainOptions.map((option, index: number) => (
 																<Option value={option} key={option + index}>
@@ -742,7 +751,9 @@ export const InitiateRequestSection = () => {
 																</Option>
 															))}
 														</>
-													) : field.name === "scenario" &&
+													) 
+													
+													: field.name === "scenario" &&
 													  version === "b2b" ? (
 														<>
 															{scenarioOptions.map((option, index: number) => (
