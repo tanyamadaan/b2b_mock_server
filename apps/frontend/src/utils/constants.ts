@@ -72,7 +72,7 @@ export const SERVICE_DOMAINS = [
 	"ONDC:SRV11",
 	"ONDC:SRV13",
 	"ONDC:SRV14",
-	"ONDC:SRV15",
+	"ONDC:SRV17",
 	"ONDC:SRV18",
 ];
 
@@ -86,7 +86,7 @@ export const SERVICE_DOMAINS_OBJECT = [
 	{ lable: "ONDC:SRV11-Services", value: "ONDC:SRV11" },
 	{ lable: "ONDC:SRV13-Healthcare Services", value: "ONDC:SRV13" },
 	{ lable: "ONDC:SRV14-Agri Services", value: "ONDC:SRV14" },
-	{ lable: "ONDC:SRV15-Agri Equipment Hiring Services", value: "ONDC:SRV15" },
+	{ lable: "ONDC:SRV17-Agri Equipment Hiring Services", value: "ONDC:SRV17" },
 	{ lable: "ONDC:SRV18-Bid And Auction Services", value: "ONDC:SRV18" },
 ];
 
@@ -94,7 +94,7 @@ export const SERVICES_DOMAINS = {
 	SERVICE: "ONDC:SRV11",
 	HEALTHCARE_SERVICES: "ONDC:SRV13",
 	AGRI_SERVICES: "ONDC:SRV14",
-	EQUIPMENT_HIRING_SERVICES: "ONDC:SRV15",
+	EQUIPMENT_HIRING_SERVICES: "ONDC:SRV17",
 	BID_AUCTION_SERVICE: "ONDC:SRV18",
 	PRINT_MEDIA:"ONDC:MEC10"
 };
