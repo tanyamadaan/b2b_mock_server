@@ -30,7 +30,9 @@ export const MockRequestSection = () => {
 		name: string;
 		scenario: string;
 	}>();
+
 	const { domain } = useDomain();
+	const [version, setVersion] = useState("");
 	const { action, detectAction, logError, scenarios } = useAction();
 	const { setAsyncResponse, setSyncResponse } = useMock();
 
@@ -42,24 +44,31 @@ export const MockRequestSection = () => {
 		// @ts-ignore
 		setAsyncResponse(undefined);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [version]);
 
 	const [curl, setCurl] = useState<string>();
 
-    const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setLog(e.target.value);
-        detectAction(e.target.value);
-        console.log("Action:", action);
-    };
+	const handleVersion = (
+    event: React.SyntheticEvent | null,
+    newValue: string,
+  ) => {
+		setVersion(newValue)
+	};
+
+	const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+		setLog(e.target.value);
+		detectAction(e.target.value,version);
+	};
 
 	const handleSubmit = async () => {
 		let url = `${[
 			import.meta.env.VITE_SERVER_URL,
 		]}/${domain.toLowerCase()}/${Object.keys(URL_MAPPING).filter((key) =>
 			URL_MAPPING[key as keyof typeof URL_MAPPING].includes(action as string)
-		)}/${action}?mode=mock`;
+		)}/${action}?mode=mock&version=${version}`;
 		if (activeScenario?.scenario)
 			url = url + `&scenario=${activeScenario?.scenario}`;
+
 		setCurl(`curl -X POST \\
 		  ${url} \\
 		-H 'accept: application/json' \\
@@ -71,8 +80,8 @@ export const MockRequestSection = () => {
 					"Content-Type": "application/json",
 				},
 			});
+			
 			setSyncResponse(response.data.sync);
-
 			setAsyncResponse(response.data.async || {});
 		} catch (error) {
 			console.log("ERROR Occured while pinging backend:", error);
@@ -92,6 +101,12 @@ export const MockRequestSection = () => {
 				>
 					<Stack spacing={2} justifyContent="center" alignItems="center">
 						<Typography variant="h5">Mock Server</Typography>
+						{domain === "retail" && (
+							<Select placeholder="Select a version" sx={{ width: "100%" }} onChange={handleVersion}>
+								<Option value="b2b">B2B</Option>
+								<Option value="b2c">B2C</Option>
+							</Select>
+						)}
 						<FormControl error={logError} sx={{ width: "100%" }}>
 							<Textarea
 								minRows={10}

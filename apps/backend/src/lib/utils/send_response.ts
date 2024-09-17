@@ -14,12 +14,12 @@ async function send_response(
 	transaction_id: string,
 	action: string,
 	scenario: string = "",
-	bpp_uri: string = "" // for search
+	version: any = ""
 ) {
 	try {
 		const { context } = res_obj;
-		if (bpp_uri === "")
-			bpp_uri = context.bpp_uri || res_obj.bpp_uri;
+
+		const	bpp_uri = context.bpp_uri || res_obj.bpp_uri;
 
 		// res_obj.context.bpp_uri = bpp_uri
 		if (res_obj.bpp_uri) delete res_obj.bpp_uri;
@@ -39,8 +39,18 @@ async function send_response(
 			headers["X-Gateway-Authorization"] = header;
 		}
 
-		const uri = `${bpp_uri}/${action}${scenario ? `?scenario=${scenario}` : ""}`
-		
+		let uri: any;
+
+		if (scenario && version) {
+			uri = `${bpp_uri}/${action}${scenario ? `?scenario=${scenario}` : ""}${
+				version ? `&version=${version}` : ""
+			}`;
+		}else if (version){
+			uri = `${bpp_uri}/${action}${version ? `?version=${version}` : ""}`;
+		}else{
+			uri = `${bpp_uri}/${action}${scenario ? `?scenario=${scenario}` : ""}`;
+
+		}
 		const response = await axios.post(uri, res_obj, {
 			headers: { ...headers },
 		});
@@ -64,7 +74,6 @@ async function send_response(
 			},
 			transaction_id,
 		});
-
 	} catch (error) {
 		next(error);
 	}

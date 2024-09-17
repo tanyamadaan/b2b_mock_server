@@ -16,7 +16,7 @@ export const BID_AUCTION_SERVICES_EXAMPLES_PATH =
 	"./domain-repos/@services/draft-agri_bids_and_auction/api/components/Examples/Agri_Bids_And_Auction_yaml";
 
 export const HEALTHCARE_SERVICES_EXAMPLES_PATH =
-	"./domain-repos/@services/draft-healthcare-services/api/components/Examples/Health_care_services_yaml";
+	"./domain-repos/@services/draft-healthcare-service/api/components/Examples/Health_care_services_yaml";
 
 
 export const AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH =
@@ -24,6 +24,7 @@ export const AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH =
 
 export const B2B_EXAMPLES_PATH =
 	"./domain-repos/@retail-b2b/release-2.0.2/api/components/Examples/B2B";
+	
 export const B2C_EXAMPLES_PATH =
 	"./domain-repos/@b2c_exports_2.0/api/components/Examples/B2C_Exports";
 
@@ -36,6 +37,10 @@ export const B2B_BPP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}b2b/bpp`;
 export const B2B_BAP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}b2b/bap`;
 export const B2C_BPP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}b2c/bpp`;
 export const B2C_BAP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}b2c/bap`;
+
+export const REATIL_BPP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}retail/bpp`;
+export const RETAIL_BAP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}retail/bap`;
+
 export const LOGISTICS_BPP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}logistics/bpp`;
 export const LOGISTICS_BAP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}logistics/bap`;
 // export const SERVICES_BPP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/services/bpp`;
