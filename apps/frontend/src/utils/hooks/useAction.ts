@@ -20,22 +20,9 @@ export const useAction = () => {
 	const [scenarios, setScenarios] =
 		useState<{ name: string; scenario?: string }[]>();
 
-	const detectAction = _.debounce((log: string) => {
+	const detectAction = _.debounce((log: string, version?: string) => {
 		try {
 			const parsedLog = JSON.parse(log);
-			// const newDomain =
-			// 	parsedLog?.context?.domain === ALL_DOMAINS_FRONTEND.SERVICES_DOMAINS
-			// 		? "services"
-			// 		: parsedLog?.context?.domain ===
-			// 		  ALL_DOMAINS_FRONTEND.HEALTHCARE_SERVICES_DOMAINS
-			// 		? "healthcare-services"
-			// 		: parsedLog?.context?.domain ===
-			// 		  ALL_DOMAINS_FRONTEND.AGRI_SERVICES_DOMAINS
-			// 		? "agri-services"
-			// 		: "b2b";
-
-			// setDomain(newDomain);
-
 			//DETACT DOMAIN FROM PAYLOAD
 			const servicesDomain = parsedLog?.context?.domain;
 			//DETACT DOMAIN
@@ -50,7 +37,9 @@ export const useAction = () => {
 					? AGRI_EQUIPMENT_SERVICES_SCENARIOS
 					: servicesDomain === SERVICES_DOMAINS.BID_AUCTION_SERVICE
 					? BID_AUCTION_SCENARIOS
-					: B2B_SCENARIOS;
+					: version === "b2b"
+					? B2B_SCENARIOS
+					: B2C_SCENARIOS;
 
 			if (!parsedLog.context!.action) setLogError(true);
 			const parsedAction = parsedLog.context.action;
@@ -58,11 +47,13 @@ export const useAction = () => {
 			const scenarioKey = Object.keys(allScenarios).filter(
 				(key) => key === NEXT_ACTION[parsedAction as keyof typeof NEXT_ACTION]
 			)[0];
+
 			if (scenarioKey) {
 				setScenarios(allScenarios[scenarioKey as keyof typeof allScenarios]);
 			} else {
 				setScenarios([]);
 			}
+
 			setLogError(false);
 		} catch (error) {
 			setLogError(true);

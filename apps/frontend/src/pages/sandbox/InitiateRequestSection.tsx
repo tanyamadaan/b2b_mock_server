@@ -1,4 +1,3 @@
-/* eslint-disable no-mixed-spaces-and-tabs */
 import Fade from "@mui/material/Fade";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
@@ -14,7 +13,6 @@ import { useDomain, useMessage } from "../../utils/hooks";
 import HelpOutlineTwoToneIcon from "@mui/icons-material/HelpOutlineTwoTone";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-
 
 type SELECT_OPTIONS =
 	| string[]
@@ -37,6 +35,7 @@ type SELECT_FIELD = {
 	placeholder: string;
 	type: string;
 	domainDepended: boolean;
+	versionDepended: boolean;
 	options: SELECT_OPTIONS;
 };
 
@@ -44,8 +43,12 @@ export const InitiateRequestSection = () => {
 	const { handleMessageToggle, setMessageType, setCopy } = useMessage();
 	const [action, setAction] = useState<string>();
 	const { domain } = useDomain();
+	const [domainOptions, setDomainOptions] = useState<string[]>([]);
+	const [scenarioOptions, setScenarioOptions] = useState<string[]>([]);
+	const [cityOptions, setCityOptions] = useState<string[]>([]);
+	const [version, setVersion] = useState<string>("services");
 	const [renderActionFields, setRenderActionFields] = useState(false);
-	const [formState, setFormState] = useState<object>();
+	const [formState, setFormState] = useState<any>();
 	const [allowSubmission, setAllowSubmission] = useState<boolean>();
 
 	const handleActionSelection = (
@@ -59,8 +62,24 @@ export const InitiateRequestSection = () => {
 		setTimeout(() => setRenderActionFields(true), 500);
 	};
 
-	const handleFieldChange = (fieldName: string, value: string | object) => {
-		setFormState((prev) => ({ ...prev, [fieldName]: value }));
+	const handleFieldChange = (fieldName: string, value: string) => {
+		if (fieldName === "version") {
+			setVersion(value as string);
+			/****Write the logic for changes the domain options based on version selection */
+			const newDomainOptions =
+				INITIATE_FIELDS.search.find((field) => field.name === "domain")
+					?.options[version] || [];
+
+			setDomainOptions(newDomainOptions as string[]);
+
+			const newCityOptions =
+				INITIATE_FIELDS.search.find((field) => field.name === "city")?.options[
+					version
+				] || [];
+
+			setCityOptions(newCityOptions as string[]);
+		}
+		setFormState((prev: any) => ({ ...prev, [fieldName]: value }));
 	};
 
 	useEffect(() => {
@@ -69,15 +88,18 @@ export const InitiateRequestSection = () => {
 			const formKeys = INITIATE_FIELDS[
 				action as keyof typeof INITIATE_FIELDS
 			].map((e) => e.name);
+
 			const scenarios = INITIATE_FIELDS[
 				action as keyof typeof INITIATE_FIELDS
 			].filter((e) => e.name === "scenario")[0];
 
-			if (checker(keys, formKeys)) setAllowSubmission(true);
-			else if (
+			if (checker(keys, formKeys, domain)) {
+				setAllowSubmission(true);
+			} else if (
 				checker(
 					keys,
-					formKeys.filter((e) => e !== "scenario")
+					formKeys.filter((e) => e !== "scenario"),
+					domain
 				) &&
 				scenarios?.domainDepended &&
 				!scenarios.options[domain as keyof SELECT_OPTIONS]
@@ -85,14 +107,35 @@ export const InitiateRequestSection = () => {
 				setAllowSubmission(true);
 			else setAllowSubmission(false);
 		}
-	}, [action, domain, formState]);
+
+		const newDomainOptions =
+			INITIATE_FIELDS.search.find((field) => field.name === "domain")?.options[
+				version
+			] || [];
+
+		setDomainOptions(newDomainOptions as string[]);
+
+		const newCityOptions =
+			INITIATE_FIELDS.search.find((field) => field.name === "city")?.options[
+				version
+			] || [];
+
+		setCityOptions(newCityOptions as string[]);
+
+		const newScenarioOption =
+			action === "select"?INITIATE_FIELDS.select.find((field) => field.name === "scenario")
+				?.options[version] || []:action === "init"?INITIATE_FIELDS.init.find((field) => field.name === "scenario")
+				?.options[version] || []:[];
+
+		setScenarioOptions(newScenarioOption);
+	}, [action, domain, formState, version]);
 
 	const handleSubmit = async () => {
 		try {
 			const response = await axios.post(
 				`${
 					import.meta.env.VITE_SERVER_URL
-				}/${domain}/initiate/${action}?mode=mock`,
+				}/${domain}/initiate/${action}?mode=mock&version=${version}`,
 				formState,
 				{
 					headers: {
@@ -128,9 +171,12 @@ export const InitiateRequestSection = () => {
 				handleMessageToggle(
 					error.response?.data?.error?.message.error?.message === "string"
 						? error.response?.data?.error?.message.error?.message
-						: error.response?.data?.error?.message?.error?.message.length > 0
+						: Array.isArray(
+								error.response?.data?.error?.message?.error?.message
+						  ) &&
+						  error.response?.data?.error?.message?.error?.message.length > 0
 						? `${error.response?.data?.error?.message?.error?.message[0]?.message} in ${error.response?.data?.error?.message?.error?.message[0]?.details}`
-						: "Error Occurred while initiating request!"
+						: error.response?.data?.error?.message.error?.message
 				);
 			} else {
 				handleMessageToggle(
@@ -178,7 +224,6 @@ export const InitiateRequestSection = () => {
 							</Option>
 						))}
 					</Select>
-
 					<Grow in={renderActionFields} timeout={500}>
 						<Stack spacing={2} sx={{ my: 2 }}>
 							<Divider />
@@ -210,15 +255,44 @@ export const InitiateRequestSection = () => {
 														handleFieldChange(field.name, newValue as string)
 													}
 												>
-													{(
-														(field as SELECT_FIELD).options[
-															domain as keyof SELECT_OPTIONS
-														] as string[]
-													).map((option, index: number) => (
-														<Option value={option} key={option + index}>
-															{option}
-														</Option>
-													))}
+													{field.name === "domain" && domain === "retail" ? (
+														<>
+															{domainOptions.map((option, index: number) => (
+																<Option value={option} key={option + index}>
+																	{option}
+																</Option>
+															))}
+														</>
+													) : field.name === "city" && domain === "retail" ? (
+														<>
+															{cityOptions.map((option, index: number) => (
+																<Option value={option} key={option + index}>
+																	{option}
+																</Option>
+															))}
+														</>
+													) : field.name === "scenario" &&
+													  version === "b2b" ? (
+														<>
+															{scenarioOptions.map((option, index: number) => (
+																<Option value={option} key={option + index}>
+																	{option}
+																</Option>
+															))}
+														</>
+													) : (
+														<>
+															{(
+																(field as SELECT_FIELD).options[
+																	domain as keyof SELECT_OPTIONS
+																] as string[]
+															).map((option, index: number) => (
+																<Option value={option} key={option + index}>
+																	{option}
+																</Option>
+															))}
+														</>
+													)}
 												</Select>
 											) : field.type === "select" && !field.domainDepended ? (
 												<Select

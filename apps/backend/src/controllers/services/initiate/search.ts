@@ -75,7 +75,6 @@ export const initiateSearchController = async (
 				onSearch = YAML.parse(file.toString());
 				break;
 		}
-
 		let search = YAML.parse(file.toString());
 		search = search.value;
 		const transaction_id = uuidv4();

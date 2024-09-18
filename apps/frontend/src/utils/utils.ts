@@ -148,5 +148,11 @@ export const copyToClipboard = (body: object, callback?: CopyCallbackFn) => {
 		});
 };
 
-export const checker = (arr: string[], target: string[]) =>
-	target.every((v) => arr.includes(v));
+export const checker = (arr: string[], target: string[],domain?:string) =>{
+	if(domain === "services"){
+		target = target.filter(item => item !== "version")
+	}
+	// console.log("arrrrrrr",domain,arr,target)
+
+	return target.every((v) => arr.includes(v));
+}
