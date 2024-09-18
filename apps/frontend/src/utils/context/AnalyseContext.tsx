@@ -45,9 +45,10 @@ export const AnalyseContext = createContext<AnalyseContextType>({
 export const AnalyseProvider = ({ children }: AnalyseProviderType) => {
 	const [nodes, setNodes, onNodesChange] = useNodesState([]);
 	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-
 	const [openLogDialog, setOpenLogDialog] = useState(false);
 	const [logToShow, setLogToShow] = useState<object>({});
+	
+	console.log("TransactionVisualizer",children,nodes,edges,logToShow)
 	return (
 		<AnalyseContext.Provider
 			value={{

@@ -11,9 +11,10 @@ import {
 	redisFetchToServer,
 	AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH,
 	SERVICES_BPP_MOCKSERVER_URL,
+	send_response,
 } from "../../../lib/utils";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
-import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
+import { ACTTION_KEY, ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 
 export const initiateUpdateController = async (
 	req: Request,
@@ -22,6 +23,7 @@ export const initiateUpdateController = async (
 ) => {
 	try {
 		let { scenario, update_target, transactionId } = req.body;
+		let ts = new Date();
 		const on_confirm = await redisFetchToServer(
 			ON_ACTION_KEY.ON_CONFIRM,
 			transactionId
@@ -40,7 +42,7 @@ export const initiateUpdateController = async (
 		// Need to reconstruct this logic
 
 		scenario = update_target ? update_target : "payments";
-
+		console.log("scenario", scenario)
 		if (scenario === "payments"){
 			//FETCH ON UPDATE IF UPDATE PAYMENT FLOW COME
 			const on_update = await redisFetchToServer(
@@ -50,6 +52,7 @@ export const initiateUpdateController = async (
 			if (!on_update) {
 				return send_nack(res, ERROR_MESSAGES.ON_UPDATE_DOES_NOT_EXISTED);
 			}
+			console.log("----->" , on_update)
 			message = on_update.message;
 		}
 
@@ -75,38 +78,41 @@ export const initiateUpdateController = async (
 
 		const header = await createAuthHeader(update);
 
-		await redis.set(
-			`${transactionId}-update-from-server`,
-			JSON.stringify({ request: { ...update } })
-		);
-		const response = await axios.post(
-			`${context.bpp_uri}/update?scenario=${scenario}`,
-			update,
-			{
-				headers: {
-					authorization: header,
-				},
-			}
-		);
+		// await redis.set(
+		// 	`${transactionId}-update-from-server-0-${ts.toISOString()}`,
+		// 	JSON.stringify({ request: { ...update } })
+		// );
+		// const response = await axios.post(
+		// 	`${context.bpp_uri}/update?scenario=${scenario}`,
+		// 	update,
+		// 	{
+		// 		headers: {
+		// 			authorization: header,
+		// 		},
+		// 	}
+		// );
 
-		await redis.set(
-			`${transactionId}-update-from-server`,
-			JSON.stringify({
-				request: { ...update },
-				response: {
-					response: response.data,
-					timestamp: new Date().toISOString(),
-				},
-			})
-		);
-		return res.json({
-			message: {
-				ack: {
-					status: "ACK",
-				},
-			},
-			transactionId,
-		});
+		// await redis.set(
+		// 	`${transactionId}-update-from-server-0-${ts.toISOString()}`,
+		// 	JSON.stringify({
+		// 		request: { ...update },
+		// 		response: {
+		// 			response: response.data,
+		// 			timestamp: new Date().toISOString(),
+		// 		},
+		// 	})
+		// );
+
+		await send_response(res, next, update, transactionId, ACTTION_KEY.UPDATE, scenario = scenario);
+
+		// return res.json({
+		// 	message: {
+		// 		ack: {
+		// 			status: "ACK",
+		// 		},
+		// 	},
+		// 	transactionId,
+		// });
 	} catch (error) {
 		return next(error);
 	}
@@ -208,7 +214,7 @@ function rescheduleRequest(message: any, update_target: string) {
 
 function updatePaymentController(message: any, update_target: string){
 	let {
-		order: { items, payments, fulfillments, quote },
+		items, payments, fulfillments, quote,
 	} = message;
 
 	payments = payments.map((ele: any) => {
@@ -219,9 +225,9 @@ function updatePaymentController(message: any, update_target: string){
 	const responseMessage = {
 		update_target,
 		order: {
-			id: message.order.id,
+			id: message.id,
 			status: "Completed",
-			provider: message.order.provider,
+			provider: message.provider,
 			items,
 			payments,
 			fulfillments: fulfillments.map((itm: any) => ({

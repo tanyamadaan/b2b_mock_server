@@ -114,7 +114,7 @@ export const srvSchemaValidator =
 		isValid = validate(req.body);
 		// console.log('isValid::::: ', isValid)
 		if (!isValid) {
-			console.log("error json schema",validate.errors?.map(
+			console.log("error json schema",schema,validate.errors?.map(
 				({ message, params, instancePath }) => ({
 					message: `${message}${
 						params.allowedValues ? ` (${params.allowedValues})` : ""

@@ -18,7 +18,6 @@ const traverse = (source) => {
     const allPaths = [];
     path.forEach((item) => {
       if (item.includes(".json")) {
-        console.log(item);
         allPaths.push(`${source}/${item}`);
         return;
       }

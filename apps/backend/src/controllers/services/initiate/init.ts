@@ -118,8 +118,6 @@ const intializeRequest = async (
 			ACTTION_KEY.INIT,
 			(scenario = scenario)
 		);
-		
-
 	} catch (error) {
 		next(error);
 	}

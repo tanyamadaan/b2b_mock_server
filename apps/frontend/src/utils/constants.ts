@@ -1,5 +1,4 @@
-import { B2B_SCENARIOS } from "openapi-specs/constants";
-import { version } from "react";
+import { B2B_SCENARIOS, PRINT_MEDIA_SCENARIOS } from "openapi-specs/constants";
 
 export const SUPPORTED_DOMAINS = [
 	"B2B",
@@ -9,6 +8,8 @@ export const SUPPORTED_DOMAINS = [
 	"HEALTHCARE SERVICES",
 	"AGRI EQUIPMENT HIRING",
 	"BID AND AUCTION",
+	"LOGISTICS",
+	"PRINT MEDIA (SUBSCRIPTION)"
 ];
 
 export const USER_GUIDE_LINK =
@@ -58,15 +59,26 @@ export const B2B_DOMAINS = [
 	"ONDC:RET14",
 ];
 
+export const LOGISTICS_DOMAINS_OBJECT = {
+	DOMESTIC: "ONDC:LOG10",
+	INTERNATIONAL: "ONDC:LOG11",
+};
+
+export const LOGISTICS_DOMAINS = ["ONDC:LOG10", "ONDC:LOG11"];
+
 export const B2C_DOMAINS = ["ONDC:RET10", "ONDC:RET12"];
 
 export const SERVICE_DOMAINS = [
 	"ONDC:SRV11",
 	"ONDC:SRV13",
 	"ONDC:SRV14",
-	"ONDC:SRV15",
+	"ONDC:SRV17",
 	"ONDC:SRV18",
 ];
+
+export const SUBSCRIPTION_DOMAINS = [
+	"ONDC:MEC10"
+]
 
 export const RETAIL_DOMAINS = ["b2b", "b2c"];
 
@@ -74,7 +86,7 @@ export const SERVICE_DOMAINS_OBJECT = [
 	{ lable: "ONDC:SRV11-Services", value: "ONDC:SRV11" },
 	{ lable: "ONDC:SRV13-Healthcare Services", value: "ONDC:SRV13" },
 	{ lable: "ONDC:SRV14-Agri Services", value: "ONDC:SRV14" },
-	{ lable: "ONDC:SRV15-Agri Equipment Hiring Services", value: "ONDC:SRV15" },
+	{ lable: "ONDC:SRV17-Agri Equipment Hiring Services", value: "ONDC:SRV17" },
 	{ lable: "ONDC:SRV18-Bid And Auction Services", value: "ONDC:SRV18" },
 ];
 
@@ -82,15 +94,16 @@ export const SERVICES_DOMAINS = {
 	SERVICE: "ONDC:SRV11",
 	HEALTHCARE_SERVICES: "ONDC:SRV13",
 	AGRI_SERVICES: "ONDC:SRV14",
-	EQUIPMENT_HIRING_SERVICES: "ONDC:SRV15",
+	EQUIPMENT_HIRING_SERVICES: "ONDC:SRV17",
 	BID_AUCTION_SERVICE: "ONDC:SRV18",
+	PRINT_MEDIA:"ONDC:MEC10"
 };
 
 export const ALL_DOMAINS = {
-	// "B2B": B2B_DOMAINS,
-	// "B2C": B2C_DOMAINS,
 	Retail: RETAIL_DOMAINS,
 	Services: SERVICE_DOMAINS,
+	Subscription: SUBSCRIPTION_DOMAINS,
+	// Logistics: LOGISTICS_DOMAINS,
 };
 
 export const CITY_CODE = ["std:080", "std:011"];
@@ -127,7 +140,10 @@ export const INITIATE_FIELDS = {
 				retail:B2B_DOMAINS,
 				b2b: B2B_DOMAINS,
 				services: SERVICE_DOMAINS,
+				subscription:SUBSCRIPTION_DOMAINS,
+				// services:SERVICE_DOMAINS_OBJECT,
 				b2c: B2C_DOMAINS,
+				logistics: LOGISTICS_DOMAINS,
 			},
 		},
 
@@ -140,7 +156,9 @@ export const INITIATE_FIELDS = {
 				retail:CITY_CODE,
 				b2b: CITY_CODE,
 				services: CITY_CODE,
+				subscription:CITY_CODE,
 				b2c: B2C_CITY_CODE,
+				logistics: [],
 			},
 		},
 	],
@@ -158,6 +176,7 @@ export const INITIATE_FIELDS = {
 			domainDepended: true,
 			options: {
 				retail: B2B_SCENARIOS["select"].map((each) => each.scenario),
+				subscription:PRINT_MEDIA_SCENARIOS["select"].map((each) => each.scenario),
 				b2b: B2B_SCENARIOS["select"].map((each) => each.scenario),
 			},
 		},
@@ -176,8 +195,8 @@ export const INITIATE_FIELDS = {
 			domainDepended: true,
 			options: {
 				retail: B2B_SCENARIOS["init"].map((each) => each.scenario),
+				// subscription:PRINT_MEDIA_SCENARIOS["init"].map((each) => each.scenario),
 				b2b: B2B_SCENARIOS["init"].map((each) => each.scenario),
-
 				// retail: B2B_SCENARIOS["init"].map((each) => each.scenario),
 				// services: SERVICES_SCENARIOS["init"].map((each) => each.scenario),
 			},
@@ -228,8 +247,13 @@ export const INITIATE_FIELDS = {
 			name: "update_target",
 			placeholder: "Update Target",
 			type: "select",
-			domainDepended: false,
-			options: ["payments", "fulfillments", "items"],
+			domainDepended: true,
+			options: {
+				services: ["payments", "fulfillments", "items"],
+				b2b: ["payments", "fulfillments", "items"],
+				b2c: ["payments", "fulfillments", "items"],
+				logistics: ["fulfillments"],
+			},
 		},
 	],
 
@@ -248,6 +272,15 @@ export const INITIATE_FIELDS = {
 			name: "cancellationReasonId",
 			placeholder: "Enter Your Cancellation Reason ID",
 			type: "text",
+			domainDepended: true,
+			options: {
+				services:["001"],
+				b2b:["001"],
+				b2c:["001"],
+				retail:["001"],
+				subscription:["001"],
+				logistics: ["TAT Breach, 007"], // Follow this format if new options are added.
+			},
 		},
 		{
 			name: "scenario",
