@@ -193,7 +193,7 @@ export const InitiateRequestSection = () => {
 				logisticsCancelKeys
 			) {
 				setAllowSubmission(true);
-			} else if (checker(keys, formKeys, domain,version)) {
+			} else if (checker(keys, formKeys, domain, version)) {
 				setAllowSubmission(true);
 			} else if (
 				checker(
@@ -231,13 +231,23 @@ export const InitiateRequestSection = () => {
 
 		// setScenarioOptions(newScenarioOption as string[]);
 		const choice = action || "search";
-		const field = INITIATE_FIELDS[choice as keyof typeof INITIATE_FIELDS];
-		const newScenarioOption =
-			field?.find((element: any) => element?.name === "scenario")?.options?.[
-				version
-			] || [];
-		console.log("newScenario", newScenarioOption);
-		setScenarioOptions(newScenarioOption as string[]);
+		const field = INITIATE_FIELDS[choice as keyof typeof INITIATE_FIELDS].find(
+			(field) => field.name === "scenario"
+		);
+		console.log("fieldddd", field?.options);
+		if (field && field?.options) {
+			const ar = Object.values(field?.options);
+			if (domain === "retail") {
+				const newScenarioOptions = ar[0] as string[];
+				setScenarioOptions(newScenarioOptions);
+			} else if (domain === "subscription") {
+				const newScenarioOptions = ar[1] as string[];
+				setScenarioOptions(newScenarioOptions);
+			} else {
+				const newScenarioOptions = ar[2] as string[];
+				setScenarioOptions(newScenarioOptions);
+			}
+		}
 	}, [action, domain, formState, version]);
 
 	const handleSubmit = async () => {
@@ -723,59 +733,61 @@ export const InitiateRequestSection = () => {
 											  (field as SELECT_FIELD).options[
 													domain as keyof SELECT_OPTIONS
 											  ] ? (
-													field.name==="scenario" && version==="b2c"?(<></>):
-												<Select
-													placeholder={field.placeholder}
-													key={"select-" + action + "-" + index}
-													onChange={(
-														_event: React.SyntheticEvent | null,
-														newValue: string | null
-													) =>
-														handleFieldChange(field.name, newValue as string)
-													}
-												>
-													{
-													field.name === "domain" && domain === "retail" ? (
-														<>
-															{domainOptions.map((option, index: number) => (
-																<Option value={option} key={option + index}>
-																	{option}
-																</Option>
-															))}
-														</>
-													) : field.name === "city" && domain === "retail" ? (
-														<>
-															{cityOptions.map((option, index: number) => (
-																<Option value={option} key={option + index}>
-																	{option}
-																</Option>
-															))}
-														</>
-													) 
-													
-													: field.name === "scenario" &&
-													  version === "b2b" ? (
-														<>
-															{scenarioOptions.map((option, index: number) => (
-																<Option value={option} key={option + index}>
-																	{option}
-																</Option>
-															))}
-														</>
-													) : (
-														<>
-															{(
-																(field as SELECT_FIELD).options[
-																	domain as keyof SELECT_OPTIONS
-																] as string[]
-															).map((option, index: number) => (
-																<Option value={option} key={option + index}>
-																	{option}
-																</Option>
-															))}
-														</>
-													)}
-												</Select>
+												field.name === "scenario" && version === "b2c" ? (
+													<></>
+												) : (
+													<Select
+														placeholder={field.placeholder}
+														key={"select-" + action + "-" + index}
+														onChange={(
+															_event: React.SyntheticEvent | null,
+															newValue: string | null
+														) =>
+															handleFieldChange(field.name, newValue as string)
+														}
+													>
+														{field.name === "domain" && domain === "retail" ? (
+															<>
+																{domainOptions.map((option, index: number) => (
+																	<Option value={option} key={option + index}>
+																		{option}
+																	</Option>
+																))}
+															</>
+														) : field.name === "city" && domain === "retail" ? (
+															<>
+																{cityOptions.map((option, index: number) => (
+																	<Option value={option} key={option + index}>
+																		{option}
+																	</Option>
+																))}
+															</>
+														) : field.name === "scenario" &&
+														  version === "b2b" ? (
+															<>
+																{scenarioOptions.map(
+																	(option, index: number) => (
+																		<Option value={option} key={option + index}>
+																			{option}
+																		</Option>
+																	)
+																)}
+															</>
+														) : (
+															<>
+																{(
+																	(field as SELECT_FIELD).options[
+																		domain as keyof SELECT_OPTIONS
+																	] as string[]
+																).map((option, index: number) => (
+																	<Option value={option} key={option + index}>
+																		{option}
+																	</Option>
+																))}
+															</>
+														)}
+													</Select>
+												)
 											) : field.type === "select" && !field.domainDepended ? (
 												<Select
 													placeholder={field.placeholder}
