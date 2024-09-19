@@ -126,7 +126,7 @@ export const INITIATE_FIELDS = {
 			options: {
 				retail: RETAIL_DOMAINS,
 				b2b: RETAIL_DOMAINS,
-				b2c: RETAIL_DOMAINS
+				b2c: RETAIL_DOMAINS,
 			},
 		},
 
