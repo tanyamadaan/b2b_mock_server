@@ -114,9 +114,10 @@ export const InitiateRequestSection = () => {
 		}
 	};
 	const handleFieldChange = (fieldName: string, value: string | object) => {
+		console.log("formmmmstataee",formState)
 		setFormState((prev) => ({ ...prev, [fieldName]: value }));
 	};
-
+	console.log("alooowsub",allowSubmission)
 	useEffect(() => {
 		if (action) {
 			const keys = Object.keys(formState || {});
@@ -147,6 +148,7 @@ export const InitiateRequestSection = () => {
 			) {
 				setAllowSubmission(true);
 			} else if (checker(keys, formKeys)) {
+				console.log("heree1")
 				setAllowSubmission(true);
 			} else if (
 				checker(
@@ -158,8 +160,18 @@ export const InitiateRequestSection = () => {
 				scenarios?.domainDepended &&
 				!scenarios.options[domain as keyof SELECT_OPTIONS]
 			) {
+				console.log("here...")
 				setAllowSubmission(true);
-			} else {
+			}
+			else if(checker(
+				keys,
+				formKeys.filter((e) => e !== "scenario"),
+				domain,
+			) ) {
+				setAllowSubmission(true)
+			}
+			else {
+				console.log("herer2")
 				setAllowSubmission(false);
 			}
 		}
@@ -187,6 +199,10 @@ export const InitiateRequestSection = () => {
 		const field = INITIATE_FIELDS[choice as keyof typeof INITIATE_FIELDS].find(
 			(field) => field.name === "scenario"
 		);
+
+
+		console.log("domainnnnnn",domain)
+
 		console.log("fieldddd", field?.options);
 		if (field && field?.options) {
 			const ar = Object.values(field?.options);
@@ -350,6 +366,7 @@ export const InitiateRequestSection = () => {
 						{Object.keys(INITIATE_FIELDS)
 							.filter(
 								(action) =>
+									
 									!(
 										(domain === "logistics" && action === "select") ||
 										(domain === "subscription" && action === "update")
@@ -749,7 +766,8 @@ export const InitiateRequestSection = () => {
 													field.domainDepended ? (
 														(() => {
 															const options = field.options as any;
-
+															console.log("optionsss",options,field.name)
+															
 															// Special case for scenario field
 															if (field.name === "scenario") {
 																if (
@@ -797,8 +815,10 @@ export const InitiateRequestSection = () => {
 																Array.isArray(options[domain]) &&
 																options[domain].length > 0
 															) {
+																 console.log("exex",field)																
 																return (
-																	<Select
+																	
+																	 <Select
 																		placeholder={field.placeholder}
 																		onChange={(
 																			_event: React.SyntheticEvent | null,
@@ -810,6 +830,7 @@ export const InitiateRequestSection = () => {
 																			)
 																		}
 																	>
+																		
 																		{options[domain].map(
 																			(option: string, optionIndex: number) => (
 																				<Option
@@ -822,12 +843,18 @@ export const InitiateRequestSection = () => {
 																		)}
 																	</Select>
 																);
+															
 															} else if (
-																domain == "logistics" &&
+																domain==="logistics"&&
 																action == "search"
 															) {
-																return (
-																	<Select
+																
+															console.log("selllllects",field.name)
+															
+															console.log("🚀 ~ field:", field)
+															return	(	
+																	(	field.placeholder==="Select Use Case..." && field.name==="version" && (domain==="logistics"  || domain==="services" || domain==="subscription")?															
+																	null:(<Select
 																		placeholder={field.placeholder}
 																		onChange={(
 																			_event: React.SyntheticEvent | null,
@@ -838,8 +865,9 @@ export const InitiateRequestSection = () => {
 																				newValue as string
 																			)
 																		}
-																	>
-																		{field.name === "city" ? (
+																		>
+																		
+																		{(field.name === "city" ? (
 																			formState.domain === "ONDC:LOG10" ? (
 																				CITY_CODE.map((option: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined, optionIndex: any) => (
 																					<Option
@@ -852,7 +880,9 @@ export const InitiateRequestSection = () => {
 																			) : (
 																				<Option value="UN:SIN">UN:SIN</Option>
 																			)
-																		) : Array.isArray(field.options) ? (
+																		) : 
+																		Array.isArray(field.options) ? (
+																			console.log("fielssss2",field),
 																			field.options.map(
 																				(option, optionIndex: number) => (
 																					<Option
@@ -863,10 +893,66 @@ export const InitiateRequestSection = () => {
 																					</Option>
 																				)
 																			)
-																		) : null}
-																	</Select>
-																);
-															}
+																		)
+																		 :
+																		  null)}
+																	</Select>))
+																)
+															
+														}
+													// 	else if (
+													// 		action === "search" && domain === "logistics"
+													// 	) {
+															
+													// 		console.log("selllllects",field.name)
+													// 		if()
+													// 		return (	
+													// 			<Select
+													// 				placeholder={field.placeholder}
+													// 				onChange={(
+													// 					_event: React.SyntheticEvent | null,
+													// 					newValue: string | null
+													// 				) =>
+													// 					handleFieldChange(
+													// 						field.name,
+													// 						newValue as string
+													// 					)
+													// 				}
+													// 			>
+													// 				console.log("sdssd")
+													// 				{field.name === "city" ? (
+													// 					formState.domain === "ONDC:LOG10" ? (
+													// 						CITY_CODE.map((option: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined, optionIndex: any) => (
+													// 							<Option
+													// 								value={option}
+													// 								key={`${option}-${optionIndex}`}
+													// 							>
+													// 								{option}
+													// 							</Option>
+													// 						))
+													// 					) : (
+													// 						<Option value="UN:SIN">UN:SIN</Option>
+													// 					)
+													// 				) : 
+													// 				Array.isArray(field.options) ? (
+													// 					console.log("fielssss2",field),
+													// 					field.options.map(
+													// 						(option, optionIndex: number) => (
+													// 							<Option
+													// 								value={option}
+													// 								key={`${option}-${optionIndex}`}
+													// 							>
+													// 								{option}
+													// 							</Option>
+													// 						)
+													// 					)
+													// 				)
+													// 				 :
+													// 				  null}
+													// 			</Select>
+													// 		);
+														
+													// }
 														})()
 													) : (
 														<Input

@@ -289,7 +289,7 @@ export const copyToClipboard = (body: object, callback?: CopyCallbackFn) => {
 };
 
 export const checker = (arr: string[], target: string[], domain?: string,version?:string) => {
-	if(domain === "services"){
+	if(domain === "services" || domain === "logistics" || domain === "subscription"){
 		target = target.filter(item => item !== "version")
 	}
 

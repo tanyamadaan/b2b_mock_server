@@ -50,6 +50,7 @@ const intializeRequest = async (
 
 		let file: any = "";
 
+		console.log("versionnnnnnnnn",version)
     switch(version){
       case "b2c":
         file = fs.readFileSync(
@@ -63,8 +64,9 @@ const intializeRequest = async (
 		
 		const response = YAML.parse(file.toString());
 
+
 		if (scenario !== "rfq") {
-			delete response.value.message.order.items[0].tags;
+			delete response?.value?.message?.order?.items[0]?.tags;
 		}
 		const select = {
 			context: {
@@ -89,7 +91,7 @@ const intializeRequest = async (
 					},
 					items: [
 						{
-							...response.value.message.order.items[0],
+							...response?.value?.message?.order?.items[0],
 							id: message.catalog.providers[0].items[0].id,
 							location_ids: [
 								message.catalog.providers[0].items[0].location_ids[0],
