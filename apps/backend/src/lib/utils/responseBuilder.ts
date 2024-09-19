@@ -87,6 +87,7 @@ export const responseBuilder = async (
 	id: number = 0
 ) => {
 	res.locals = {};
+
 	let ts = new Date();
 	// ts.setSeconds(ts.getSeconds() + 1);
 	const sandboxMode = res.getHeader("mode") === "sandbox";
@@ -140,6 +141,7 @@ export const responseBuilder = async (
 	}
 
 	const header = await createAuthHeader(async);
+
 	if (sandboxMode) {
 		if (action.startsWith("on_")) {
 			var log: TransactionType = {
@@ -174,12 +176,14 @@ export const responseBuilder = async (
 					JSON.stringify(log)
 				);
 			}
+
 			try {
 				const response = await axios.post(`${uri}?mode=mock`, async, {
 					headers: {
 						authorization: header,
 					},
 				});
+
 
 				log.response = {
 					timestamp: new Date().toISOString(),
@@ -264,7 +268,8 @@ export const sendStatusAxiosCall = async (
 		| "services"
 		| "agri-services"
 		| "healthcare-service"
-		| "agri-equipment-hiring",
+		| "agri-equipment-hiring"
+		| "logistics",
 	error?: object | undefined
 ) => {
 	let ts = new Date();
@@ -279,12 +284,14 @@ export const sendStatusAxiosCall = async (
 		domain === "b2b"
 			? B2B_BPP_MOCKSERVER_URL
 			: domain === "agri-services"
-			? AGRI_SERVICES_BPP_MOCKSERVER_URL
-			: domain === "healthcare-service"
-			? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
-			: domain === "agri-equipment-hiring"
-			? AGRI_EQUIPMENT_BPP_MOCKSERVER_URL
-			: SERVICES_BPP_MOCKSERVER_URL;
+				? AGRI_SERVICES_BPP_MOCKSERVER_URL
+				: domain === "logistics"
+					? LOGISTICS_BPP_MOCKSERVER_URL
+					: domain === "healthcare-service"
+						? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
+						: domain === "agri-equipment-hiring"
+							? AGRI_EQUIPMENT_BPP_MOCKSERVER_URL
+							: SERVICES_BPP_MOCKSERVER_URL;
 
 	async = {
 		...async,

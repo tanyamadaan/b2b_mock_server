@@ -289,8 +289,8 @@ export const copyToClipboard = (body: object, callback?: CopyCallbackFn) => {
 };
 
 export const checker = (arr: string[], target: string[], domain?: string,version?:string) => {
-	if (domain !== "reatil") {
-		target = target.filter((item) => item !== "version");
+	if(domain === "services" || domain === "logistics" || domain === "subscription"){
+		target = target.filter(item => item !== "version")
 	}
 
 	if(domain === "retail" && version === "b2c"){
@@ -298,4 +298,4 @@ export const checker = (arr: string[], target: string[], domain?: string,version
 
 	}
 	return target.every((v) => arr.includes(v));
-};
+}

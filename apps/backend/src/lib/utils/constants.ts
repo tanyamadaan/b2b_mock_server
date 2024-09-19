@@ -43,8 +43,8 @@ export const B2C_BAP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}b2c/bap`;
 export const REATIL_BPP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}retail/bpp`;
 export const RETAIL_BAP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}retail/bap`;
 
-export const LOGISTICS_BPP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/logistics/bpp`;
-export const LOGISTICS_BAP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/logistics/bap`;
+export const LOGISTICS_BPP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}logistics/bpp`;
+export const LOGISTICS_BAP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}logistics/bap`;
 // export const SERVICES_BPP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/services/bpp`;
 // export const SERVICES_BAP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/services/bap`;
 export const SERVICES_BPP_MOCKSERVER_URL = `${MOCK_API_BASE_URL}services/bpp`;
