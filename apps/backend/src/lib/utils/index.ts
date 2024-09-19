@@ -12,4 +12,3 @@ export * from "./logger"
 export * from "./redisFetch"
 export * from "./send_response"
 export * from './interfaces'
-export * from "./responseBuilder_logistics";

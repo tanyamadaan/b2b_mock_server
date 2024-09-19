@@ -15,19 +15,6 @@ import HelpOutlineTwoToneIcon from "@mui/icons-material/HelpOutlineTwoTone";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 
-// import { Item } from "../../../../backend/src/lib/utils/interfaces";
-// type InitiateRequestSectionProp = {
-// 	domain:
-// 		| "b2b"
-// 		| "b2c"
-// 		| "services"
-// 		| "retail"
-// 		| "subscription"
-// 		| "agri-services"
-// 		| "healthcare-services"
-// 		| "agri-equipment-hiring"
-// 		| "logistics";
-// };
 
 type SELECT_OPTIONS =
 	| string[]
@@ -43,7 +30,6 @@ type SELECT_FIELD = {
 	placeholder: string;
 	type: string;
 	domainDepended: boolean;
-	versionDepended: boolean;
 	options: SELECT_OPTIONS;
 };
 
@@ -66,57 +52,14 @@ export const InitiateRequestSection = () => {
 	const [version, setVersion] = useState<string>("services");
 	const [selectedScenario, setSelectedScenario] = useState<string>("default");
 	const [renderActionFields, setRenderActionFields] = useState(false);
-	const [formState, setFormState] = useState<{ [key: string]: any }>({});
-	const [allowSubmission, setAllowSubmission] = useState<boolean>(false);
-	// const [transactionId, setTransactionId] = useState<string>("");
-	// const [showCatalogSelect, setShowCatalogSelect] = useState<boolean>(false);
-	// const [matchingItems, setMatchingItems] = useState<Item[]>([]);
-	// const [selectedItemId, setSelectedItemId] = useState<string>("");
+	const [formState, setFormState] = useState<object>();
+	const [allowSubmission, setAllowSubmission] = useState<boolean>();
 
 	useEffect(() => {
 		// setRenderActionFields(true);
 		setAction("");
 	}, [domain]);
-
-	// const handleSelectionChange = (
-	// 	_event: React.SyntheticEvent | null,
-	// 	newValue: string | null
-	// ) => {
-	// 	setSelectedItemId(newValue as string | "");
-	// 	setFormState((prev) => ({ ...prev, ["itemID"]: newValue }));
-	// 	console.log(`Selected item ID: ${newValue}`);
-	// };
-
-	// const handleTransactionIdSubmit = async () => {
-	// 	try {
-	// 		const response = await axios.post<{
-	// 			message: { matchingItems: Item[] };
-	// 		}>(
-	// 			`${
-	// 				import.meta.env.VITE_SERVER_URL
-	// 			}/${domain.toLowerCase()}/getCatalog/?mode=mock`,
-	// 			{ transactionId },
-	// 			{
-	// 				headers: {
-	// 					"Content-Type": "application/json",
-	// 				},
-	// 			}
-	// 		);
-
-	// 		if (response.data && response.data.message) {
-	// 			setMatchingItems(response.data.message.matchingItems);
-	// 			setShowCatalogSelect(true);
-	// 		} else {
-	// 			// Handle error or unexpected response
-	// 			console.error("Unexpected response format:", response.data);
-	// 		}
-	// 	} catch (error) {
-	// 		setShowCatalogSelect(false);
-	// 		console.error("Error fetching catalog:", error);
-	// 		// Handle error (e.g., show error message to user)
-	// 	}
-	// };
-
+	
 	const handleActionSelection = (
 		_event: React.SyntheticEvent | null,
 		newValue: string | null

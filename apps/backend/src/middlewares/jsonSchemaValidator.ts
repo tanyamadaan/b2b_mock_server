@@ -24,6 +24,7 @@ type AllActions =
 	| "on_cancel"
 	| "rating";
 
+// Exclude "select", "on_select", and "rating" for logistics domain
 type LogisticsActions = Exclude<AllActions, "select" | "on_select" | "rating">;
 
 type B2BActions = Exclude<AllActions, "rating">;

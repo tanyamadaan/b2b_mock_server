@@ -103,7 +103,7 @@ export const ALL_DOMAINS = {
 	Retail: RETAIL_DOMAINS,
 	Services: SERVICE_DOMAINS,
 	Subscription: SUBSCRIPTION_DOMAINS,
-	// Logistics: LOGISTICS_DOMAINS,
+	Logistics: LOGISTICS_DOMAINS,
 };
 
 export const CITY_CODE = ["std:080", "std:011"];
