@@ -15,12 +15,12 @@ import HelpOutlineTwoToneIcon from "@mui/icons-material/HelpOutlineTwoTone";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 
-import { Item } from "../../../../backend/src/lib/utils/interfaces";
+// import { Item } from "../../../../backend/src/lib/utils/interfaces";
 
 type SELECT_OPTIONS =
 	| string[]
-	| { b2b: string[]; services: string[]; b2c: string[] }
-	| { b2b: string[]; services: string[]; b2c: string[] }
+	| { b2b: string[]; services: string[]; b2c: string[],logistics:string[] }
+	| { b2b: string[]; services: string[]; b2c: string[] ,logistics:string[]}
 	| { services: string[] }
 	| { logistics: string[] }
 	| { b2c: string[] }
@@ -43,6 +43,8 @@ export const InitiateRequestSection = () => {
 	const [matchingItems, setMatchingItems] = useState<Item[]>([]);
 	const [selectedItemId, setSelectedItemId] = useState<string>("");
 
+	console.log("services=========> true")
+
 	const handleSelectionChange = (
 		_event: React.SyntheticEvent | null,
 		newValue: string | null
@@ -55,7 +57,7 @@ export const InitiateRequestSection = () => {
 	const handleTransactionIdSubmit = async () => {
 		try {
 			const response = await axios.post<{
-				message: { matchingItems: Item[] };
+				message: { matchingItems: any[] };
 			}>(
 				`${
 					import.meta.env.VITE_SERVER_URL
@@ -108,6 +110,7 @@ export const InitiateRequestSection = () => {
 			const formKeys = INITIATE_FIELDS[
 				action as keyof typeof INITIATE_FIELDS
 			].map((e) => e.name);
+			console.log("🚀 ~ useEffect ~ formKeys:", formKeys)
 
 			const scenarios = INITIATE_FIELDS[
 				action as keyof typeof INITIATE_FIELDS
@@ -117,6 +120,7 @@ export const InitiateRequestSection = () => {
 				"transactionId",
 				"cancellationReasonId",
 			].every((key) => formKeys.includes(key));
+			console.log("🚀 ~ useEffect ~ scenarios:", scenarios)
 
 			if (domain === "logistics" && action === "init") {
 				// Check if both transactionId and itemID are present in formState
@@ -149,22 +153,23 @@ export const InitiateRequestSection = () => {
 		}
 
 		const newDomainOptions =
-			INITIATE_FIELDS.search.find((field) => field.name === "domain")?.options[
-				version
-			] || [];
+		(INITIATE_FIELDS as any).search.find((field:any) => field.name === "domain")?.options[
+			version
+		] || [];
+		console.log("🚀 ~ useEffect ~ newDomainOptions:", newDomainOptions)
 
 		setDomainOptions(newDomainOptions as string[]);
 
 		const newCityOptions =
-			INITIATE_FIELDS.search.find((field) => field.name === "city")?.options[
+		(INITIATE_FIELDS as any).search.find((field:any) => field.name === "city")?.options[
 				version
 			] || [];
 
 		setCityOptions(newCityOptions as string[]);
 
 		const newScenarioOption =
-			action === "select"?INITIATE_FIELDS.select.find((field) => field.name === "scenario")
-				?.options[version] || []:action === "init"?INITIATE_FIELDS.init.find((field) => field.name === "scenario")
+			action === "select"?(INITIATE_FIELDS as any).select.find((field:any) => field.name === "scenario")
+				?.options[version] || []:action === "init"?(INITIATE_FIELDS as any).init.find((field:any) => field.name === "scenario")
 				?.options[version] || []:[];
 
 		setScenarioOptions(newScenarioOption);
@@ -458,7 +463,7 @@ export const InitiateRequestSection = () => {
 																					</Option>
 																				))
 																			) : (
-																				<Option value="UN:SIN">UN:SIN</Option>
+																				<Option value="std:999">UN:SIN</Option>
 																			)
 																		) : Array.isArray(field.options) ? (
 																			field.options.map(
