@@ -60,6 +60,10 @@ const intializeRequest = async (
         file = fs.readFileSync(
           path.join(B2B_EXAMPLES_PATH, "select/select_domestic.yaml")
         );
+			default:
+				file = fs.readFileSync(
+          path.join(B2B_EXAMPLES_PATH, "select/select_domestic.yaml")
+        );
     }
 		
 		const response = YAML.parse(file.toString());
