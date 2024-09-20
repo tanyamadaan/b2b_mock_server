@@ -73,6 +73,7 @@ export const initiateSearchController = async (
 		var endTime = new Date();
 		endTime.setDate(endTime.getDate() + 2);
 		search = search.value;
+		console.log("searchhhh",JSON.stringify(search.message.intent.fulfillment.stops[0]))
 		search = {
 			...search,
 			context: {
@@ -108,7 +109,8 @@ export const initiateSearchController = async (
 						...search.message.intent.fulfillment,
 						stops: [
 							{
-								...search.message.intent?.fulfillments?.stops[0],
+
+								...search.message.intent?.fulfillment?.stops[0],
 								time: {
 									range: {
 										start: startTime.toISOString(),
@@ -116,8 +118,8 @@ export const initiateSearchController = async (
 									},
 								},
 							},
-							{
-								...search.message.intent?.fulfillments?.stops[1],
+							{						
+							...search.message.intent?.fulfillment?.stops[1],
 							},
 						],
 					},
@@ -126,6 +128,7 @@ export const initiateSearchController = async (
 				},
 			},
 		};
+		console.log("Seaaavvvvvvh",JSON.stringify(search))
 		await send_response(res, next, search, transaction_id, "search", "","", bpp_uri);
 	} catch (error) {
 		return next(error);

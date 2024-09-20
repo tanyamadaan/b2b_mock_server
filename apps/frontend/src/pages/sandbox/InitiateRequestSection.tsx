@@ -345,7 +345,7 @@ export const InitiateRequestSection = () => {
 			}
 		}
 	};
-
+console.log("versionnn",version)
 	return (
 		<Fade in={true} timeout={2500}>
 			<Paper
@@ -392,105 +392,7 @@ export const InitiateRequestSection = () => {
 								</Option>
 							))}
 					</Select>
-
-					{/* <Grow in={renderActionFields} timeout={500}>
-						<Stack spacing={2} sx={{ my: 2 }}>
-							<Divider />
-							{action &&
-								INITIATE_FIELDS[action as keyof typeof INITIATE_FIELDS].map(
-									(field, index) => (
-										<>
-											{field.type === "text" ? (
-												<Input
-													fullWidth
-													placeholder={field.placeholder}
-													key={"input-" + action + "-" + index}
-													onChange={(e) =>
-														handleFieldChange(field.name, e.target.value)
-													}
-												/>
-											) : field.type === "select" &&
-											  (field as SELECT_FIELD).domainDepended &&
-											  (field as SELECT_FIELD).options[
-													domain as keyof SELECT_OPTIONS
-											  ] ? (
-												<Select
-													placeholder={field.placeholder}
-													key={"select-" + action + "-" + index}
-													onChange={(
-														_event: React.SyntheticEvent | null,
-														newValue: string | null
-													) =>
-														handleFieldChange(field.name, newValue as string)
-													}
-												>
-													{field.name === "domain" && domain === "retail" ? (
-														<>
-															{domainOptions.map((option, index: number) => (
-																<Option value={option} key={option + index}>
-																	{option}
-																</Option>
-															))}
-														</>
-													) : field.name === "city" && domain === "retail" ? (
-														<>
-															{cityOptions.map((option, index: number) => (
-																<Option value={option} key={option + index}>
-																	{option}
-																</Option>
-															))}
-														</>
-													) : field.name === "scenario" &&
-													  version === "b2b" ? (
-														<>
-															{scenarioOptions.map((option, index: number) => (
-																<Option value={option} key={option + index}>
-																	{option}
-																</Option>
-															))}
-														</>
-													) : (
-														<>
-															{(
-																(field as SELECT_FIELD).options[
-																	domain as keyof SELECT_OPTIONS
-																] as string[]
-															).map((option, index: number) => (
-																<Option value={option} key={option + index}>
-																	{option}
-																</Option>
-															))}
-														</>
-													)}
-												</Select>
-											) : field.type === "select" && !field.domainDepended ? (
-												<Select
-													placeholder={field.placeholder}
-													key={"select-" + action + "-" + index}
-													onChange={(
-														_event: React.SyntheticEvent | null,
-														newValue: string | null
-													) =>
-														handleFieldChange(field.name, newValue as string)
-													}
-												>
-													{(field.options as string[]).map(
-														(option, index: number) => (
-															<Option value={option} key={option + index}>
-																{option}
-															</Option>
-														)
-													)}
-												</Select>
-											) : (
-												<></>
-											)}
-										</>
-									)
-								)}
-						</Stack>
-					</Grow> */}
-
+	
 
 					<Grow in={renderActionFields} timeout={500}>
 						<Stack spacing={2} sx={{ my: 2 }}>
@@ -581,18 +483,21 @@ export const InitiateRequestSection = () => {
 													field.domainDepended ? (
 														(() => {
 															const options = field.options as any;
-
+															console.log("optionss",options,"fielld",field)
 															// Special case for scenario field
-															if (field.name === "scenario") {
+															if (field.name === "scenario" ) {
 																if (
 																	options &&
 																	domain in options &&
 																	Array.isArray(options[domain]) &&
-																	options[domain].length > 0
-																) {
+																	options[domain].length > 0 
+																) {			
+																	if(version==="b2c" && domain==="retail"){
+																		return (<></>)
+																	}													
 																	return (
-																	<>
-																	{/* {version !=="b2c"? */}
+																	
+																	//   version ==="b2c" && domain==="retail"? (<></>) :
 																	<Select
 																			placeholder={field.placeholder}
 																			onChange={(
@@ -619,8 +524,8 @@ export const InitiateRequestSection = () => {
 																				)
 																			)}
 																		</Select>
-																		{/* :null} */}
-																	</>
+																		
+																	
 																		
 																	);
 																}
@@ -634,6 +539,7 @@ export const InitiateRequestSection = () => {
 																Array.isArray(options[domain]) &&
 																options[domain].length > 0
 															) {
+																
 																return (
 																	<Select
 																		placeholder={field.placeholder}
