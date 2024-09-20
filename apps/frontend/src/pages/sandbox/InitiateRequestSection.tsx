@@ -15,7 +15,19 @@ import HelpOutlineTwoToneIcon from "@mui/icons-material/HelpOutlineTwoTone";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 
-import { Item } from "../../../../backend/src/lib/utils/interfaces";
+// import { Item } from "../../../../backend/src/lib/utils/interfaces";
+// type InitiateRequestSectionProp = {
+// 	domain:
+// 		| "b2b"
+// 		| "b2c"
+// 		| "services"
+// 		| "retail"
+// 		| "subscription"
+// 		| "agri-services"
+// 		| "healthcare-services"
+// 		| "agri-equipment-hiring"
+// 		| "logistics";
+// };
 
 type SELECT_OPTIONS =
 	| string[]
@@ -26,15 +38,23 @@ type SELECT_OPTIONS =
 	| { b2c: string[] }
 	| object;
 
-
-type OptionsType = {
-	retail: string[];
-	subscription: string[];
-	b2b: string[];
-	b2c: string[];
+type SELECT_FIELD = {
+	name: string;
+	placeholder: string;
+	type: string;
+	domainDepended: boolean;
+	versionDepended: boolean;
+	options: SELECT_OPTIONS;
 };
 
-type Version = keyof OptionsType;
+type OptionsType = {
+  retail: string[];
+  subscription: string[];
+  b2b: string[];
+	b2c:string[];
+};
+
+type Version = keyof OptionsType; 
 
 export const InitiateRequestSection = () => {
 	const { handleMessageToggle, setMessageType, setCopy } = useMessage();
@@ -52,6 +72,11 @@ export const InitiateRequestSection = () => {
 	const [showCatalogSelect, setShowCatalogSelect] = useState<boolean>(false);
 	const [matchingItems, setMatchingItems] = useState<Item[]>([]);
 	const [selectedItemId, setSelectedItemId] = useState<string>("");
+
+	useEffect(() => {
+		// setRenderActionFields(true);
+		setAction("");
+	}, [domain]);
 
 	const handleSelectionChange = (
 		_event: React.SyntheticEvent | null,
@@ -92,11 +117,6 @@ export const InitiateRequestSection = () => {
 		}
 	};
 
-	useEffect(() => {
-		// setRenderActionFields(true);
-		setAction("");
-	}, [domain]);
-	
 	const handleActionSelection = (
 		_event: React.SyntheticEvent | null,
 		newValue: string | null
@@ -107,17 +127,44 @@ export const InitiateRequestSection = () => {
 		setAllowSubmission(false);
 		setTimeout(() => setRenderActionFields(true), 500);
 		if (domain === "logistics") {
-			// setTransactionId("");
-			// setShowCatalogSelect(false);
-			// setMatchingItems([]);
-			// setSelectedItemId("");
+			setTransactionId("");
+			setShowCatalogSelect(false);
+			setMatchingItems([]);
+			setSelectedItemId("");
 		}
 	};
-	const handleFieldChange = (fieldName: string, value: string | object) => {
-		console.log("formmmmstataee",formState)
-		setFormState((prev) => ({ ...prev, [fieldName]: value }));
+
+	const handleFieldChange = (fieldName: string, value: string) => {
+		if (fieldName === "version") {
+			setVersion(value as string);
+			/****Write the logic for changes the domain options based on version selection */
+			const newDomainOptions =
+				INITIATE_FIELDS.search.find((field) => field.name === "domain")
+					?.options?.[version as Version] || [];
+
+			setDomainOptions(newDomainOptions as string[]);
+
+			const newCityOptions =
+				INITIATE_FIELDS.search.find((field) => field.name === "city")?.options?.[
+					version as Version
+				] || [];
+
+			setCityOptions(newCityOptions as string[]);
+
+			const newScenarioOption =
+			INITIATE_FIELDS.search.find((field) => field.name === "scenario")?.options?.[
+				version as Version
+			] || [];
+
+			setScenarioOptions(newScenarioOption as string[]);
+		}
+		if (fieldName === "scenario") {
+			setSelectedScenario(value as string);
+			/****Write the logic for changes the domain options based on version selection */
+		}
+		setFormState((prev: any) => ({ ...prev, [fieldName]: value }));
 	};
-	console.log("alooowsub",allowSubmission)
+
 	useEffect(() => {
 		if (action) {
 			const keys = Object.keys(formState || {});
@@ -129,6 +176,7 @@ export const InitiateRequestSection = () => {
 				action as keyof typeof INITIATE_FIELDS
 			].filter((e) => e.name === "scenario")[0];
 			const logisticsInitKeys = ["transactionId", "itemID"];
+
 			const logisticsCancelKeys = [
 				"transactionId",
 				"cancellationReasonId",
@@ -147,80 +195,47 @@ export const InitiateRequestSection = () => {
 				logisticsCancelKeys
 			) {
 				setAllowSubmission(true);
-			} else if (checker(keys, formKeys)) {
-				console.log("heree1")
+			} else if (checker(keys, formKeys, domain,version)) {
 				setAllowSubmission(true);
 			} else if (
 				checker(
 					keys,
 					formKeys.filter((e) => e !== "scenario"),
-					domain,
-					version
+					domain
 				) &&
 				scenarios?.domainDepended &&
 				!scenarios.options[domain as keyof SELECT_OPTIONS]
 			) {
-				console.log("here...")
 				setAllowSubmission(true);
-			}
-			else if(checker(
-				keys,
-				formKeys.filter((e) => e !== "scenario"),
-				domain,
-			) ) {
-				setAllowSubmission(true)
-			}
-			else {
-				console.log("herer2")
+			} else {
 				setAllowSubmission(false);
 			}
 		}
 
 		const newDomainOptions =
-			INITIATE_FIELDS.search.find((field) => field.name === "domain")
-				?.options?.[version as Version] || [];
+				INITIATE_FIELDS.search.find((field) => field.name === "domain")
+					?.options?.[version as Version] || [];
 
-		setDomainOptions(newDomainOptions as string[]);
+			setDomainOptions(newDomainOptions as string[]);
 
-		const newCityOptions =
-			INITIATE_FIELDS.search.find((field) => field.name === "city")?.options?.[
+			const newCityOptions =
+				INITIATE_FIELDS.search.find((field) => field.name === "city")?.options?.[
+					version as Version
+				] || [];
+
+			setCityOptions(newCityOptions as string[]);
+
+			const newScenarioOption =
+			INITIATE_FIELDS.search.find((field) => field.name === "scenario")?.options?.[
 				version as Version
 			] || [];
 
-		setCityOptions(newCityOptions as string[]);
-
-		// const newScenarioOption =
-		// INITIATE_FIELDS.search.find((field) => field.name === "scenario")?.options?.[
-		// 	version as Version
-		// ] || [];
-
-		// setScenarioOptions(newScenarioOption as string[]);
-		const choice = action || "search";
-		const field = INITIATE_FIELDS[choice as keyof typeof INITIATE_FIELDS].find(
-			(field) => field.name === "scenario"
-		);
-
-
-		console.log("domainnnnnn",domain)
-
-		console.log("fieldddd", field?.options);
-		if (field && field?.options) {
-			const ar = Object.values(field?.options);
-			if (domain === "retail") {
-				const newScenarioOptions = ar[0] as string[];
-				setScenarioOptions(newScenarioOptions);
-			} else if (domain === "subscription") {
-				const newScenarioOptions = ar[1] as string[];
-				setScenarioOptions(newScenarioOptions);
-			} else {
-				const newScenarioOptions = ar[2] as string[];
-				setScenarioOptions(newScenarioOptions);
-			}
-		}
+			setScenarioOptions(newScenarioOption as string[]);
 	}, [action, domain, formState, version]);
 
 	const handleSubmit = async () => {
 		try {
+			console.log("formStateeeeeeee",formState)
 			const response = await axios.post(
 				`${
 					import.meta.env.VITE_SERVER_URL
@@ -366,7 +381,6 @@ export const InitiateRequestSection = () => {
 						{Object.keys(INITIATE_FIELDS)
 							.filter(
 								(action) =>
-									
 									!(
 										(domain === "logistics" && action === "select") ||
 										(domain === "subscription" && action === "update")
@@ -384,304 +398,100 @@ export const InitiateRequestSection = () => {
 							<Divider />
 							{action &&
 								INITIATE_FIELDS[action as keyof typeof INITIATE_FIELDS].map(
-									//my version code
-
-									// (field, index) => (
-									// 	<>
-									// 		{field.type === "text" ? (
-									// 			<Input
-									// 				fullWidth
-									// 				placeholder={field.placeholder}
-									// 				key={"input-" + action + "-" + index}
-									// 				onChange={(e) =>
-									// 					handleFieldChange(field.name, e.target.value)
-									// 				}
-									// 			/>
-									// 		) : field.type === "select" &&
-									// 		  (field as SELECT_FIELD).domainDepended &&
-									// 		  (field as SELECT_FIELD).options[
-									// 				domain as keyof SELECT_OPTIONS
-									// 		  ] ? (
-									// 			<Select
-									// 				placeholder={field.placeholder}
-									// 				key={"select-" + action + "-" + index}
-									// 				onChange={(
-									// 					_event: React.SyntheticEvent | null,
-									// 					newValue: string | null
-									// 				) =>
-									// 					handleFieldChange(field.name, newValue as string)
-									// 				}
-									// 			>
-									// 				{field.name === "domain" && domain === "retail" ? (
-									// 					<>
-									// 						{domainOptions.map((option, index: number) => (
-									// 							<Option value={option} key={option + index}>
-									// 								{option}
-									// 							</Option>
-									// 						))}
-									// 					</>
-									// 				) : field.name === "city" && domain === "retail" ? (
-									// 					<>
-									// 						{cityOptions.map((option, index: number) => (
-									// 							<Option value={option} key={option + index}>
-									// 								{option}
-									// 							</Option>
-									// 						))}
-									// 					</>
-									// 				) : field.name === "scenario" &&
-									// 				  domain === "retail" ? (
-									// 					<>
-									// 						{scenarioOptions.map((option, index: number) => (
-									// 							<Option value={option} key={option + index}>
-									// 								{option}
-									// 							</Option>
-									// 						))}
-									// 					</>
-									// 				) : (
-									// 					<>
-									// 						{(
-									// 							(field as SELECT_FIELD).options[
-									// 								domain as keyof SELECT_OPTIONS
-									// 							] as string[]
-									// 						).map((option, index: number) => (
-									// 							<Option value={option} key={option + index}>
-									// 								{option}
-									// 							</Option>
-									// 						))}
-									// 					</>
-									// 				)}
-									// 			</Select>
-									// 		) : field.type === "select" && !field.domainDepended ? (
-									// 			<Select
-									// 				placeholder={field.placeholder}
-									// 				key={"select-" + action + "-" + index}
-									// 				onChange={(
-									// 					_event: React.SyntheticEvent | null,
-									// 					newValue: string | null
-									// 				) =>
-									// 					handleFieldChange(field.name, newValue as string)
-									// 				}
-									// 			>
-									// 				{(field.options as string[]).map(
-									// 					(option, index: number) => (
-									// 						<Option value={option} key={option + index}>
-									// 							{option}
-									// 						</Option>
-									// 					)
-									(field, index) => {
-										// Skip rendering `orderId` if action is "cancel" and domain is "logistics"
-										if (
-											domain === "logistics" &&
-											action === "cancel" &&
-											field.name === "orderId"
-										) {
-											return null;
-										}
-										if (domain === "logistics" && action === "init") {
-											if (index > 0) return <></>;
-
-											return (
-												<React.Fragment key={"react-" + action + "-" + index}>
-													<Input
-														type="text"
-														key={"input-" + action + "-" + index}
-														value={transactionId}
-														placeholder={field.placeholder}
-														onChange={(e) => {
-															setTransactionId(
-																(e.target as HTMLInputElement).value
-															);
-															handleFieldChange(field.name, e.target.value);
-														}}
-													/>
-													<Button onClick={handleTransactionIdSubmit}>
-														Submit
-													</Button>
-													{showCatalogSelect && (
-														<React.Fragment>
-															<Select
-																id="matchingItemsDropdown"
-																value={selectedItemId || ""}
-																onChange={(
-																	_event: React.SyntheticEvent | null,
-																	newValue: string | null
-																) =>
-																	handleSelectionChange(
-																		_event,
-																		newValue as string
-																	)
-																}
-																placeholder="Select an item"
-															>
-																<Option value="" disabled>
-																	Select an item
+									(field, index) => (
+										<>
+											{field.type === "text" ? (
+												<Input
+													fullWidth
+													placeholder={field.placeholder}
+													key={"input-" + action + "-" + index}
+													onChange={(e) =>
+														handleFieldChange(field.name, e.target.value)
+													}
+												/>
+											) : field.type === "select" &&
+											  (field as SELECT_FIELD).domainDepended &&
+											  (field as SELECT_FIELD).options[
+													domain as keyof SELECT_OPTIONS
+											  ] ? (
+												<Select
+													placeholder={field.placeholder}
+													key={"select-" + action + "-" + index}
+													onChange={(
+														_event: React.SyntheticEvent | null,
+														newValue: string | null
+													) =>
+														handleFieldChange(field.name, newValue as string)
+													}
+												>
+													{field.name === "domain" && domain === "retail" ? (
+														<>
+															{domainOptions.map((option, index: number) => (
+																<Option value={option} key={option + index}>
+																	{option}
 																</Option>
-																{matchingItems.map((item) => (
-																	<Option key={item.id} value={item.id}>
-																		{item.id}
-																	</Option>
-																))}
-															</Select>
-														</React.Fragment>
-													)}
-												</React.Fragment>
-											);
-										}
-
-										return (
-											<React.Fragment key={`field-${action}-${index}`}>
-												{field.type === "text" &&
-												field.name !== "cancellationReasonId" ? (
-													<Input
-														fullWidth
-														placeholder={field.placeholder}
-														key={"input-" + action + "-" + index}
-														onChange={(e) =>
-															handleFieldChange(field.name, e.target.value)
-														}
-													/>
-												) : field.type === "select" ||
-												  (field.type === "text" &&
-														field.name === "cancellationReasonId") ? (
-													field.domainDepended ? (
-														(() => {
-															const options = field.options as any;
-
-															// Special case for scenario field
-															if (field.name === "scenario") {
-																if (
-																	options &&
-																	domain in options &&
-																	Array.isArray(options[domain]) &&
-																	options[domain].length > 0
-																) {
-																	return (
-																		<Select
-																			placeholder={field.placeholder}
-																			onChange={(
-																				_event: React.SyntheticEvent | null,
-																				newValue: string | null
-																			) =>
-																				handleFieldChange(
-																					field.name,
-																					newValue as string
-																				)
-																			}
-																		>
-																			{options[domain].map(
-																				(
-																					option: string,
-																					optionIndex: number
-																				) => (
-																					<Option
-																						value={option}
-																						key={`${option}-${optionIndex}`}
-																					>
-																						{option}
-																					</Option>
-																				)
-																			)}
-																		</Select>
-																	);
-																}
-																return null; // Render null if domain doesn't exist in options or has no options
-															}
-
-															// For other domain-dependent fields
-															if (
-																options &&
-																options[domain] &&
-																Array.isArray(options[domain]) &&
-																options[domain].length > 0
-															) {
-																return (
-																	<Select
-																		placeholder={field.placeholder}
-																		onChange={(
-																			_event: React.SyntheticEvent | null,
-																			newValue: string | null
-																		) =>
-																			handleFieldChange(
-																				field.name,
-																				newValue as string
-																			)
-																		}
-																	>
-																		{options[domain].map(
-																			(option: string, optionIndex: number) => (
-																				<Option
-																					value={option}
-																					key={`${option}-${optionIndex}`}
-																				>
-																					{option}
-																				</Option>
-																			)
-																		)}
-																	</Select>
-																);
-															} else if (
-																domain == "logistics" &&
-																action == "search"
-															) {
-																return (
-																	<Select
-																		placeholder={field.placeholder}
-																		onChange={(
-																			_event: React.SyntheticEvent | null,
-																			newValue: string | null
-																		) =>
-																			handleFieldChange(
-																				field.name,
-																				newValue as string
-																			)
-																		}
-																	>
-																		{field.name === "city" ? (
-																			formState.domain === "ONDC:LOG10" ? (
-																				CITY_CODE.map((option, optionIndex) => (
-																					<Option
-																						value={option}
-																						key={`${option}-${optionIndex}`}
-																					>
-																						{option}
-																					</Option>
-																				))
-																			) : (
-																				<Option value="UN:SIN">UN:SIN</Option>
-																			)
-																		) : Array.isArray(field.options) ? (
-																			field.options.map(
-																				(option, optionIndex: number) => (
-																					<Option
-																						value={option}
-																						key={`${option}-${optionIndex}`}
-																					>
-																						{option}
-																					</Option>
-																				)
-																			)
-																		) : null}
-																	</Select>
-																);
-															}
-														})()
+															))}
+														</>
+													) : field.name === "city" && domain === "retail" ? (
+														<>
+															{cityOptions.map((option, index: number) => (
+																<Option value={option} key={option + index}>
+																	{option}
+																</Option>
+															))}
+														</>
+													) : field.name === "scenario" &&
+													  version === "b2b" ? (
+														<>
+															{scenarioOptions.map((option, index: number) => (
+																<Option value={option} key={option + index}>
+																	{option}
+																</Option>
+															))}
+														</>
 													) : (
-														<Input
-															fullWidth
-															placeholder={field.placeholder}
-															key={"input-" + action + "-" + index}
-															onChange={(e) =>
-																handleFieldChange(field.name, e.target.value)
-															}
-														/>
-													)
-												) : null}
-											</React.Fragment>
-										);
-									}
+														<>
+															{(
+																(field as SELECT_FIELD).options[
+																	domain as keyof SELECT_OPTIONS
+																] as string[]
+															).map((option, index: number) => (
+																<Option value={option} key={option + index}>
+																	{option}
+																</Option>
+															))}
+														</>
+													)}
+												</Select>
+											) : field.type === "select" && !field.domainDepended ? (
+												<Select
+													placeholder={field.placeholder}
+													key={"select-" + action + "-" + index}
+													onChange={(
+														_event: React.SyntheticEvent | null,
+														newValue: string | null
+													) =>
+														handleFieldChange(field.name, newValue as string)
+													}
+												>
+													{(field.options as string[]).map(
+														(option, index: number) => (
+															<Option value={option} key={option + index}>
+																{option}
+															</Option>
+														)
+													)}
+												</Select>
+											) : (
+												<></>
+											)}
+										</>
+									)
 								)}
 						</Stack>
 					</Grow> */}
+
+
 					<Grow in={renderActionFields} timeout={500}>
 						<Stack spacing={2} sx={{ my: 2 }}>
 							<Divider />
@@ -750,7 +560,9 @@ export const InitiateRequestSection = () => {
 
 										return (
 											<React.Fragment key={`field-${action}-${index}`}>
-												{field.type === "text" &&
+
+												{
+												field.type === "text" &&
 												field.name !== "cancellationReasonId" ? (
 													<Input
 														fullWidth
@@ -760,14 +572,16 @@ export const InitiateRequestSection = () => {
 															handleFieldChange(field.name, e.target.value)
 														}
 													/>
-												) : field.type === "select" ||
+												) : 
+												
+												
+												field.type === "select" ||
 												  (field.type === "text" &&
 														field.name === "cancellationReasonId") ? (
 													field.domainDepended ? (
 														(() => {
 															const options = field.options as any;
-															console.log("optionsss",options,field.name)
-															
+
 															// Special case for scenario field
 															if (field.name === "scenario") {
 																if (
@@ -777,7 +591,9 @@ export const InitiateRequestSection = () => {
 																	options[domain].length > 0
 																) {
 																	return (
-																		<Select
+																	<>
+																	{/* {version !=="b2c"? */}
+																	<Select
 																			placeholder={field.placeholder}
 																			onChange={(
 																				_event: React.SyntheticEvent | null,
@@ -803,6 +619,9 @@ export const InitiateRequestSection = () => {
 																				)
 																			)}
 																		</Select>
+																		{/* :null} */}
+																	</>
+																		
 																	);
 																}
 																return null; // Render null if domain doesn't exist in options or has no options
@@ -815,10 +634,8 @@ export const InitiateRequestSection = () => {
 																Array.isArray(options[domain]) &&
 																options[domain].length > 0
 															) {
-																 console.log("exex",field)																
 																return (
-																	
-																	 <Select
+																	<Select
 																		placeholder={field.placeholder}
 																		onChange={(
 																			_event: React.SyntheticEvent | null,
@@ -830,8 +647,34 @@ export const InitiateRequestSection = () => {
 																			)
 																		}
 																	>
-																		
-																		{options[domain].map(
+														{field.name === "domain" && domain === "retail" ? (
+														<>
+															{domainOptions.map((option, index: number) => (
+																<Option value={option} key={option + index}>
+																	{option}
+																</Option>
+															))}
+														</>
+													) : field.name === "city" && domain === "retail" ? (
+														<>
+															{cityOptions.map((option, index: number) => (
+																<Option value={option} key={option + index}>
+																	{option}
+																</Option>
+															))}
+														</>
+													) 
+													: options[domain].map(
+														(option: string, optionIndex: number) => (
+															<Option
+																value={option}
+																key={`${option}-${optionIndex}`}
+															>
+																{option}
+															</Option>
+														)
+													)} 
+																		{/* {options[domain].map(
 																			(option: string, optionIndex: number) => (
 																				<Option
 																					value={option}
@@ -840,119 +683,47 @@ export const InitiateRequestSection = () => {
 																					{option}
 																				</Option>
 																			)
-																		)}
+																		)} */}
 																	</Select>
 																);
-															
 															} else if (
-																domain==="logistics"&&
+																domain == "logistics" &&
 																action == "search"
 															) {
+																console.log("searchhhhhhhhhhhhhhhhhhhh",field.name)
+																return (
+																	<>
+																		{field.name !== "version" && (
+																			<Select
+																				placeholder={field.placeholder}
+																				onChange={(
+																					_event: React.SyntheticEvent | null,
+																					newValue: string | null
+																				) => handleFieldChange(field.name, newValue as string)}
+																			>
+																				{field.name === "city" ? (
+																					formState.domain === "ONDC:LOG10" ? (
+																						CITY_CODE.map((option, optionIndex) => (
+																							<Option value={option} key={`${option}-${optionIndex}`}>
+																								{option}
+																							</Option>
+																						))
+																					) : (
+																						<Option value="UN:SIN">UN:SIN</Option>
+																					)
+																				) : Array.isArray(field.options) ? (
+																					field.options.map((option, optionIndex: number) => (
+																						<Option value={option} key={`${option}-${optionIndex}`}>
+																							{option}
+																						</Option>
+																					))
+																				) : null}
+																			</Select>
+																		)}
+																	</>
+																);
 																
-															console.log("selllllects",field.name)
-															
-															console.log("🚀 ~ field:", field)
-															return	(	
-																	(	field.placeholder==="Select Use Case..." && field.name==="version" && (domain==="logistics"  || domain==="services" || domain==="subscription")?															
-																	null:(<Select
-																		placeholder={field.placeholder}
-																		onChange={(
-																			_event: React.SyntheticEvent | null,
-																			newValue: string | null
-																		) =>
-																			handleFieldChange(
-																				field.name,
-																				newValue as string
-																			)
-																		}
-																		>
-																		
-																		{(field.name === "city" ? (
-																			formState.domain === "ONDC:LOG10" ? (
-																				CITY_CODE.map((option: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined, optionIndex: any) => (
-																					<Option
-																						value={option}
-																						key={`${option}-${optionIndex}`}
-																					>
-																						{option}
-																					</Option>
-																				))
-																			) : (
-																				<Option value="UN:SIN">UN:SIN</Option>
-																			)
-																		) : 
-																		Array.isArray(field.options) ? (
-																			console.log("fielssss2",field),
-																			field.options.map(
-																				(option, optionIndex: number) => (
-																					<Option
-																						value={option}
-																						key={`${option}-${optionIndex}`}
-																					>
-																						{option}
-																					</Option>
-																				)
-																			)
-																		)
-																		 :
-																		  null)}
-																	</Select>))
-																)
-															
-														}
-													// 	else if (
-													// 		action === "search" && domain === "logistics"
-													// 	) {
-															
-													// 		console.log("selllllects",field.name)
-													// 		if()
-													// 		return (	
-													// 			<Select
-													// 				placeholder={field.placeholder}
-													// 				onChange={(
-													// 					_event: React.SyntheticEvent | null,
-													// 					newValue: string | null
-													// 				) =>
-													// 					handleFieldChange(
-													// 						field.name,
-													// 						newValue as string
-													// 					)
-													// 				}
-													// 			>
-													// 				console.log("sdssd")
-													// 				{field.name === "city" ? (
-													// 					formState.domain === "ONDC:LOG10" ? (
-													// 						CITY_CODE.map((option: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined, optionIndex: any) => (
-													// 							<Option
-													// 								value={option}
-													// 								key={`${option}-${optionIndex}`}
-													// 							>
-													// 								{option}
-													// 							</Option>
-													// 						))
-													// 					) : (
-													// 						<Option value="UN:SIN">UN:SIN</Option>
-													// 					)
-													// 				) : 
-													// 				Array.isArray(field.options) ? (
-													// 					console.log("fielssss2",field),
-													// 					field.options.map(
-													// 						(option, optionIndex: number) => (
-													// 							<Option
-													// 								value={option}
-													// 								key={`${option}-${optionIndex}`}
-													// 							>
-													// 								{option}
-													// 							</Option>
-													// 						)
-													// 					)
-													// 				)
-													// 				 :
-													// 				  null}
-													// 			</Select>
-													// 		);
-														
-													// }
+															}
 														})()
 													) : (
 														<Input
@@ -971,6 +742,8 @@ export const InitiateRequestSection = () => {
 								)}
 						</Stack>
 					</Grow>
+
+					
 				</Stack>
 				<Box sx={{ display: "flex", justifyContent: "center" }}>
 					<Button
