@@ -590,6 +590,9 @@ export const InitiateRequestSection = () => {
 																	Array.isArray(options[domain]) &&
 																	options[domain].length > 0
 																) {
+																	 if(version==="b2c" && domain==="retail"){
+                                                                        return (<></>)
+                                                                    }       
 																	return (
 																	<>
 																	{/* {version !=="b2c"? */}
