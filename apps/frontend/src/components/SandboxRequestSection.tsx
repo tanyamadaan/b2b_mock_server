@@ -30,9 +30,15 @@ export const SandboxRequestSection = () => {
 		scenario: string;
 	}>();
 	const { domain } = useDomain();
-	const { action, detectAction, logError, scenarios } = useAction();
-
+	const { action, detectAction, logError, scenarios, setLogError } =
+		useAction();
 	const { setSyncResponse } = useSandbox();
+
+	useEffect(() => {
+		setAuthHeader("");
+		setLog("");
+		setLogError(false);
+	}, [domain]);
 	useEffect(() => {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
@@ -44,15 +50,20 @@ export const SandboxRequestSection = () => {
 
 	const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		setLog(e.target.value);
-		detectAction(e.target.value,version);
+		detectAction(e.target.value, version);
 	};
 
 	const handleVersion = (
-    event: React.SyntheticEvent | null,
-    newValue: string,
-  ) => {
-		setVersion(newValue)
-  };
+		event: React.MouseEvent<Element> | React.KeyboardEvent<Element> | React.FocusEvent<Element> | null,
+		value: {} | null
+	) => {
+		console.log("event",event)
+		if (value) {
+			setVersion(value as string); // Ensure value is a string and set the version
+		}
+	};
+	
+
 	const handleSubmit = async () => {
 		let url = `${[
 			import.meta.env.VITE_SERVER_URL,
@@ -76,7 +87,6 @@ export const SandboxRequestSection = () => {
 					authorization: authHeader,
 				},
 			});
-			console.log("RESPONSE RECEIVED", response);
 
 			if (response.data.error) {
 				setSyncResponse(response.data);
@@ -107,7 +117,15 @@ export const SandboxRequestSection = () => {
 							}}
 						></Box>
 						{domain === "retail" && (
-							<Select placeholder="Select a version" sx={{ width: "100%" }} onChange={handleVersion}>
+							// <Select placeholder="Select a version" sx={{ width: "100%" }} onChange={handleVersion}>
+							// 	<Option value="b2b">B2B</Option>
+							// 	<Option value="b2c">B2c</Option>
+							// </Select>
+							<Select
+								placeholder="Select a version"
+								sx={{ width: "100%" }}
+								onChange={(event, value) => handleVersion(event, value)} // Ensure both event and value are passed
+							>
 								<Option value="b2b">B2B</Option>
 								<Option value="b2c">B2c</Option>
 							</Select>

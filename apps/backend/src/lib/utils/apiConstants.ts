@@ -10,8 +10,20 @@ export const SERVICES_DOMAINS = {
 	SERVICES: "ONDC:SRV11",
 	AGRI_SERVICES: "ONDC:SRV14",
 	HEALTHCARE_SERVICES: "ONDC:SRV13",
-	AGRI_EQUIPMENT: "ONDC:SRV15",
+	AGRI_EQUIPMENT: "ONDC:SRV17",
 	BID_ACTION_SERVICES: "ONDC:SRV18",
+	SUBSCRIPTION_PRINT_MEDIA:"ONDC:MEC10",
+	SUBSCRIPTION_AUDIO_VIDEO: "ONDC:MEC11"
+};
+
+export const SUBSCRIPTION_DOMAINS = {
+	PRINT_MEDIA: "ONDC:MEC10",
+	AUDIO_VIDEO: "ONDC:MEC11"
+};
+
+export const PRINT_MEDIA_CATEGORIES = {
+	NEWSPAPER: "MEC10-1002",
+	MAGAZINES: "MEC10-1001"
 };
 
 export const ORDER_STATUS = {
@@ -74,12 +86,23 @@ export const EQUIPMENT_HIRING_STATUS = [
 	"Completed",
 ];
 
-//Pickup-approved (progress)
-//Order-picked-up (progress)
-//Domestic-custom-cleared
-//At-destination-hub
-//Out-for-delivery(In-progress)
-//Order-delivered(Completed)
+export const PRINT_MEDIA_STATUS = [
+	"PENDING",
+	"PACKED",
+	"AGENT-ASSIGNED",
+	"OUT-FOR-DELIVERY",
+	"ORDER-PICKED-UP",
+	"COMPLETED",
+];
+
+export const PRINT_MEDIA_STATUS_OBJECT = {
+	PENDING:"PENDING",
+	PACKED:"PACKED",
+	AGENT_ASSIGNED:"AGENT-ASSIGNED",
+	OUT_FOR_DELIVERY:"OUT-FOR-DELIVERY",
+	ORDER_PICKED_UP:"ORDER-PICKED-UP",
+	COMPLETED:"COMPLETED",
+};
 
 export const B2C_STATUS = [
 	"Pickup-approved",
@@ -128,6 +151,7 @@ export const EQUIPMENT_HIRING_STATUS_OBJECT = {
 export const FULFILLMENT_TYPES = {
 	BUYER_FULFILLED: "Buyer-Fulfilled",
 	SELLER_FULFILLED: "Seller-Fulfilled",
+	SUBSCRIPTION: "Subscription",
 };
 
 export const FULFILLMENT_LABELS = {

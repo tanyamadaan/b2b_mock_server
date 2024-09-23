@@ -1,12 +1,12 @@
 import express, { Express, Request, Response } from "express";
 import swaggerUi from "swagger-ui-express";
 import cron from "node-cron"; // Import node-cron
-
 import {
 	authRouter,
-	b2bRouter,
 	miscRouter,
 	servicesRouter,
+	subscriptionRouter,
+	logisticsRouter,
 } from "./controllers";
 import cors from "cors";
 import {
@@ -22,14 +22,7 @@ import {
 	healthcareServiceSwagger,
 } from "./middlewares";
 import { retailRouter } from "./controllers/retail";
-import { b2cRouter } from "./controllers/b2c";
-
-// import memwatch from 'memwatch-next';
-// // Set up memwatch to listen for memory leaks
-// memwatch.on('leak', (info) => {
-//   console.log('Memory leak detected:', info);
-// });
-
+import { sendUpsolicieatedOnStatus } from "./lib/utils/sendUpsolicieatedOnStatus";
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
@@ -64,14 +57,15 @@ app.use(
 	healthcareServiceSwagger("/api-docs/agri-equipment-services")
 );
 
+app.use(express.json());
 app.use(express.raw({ type: "*/*", limit: "1mb" }));
 app.use(requestParser);
 app.use("/", miscRouter);
-app.use("/b2b", errorHandlingWrapper(b2bRouter));
-app.use("/b2c", errorHandlingWrapper(b2cRouter));
 app.use("/retail", errorHandlingWrapper(retailRouter));
 app.use("/auth", errorHandlingWrapper(authRouter));
 app.use("/services", errorHandlingWrapper(servicesRouter));
+app.use("/subscription", errorHandlingWrapper(subscriptionRouter));
+app.use("/logistics", errorHandlingWrapper(logisticsRouter));
 app.use("/detect_app_installation", (req: Request, res: Response) => {
 	const headers = req.headers;
 	return res.json({
@@ -80,14 +74,14 @@ app.use("/detect_app_installation", (req: Request, res: Response) => {
 });
 app.use(globalErrorHandler);
 
-// //Schedule the function to run every 30 seconds using node-cron
-// cron.schedule("*/30 * * * * *", async () => {
-// 	try {
-// 		await sendUpsolicieatedOnStatus();
-// 	} catch (error) {
-// 		console.log("error occured in cron");
-// 	}
-// });
+//Schedule the function to run every 30 seconds using node-cron
+cron.schedule("*/30 * * * * *", async () => {
+	try {
+		await sendUpsolicieatedOnStatus();
+	} catch (error) {
+		console.log("error occured in cron");
+	}
+});
 
 app.listen(port, () => {
 	console.log(`[server]: Server is running at http://localhost:${port}`);

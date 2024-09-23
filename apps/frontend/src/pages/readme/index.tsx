@@ -129,8 +129,7 @@ const ONDCDocumentation = () => {
 					<li>Enter the BPP URL in the provided input field:</li>
 					<ul>
 						<li>Services: <a href="https://mock.ondc.org/api/services/bpp">https://mock.ondc.org/api/services/bpp</a></li>
-						<li>B2B: <a href="https://mock.ondc.org/api/b2b/bpp">https://mock.ondc.org/api/b2b/bpp</a></li>
-						<li>B2C: <a href="https://mock.ondc.org/api/b2c/bpp">https://mock.ondc.org/api/b2c/bpp</a></li>
+						<li>Retail: <a href="https://mock.ondc.org/api/retail/bpp">https://mock.ondc.org/api/retail/bpp</a></li>
 					</ul>
 				</ul>
 				<h3>Step 2: Select the Request Type for Search</h3>
