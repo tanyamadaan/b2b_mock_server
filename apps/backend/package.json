@@ -18,7 +18,8 @@
 			"src/index.ts"
 		],
 		"noExternal": [
-			"openapi-specs"
+			"openapi-specs",
+			"common"
 		]
 	},
 	"author": "Abhik Banerjee",
