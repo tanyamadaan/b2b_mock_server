@@ -8,8 +8,12 @@ import {
 	AGRI_SERVICES_SCENARIOS,
 	AGRI_EQUIPMENT_SERVICES_SCENARIOS,
 	BID_AUCTION_SCENARIOS,
+	LOGISTICS_SCENARIOS,
+	NEXT_ACTION_LOGISTICS,
+	B2C_SCENARIOS,
+	PRINT_MEDIA_SCENARIOS,
 } from "openapi-specs/constants";
-import { SERVICES_DOMAINS } from "../constants";
+import { LOGISTICS_DOMAINS_OBJECT, SERVICES_DOMAINS } from "../constants";
 // import { ALL_DOMAINS_FRONTEND } from "../constants";
 
 export const useAction = () => {
@@ -37,17 +41,27 @@ export const useAction = () => {
 					? AGRI_EQUIPMENT_SERVICES_SCENARIOS
 					: servicesDomain === SERVICES_DOMAINS.BID_AUCTION_SERVICE
 					? BID_AUCTION_SCENARIOS
+					: servicesDomain === SERVICES_DOMAINS.PRINT_MEDIA
+					? PRINT_MEDIA_SCENARIOS
+					: servicesDomain === LOGISTICS_DOMAINS_OBJECT.DOMESTIC ||
+					  servicesDomain === LOGISTICS_DOMAINS_OBJECT.INTERNATIONAL
+					? LOGISTICS_SCENARIOS
 					: version === "b2b"
 					? B2B_SCENARIOS
 					: B2C_SCENARIOS;
-
 			if (!parsedLog.context!.action) setLogError(true);
 			const parsedAction = parsedLog.context.action;
 			setAction(parsedAction);
-			const scenarioKey = Object.keys(allScenarios).filter(
-				(key) => key === NEXT_ACTION[parsedAction as keyof typeof NEXT_ACTION]
-			)[0];
 
+			// Choose the appropriate action mapping based on the domain
+			const actionMapping =
+				domain.toLowerCase() === "logistics"
+					? NEXT_ACTION_LOGISTICS
+					: NEXT_ACTION;
+			const scenarioKey = Object.keys(allScenarios).find(
+				(key) =>
+					key === actionMapping[parsedAction as keyof typeof actionMapping]
+			);
 			if (scenarioKey) {
 				setScenarios(allScenarios[scenarioKey as keyof typeof allScenarios]);
 			} else {
@@ -60,5 +74,5 @@ export const useAction = () => {
 			setAction(undefined);
 		}
 	}, 1500);
-	return { action, domain, setDomain, logError, scenarios, detectAction };
+	return { action, domain, setDomain, logError, scenarios, detectAction,setLogError };
 };

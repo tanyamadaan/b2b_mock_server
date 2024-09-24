@@ -22,8 +22,7 @@ RUN npm i --force
 COPY --from=pruner /app/out/full/ .
 COPY turbo.json turbo.json
 ENV NODE_OPTIONS=--max_old_space_size=4096
-RUN npm run build -- --filter=frontend
-
+RUN npm run build
 
 # Stage 2: Production Image
 FROM nginx:alpine AS ondc-mock-web

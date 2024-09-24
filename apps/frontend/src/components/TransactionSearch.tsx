@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import Grow from "@mui/material/Grow";
 import IconButton from "@mui/material/IconButton";
 import useTheme from "@mui/material/styles/useTheme";
-import { actionComparator, getNodesAndEdges } from "../utils";
+import { _getNodesAndEdges, actionComparator } from "../utils";
 import axios from "axios";
 import * as _ from "lodash";
 import { useAnalyse, useMessage } from "../utils/hooks";
@@ -24,62 +24,65 @@ export const TransactionSearch = () => {
 			const response = await axios.get(
 				`${import.meta.env.VITE_SERVER_URL}/analyse/${transaction}`
 			);
-			const seenActionMessageId: Record<string, Date> = {};
 			const formattedResponse = response.data
-				.reduce(
-					(
-						// eslint-disable-next-line @typescript-eslint/no-explicit-any
-						uniqueArr: any[],
-						// eslint-disable-next-line @typescript-eslint/no-explicit-any
-						item: {
-							request: {
-								context: {
-									action: string;
-									timestamp: string;
-									message_id: string;
-								};
-							};
-						}
-					) => {
-						const {
-							action,
-							timestamp: strTimestamp,
-							message_id,
-						} = item.request.context;
-						const timestamp = new Date(strTimestamp);
-						if (
-							!seenActionMessageId[`${message_id}-${action}`]
-							// || timestamp > seenActionMessageId[action]
-						) {
-							seenActionMessageId[`${message_id}-${action}`] = timestamp; // Update latest timestamp for the action
-							// const existingIndex = uniqueArr.findIndex(
-							// 	(obj) => obj.action === action
-							// );
-							// if (existingIndex !== -1) {
-							// 	uniqueArr[existingIndex] = item;
-							// } else {
-							uniqueArr.push(item);
-							// }
-						}
-						return uniqueArr;
-					},
-					[]
-				)
-				.sort(
-					// (
-					// 	a: {
-					// 		request: { context: { timestamp: string | number | Date } };
-					// 	},
-					// 	b: {
-					// 		request: { context: { timestamp: string | number | Date } };
-					// 	}
-					// ) =>
-					// 	new Date(a.request.context.timestamp!).getTime() -
-					// 	new Date(b.request.context.timestamp!).getTime()
-					actionComparator
-				);
-			// console.log("RESPONSE", response, formattedResponse);
-			const { edges, nodes } = getNodesAndEdges(formattedResponse, theme);
+        .reduce(
+          (
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            uniqueArr: any[],
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            item: {
+              request: {
+                context: {
+                  action: string;
+                  timestamp: string;
+                  message_id: string;
+                };
+              };
+              type: string,
+							id: string
+            }
+          ) => {
+            // const {
+            //   action,
+            //   timestamp: strTimestamp,
+            //   message_id,
+            // } = item.request.context;
+            // const timestamp = new Date(strTimestamp);
+            // if (
+            //   !seenActionMessageId[`${message_id}-${action}-${item.id}`]
+            //   // || timestamp > seenActionMessageId[action]
+            // ) {
+            //   seenActionMessageId[`${message_id}-${action}-${item.id}`] = timestamp; // Update latest timestamp for the action
+              // const existingIndex = uniqueArr.findIndex(
+              //  (obj) => obj.action === action
+              // );
+              // if (existingIndex !== -1) {
+              //  uniqueArr[existingIndex] = item;
+              // } else {
+              uniqueArr.push(item);
+              // }
+            // }
+            return uniqueArr;
+          },
+          []
+        )
+        .sort(
+          // (
+          //  a: {
+          //    request: { context: { timestamp: string | number | Date } };
+          //  },
+          //  b: {
+          //    request: { context: { timestamp: string | number | Date } };
+          //  }
+          // ) =>
+          //  new Date(a.request.context.timestamp!).getTime() -
+          //  new Date(b.request.context.timestamp!).getTime()
+          actionComparator
+        );
+
+			const {edges, nodes} = _getNodesAndEdges(formattedResponse, theme)
+
+			// const { edges, nodes } = getNodesAndEdges(formattedResponse, theme);
 			setNodes(nodes);
 			setEdges(edges);
 			setRequested(true);
@@ -89,6 +92,8 @@ export const TransactionSearch = () => {
 			console.log("Following error occurred while querying", error);
 		}
 	};
+
+	
 	const requestTransaction = _.debounce(
 		async (
 			event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -98,6 +103,7 @@ export const TransactionSearch = () => {
 		},
 		500
 	);
+
 	const handleFetch = async () => {
 		await fetchTransaction(transactionId);
 	};

@@ -37,8 +37,6 @@ export const initiateStatusController = async (
 		const parsedTransaction = transaction.map((ele) => {
 			return JSON.parse(ele as string);
 		});
-
-		// console.log("parsedTransaction:::: ", parsedTransaction[0]);
 		return intializeRequest(
 			res,
 			next,
@@ -66,8 +64,6 @@ const intializeRequest = async (
 			},
 		} = transaction;
 		const { transaction_id } = context;
-
-		console.log("versionb2bbbb",version)
 		const status = {
 			context: {
 				...context,

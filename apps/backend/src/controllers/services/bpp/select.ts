@@ -81,6 +81,7 @@ const selectConsultationConfirmController = (
 				? updateFulfillments(
 						message?.order?.fulfillments,
 						ON_ACTION_KEY?.ON_SELECT,
+						"",
 						"bid_auction_service"
 				  )
 				: updateFulfillments(
@@ -132,6 +133,9 @@ const selectConsultationConfirmController = (
 						  ),
 			},
 		};
+		responseMessage.order.items[0].fulfillment_ids = [
+			"F1"
+		]
 
 		return responseBuilder(
 			res,

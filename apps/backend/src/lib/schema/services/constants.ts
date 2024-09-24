@@ -1,6 +1,6 @@
 export const VERSION = "2.0.0";
 
-export const DOMAIN = ["ONDC:SRV11","ONDC:SRV13","ONDC:SRV14","ONDC:SRV15","ONDC:SRV18"];
+export const DOMAIN = ["ONDC:SRV11","ONDC:SRV13","ONDC:SRV14","ONDC:SRV17","ONDC:SRV18"];
 
 export const SRV_FULFILLMENT_TYPE = ["Home-Service", "Store-Service","Seller-Fulfilled", "Buyer-Fulfilled"];
 

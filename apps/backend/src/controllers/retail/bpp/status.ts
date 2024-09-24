@@ -45,7 +45,6 @@ const statusRequest = async (
 	version:any
 ) => {
 	try {
-		console.log("versionnnnnnnnn", scenario,version)
 		const timestamp = new Date().toISOString();
 		const responseMessage: any = {
 			order: {
@@ -276,7 +275,6 @@ const statusRequest = async (
 					);
 					break;
 				case "bpp-payment-error":
-					console.log("bpp payment error");
 					responseMessage.error = {
 						code: "31004",
 						message: "Payment Failed",
@@ -302,7 +300,6 @@ const statusRequest = async (
 					);
 					break;
 				case "bpp-payment":
-					console.log("bpp payment")
 					responseMessage.order.payments.forEach((itm: Payment) =>
 						itm["@ondc/org/settlement_details"]?.forEach(
 							(itm: SettlementDetails) => {

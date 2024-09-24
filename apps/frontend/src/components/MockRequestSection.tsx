@@ -33,9 +33,13 @@ export const MockRequestSection = () => {
 
 	const { domain } = useDomain();
 	const [version, setVersion] = useState("");
-	const { action, detectAction, logError, scenarios } = useAction();
+	const { action, detectAction, logError, scenarios,setLogError } = useAction();
 	const { setAsyncResponse, setSyncResponse } = useMock();
 
+	useEffect(()=>{
+    setLog("")
+    setLogError(false)
+  },[domain])
 	useEffect(() => {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
@@ -49,10 +53,13 @@ export const MockRequestSection = () => {
 	const [curl, setCurl] = useState<string>();
 
 	const handleVersion = (
-    event: React.SyntheticEvent | null,
-    newValue: string,
-  ) => {
-		setVersion(newValue)
+		event: React.MouseEvent<Element> | React.KeyboardEvent<Element> | React.FocusEvent<Element> | null,
+		value: {} | null
+	) => {
+		console.log("event",event)
+		if (value) {
+			setVersion(value as string); // Ensure value is a string and set the version
+		}
 	};
 
 	const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

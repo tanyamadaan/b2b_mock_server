@@ -324,7 +324,7 @@ export const initSchema = {
                     },
                   },
                 },
-                required: ["id", "type", "stops"],
+                required: ["id", "stops"],
               },
             },
             payments: {

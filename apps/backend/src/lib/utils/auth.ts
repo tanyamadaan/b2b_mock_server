@@ -1,5 +1,4 @@
 import _sodium from "libsodium-wrappers";
-import { Request, Response } from "express";
 import { getSubscriberDetails } from "./lookup";
 import { createSigningString, verifyMessage } from "./crypto";
 
