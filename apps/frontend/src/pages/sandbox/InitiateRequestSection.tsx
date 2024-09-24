@@ -15,7 +15,7 @@ import HelpOutlineTwoToneIcon from "@mui/icons-material/HelpOutlineTwoTone";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 
-// import { Item } from "../../../../backend/src/lib/utils/interfaces";
+import { Item } from "common/index";
 // type InitiateRequestSectionProp = {
 // 	domain:
 // 		| "b2b"
@@ -38,14 +38,14 @@ type SELECT_OPTIONS =
 	| { b2c: string[] }
 	| object;
 
-type SELECT_FIELD = {
-	name: string;
-	placeholder: string;
-	type: string;
-	domainDepended: boolean;
-	versionDepended: boolean;
-	options: SELECT_OPTIONS;
-};
+// type SELECT_FIELD = {
+// 	name: string;
+// 	placeholder: string;
+// 	type: string;
+// 	domainDepended: boolean;
+// 	versionDepended: boolean;
+// 	options: SELECT_OPTIONS;
+// };
 
 type OptionsType = {
   retail: string[];
@@ -61,11 +61,12 @@ export const InitiateRequestSection = () => {
 	const [action, setAction] = useState<string>();
 	const { domain } = useDomain();
 	const [domainOptions, setDomainOptions] = useState<string[]>([]);
-	const [scenarioOptions, setScenarioOptions] = useState<string[]>([]);
+	const [, setScenarioOptions] = useState<string[]>([]);
 	const [cityOptions, setCityOptions] = useState<string[]>([]);
 	const [version, setVersion] = useState<string>("services");
 	const [selectedScenario, setSelectedScenario] = useState<string>("default");
 	const [renderActionFields, setRenderActionFields] = useState(false);
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const [formState, setFormState] = useState<{ [key: string]: any }>({});
 	const [allowSubmission, setAllowSubmission] = useState<boolean>(false);
 	const [transactionId, setTransactionId] = useState<string>("");
@@ -162,6 +163,7 @@ export const InitiateRequestSection = () => {
 			setSelectedScenario(value as string);
 			/****Write the logic for changes the domain options based on version selection */
 		}
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		setFormState((prev: any) => ({ ...prev, [fieldName]: value }));
 	};
 

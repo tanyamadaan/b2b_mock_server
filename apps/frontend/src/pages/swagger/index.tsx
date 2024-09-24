@@ -12,9 +12,10 @@ export const Swagger = () => {
 	const [fileName, setFileName] = useState("B2b.yaml");
 	const { domain } = useDomain();
 
-	useEffect(()=>{
-		const swaggerFile = domain === "retail"?b2bswaggerSpec:serviceswaggerSpec;
-		const yamlFileName = domain === "retail"?"B2b.yaml":"services.yaml";
+	useEffect(() => {
+		const swaggerFile =
+			domain === "retail" ? b2bswaggerSpec : serviceswaggerSpec;
+		const yamlFileName = domain === "retail" ? "B2b.yaml" : "services.yaml";
 		setSwaggerSpec(swaggerFile);
 		setFileName(yamlFileName);
 	}, [domain]);
