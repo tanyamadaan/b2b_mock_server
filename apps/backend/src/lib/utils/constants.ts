@@ -24,13 +24,13 @@ export const AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH =
 export const B2B_EXAMPLES_PATH =
 	"./domain-repos/@retail-b2b/release-2.0.2/api/components/Examples/B2B";
 export const B2C_EXAMPLES_PATH =
-	"./domain-repos/@b2c_exports_2.0/api/components/Examples/B2C_Exports";
+	"./domain-repos/@retail-b2b/b2c_exports_2.0/api/components/Examples/B2C_Exports";
 
 export const LOGISTICS_EXAMPLES_PATH =
-	"./domain-repos/@logistics/ONDC-LOG-Specifications/api/components/Examples";
+	"./domain-repos/@logistics/api/components/Examples";
 
 export const SUBSCRIPTION_EXAMPLES_PATH =
-	"./domain-repos/@MEC/subscription/draft-ptint_media/api/components/Examples/Print_Content_yaml";
+	"./domain-repos/@mec/draft-print_media/api/components/Examples/Print_Content_yaml";
 
 export const MOCKSERVER_ID = "mock.ondc.org/api";
 // export const B2B_BPP_MOCKSERVER_URL = `https://${MOCKSERVER_ID}/b2b/bpp`;
