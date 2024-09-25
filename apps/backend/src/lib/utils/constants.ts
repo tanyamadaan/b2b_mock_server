@@ -27,7 +27,7 @@ export const B2C_EXAMPLES_PATH =
 	"./domain-repos/@retail-b2b/b2c_exports_2.0/api/components/Examples/B2C_Exports";
 
 export const LOGISTICS_EXAMPLES_PATH =
-	"./domain-repos/@logistics/api/components/Examples";
+	"./domain-repos/@logistics/draft-2.x/api/components/Examples";
 
 export const SUBSCRIPTION_EXAMPLES_PATH =
 	"./domain-repos/@mec/draft-print_media/api/components/Examples/Print_Content_yaml";
