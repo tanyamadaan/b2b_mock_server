@@ -8,14 +8,15 @@ import SwaggerUI from "swagger-ui-react";
 import { useDomain } from "../../utils/hooks";
 
 export const Swagger = () => {
-	const [swaggerSpec, setSwaggerSpec] = useState(b2bswaggerSpec);
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const [swaggerSpec, setSwaggerSpec] = useState<any>(b2bswaggerSpec);
 	const [fileName, setFileName] = useState("B2b.yaml");
 	const { domain } = useDomain();
 
 	useEffect(() => {
 		const swaggerFile =
 			domain === "retail" ? b2bswaggerSpec : serviceswaggerSpec;
-		const yamlFileName = domain === "retail" ? "B2b.yaml" : "services.yaml";
+		const yamlFileName = domain === "retail" ? "b2b.yaml" : "services.yaml";
 		setSwaggerSpec(swaggerFile);
 		setFileName(yamlFileName);
 	}, [domain]);
