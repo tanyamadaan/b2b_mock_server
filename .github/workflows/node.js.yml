@@ -1,10 +1,10 @@
-name: Build Check on PR
+name: Build on Merge
 
-# Run this workflow on pull requests targeting the main branch
+# Run this workflow when a pull request is merged into the main branch
 on:
-  pull_request:
+  push:
     branches:
-      - build-check  # Replace 'main' with your target branch if different
+      - build-check  # Replace this with the branch you want to monitor for merges
 
 jobs:
   build:
@@ -19,7 +19,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '20' # Adjust Node.js version as needed
+        node-version: '20' # Use the appropriate Node.js version
 
     # Install dependencies
     - name: Install dependencies
@@ -28,3 +28,8 @@ jobs:
     # Run the build
     - name: Run build
       run: npm run build
+
+    # Conditional Deployment
+    - name: Deploy (only if build succeeds)
+      if: success() # Continue only if the previous steps succeed
+      run: echo "Deploying..." # Replace this with your actual deploy command
