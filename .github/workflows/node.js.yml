@@ -21,6 +21,12 @@ jobs:
         with:
           node-version: "20" # Use the appropriate Node.js version
 
+      
+      - name: Install submodules
+        run: git submodule init
+        run: git submodule update --remote --recursive
+
+
       # Install dependencies
       - name: Install dependencies
         run: npm install -ff
