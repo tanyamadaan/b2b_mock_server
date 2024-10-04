@@ -29,16 +29,17 @@ export const redisRetriever = async (
 	// 	request: req.body,
 	// };
 
-	let ts = new Date().toISOString()
+	let ts = new Date().toISOString();
 
-	if (action !== "status" && action !== "on_status")
+	if (action !== "status" && action !== "on_status") {
+		console.log("storing in redis", `${transaction_id}-${action}-to-server`);
 		await redis.set(
 			`${transaction_id}-${action}-to-server`,
 			JSON.stringify({
 				request: req.body,
 			})
 		);
-	else {
+	} else {
 		const transactionKeys = await redis.keys(`${transaction_id}-*`);
 		const logIndex = transactionKeys.filter((e) =>
 			e.includes(`${action}-to-server`)
