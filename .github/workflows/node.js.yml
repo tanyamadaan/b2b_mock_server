@@ -4,7 +4,11 @@ name: Build on Merge
 on:
   push:
     branches:
-      - build-check # Replace this with the branch you want to monitor for merges
+      - release/v1.0-sandbox # Replace this with the branch you want to monitor for merges
+  pull_request:
+    branches:
+      - release/v1.0-sandbox # Monitor the 'build-check' branch for pull request events
+    
 
 jobs:
   build:
