@@ -32,6 +32,8 @@ export const searchController = async (
 				logger.info("buyer id number is present , it is b2b");
 				version = "b2b";
 			} else version = "b2c";
+		} else {
+			version = "b2c";
 		}
 
 		console.log("🚀 ~ version:", version);
