@@ -59,7 +59,6 @@ export const jsonSchemaValidator = <T extends Domain>({
 	action,
 	VERSION
 }: JsonSchemaValidatorType<T>) => {
-	console.log("ssssss",VERSION)
 	if(domain==='retail' && VERSION==='b2b'){
 		console.log("b2b")
 		return b2bSchemaValidator(action as AllActions);

@@ -10,46 +10,41 @@ import { cancelController } from "./cancel";
 import { logger } from "../../../lib/utils";
 import { VersionType } from "../../../middlewares";
 export const bppRouter = Router();
- let version:VersionType|undefined;
+let version: VersionType | undefined;
 // let VERSION
 bppRouter.post(
 	"/search",
-	async(req,res,next)=>{
-		
+	async (req, res, next) => {
 		try {
-            // const { version} = req.query
-			// VERSION=version
-			
-			const{message}=req.body
+			const { message } = req.body;
 			const buyerIdTag = message.intent.tags.find(
 				(tag: any) => tag.descriptor.code === "buyer_id"
 			);
-			
+
 			if (buyerIdTag) {
 				const buyerIdNo = buyerIdTag.list.find(
 					(item: any) => item.descriptor.code === "buyer_id_no"
 				);
-				
+
 				if (buyerIdNo && buyerIdNo.value) {
 					version = "b2b" as VersionType; // Type assertion
 				} else {
 					version = "b2c" as VersionType; // Type assertion
 				}
-				
-		}}
-		catch(err){
-			logger.error("eerrr",err)
+			} else {
+				version = "b2c" as VersionType; // Type assertion
+			}
+		} catch (err) {
+			logger.error("eerrr", err);
 		}
-		console.log("version",version)
 		const validationResult = jsonSchemaValidator({
-            domain: "retail",
-            action: "search",
-            VERSION: version, // version is now guaranteed to be a string
-        });
+			domain: "retail",
+			action: "search",
+			VERSION: version, // version is now guaranteed to be a string
+		});
 
-        // Continue with the next middlewares or send a response
-        next();
-		
+		// Continue with the next middlewares or send a response
+		next();
 	},
 	//  jsonSchemaValidator({ domain: "retail", action: "search" ,VERSION}),
 	redisRetriever,
@@ -93,7 +88,7 @@ bppRouter.post(
 
 bppRouter.post(
 	"/cancel",
-	jsonSchemaValidator({domain: "retail", action: "cancel"}),
+	jsonSchemaValidator({ domain: "retail", action: "cancel" }),
 	redisRetriever,
 	cancelController
-)
+);
