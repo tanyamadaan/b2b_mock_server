@@ -57,7 +57,6 @@ app.use(
 	healthcareServiceSwagger("/api-docs/agri-equipment-services")
 );
 
-app.use(express.json());
 app.use(express.raw({ type: "*/*", limit: "1mb" }));
 app.use(requestParser);
 app.use("/", miscRouter);
