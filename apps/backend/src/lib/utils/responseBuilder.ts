@@ -171,7 +171,7 @@ export const responseBuilder = async (
 				}
 				
 			} else {
-				await redis.set(
+					await redis.set(
 					`${(async.context! as any).transaction_id}-${action}-from-server-${id}-${ts.toISOString()}`,
 					JSON.stringify(log)
 				);
