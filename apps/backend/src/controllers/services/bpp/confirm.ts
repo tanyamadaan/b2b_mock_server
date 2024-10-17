@@ -48,7 +48,7 @@ export const confirmConsultationController = async (
 		const responseMessage = {
 			order: {
 				...order,
-				status: ORDER_STATUS.ACCEPTED,
+				status: ORDER_STATUS.ACCEPTED.toUpperCase(),
 				fulfillments: updatedFulfillments,
 				provider: {
 					...order.provider,

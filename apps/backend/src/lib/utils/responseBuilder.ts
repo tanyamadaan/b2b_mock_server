@@ -178,6 +178,7 @@ export const responseBuilder = async (
 			}
 
 			try {
+				console.log("URI BEING SENT :::", uri)
 				const response = await axios.post(`${uri}?mode=mock`, async, {
 					headers: {
 						authorization: header,
