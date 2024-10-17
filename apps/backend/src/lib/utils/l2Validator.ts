@@ -5,7 +5,9 @@ import addFormats from "ajv-formats";
 import { redis } from "./redis";
 
 export const l2Validator = (domain: string) => async (req: Request, res: Response, next: NextFunction) => {
-  const {action, domain: reqDomain} = req.body.context;
+  const action = req.url.replace("/", "")
+  const {domain: reqDomain} = req.body.context;
+  console.log("REQ Context", req.body.context)
   const ajv = new Ajv({
     allErrors: true,
     strict: false,
