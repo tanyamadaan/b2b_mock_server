@@ -23,6 +23,11 @@ export const initController = async (
 ) => {
   try {
     const { transaction_id } = req.body.context;
+    const VERSION=await redis.keys(`${transaction_id}-version-*`)
+    const parts = VERSION[0].split('-');
+	const versionn = parts[parts.length - 1];
+    
+
     const transactionKeys = await redis.keys(`${transaction_id}-*`);
 
     // checking on_select response exits or not

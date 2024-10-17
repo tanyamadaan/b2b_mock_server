@@ -30,6 +30,7 @@ import {
 	SERVICES_DOMAINS,
 } from "./apiConstants";
 import { calculateQuotePrice } from "./getISODuration";
+import { values } from "lodash";
 
 interface TagDescriptor {
 	code: string;
@@ -171,7 +172,7 @@ export const responseBuilder = async (
 				}
 				
 			} else {
-				await redis.set(
+					await redis.set(
 					`${(async.context! as any).transaction_id}-${action}-from-server-${id}-${ts.toISOString()}`,
 					JSON.stringify(log)
 				);
@@ -1140,8 +1141,33 @@ export const quoteCommon = (items: Item[], providersItems?: any) => {
 		// If a matching item is found, update the price in the items array
 		if (matchingItem) {
 			item.title = matchingItem?.descriptor?.name;
-			item.price = matchingItem?.price;
-			item.tags = matchingItem?.tags;
+			const pp = {
+				currency: matchingItem.price.currency,
+				value: matchingItem.price.value
+			};
+			item.price = pp
+			if(matchingItem?.tags[0].descriptor.code!='reschedule_terms'){
+				item.tags = matchingItem?.tags;
+			}
+			else{
+				const tag=[
+                            {
+                                "descriptor": {
+                                    "code": "title"
+                                },
+                                "list": [
+                                    {
+                                        "descriptor": {
+                                            "code": "type"
+                                        },
+                                        "value": "item"
+                                    }
+                                ]
+                            }
+                        ]
+						item.tags=tag
+			}
+			 
 		}
 	});
 
@@ -1164,7 +1190,16 @@ export const quoteCommon = (items: Item[], providersItems?: any) => {
 			},
 		});
 	});
+	const price={
+		currency:items[0].price.currency,
+		value:items[0].price.value
+	}
 
+	const itemtobe={
+		id:items[0].id,
+		price:price,
+		quantity:items[0].quantity
+	}
 	//ADD STATIC TAX IN BREAKUP QUOTE
 	breakup.push({
 		title: "tax",
@@ -1172,7 +1207,7 @@ export const quoteCommon = (items: Item[], providersItems?: any) => {
 			currency: "INR",
 			value: "10",
 		},
-		item: items[0],
+		item: itemtobe,
 		tags: [
 			{
 				descriptor: {
@@ -1227,8 +1262,8 @@ export const quoteCreatorService = (items: Item[], providersItems?: any) => {
 		item: {
 			id: "I1",
 			quantity: {
-				allocated: {
-					count: "1",
+				selected: {
+					count: 1,
 				},
 			},
 			price: {
@@ -1261,8 +1296,8 @@ export const quoteCreatorService = (items: Item[], providersItems?: any) => {
 		item: {
 			id: "I1",
 			quantity: {
-				allocated: {
-					count: "1",
+				selected: {
+					count: 1,
 				},
 			},
 			price: {
