@@ -5,7 +5,10 @@ import addFormats from "ajv-formats";
 import { redis } from "./redis";
 
 export const l2Validator = (domain: string) => async (req: Request, res: Response, next: NextFunction) => {
-  const action = req.url.replace("/", "")
+  console.log("URL ::", req.url, req.originalUrl, req.hostname)
+  const url = new URL(`https://www.google.com${req.originalUrl}`)
+  const action = url.pathname.split("/")[url.pathname.split("/").length - 1]
+
   const {domain: reqDomain} = req.body.context;
   console.log("REQ Context", req.body.context)
   const ajv = new Ajv({
