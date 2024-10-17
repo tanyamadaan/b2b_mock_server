@@ -26,7 +26,8 @@ export const selectController = async (
     const { transaction_id } = req.body.context;
 	
 	const VERSION=await redis.keys(`${transaction_id}-version-*`)
-	console.log("abc",VERSION[0].split('-'))
+	const parts = VERSION[0].split('-');
+	const versionn = parts[parts.length - 1];
 
     const transactionKeys = await redis.keys(`${transaction_id}-*`);
 
