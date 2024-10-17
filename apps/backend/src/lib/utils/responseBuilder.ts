@@ -1228,8 +1228,8 @@ export const quoteCreatorService = (items: Item[], providersItems?: any) => {
 		item: {
 			id: "I1",
 			quantity: {
-				allocated: {
-					count: "1",
+				selected: {
+					count: 1,
 				},
 			},
 			price: {
@@ -1262,8 +1262,8 @@ export const quoteCreatorService = (items: Item[], providersItems?: any) => {
 		item: {
 			id: "I1",
 			quantity: {
-				allocated: {
-					count: "1",
+				selected: {
+					count: 1,
 				},
 			},
 			price: {
