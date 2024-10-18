@@ -786,10 +786,10 @@ paths:
                                               code:
                                                 type: string
                                                 enum:
-                                                  - Pending
-                                                  - In-Transit
-                                                  - At-Location
-                                                  - Completed
+                                                  - PENDING
+                                                  - IN_TRANSIT
+                                                  - AT_LOCATION
+                                                  - COMPLETED
                                             required:
                                               - code
                                         required:
@@ -1573,6 +1573,7 @@ paths:
                                   enum:
                                     - CREATED
                                     - ACCEPTED
+                                    - IN-PROGRESS
                               required:
                                 - id
                                 - status

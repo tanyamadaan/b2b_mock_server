@@ -189,14 +189,14 @@ function rescheduleRequest(message: any, update_target: string) {
 	);
 
 	fulfillments.map((itm: any) => {
-		itm.state.descriptor.code = "Pending";
+		itm.state.descriptor.code = "PENDING";
 	});
 
 	const responseMessage = {
 		update_target: "fulfillments",
 		order: {
 			id: message.order.id,
-			status: "Accepted",
+			status: "ACCEPTED",
 			provider: message.order.provider,
 			items,
 			payments,
@@ -226,7 +226,7 @@ function updatePaymentController(message: any, update_target: string){
 		update_target,
 		order: {
 			id: message.id,
-			status: "Completed",
+			status: "COMPLETED",
 			provider: message.provider,
 			items,
 			payments,

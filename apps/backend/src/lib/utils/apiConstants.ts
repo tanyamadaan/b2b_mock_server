@@ -173,7 +173,7 @@ export const SCENARIO = {
 
 export const PAYMENT_STATUS = {
 	PAID: "PAID",
-	NON_PAID: "NON-PAID",
+	NON_PAID: "NOT-PAID",
 };
 
 export const PAYMENT_TYPE = {

@@ -1,4 +1,4 @@
-//new code for transaction anylyser( changes in redis set with id) 
+//new code for transaction anylyser( changes in redis set with id)
 
 import axios from "axios";
 import { NextFunction, Response } from "express";
@@ -155,7 +155,7 @@ export const responseBuilder = async (
 				const logIndex = transactionKeys.filter((e) =>
 					e.includes("on_status-to-server")
 				).length;
-				if(domain === "services") {
+				if (domain === "services") {
 					await redis.set(
 						`${
 							(async.context! as any).transaction_id
@@ -170,22 +170,22 @@ export const responseBuilder = async (
 						JSON.stringify(log)
 					);
 				}
-				
 			} else {
-					await redis.set(
-					`${(async.context! as any).transaction_id}-${action}-from-server-${id}-${ts.toISOString()}`,
+				await redis.set(
+					`${
+						(async.context! as any).transaction_id
+					}-${action}-from-server-${id}-${ts.toISOString()}`,
 					JSON.stringify(log)
 				);
 			}
 
 			try {
-				console.log("URI BEING SENT :::", uri)
+				console.log("URI BEING SENT :::", uri);
 				const response = await axios.post(`${uri}?mode=mock`, async, {
 					headers: {
 						authorization: header,
 					},
 				});
-
 
 				log.response = {
 					timestamp: new Date().toISOString(),
@@ -193,7 +193,9 @@ export const responseBuilder = async (
 				};
 
 				await redis.set(
-					`${(async.context! as any).transaction_id}-${action}-from-server-${id}-${ts.toISOString()}`,
+					`${
+						(async.context! as any).transaction_id
+					}-${action}-from-server-${id}-${ts.toISOString()}`,
 					JSON.stringify(log)
 				);
 			} catch (error) {
@@ -215,12 +217,14 @@ export const responseBuilder = async (
 					response: response,
 				};
 				await redis.set(
-					`${(async.context! as any).transaction_id}-${action}-from-server-${id}-${ts.toISOString()}`,
+					`${
+						(async.context! as any).transaction_id
+					}-${action}-from-server-${id}-${ts.toISOString()}`,
 					JSON.stringify(log)
 				);
-				
-				if(error instanceof AxiosError) {
-					return res.status(error.status ? error.status : 500).json(response)
+
+				if (error instanceof AxiosError) {
+					return res.status(error.status ? error.status : 500).json(response);
 				}
 
 				return next(error);
@@ -286,14 +290,14 @@ export const sendStatusAxiosCall = async (
 		domain === "b2b"
 			? B2B_BPP_MOCKSERVER_URL
 			: domain === "agri-services"
-				? AGRI_SERVICES_BPP_MOCKSERVER_URL
-				: domain === "logistics"
-					? LOGISTICS_BPP_MOCKSERVER_URL
-					: domain === "healthcare-service"
-						? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
-						: domain === "agri-equipment-hiring"
-							? AGRI_EQUIPMENT_BPP_MOCKSERVER_URL
-							: SERVICES_BPP_MOCKSERVER_URL;
+			? AGRI_SERVICES_BPP_MOCKSERVER_URL
+			: domain === "logistics"
+			? LOGISTICS_BPP_MOCKSERVER_URL
+			: domain === "healthcare-service"
+			? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
+			: domain === "agri-equipment-hiring"
+			? AGRI_EQUIPMENT_BPP_MOCKSERVER_URL
+			: SERVICES_BPP_MOCKSERVER_URL;
 
 	async = {
 		...async,
@@ -1101,7 +1105,6 @@ export const quoteSubscription = (
 			}
 		);
 
-
 		let totalPrice = 0;
 		breakup.forEach((entry) => {
 			const priceValue = parseFloat(entry?.price?.value);
@@ -1115,13 +1118,20 @@ export const quoteSubscription = (
 			}
 		});
 
-		const quotePrice =  scenario === "single-order"?totalPrice:calculateQuotePrice(fulfillment?.stops[0]?.time?.duration, fulfillment?.stops[0]?.time.schedule?.frequency, totalPrice);
+		const quotePrice =
+			scenario === "single-order"
+				? totalPrice
+				: calculateQuotePrice(
+						fulfillment?.stops[0]?.time?.duration,
+						fulfillment?.stops[0]?.time.schedule?.frequency,
+						totalPrice
+				  );
 
 		const result = {
 			breakup,
 			price: {
 				currency: "INR",
-				value: quotePrice.toFixed(2)
+				value: quotePrice.toFixed(2),
 			},
 			ttl: "P1D",
 		};
@@ -1132,7 +1142,8 @@ export const quoteSubscription = (
 	}
 };
 
-export const quoteCommon = (items: Item[], providersItems?: any) => {
+export const quoteCommon = (tempItems: Item[], providersItems?: any) => {
+	const items: Item[] = JSON.parse(JSON.stringify(tempItems))
 	//get price from on_search
 	items.forEach((item) => {
 		// Find the corresponding item in the second array
@@ -1144,31 +1155,29 @@ export const quoteCommon = (items: Item[], providersItems?: any) => {
 			item.title = matchingItem?.descriptor?.name;
 			const pp = {
 				currency: matchingItem.price.currency,
-				value: matchingItem.price.value
+				value: matchingItem.price.value,
 			};
-			item.price = pp
-			if(matchingItem?.tags[0].descriptor.code!='reschedule_terms'){
+			item.price = pp;
+			if (matchingItem?.tags[0].descriptor.code != "reschedule_terms") {
 				item.tags = matchingItem?.tags;
+			} else {
+				const tag = [
+					{
+						descriptor: {
+							code: "title",
+						},
+						list: [
+							{
+								descriptor: {
+									code: "type",
+								},
+								value: "item",
+							},
+						],
+					},
+				];
+				item.tags = tag;
 			}
-			else{
-				const tag=[
-                            {
-                                "descriptor": {
-                                    "code": "title"
-                                },
-                                "list": [
-                                    {
-                                        "descriptor": {
-                                            "code": "type"
-                                        },
-                                        "value": "item"
-                                    }
-                                ]
-                            }
-                        ]
-						item.tags=tag
-			}
-			 
 		}
 	});
 
@@ -1191,16 +1200,16 @@ export const quoteCommon = (items: Item[], providersItems?: any) => {
 			},
 		});
 	});
-	const price={
-		currency:items[0].price.currency,
-		value:items[0].price.value
-	}
+	const price = {
+		currency: items[0].price.currency,
+		value: items[0].price.value,
+	};
 
-	const itemtobe={
-		id:items[0].id,
-		price:price,
-		quantity:items[0].quantity
-	}
+	const itemtobe = {
+		id: items[0].id,
+		price: price,
+		quantity: items[0].quantity,
+	};
 	//ADD STATIC TAX IN BREAKUP QUOTE
 	breakup.push({
 		title: "tax",
@@ -1412,7 +1421,7 @@ export const updateFulfillments = (
 	try {
 		// Update fulfillments according to actions
 
-		console.log("fulfillmentssssssssssssssssssssssss",fulfillments)
+		console.log("fulfillmentssssssssssssssssssssssss", fulfillments);
 		const rangeStart = new Date().setHours(new Date().getHours() + 2);
 		const rangeEnd = new Date().setHours(new Date().getHours() + 3);
 
@@ -1438,13 +1447,17 @@ export const updateFulfillments = (
 				},
 			};
 		} else {
-			fulfillmentObj.stops = fulfillments[0]?.stops.map((ele: any) => {action
+			fulfillmentObj.stops = fulfillments[0]?.stops.map((ele: any) => {
+				action;
 				ele.time.range.end = new Date(rangeEnd).toISOString();
 				return ele;
 			});
 			fulfillmentObj.type = fulfillments[0]?.type;
 		}
-		if (domain !== SERVICES_DOMAINS.BID_ACTION_SERVICES && domain !== "subscription"){
+		if (
+			domain !== SERVICES_DOMAINS.BID_ACTION_SERVICES &&
+			domain !== "subscription"
+		) {
 			fulfillmentObj = {
 				...fulfillmentObj,
 				type: FULFILLMENT_TYPES.SELLER_FULFILLED,
