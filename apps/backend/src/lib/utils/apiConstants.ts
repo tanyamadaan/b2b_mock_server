@@ -162,9 +162,9 @@ export const FULFILLMENT_LABELS = {
 
 export const FULFILLMENT_STATES = {
 	SERVICEABLE: "Serviceable",
-	PENDING: "Pending",
-	CANCELLED: "Cancelled",
-	COMPLETED: "Completed",
+	PENDING: "PENDING",
+	CANCELLED: "CANCELLED",
+	COMPLETED: "COMPLETED",
 };
 
 export const SCENARIO = {

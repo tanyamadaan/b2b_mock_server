@@ -141,7 +141,7 @@ export const confirmServiceCustomizationController = (
             // state hard coded
             state: {
               descriptor: {
-                code: "Pending",
+                code: "PENDING",
               },
             },
             rateable: true,
