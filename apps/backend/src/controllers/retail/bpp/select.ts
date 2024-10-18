@@ -24,16 +24,21 @@ export const selectController = async (
   try {
     const { scenario, version } = req.query;
     const { transaction_id } = req.body.context;
+	
+	const VERSION=await redis.keys(`${transaction_id}-version-*`)
+	const parts = VERSION[0].split('-');
+	const versionn = parts[parts.length - 1];
 
     const transactionKeys = await redis.keys(`${transaction_id}-*`);
+
     const ifToTransactionExist = transactionKeys.filter((e) =>
       e.includes("on_search-to-server")
     );
-
     const ifFromTransactionExist = transactionKeys.filter((e) =>
       e.includes("on_search-from-server")
     );
-
+	
+	
     if (
       ifFromTransactionExist.length === 0 &&
       ifToTransactionExist.length === 0
@@ -49,6 +54,7 @@ export const selectController = async (
     const parsedTransaction = transaction.map((ele) => {
       return JSON.parse(ele as string);
     });
+
 
     const providers = parsedTransaction[0].request.message.catalog.providers;
     req.body.providersItems = providers[0];
