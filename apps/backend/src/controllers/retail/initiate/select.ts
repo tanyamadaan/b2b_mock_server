@@ -7,6 +7,8 @@ import {
 	B2C_EXAMPLES_PATH,
   B2B_EXAMPLES_PATH,
 	RETAIL_BAP_MOCKSERVER_URL,
+	redis,
+	logger,
 } from "../../../lib/utils";
 import fs from "fs";
 import path from "path";
@@ -23,7 +25,7 @@ export const initiateSelectController = async (
 	try {
 		const { scenario, transactionId } = req.body;
 		const { version } = req.query;
-
+		console.log("tt",transactionId)
 		const on_search = await redisFetchToServer(
 			ON_ACTION_KEY.ON_SEARCH,
 			transactionId
@@ -31,6 +33,8 @@ export const initiateSelectController = async (
 		if (!on_search) {
 			return send_nack(res, ERROR_MESSAGES.ON_SEARCH_DOES_NOT_EXISTED);
 		}
+
+		
 		return intializeRequest(res, next, on_search, scenario, version);
 	} catch (error) {
 		return next(error);
@@ -51,6 +55,9 @@ const intializeRequest = async (
 		let file: any = "";
 
 		console.log("versionnnnnnnnn",version)
+
+
+
     switch(version){
       case "b2c":
         file = fs.readFileSync(
