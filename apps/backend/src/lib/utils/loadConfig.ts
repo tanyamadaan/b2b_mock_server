@@ -7,9 +7,11 @@ import { redis } from "./redis";
 
 export const loadConfig = () => {
 	const fileContent = fs.readFileSync(
-		path.join(__dirname, "../../../", "./config/default.yaml"),
+		path.join(process.cwd(), "./config/default.yaml"),
 		"utf8"
 	);
+
+	console.log("INSIDE loadConfig :::", process.cwd());
 	const config = YAML.parse(fileContent);
   const generalDomains = Object.keys(config.l2_validations);
   console.log("GENERAL DOMAINS", generalDomains);
@@ -27,7 +29,7 @@ export const loadConfig = () => {
 				);
 				// console.log("config file name", layer2ConfigFilename);
 				const fileContent = fs.readFileSync(
-					path.join(__dirname, "../../../", `./specs/${layer2ConfigFilename}`),
+					path.join(process.cwd(), `./specs/${layer2ConfigFilename}`),
 					"utf8"
 				);
 				const layer2Config = YAML.parse(fileContent);
