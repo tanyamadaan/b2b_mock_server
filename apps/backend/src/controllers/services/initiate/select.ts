@@ -257,7 +257,7 @@ const intializeRequest = async (
 					})),
 					fulfillments: [
 						{
-							...fulfillments?.[0],
+							// ...fulfillments?.[0],
 							type: fulfillments?.[0].type,
 							stops: [
 								{

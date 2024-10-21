@@ -80,7 +80,7 @@ export const initController = async (
   }
 };
 
-const initDomesticController = (
+const initDomesticController =(
   req: Request,
   res: Response,
   next: NextFunction
@@ -127,63 +127,111 @@ const initDomesticController = (
         ],
       };
     }
-    const responseMessage = {
-      order: {
-        items,
-        fulfillments: fulfillments.map((each: Fulfillment) => ({
-          ...each,
-          tracking: true,
-        })),
-        tags: [
-          {
-            descriptor: {
-              code: "bpp_terms",
-            },
-            list: [
+
+    let responseMessage;
+
+    if(version==="b2b"){
+      let responseMessageb2b = {
+        order: {
+          items:[
+            {
+              id:items[0].id,
+              fulfillment_ids:items[0].fulfillment_ids,
+              quantity:items[0].quantity,
+              tags: response.value.message.order.items[0].tags
+            }
+          ],
+          fulfillments: fulfillments.map((each: Fulfillment) => ({
+            ...each,
+
+            tracking: true,
+          })),
+        
+          billing,
+          provider: { id: remainingMessage.provider.id,
+           },
+          provider_location: remainingMessage.provider.locations[0],
+          payments: remainingMessage.payments.map((each: any) => ({
+            ...each,
+            ...staticPaymentInfo,
+          })),
+          tags:message.order.tags,
+          quote: quoteCreatorB2c(message?.order?.items,providersItems?.items),
+        },
+      };
+      responseMessage=responseMessageb2b
+      }
+      else{
+        let responseMessageb2c = {
+          order: {
+            items:[
+              {
+                id:items[0].id,
+                fulfillment_ids:items[0].fulfillment_ids,
+                quantity:items[0].quantity
+              }
+            ],
+            fulfillments: fulfillments.map((each: Fulfillment) => ({
+              id:each.id,
+              stops:each.stops,
+              type:each.type,             
+              tracking: true,
+            })),
+            cancelation_terms:response.value.message.order.cancelation_terms,
+            tags: [
               {
                 descriptor: {
-                  code: "max_liability",
+                  code: "bpp_terms",
                 },
-                value: "2",
-              },
-              {
-                descriptor: {
-                  code: "max_liability_cap",
-                },
-                value: "10000",
-              },
-              {
-                descriptor: {
-                  code: "mandatory_arbitration",
-                },
-                value: "false",
-              },
-              {
-                descriptor: {
-                  code: "court_jurisdiction",
-                },
-                value: "Bengaluru",
-              },
-              {
-                descriptor: {
-                  code: "delay_interest",
-                },
-                value: "1000",
+                list: [
+                  {
+                    descriptor: {
+                      code: "max_liability",
+                    },
+                    value: "2",
+                  },
+                  {
+                    descriptor: {
+                      code: "max_liability_cap",
+                    },
+                    value: "10000",
+                  },
+                  {
+                    descriptor: {
+                      code: "mandatory_arbitration",
+                    },
+                    value: "false",
+                  },
+                  {
+                    descriptor: {
+                      code: "court_jurisdiction",
+                    },
+                    value: "Bengaluru",
+                  },
+                  {
+                    descriptor: {
+                      code: "delay_interest",
+                    },
+                    value: "1000",
+                  },
+                ],
               },
             ],
+            billing,
+            provider: { id: remainingMessage.provider.id,
+              location:remainingMessage.provider.locations[0]
+             },
+            payments: remainingMessage.payments.map((each: any) => ({
+              ...each,
+              ...staticPaymentInfo,
+            })),
+            quote: quoteCreatorB2c(message?.order?.items,providersItems?.items),
           },
-        ],
-        billing,
-        provider: { id: remainingMessage.provider.id },
-        provider_location: remainingMessage.provider.locations[0],
-        payments: remainingMessage.payments.map((each: any) => ({
-          ...each,
-          ...staticPaymentInfo,
-        })),
-        quote: quoteCreatorB2c(message?.order?.items,providersItems?.items),
-      },
-    };
+        };
+        responseMessage=responseMessageb2c
+      }
 
+    
     try {
       responseMessage.order.quote.breakup.forEach((element: Breakup) => {
         if (element["@ondc/org/title_type"] === "item") {

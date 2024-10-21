@@ -516,6 +516,8 @@ export const quoteCreatorB2c = (items: Item[], providersItems?: any) => {
 		},
 	];
 
+
+
 	items.forEach((item) => {
 		// Find the corresponding item in the second array
 		if (providersItems) {
@@ -525,8 +527,14 @@ export const quoteCreatorB2c = (items: Item[], providersItems?: any) => {
 			// If a matching item is found, update the price in the items array
 			if (matchingItem) {
 				item.title = matchingItem?.descriptor?.name;
-				item.price = matchingItem?.price;
-				item.tags = matchingItem?.tags;
+				// item.price = matchingItem?.price;
+				item.price={
+					currency:matchingItem.price.currency,
+					value:matchingItem.price.value
+				}
+				if(matchingItem?.tags[0].descriptor.code!=='origin'){
+					item.tags = matchingItem?.tags;
+				}	
 			}
 		}
 	});
@@ -549,9 +557,9 @@ export const quoteCreatorB2c = (items: Item[], providersItems?: any) => {
 				},
 				tags: item.tags,
 				item: {
-					id: item.id,
+					// id: item.id,
 					price: item.price,
-					quantity: item.quantity ? item.quantity : undefined,
+					// quantity: item.quantity ? item.quantity : undefined,
 				},
 			},
 		];
@@ -1427,6 +1435,19 @@ export const updateFulfillments = (
 				ele.time.label = FULFILLMENT_LABELS.CONFIRMED;
 				return ele;
 			}),
+			tags:{
+                "descriptor": {
+                  "code": "schedule"
+                },
+                "list": [
+                  {
+                    "descriptor": {
+                      "code": "ttl"
+                    },
+                    "value": "PT1H"
+                  }
+                ]
+              }
 		};
 
 		if (domain !== "subscription") {

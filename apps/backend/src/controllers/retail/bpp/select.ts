@@ -108,43 +108,88 @@ export const selectDomesticController = (
 		const { context, message, providersItems } = req.body;
 		const { ttl, ...provider } = message.order.provider;
 
-		let responseMessage = {
-			order: {
-				provider,
-				payments: [message.order.payments[0]],
-				items: message.order.items.map(
-					({
-						location_ids,
-						add_ons,
-						...remaining
-					}: {
-						location_ids: string[];
-						add_ons: any;
-						remaining: any;
-					}) => ({
-						...remaining,
-					})
-				),
-				fulfillments: message.order.fulfillments.map(
-					({ id, ...each }: { id: string; each: any }) => ({
-						id,
-						tracking: false,
-						"@ondc/org/provider_name": "ONDC Mock Server",
-						"@ondc/org/category": "Express Delivery",
-						"@ondc/org/TAT": "P7D",
-						state: {
-							descriptor: {
-								code: "Serviceable",
+		let responseMessage;
+		if(version==="b2b"){
+			let responseMessageB2B = {
+				order: {
+					provider,
+					payments: [message.order.payments[0]],
+					items: message.order.items.map(
+						({
+							location_ids,
+							add_ons,
+							...remaining
+						}: {
+							location_ids: string[];
+							add_ons: any;
+							remaining: any;
+						}) => ({
+							...remaining,
+						})
+					),
+					fulfillments: message.order.fulfillments.map(
+						({ id, ...each }: { id: string; each: any }) => ({
+							id,
+							tracking: false,
+							"@ondc/org/provider_name": "ONDC Mock Server",
+							"@ondc/org/category": "Express Delivery",
+							"@ondc/org/TAT": "P7D",
+							state: {
+								descriptor: {
+									code: "Serviceable",
+								},
 							},
-						},
-					})
-				),
-				quote:
-					version === "b2c"
-						? quoteCreatorB2c(message?.order?.items, providersItems?.items)
-						: quoteCreator(message.order.items),
-			},
-		};
+							...each
+						})
+					),
+					quote: quoteCreator(message.order.items),
+				},
+			};
+			responseMessage=responseMessageB2B
+		}
+		else{
+			let responseMessageB2c = {
+				order: {
+					provider,
+					payments: [message.order.payments[0]],
+					items: message.order.items.map(
+						({
+							location_ids,
+							add_ons,
+							...remaining
+						}: {
+							location_ids: string[];
+							add_ons: any;
+							remaining: any;
+						}) => ({
+							...remaining,
+						})
+					),
+					fulfillments: message.order.fulfillments.map(
+						({ id, ...each }: { id: string; each: any }) => ({
+							id,
+							tracking: false,
+							"@ondc/org/provider_name": "ONDC Mock Server",
+							"@ondc/org/category": "Express Delivery",
+							"@ondc/org/TAT": "P7D",
+							state: {
+								descriptor: {
+									code: "Serviceable",
+								},
+							},
+						})
+					),
+					quote:
+						version === "b2c"
+							? quoteCreatorB2c(message?.order?.items, providersItems?.items)
+							: quoteCreator(message.order.items),
+				},
+			};
+			responseMessage=responseMessageB2c
+		}
+		
+
+		
 		try {
 			responseMessage.order.quote.breakup.forEach((element: Breakup) => {
 				if (element["@ondc/org/title_type"] === "item") {
