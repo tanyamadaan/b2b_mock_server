@@ -133,6 +133,9 @@ const intializeRequest = async (
 
 			// selecting elements based on categories selected
 			items = items.filter((itm: Item) => {
+				if (parent_item.id === itm.id) {
+					return false;
+				}
 				let flag = 0;
 				itm?.category_ids?.forEach((id: string) => {
 					if (id in count_cat && count_cat[id] < 2) {
