@@ -54,7 +54,7 @@ const intializeRequest = async (
 
 		let file: any = "";
 
-		console.log("versionnnnnnnnn",version)
+		console.log("versionnnnnnnnn",JSON.stringify(message))
 
 
 
@@ -74,7 +74,7 @@ const intializeRequest = async (
     }
 		
 		const response = YAML.parse(file.toString());
-
+		// console.log("Yaml",JSON.stringify(response))
 
 		if (scenario !== "rfq") {
 			delete response?.value?.message?.order?.items[0]?.tags;
@@ -98,11 +98,11 @@ const intializeRequest = async (
 								id: message.catalog.providers[0].items[0].location_ids[0],
 							},
 						],
-						ttl: scenario === "rfq" ? "P1D" : "PT30S",
+						// ttl: scenario === "rfq" ? "P1D" : "PT30S",
 					},
 					items: [
 						{
-							...response?.value?.message?.order?.items[0],
+							//  ...response?.value?.message?.order?.items[0],
 							id: message.catalog.providers[0].items[0].id,
 							location_ids: [
 								message.catalog.providers[0].items[0].location_ids[0],
@@ -110,16 +110,22 @@ const intializeRequest = async (
 							fulfillment_ids: [
 								message.catalog.providers[0].items[0].fulfillment_ids[0],
 							],
+							 quantity:response?.value?.message?.order?.items[0].quantity,
 						},
 					],
+					offers:{		
+						id:message.catalog.providers[0].offers[0].id
+					},
 					fulfillments: [
 						{
-							...message.catalog.fulfillments[0],
-							type: message.catalog.providers[0].items[0].fulfillment_ids[0],
+							 ...response?.value?.message?.order?.fulfillments[0]
+							// ...message.catalog.fulfillments[0],
+							//  type: message.catalog.providers[0].items[0].fulfillment_ids[0],
+							
 						},
 					],
-					payments: [message.catalog.payments[0]],
-					tags: response.value.message.order.tags,
+					payments: [{type:message.catalog.payments[0].type}],
+					//  tags: response.value.message.order.tags,
 				},
 			},
 		};
